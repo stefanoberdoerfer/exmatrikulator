@@ -1,0 +1,61 @@
+Making changes
+==============
+
+1. Fork the Exmartikulator project (optional).
+2. Create a branch from where you want to base your work on.
+	* This is usually the master branch.
+	* It's recommended to use a dedicated branch for each feature/hotfix.
+3. Make commits of logical units.
+4. Make sure your commit messages are in the proper format.
+	* Commit messages can be written in German or English.
+	* See `Good commit messages` below.
+5. Make sure you have added the tests for your changes.
+6. Make sure your changes comply with our style guides.
+6. Run **all** tests to ensure that you didn't break anything.
+7. Open a new merge requests and wait for someone else to approve your changes.
+	* Rebase if changes have been requested.
+
+Merging changes
+===============
+
+1. Open the merge requests in the GitLab web interface.
+2. Check out the branch locally.
+	* Click on the `Check out branch` button for instructions.
+3. Review the proposed changes:
+	* Make sure that they are in accordance with our style guides.
+	* Make sure that they didn't break any tests.
+4. Merge the branch onto the master using `git merge --no-ff <branch>`.
+5. Push the result of this merge using `git push origin master`.
+
+*Alternatively you can also use the GitLab GUI to apply merge requests.*
+
+Good commit messages
+====================
+
+According to Linus Torvalds a good commit messages looks like this:
+
+	Header line: explaining the commit in one line
+
+	Body of commit message is a few lines of text, explaining things
+	in more detail, possibly giving some background about the issue
+	being fixed, etc etc.
+
+	The body of the commit message can be several paragraphs, and
+	please do proper word-wrap and keep columns shorter than about
+	74 characters or so. That way "git log" will show things
+	nicely even when it's indented.
+
+Style guides
+============
+
+Please obey coding conventions for the languages listed below.
+
+Java
+----
+
+See: [google conventions](https://google.github.io/styleguide/javaguide.html).
+
+XML
+---
+
+See: [maven conventions](https://maven.apache.org/developers/conventions/code.html#XML).
