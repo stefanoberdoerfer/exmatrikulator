@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>de.unibremen.opensores</groupId>
-  <artifactId>exmartikulator</artifactId>
+  <artifactId>exmatrikulator</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <name>exmartikulator</name>
+  <name>exmatrikulator</name>
   <url>http://opensor.es</url>
   <licenses>
     <license>
