@@ -1,7 +1,7 @@
 Making changes
 ==============
 
-1. Fork the Exmartikulator project (optional).
+1. Fork the Exmatrikulator project (optional).
 2. Create a branch from where you want to base your work on.
 	* This is usually the master branch.
 	* It's recommended to use a dedicated branch for each feature/hotfix.
