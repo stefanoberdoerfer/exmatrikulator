@@ -1,0 +1,37 @@
+stages:
+  - build
+  - test
+  - verify
+
+build:
+  stage: build
+  script:
+    - mvn compile
+  only:
+    - master
+  tags:
+    - linux
+
+cobertura:
+  stage: test
+  script:
+    - mvn cobertura:check
+    - mvn cobertura:clean
+  only:
+    - master
+  tags:
+    - linux
+
+findbugs:
+  stage: verify
+  script:
+    - mvn findbugs:check
+  tags:
+    - linux
+
+checkstyle:
+  stage: verify
+  script:
+    - mvn checkstyle:check
+  tags:
+    - linux
