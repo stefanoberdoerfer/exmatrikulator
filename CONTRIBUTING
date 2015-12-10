@@ -53,7 +53,7 @@ Please obey coding conventions for the languages listed below.
 Java
 ----
 
-See: [google conventions](https://google.github.io/styleguide/javaguide.html).
+See: [sun conventions](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/sun_checks.xml).
 
 XML
 ---
