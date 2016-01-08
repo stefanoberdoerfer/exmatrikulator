@@ -1,0 +1,32 @@
+Exmatrikulator Grunt
+====================
+
+Node Installation
+-----------------
+
+1. Download source of latest NodeJS version from https://nodejs.org/
+2. Extract files, execute configure script, then compile it with make and
+   finally use make install
+
+
+Install grunt client
+--------------------
+
+Open terminal and execute:
+npm install -g grunt-cli
+(Can be possible that it's necessary to use sudo.)
+
+
+Install dependencies
+--------------------
+
+Open path exmatrikaltor-code/src/main/gui in terminal and execute:
+npm install
+Then same command in folder exmatrikaltor-code/src/main/gui/vendors/bootstrap
+
+
+Build Stylesheets and Javascript
+--------------------------------
+
+Open path exmatrikaltor-code/src/main/gui in terminal and execute:
+grunt build --force
