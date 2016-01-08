@@ -1,0 +1,27 @@
+{
+  "name": "bootstrap-nav-wizard",
+  "version": "0.0.3",
+  "homepage": "https://github.com/acornejo/bootstrap-nav-wizard",
+  "authors": [
+    "Alex Cornejo <acornejo@gmail.com>"
+  ],
+  "description": "Bootstrap nav wizard extension",
+  "dependencies": {
+    "bootstrap": "*"
+  },
+  "ignore": [
+    "bower_components/",
+    "node_modules/",
+    "package.json"
+  ],
+  "_release": "0.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.3",
+    "commit": "43cb6eb9b93cc2091eb1590ed9523749cf719a4d"
+  },
+  "_source": "git://github.com/acornejo/bootstrap-nav-wizard.git",
+  "_target": "~0.0.3",
+  "_originalSource": "bootstrap-nav-wizard",
+  "_direct": true
+}

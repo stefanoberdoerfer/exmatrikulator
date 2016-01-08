@@ -14,6 +14,14 @@ module.exports = function(grunt) {
                 tasks: 'dist'
             }
         },
+        less: {
+            dist: {
+                files: {
+                    './build/bootstrap-nav-wizard.css':
+                        './vendors/bootstrap-nav-wizard/bootstrap-nav-wizard.less'
+                }
+            }
+        },
         sass: {
             options: {
                 sourceMap: true
@@ -42,7 +50,8 @@ module.exports = function(grunt) {
                 src: [
                     './build/roboto-fontface.css',
                     './build/font-awesome.css',
-                    './vendors/bootstrap/dist/css/bootstrap.css'
+                    './vendors/bootstrap/dist/css/bootstrap.css',
+                    './build/bootstrap-nav-wizard.css'
                 ],
                 dest: './build/vendors.css'
             },
@@ -129,6 +138,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-exec');
 
@@ -138,6 +148,7 @@ module.exports = function(grunt) {
             'clean',
             'grunt',
             'sass',
+            'less',
             'coffee',
             'concat',
             'copy',
