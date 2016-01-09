@@ -45,6 +45,9 @@ module.exports = function(grunt) {
             }
         },
         coffee: {
+            options: {
+                bare: true
+            },
             compile: {
                 files: {
                     './build/exmatrikulator.js':
