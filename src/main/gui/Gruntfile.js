@@ -3,11 +3,18 @@
  */
 module.exports = function(grunt) {
     grunt.initConfig({
-        clean: [
-            './../webapp/fonts',
-            './../webapp/css',
-            './../webapp/js'
-        ],
+        clean: {
+            options: {
+                force: true
+            },
+            build: {
+                src: [
+                    './../webapp/fonts',
+                    './../webapp/css',
+                    './../webapp/js'
+                ]
+            }
+        },
         grunt: {
             buildsome: {
                 gruntfile: 'vendors/bootstrap/Gruntfile.js',

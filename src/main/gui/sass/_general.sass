@@ -1,0 +1,189 @@
+html,
+body
+  height: 100%
+
+header
+  background-color: $header-bg
+  padding:          6px 20px
+  +sizeAndPosition(80%, $header-height, 0, 20%, absolute)
+
+  .user
+    margin-top: 2px
+
+    .btn
+      color:        $header-user-color
+      border-color: $header-user-color
+      padding:      0
+
+      .dropdown-toggle
+        padding:  6px 12px
+
+  .breadcrumb
+    background-color: $header-breadcrumb-bg
+    padding:          8px 0
+    margin-bottom:    0
+    font-size:        16px
+
+    a
+      color:  $header-breadcrumb-color
+
+nav
+  color:    $nav-color
+  overflow: auto
+  +sizeAndPosition(20%, 100%, 0, 0, absolute)
+
+  .logo
+    padding:  11px 15px
+
+  .logo-stallion
+    width:  $nav-logo-width
+    height: $nav-logo-height
+
+  .logo-label
+    height:       18px
+    margin-top:   1px
+    opacity:      0.7
+    margin-left:  5px
+
+  label
+    display:        block
+    padding:        20px 15px 0
+    text-transform: uppercase
+    color:          $nav-label-color
+
+  a
+    color:  $nav-link
+
+  a:hover,
+  a:focus
+    color:  $nav-link-hover
+
+  .course-number
+    font-size:  11px
+    margin-top: 2px
+
+  .nav-pills
+    & > li
+      & > .sub-pills
+        display:  none
+
+      & > a:focus
+        background-color: transparent
+        color:            $nav-link
+
+      &.active
+        & > a,
+        & > a:hover,
+        & > a:focus,
+        & > .sub-pills
+          color:            $nav-active-color
+          background-color: $nav-active-bg
+
+        & > .sub-pills
+          display:      block
+          padding-left: 30px
+
+  .system-links
+    font-size:      13px
+    margin-bottom:  30px
+
+    .fa
+      margin-right: 10px
+
+  hr
+    border-color:   $nav-line
+    margin-top:     0
+    margin-bottom:  20px
+
+  .course-icons
+    .fa
+      margin-left:  5px
+
+main
+  background-color: $main-bg
+  min-height:       100%
+  padding:          0 20px 30px
+  +sizeAndPosition(80%, -1, $header-height, 20%, absolute)
+
+footer
+  bottom:     20px
+  color:      $footer-color
+  font-size:  12px
+  +sizeAndPosition(17%, -1, -1, 0, fixed)
+
+.headline
+  overflow:       auto
+  margin-bottom:  20px
+
+  .main-buttons
+    margin-top: 20px
+
+.subline
+  padding-top:  20px
+
+  .pagination
+    margin-top:     0
+    margin-bottom:  0
+
+.no-top-margin
+  margin-top: 0 !important
+
+.no-bottom-margin
+  margin-bottom:  0 !important
+
+.fa-input
+  font-family:  'FontAwesome', 'Roboto', sans-serif
+
+.fa-dozent
+  color:  $dozent-icon
+
+img.loading
+  width:  $icon-loading-size
+  height: $icon-loading-size
+
+.btn-dark
+  color:            $btn-dark-color
+  background-color: $btn-dark-bg
+  border-color:     $btn-dark-border
+
+  &:hover
+    color:            $btn-dark-hover-color
+    background-color: $btn-dark-hover-bg
+
+.nav-tabs
+  &.transparent
+    & > li
+      & > a:hover,
+      & > a:focus
+        background-color: $main-bg
+
+      &.active
+        & > a,
+        & > a:hover,
+        & > a:focus
+          background-color: $main-bg
+
+  &.full-width
+    margin: 0 -20px
+
+  &.full-width
+    li:first-of-type
+      margin-left:  20px
+
+.dl-horizontal
+  dt
+    text-align: left
+
+.form-group
+  label
+    font-weight:  normal
+
+  & > label
+    font-weight:  bold
+
+.form-buttons
+  margin-top: 30px
+
+  .control-label
+    &.text-left
+      text-align: left !important
