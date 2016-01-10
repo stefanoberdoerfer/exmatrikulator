@@ -22,7 +22,7 @@ development setup up and running by invoking:
 
 This creates a .war archive for the Exmatrikulator application and
 starts the embedded glassfish server. If you didn't see any errors
-the webapp should be running at: http://0.0.0.0:8080/exmartikulator/
+the webapp should be running at: http://0.0.0.0:8080/exmatrikulator/
 
 License
 -------
