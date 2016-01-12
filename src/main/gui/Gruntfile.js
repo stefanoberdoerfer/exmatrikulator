@@ -9,9 +9,9 @@ module.exports = function(grunt) {
             },
             build: {
                 src: [
-                    './../webapp/fonts',
-                    './../webapp/css',
-                    './../webapp/js'
+                    './../resources/fonts',
+                    './../resources/css',
+                    './../resources/js'
                 ]
             }
         },
@@ -70,16 +70,16 @@ module.exports = function(grunt) {
                     './vendors/jquery/dist/jquery.min.js',
                     './vendors/bootstrap/dist/js/bootstrap.min.js'
                 ],
-                dest: './../webapp/js/vendors.min.js'
+                dest: './../resources/js/vendors.min.js'
             }
         },
         cssmin: {
             css: {
                 files: {
-                    './../webapp/css/vendors.min.css': [
+                    './../resources/css/vendors.min.css': [
                         './build/vendors.css'
                     ],
-                    './../webapp/css/exmatrikulator.min.css': [
+                    './../resources/css/exmatrikulator.min.css': [
                         './build/exmatrikulator.css'
                     ]
                 }
@@ -89,14 +89,14 @@ module.exports = function(grunt) {
             roboto: {
                 expand: true,
                 src: './vendors/roboto-fontface/fonts/*',
-                dest: './../webapp/fonts/',
+                dest: './../resources/fonts/',
                 flatten: true,
                 filter: 'isFile'
             },
             fontawesome: {
                 expand: true,
                 src: './vendors/font-awesome/fonts/*',
-                dest: './../webapp/fonts/',
+                dest: './../resources/fonts/',
                 flatten: true,
                 filter: 'isFile'
             }
@@ -108,7 +108,7 @@ module.exports = function(grunt) {
             },
             js: {
                 files: {
-                    './../webapp/js/exmatrikulator.min.js': [
+                    './../resources/js/exmatrikulator.min.js': [
                         './build/exmatrikulator.js'
                     ]
                 }
@@ -125,13 +125,13 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
-                        src: ['./../webapp/js/*.js'],
+                        src: ['./../resources/js/*.js'],
                         dest: '.',
                         ext: '.gz.js'
                     },
                     {
                         expand: true,
-                        src: ['./../webapp/css/*.css'],
+                        src: ['./../resources/css/*.css'],
                         dest: '.',
                         ext: '.gz.css'
                     }
