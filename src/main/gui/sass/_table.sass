@@ -1,0 +1,109 @@
+td
+  height: 51px
+
+.table-condensed
+  td
+    height: auto
+
+.table
+  tbody,
+  thead
+    & > tr
+      &.vert-align-middle
+        & > td,
+        & > th
+          vertical-align: middle
+
+      &.vert-align-top
+        & > td,
+        & > th
+          vertical-align: top
+
+  .table-sorting
+    cursor:           pointer
+    color:            #fff
+    text-decoration:  none
+
+    .caret
+      margin-left:  5px
+      display:      none
+
+    &.active
+      .caret
+        display:  inline-block
+
+.table-common-email
+  width:  20%
+
+.table-common-date
+  width:  17%
+
+.table-common-options-one
+  width:  42px
+
+.table-common-options-two
+  width:  100px
+
+.table-common-options-three
+  width:  130px
+
+.table-common-options-four
+  width:  168px
+
+.table-common-options-one,
+.table-common-options-two,
+.table-common-options-three,
+.table-common-options-four
+  .btn
+    width:    37px
+    padding:  6px 10px
+
+.table-common-filesize
+  width:  100px
+
+.table-common-sub
+  font-size:  $table-sub-font-size
+  color:      #5e5e5e
+
+.table-common-boolean,
+.table-common-number,
+.table-course-semester
+  width:  15%
+
+.table-column-blank,
+.table-row-blank
+  td
+    border-top: none !important
+
+table
+  thead
+    th
+      background-color: $table-head-main-bg
+      color:            $table-head-main-color
+
+      a
+        color:  $table-head-main-color
+
+    tr
+      &.main
+        th
+          color:            $table-head-main-color
+          background-color: $table-head-main-bg
+
+  .subhead
+    th
+      background-color: $table-head-sub-bg
+      color:            $table-head-sub-color
+
+  .table-sorting
+    color:  $table-sorting-color
+
+.caret-up
+  +rotate(180deg)
+
+.table-invisible
+  tr
+    td,
+    th
+      &:first-of-type
+        padding-left: 0

@@ -5,3 +5,10 @@
 *.ctxt
 hs_err_pid*
 target/
+.idea
+*.iml
+node_modules
+src/main/gui/vendors/bootstrap/dist
+src/main/webapp/css
+src/main/webapp/js
+src/main/webapp/fonts

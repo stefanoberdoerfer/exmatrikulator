@@ -1,0 +1,63 @@
+.calendar
+  h3
+    margin-top: 0
+
+.calendar-time
+  height: 90px
+  margin: 0
+
+.calendar-time-30,
+.calendar-time-20,
+.calendar-time-60
+  margin: 0 0 1px
+
+.calendar-time-30
+  height: ($calendar-hour-height / 2) - 1px
+
+.calendar-time-20
+  height: ($calendar-hour-height / 3) - 1px
+
+.calendar-time-60
+  height: $calendar-hour-height - 1px
+
+.calendar-delay-20
+  margin-top: $calendar-hour-height / 3
+
+.calendar-delay-120
+  margin-top: $calendar-hour-height * 2
+
+.calendar-meeting
+  display:          block
+  background-color: $calendar-meeting-bg
+  padding:          10px
+  font-size:        $calendar-meeting-font-size
+  color:            $calendar-meeting-color
+
+  &:hover
+    text-decoration:  none
+    color:            $calendar-meeting-hover-color
+    background-color: $calendar-meeting-hover-bg
+
+    strong
+      text-decoration:  underline
+
+  strong
+    display:    block
+    font-size:  $calendar-meeting-label-size
+
+  &.confirmed
+    border-right: solid 5px $calendar-confirmed
+
+  &.requested
+    border-right: solid 5px $calendar-requested
+
+  &.denied
+    border-right: solid 5px $calendar-denied
+
+  &.void
+    background-color: transparent
+    border:           solid 1px $calendar-void
+    color:            $calendar-void
+
+.calendar-separator
+  margin: 0 0 20px
