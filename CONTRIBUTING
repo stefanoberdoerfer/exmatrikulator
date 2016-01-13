@@ -53,7 +53,9 @@ Please obey coding conventions for the languages listed below.
 Java
 ----
 
-See: [sun conventions](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/sun_checks.xml).
+See: [Google conventions](https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html).
+ - Basic indentation: 4 spaces
+ - Ordering of java imports doesnt have to be alphabetical
 
 XML
 ---

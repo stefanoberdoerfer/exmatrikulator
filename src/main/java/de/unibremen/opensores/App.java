@@ -1,7 +1,7 @@
 package de.unibremen.opensores;
 
 /**
- * @todo
+ * @todo.
  */
 public final class App {
     /**
@@ -12,7 +12,7 @@ public final class App {
     }
 
     /**
-     * @todo
+     * @todo.
      *
      * @param args Command line arguments.
      */
