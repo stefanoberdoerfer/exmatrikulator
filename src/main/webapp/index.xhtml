@@ -10,5 +10,19 @@
 
   <h:body>
     <p><h:outputText value="#{msg['index.helloworld']}" /></p>
+    <h:form>
+        <p>
+        <h:outputText text="#{msg['index.email']}"/>
+        <h:inputText value="#{loginController.email}"/>
+        </p>
+
+        <p>
+        <h:outputText text="#{msg['index.password']}"/>
+        <h:inputSecret value="#{loginController.password}"/>
+        </p>
+
+        <h:commandButton value="#{msg['index.login']}" action="#{loginController.login()}"/>
+    </h:form>
+    <h:messages />
   </h:body>
 </html>
