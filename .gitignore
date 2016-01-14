@@ -7,10 +7,8 @@ hs_err_pid*
 target/
 .idea
 *.iml
-node_modules
-src/main/gui/vendors/bootstrap/dist
-src/main/resources/css
-src/main/resources/js
-src/main/resources/fonts
+node_modules/
+src/main/gui/vendors/bootstrap/dist/
+src/main/webapp/resources/
 derby.log
 exmatrikulator-db/
