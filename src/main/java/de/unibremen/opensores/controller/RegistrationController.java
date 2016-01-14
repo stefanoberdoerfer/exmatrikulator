@@ -3,6 +3,7 @@ package de.unibremen.opensores.controller;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.ServiceException;
 import de.unibremen.opensores.service.UserService;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -33,9 +34,11 @@ public class RegistrationController {
             return "#";
         }
 
+        final String hashPW = BCrypt.hashpw(password, BCrypt.gensalt());
+
         User registeredUser = new User();
         registeredUser.setEmail(email);
-        registeredUser.setPassword(password);
+        registeredUser.setPassword(hashPW);
         registeredUser.setFirstName(firstName);
         registeredUser.setLastName(lastName);
         //TODO Change language by radio buttons etc.

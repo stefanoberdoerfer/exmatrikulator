@@ -30,7 +30,7 @@ public class LoginController {
         final String hashPW = BCrypt.hashpw(password, BCrypt.gensalt());
         User user = null;
         try {
-            user = userService.findByLogin(email, password);
+            user = userService.findByLogin(email, hashPW);
             if(user == null){
                 FacesContext facesContext = FacesContext.getCurrentInstance();
                 FacesMessage facesMessage = new FacesMessage("The credentials are wrong.");
