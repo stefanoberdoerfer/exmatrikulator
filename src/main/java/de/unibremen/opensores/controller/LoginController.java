@@ -8,23 +8,33 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
+/**
+ * Provisional LoginController to show usage of log4j logging.
+ */
+
 @ManagedBean
 @SessionScoped
 public class LoginController {
 
+    /**
+     * @todo
+     */
     private static Logger log = LogManager.getLogger(LoginController.class);
 
     private String email;
     private String password;
 
-    public String login() {
+    /**
+     * @todo
+     */
+    public final String login() {
         log.error("login called");
-        if(validate()){
+        if (validate()) {
             log.debug("login succeeded");
             FacesMessage msg = new FacesMessage("Login success");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return "/index.xhtml";
-        }else{
+        } else {
             log.debug("login failed");
             FacesMessage msg = new FacesMessage("Login failed");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
@@ -33,25 +43,40 @@ public class LoginController {
         }
     }
 
+    /**
+     * @todo
+     */
     private boolean validate() {
         return (email == null || password == null);
     }
 
     /* Getters and Setters */
 
-    public String getEmail() {
+    /**
+     * @todo
+     */
+    public final String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    /**
+     * @todo
+     */
+    public final void setEmail(final String mail) {
+        this.email = mail;
     }
 
-    public String getPassword() {
+    /**
+     * @todo
+     */
+    public final String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    /**
+     * @todo
+     */
+    public final void setPassword(final String pw) {
+        this.password = pw;
     }
 }
