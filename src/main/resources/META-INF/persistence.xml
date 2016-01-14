@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+    <persistence-unit name="exmatrikulator-pu" transaction-type="JTA">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <!-- Hibernate as JPA Provider -->
+        <jta-data-source>java:app/jdbc/exmatrikulator</jta-data-source>
+        <!-- All classes which should be mapped must be declared here -->
+        <class>de.unibremen.opensores.model.User</class>
+
+        <properties>
+            <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+            <property name="hibernate.default_schema" value="exmatrikulator"/>
+            <!-- Database Connection Properties -->
+
+            <!-- Using Derby as Database -->
+            <!--<property name="javax.persistence.jdbc.driver"
+                      value="org.apache.derby.jdbc.EmbeddedDriver" />-->
+            <!-- <property name="javax.persistence.jdbc.url"
+                      value="jdbc:derby:data;create=true" /> -->
+            <!--<property name="javax.perasistence.jdbc.user" value="exmatrikulator" />
+            <property name="javax.persistence.jdbc.password" value="TODOPasswortFestlegen:^)" />
+            -->
+            <!-- SQL dialect for Derby 10.7 (10.5 and 10.6 are also available)-->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
+
+            <!-- Print all SQL Statements to the console; False for production database -->
+            <property name="hibernate.show_sql" value="false"/>
+
+            <!-- Pretty format for SQL Statements; False for production database -->
+            <property name="hibernate.format_sql" value="false"/>
+            
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+
+            <!-- If enabled, Hibernate will collect statistics useful for performance tuning;
+                 False for production-->
+            <property name="hibernate.generate_statistics" value="false" />
+        </properties>
+
+    </persistence-unit>
+</persistence>
