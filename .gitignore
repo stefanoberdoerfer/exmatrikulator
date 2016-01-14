@@ -12,3 +12,5 @@ src/main/gui/vendors/bootstrap/dist
 src/main/resources/css
 src/main/resources/js
 src/main/resources/fonts
+derby.log
+exmatrikulator-db/
