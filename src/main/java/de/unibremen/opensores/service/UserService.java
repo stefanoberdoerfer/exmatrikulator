@@ -39,5 +39,18 @@ public class UserService extends GenericService<User>{
         }
     }
 
+    /**
+     * Checks
+     * @param email
+     * @return
+     */
+    public boolean isEmailRegistered(String email){
+        final String trimmedEmail = email.trim().toLowerCase();
+        List<User> registeredUserEmail = em.createQuery(
+                "SELECT DISTINCT u FROM User u WHERE TRIM(LOWER(u.email)) = :email", User.class)
+                .setParameter("email",trimmedEmail)
+                .getResultList();
+        return !registeredUserEmail.isEmpty();
+    }
     //TODO JPA User search
 }

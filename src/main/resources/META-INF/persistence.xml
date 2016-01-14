@@ -16,15 +16,6 @@
             <property name="hibernate.default_schema" value="exmatrikulator"/>
             <!-- Database Connection Properties -->
 
-            <!-- Using Derby as Database -->
-            <!--<property name="javax.persistence.jdbc.driver"
-                      value="org.apache.derby.jdbc.EmbeddedDriver" />-->
-            <!-- <property name="javax.persistence.jdbc.url"
-                      value="jdbc:derby:data;create=true" /> -->
-            <!--<property name="javax.perasistence.jdbc.user" value="exmatrikulator" />
-            <property name="javax.persistence.jdbc.password" value="TODOPasswortFestlegen:^)" />
-            -->
-            <!-- SQL dialect for Derby 10.7 (10.5 and 10.6 are also available)-->
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
 
             <!-- Print all SQL Statements to the console; False for production database -->

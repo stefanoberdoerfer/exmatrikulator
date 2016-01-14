@@ -21,13 +21,8 @@ public abstract class GenericService<T> {
      * @throws ServiceException If the parameter entity
      *          is not an entity or is already in the database.
      */
-    public T persist(T entity) throws ServiceException {
-        try{
-            em.persist(entity);
-        } catch (PersistenceException exception){
-            throw new ServiceException(
-                    "PersistenceException while persisting entity");
-        }
+    public T persist(T entity) {
+        em.persist(entity);
         return entity;
     }
 

@@ -26,8 +26,8 @@ public class User {
     @Column(name = "first_name", nullable = false, length = 32)
     private String firstName;
 
-    @Column(name = "second_name", nullable = false, length = 32)
-    private String secondName;
+    @Column(name = "last_name", nullable = false, length = 32)
+    private String lastName;
 
     @Column(name = "profile_info", nullable = true, length = 2048)
     private String profileInfo;
@@ -72,12 +72,12 @@ public class User {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getProfileInfo() {

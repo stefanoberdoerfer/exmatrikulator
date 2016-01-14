@@ -32,17 +32,20 @@
               <h:messages class="alert alert-danger" role="alert" />
 
               <h:panelGroup layout="block" class="form-group">
-                  <h:outputLabel for="credentialUser" value="#{msg['login.email']}" />
-                  <h:inputText type="email" class="form-control" id="credentialUser" h5:autofocus="true" />
+                  <h:outputLabel for="credentialUser" value="#{msg['common.email']}" />
+                  <h:inputText type="email" class="form-control" id="credentialUser" h5:autofocus="true"
+                     value="#{loginController.email}"/>
               </h:panelGroup>
 
               <h:panelGroup layout="block" class="form-group">
-                  <h:outputLabel for="credentialPassword" value="#{msg['login.password']}" />
-                  <h:inputText type="password" class="form-control" id="credentialPassword" />
+                  <h:outputLabel for="credentialPassword" value="#{msg['common.password']}" />
+                  <h:inputText type="password" class="form-control" id="credentialPassword"
+                    value="#{loginController.password}"/>
               </h:panelGroup>
 
               <h:panelGroup layout="block" class="form-group text-center">
-                  <h:commandButton type="submit" class="btn btn-primary btn-block" value="#{msg['login.submit']}" />
+                  <h:commandButton type="submit" class="btn btn-primary btn-block" value="#{msg['login.submit']}"
+                  action="#{loginController.login()}"/>
               </h:panelGroup>
           </h:form>
 
