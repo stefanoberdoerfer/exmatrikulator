@@ -9,9 +9,10 @@ module.exports = function(grunt) {
             },
             build: {
                 src: [
-                    './../resources/fonts',
-                    './../resources/css',
-                    './../resources/js'
+                    './../webapp/resources/fonts',
+                    './../webapp/resources/css',
+                    './../webapp/resources/js',
+                    './../webapp/resources/images'
                 ]
             }
         },
@@ -70,16 +71,16 @@ module.exports = function(grunt) {
                     './vendors/jquery/dist/jquery.min.js',
                     './vendors/bootstrap/dist/js/bootstrap.min.js'
                 ],
-                dest: './../resources/js/vendors.min.js'
+                dest: './../webapp/resources/js/vendors.min.js'
             }
         },
         cssmin: {
             css: {
                 files: {
-                    './../resources/css/vendors.min.css': [
+                    './../webapp/resources/css/vendors.min.css': [
                         './build/vendors.css'
                     ],
-                    './../resources/css/exmatrikulator.min.css': [
+                    './../webapp/resources/css/exmatrikulator.min.css': [
                         './build/exmatrikulator.css'
                     ]
                 }
@@ -89,14 +90,21 @@ module.exports = function(grunt) {
             roboto: {
                 expand: true,
                 src: './vendors/roboto-fontface/fonts/*',
-                dest: './../resources/fonts/',
+                dest: './../webapp/resources/fonts/',
                 flatten: true,
                 filter: 'isFile'
             },
             fontawesome: {
                 expand: true,
                 src: './vendors/font-awesome/fonts/*',
-                dest: './../resources/fonts/',
+                dest: './../webapp/resources/fonts/',
+                flatten: true,
+                filter: 'isFile'
+            },
+            img: {
+                expand: true,
+                src: './img/*',
+                dest: './../webapp/resources/images/',
                 flatten: true,
                 filter: 'isFile'
             }
@@ -108,7 +116,7 @@ module.exports = function(grunt) {
             },
             js: {
                 files: {
-                    './../resources/js/exmatrikulator.min.js': [
+                    './../webapp/resources/js/exmatrikulator.min.js': [
                         './build/exmatrikulator.js'
                     ]
                 }
@@ -125,13 +133,13 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
-                        src: ['./../resources/js/*.js'],
+                        src: ['./../webapp/resources/js/*.js'],
                         dest: '.',
                         ext: '.gz.js'
                     },
                     {
                         expand: true,
-                        src: ['./../resources/css/*.css'],
+                        src: ['./../webapp/resources/css/*.css'],
                         dest: '.',
                         ext: '.gz.css'
                     }
