@@ -119,8 +119,7 @@ public class User {
     public void setBlocked(boolean blocked) {
         isBlocked = blocked;
     }
-
-
+    
     public Long getUserId() {
         return userId;
     }

@@ -12,22 +12,12 @@
         <class>de.unibremen.opensores.model.User</class>
 
         <properties>
-            <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-            <property name="hibernate.default_schema" value="exmatrikulator"/>
-            <!-- Database Connection Properties -->
-
+            <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform" />            <property name="hibernate.default_schema" value="exmatrikulator"/>
+            <property name="hibernate.classloading.use_current_tccl_as_parent" value="false" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
-
-            <!-- Print all SQL Statements to the console; False for production database -->
             <property name="hibernate.show_sql" value="false"/>
-
-            <!-- Pretty format for SQL Statements; False for production database -->
             <property name="hibernate.format_sql" value="false"/>
-            
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
-
-            <!-- If enabled, Hibernate will collect statistics useful for performance tuning;
-                 False for production-->
             <property name="hibernate.generate_statistics" value="false" />
         </properties>
 

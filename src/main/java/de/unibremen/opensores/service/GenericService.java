@@ -36,13 +36,8 @@ public abstract class GenericService<T> {
      * @throws ServiceException If the parameter entity
      *          is not an entity or is not in the database.
      */
-    public T update(T entity) throws ServiceException {
-        try{
-            return em.merge(entity);
-        } catch (PersistenceException exception){
-            throw new ServiceException(
-                    "PersistenceException while updating an entity");
-        }
+    public T update(T entity) {
+        return em.merge(entity);
     }
 
     /**
@@ -53,12 +48,7 @@ public abstract class GenericService<T> {
      * @throws ServiceException If the parameter entity
      *          is not an entity or is not in the database.
      */
-    public void remove(T entity) throws ServiceException {
-        try{
-            em.remove(entity);
-        } catch (PersistenceException exception){
-            throw new ServiceException(
-                    "PersistenceException while persisting entity");
-        }
+    public void remove(T entity) {
+        em.remove(entity);
     }
 }

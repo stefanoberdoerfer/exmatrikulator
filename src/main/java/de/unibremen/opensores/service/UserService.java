@@ -3,6 +3,8 @@ package de.unibremen.opensores.service;
 import de.unibremen.opensores.model.User;
 
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 
@@ -25,7 +27,7 @@ public class UserService extends GenericService<User>{
         List<User> userList = em.createQuery(
                 "SELECT DISTINCT u " +
                 "FROM User u " +
-                "WHERE u.email = :email AND u.password = :password)", User.class)
+                "WHERE u.email = :email AND u.password = :password", User.class)
             .setParameter("email",email)
             .setParameter("password",password)
             .getResultList();
