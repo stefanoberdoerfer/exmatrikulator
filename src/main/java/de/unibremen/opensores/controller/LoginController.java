@@ -15,17 +15,23 @@ import javax.faces.context.FacesContext;
 @ManagedBean
 @SessionScoped
 public class LoginController {
-
     /**
-     * @todo
+     * @todo.
      */
     private static Logger log = LogManager.getLogger(LoginController.class);
 
+    /**
+     * @todo.
+     */
     private String email;
+
+    /**
+     * @todo.
+     */
     private String password;
 
     /**
-     * @todo
+     * @todo.
      */
     public final String login() {
         log.error("login called");
@@ -44,37 +50,35 @@ public class LoginController {
     }
 
     /**
-     * @todo
+     * @todo.
      */
     private boolean validate() {
         return (email == null || password == null);
     }
 
-    /* Getters and Setters */
-
     /**
-     * @todo
+     * @todo.
      */
     public final String getEmail() {
         return email;
     }
 
     /**
-     * @todo
+     * @todo.
      */
     public final void setEmail(final String mail) {
         this.email = mail;
     }
 
     /**
-     * @todo
+     * @todo.
      */
     public final String getPassword() {
         return password;
     }
 
     /**
-     * @todo
+     * @todo.
      */
     public final void setPassword(final String pw) {
         this.password = pw;
