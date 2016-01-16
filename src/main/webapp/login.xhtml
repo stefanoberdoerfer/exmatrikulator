@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+
+  <h:head>
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+      <title>Anmeldung · Exmatrikulator</title>
+
+      <!-- Styles -->
+      <h:outputStylesheet library="css" name="vendors.min.css"  />
+      <h:outputStylesheet library="css" name="exmatrikulator.min.css"  />
+
+      <!-- Interactivity -->
+      <h:outputScript library="js" name="vendors.min.js" />
+      <h:outputScript library="js" name="exmatrikulator.min.js" />
+  </h:head>
+
+  <h:body id="login">
+      <h:panelGroup layout="block" id="login-panel">
+          <h:panelGroup layout="block" class="logo">
+              <h:graphicImage library="images" name="stallion_light.svg" class="logo-stallion" />
+              <h:panelGroup class="logo-label">Exmatrikulator</h:panelGroup>
+          </h:panelGroup>
+
+          <h:form class="form">
+              <h:messages class="alert alert-danger" role="alert" />
+
+              <h:panelGroup layout="block" class="form-group">
+                  <h:outputLabel for="credentialUser" value="#{msg['common.email']}" />
+                  <h:inputText type="email" class="form-control" id="credentialUser" h5:autofocus="true"
+                     value="#{loginController.email}"/>
+              </h:panelGroup>
+
+              <h:panelGroup layout="block" class="form-group">
+                  <h:outputLabel for="credentialPassword" value="#{msg['common.password']}" />
+                  <h:inputText type="password" class="form-control" id="credentialPassword"
+                    value="#{loginController.password}"/>
+              </h:panelGroup>
+
+              <h:panelGroup layout="block" class="form-group text-center">
+                  <h:commandButton type="submit" class="btn btn-primary btn-block" value="#{msg['login.submit']}"
+                  action="#{loginController.login()}"/>
+              </h:panelGroup>
+          </h:form>
+
+          <h:panelGroup layout="block" class="text-center additional-links">
+              <ul class="list-unstyled">
+                  <li><h:link value="#{msg['login.passwordForgotten']}" outcome="password-reset" /></li>
+                  <li><h:link value="#{msg['login.register']}" outcome="registration" /></li>
+              </ul>
+          </h:panelGroup>
+      </h:panelGroup>
+  </h:body>
+</html>

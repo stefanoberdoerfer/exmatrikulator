@@ -72,9 +72,16 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+        <groupId>org.mindrot</groupId>
+        <artifactId>jbcrypt</artifactId>
+        <version>0.3m</version>
+    </dependency>
+
   </dependencies>
 
-  <build>
+    <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
