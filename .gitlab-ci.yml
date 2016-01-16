@@ -15,8 +15,7 @@ build:
 cobertura:
   stage: test
   script:
-    - mvn cobertura:check
-    - mvn cobertura:clean
+    - mvn test
   only:
     - master
   tags:
