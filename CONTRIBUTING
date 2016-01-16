@@ -54,10 +54,14 @@ Java
 ----
 
 See: [Google conventions](https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html).
- - Basic indentation: 4 spaces
- - Ordering of java imports doesnt have to be alphabetical
+
+The following changes have been made to the styleguide:
+	1. Basic indentation: 4 spaces.
+	2. Ordering of java imports doesnt have to be alphabetical.
+	3. Local variables don't need to follow a certain pattern.
+	4. Abbreviations in function names can contain >1 captial letters.
 
 XML
 ---
 
-See: [maven conventions](https://maven.apache.org/developers/conventions/code.html#XML).
+See: [Maven conventions](https://maven.apache.org/developers/conventions/code.html#XML).
