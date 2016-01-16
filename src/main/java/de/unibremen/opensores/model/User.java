@@ -2,6 +2,8 @@ package de.unibremen.opensores.model;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entity bean of the User class
@@ -43,6 +45,17 @@ public class User {
 
     @Column(name = "is_blocked", nullable = false)
     private Boolean isBlocked = false;
+
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Role.class)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private List<Role> roles = new ArrayList<>();
+
+
+    public boolean hasRole(String roleString) {
+        return roles.contains(Role.valueOf(roleString));
+    }
+
 
     /*
      * GETTERS AND SETTERS
@@ -126,5 +139,13 @@ public class User {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

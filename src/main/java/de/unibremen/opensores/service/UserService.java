@@ -9,10 +9,10 @@ import java.util.List;
 
 
 /**
- * Service class for the User model class
+ * Service class for the User model class.
  */
 @Stateless
-public class UserService extends GenericService<User>{
+public class UserService extends GenericService<User> {
 
     /**
      * Finds a user by his login credentials.
@@ -25,16 +25,16 @@ public class UserService extends GenericService<User>{
      */
     public User findByLogin(String email, String password) throws ServiceException {
         List<User> userList = em.createQuery(
-                "SELECT DISTINCT u " +
-                "FROM User u " +
-                "WHERE u.email = :email AND u.password = :password", User.class)
+                "SELECT DISTINCT u "
+              + "FROM User u "
+              + "WHERE u.email = :email AND u.password = :password", User.class)
             .setParameter("email",email)
             .setParameter("password",password)
             .getResultList();
-        if(userList.size() > 1){
+        if (userList.size() > 1) {
             throw new ServiceException(
                     "Multiple users found with logon credentials");
-        } else if (userList.isEmpty()){
+        } else if (userList.isEmpty()) {
             return null;
         } else {
             return userList.get(0);
@@ -42,11 +42,11 @@ public class UserService extends GenericService<User>{
     }
 
     /**
-     * Checks
-     * @param email
-     * @return
+     * Checks if given email is already an registered account.
+     * @param email email as typed in by the user
+     * @return true if email has already been used for registration, false otherwise
      */
-    public boolean isEmailRegistered(String email){
+    public boolean isEmailRegistered(String email) {
         final String trimmedEmail = email.trim().toLowerCase();
         List<User> registeredUserEmail = em.createQuery(
                 "SELECT DISTINCT u FROM User u WHERE TRIM(LOWER(u.email)) = :email", User.class)
