@@ -12,7 +12,7 @@ build:
   tags:
     - linux
 
-cobertura:
+test:
   stage: test
   script:
     - mvn test
