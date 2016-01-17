@@ -46,14 +46,14 @@ public class User {
     @Column(name = "is_blocked", nullable = false)
     private Boolean isBlocked = false;
 
-    @ElementCollection(fetch = FetchType.EAGER, targetClass = Role.class)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    private List<Role> roles = new ArrayList<>();
+    //@ElementCollection(fetch = FetchType.EAGER, targetClass = Role.class)
+    //@CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    //@Column(name = "role")
+    //private List<Role> roles = new ArrayList<>();
 
 
     public boolean hasRole(String roleString) {
-        return roles.contains(Role.valueOf(roleString));
+        return true;
     }
 
 
@@ -141,11 +141,11 @@ public class User {
         this.userId = userId;
     }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
+    //public List<Role> getRoles() {
+        //return roles;
+    //}
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
+    //public void setRoles(List<Role> roles) {
+        //this.roles = roles;
+    //}
 }

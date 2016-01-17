@@ -36,7 +36,6 @@ public class LoginController {
      */
     public String login() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        final String hashPW = BCrypt.hashpw(password, BCrypt.gensalt());
         User user = null;
         try {
             user = userService.findByLogin(email, password);
@@ -51,9 +50,11 @@ public class LoginController {
             } else {
                 log.debug("login success");
                 //TODO Add user in SessionMap
-                FacesMessage facesMessage = new FacesMessage(user.getRoles().get(0).toString()
-                        + " " + user.getFirstName() + " you are registered, woohoo.");
+                FacesMessage facesMessage = new FacesMessage(//user.getRoles().get(0).toString() + " " +
+                        user.getFirstName() + " you are registered, woohoo.");
                 facesContext.addMessage(null, facesMessage);
+                FacesContext.getCurrentInstance()
+                        .getExternalContext().getSessionMap().put("user", user);
                 return "#";
             }
         } catch (ServiceException e) {

@@ -44,15 +44,14 @@ public class RegistrationController {
         }
 
         final String hashPW = BCrypt.hashpw(password, BCrypt.gensalt());
-
         User registeredUser = new User();
         registeredUser.setEmail(email);
-        registeredUser.setPassword(password);
+        registeredUser.setPassword(hashPW);
         registeredUser.setFirstName(firstName);
         registeredUser.setLastName(lastName);
         //TODO Change language by radio buttons etc.
         registeredUser.setLanguage("de");
-        registeredUser.getRoles().add(Role.USER);
+        //registeredUser.getRoles().add(Role.USER);
 
         userService.persist(registeredUser);
 

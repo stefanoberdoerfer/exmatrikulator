@@ -1,10 +1,15 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
+import org.mindrot.jbcrypt.BCrypt;
 
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
 import java.util.List;
 
 
@@ -27,9 +32,8 @@ public class UserService extends GenericService<User> {
         List<User> userList = em.createQuery(
                 "SELECT DISTINCT u "
               + "FROM User u "
-              + "WHERE u.email = :email AND u.password = :password", User.class)
+              + "WHERE u.email = :email", User.class)
             .setParameter("email",email)
-            .setParameter("password",password)
             .getResultList();
         if (userList.size() > 1) {
             throw new ServiceException(
@@ -37,7 +41,12 @@ public class UserService extends GenericService<User> {
         } else if (userList.isEmpty()) {
             return null;
         } else {
-            return userList.get(0);
+            final User user = userList.get(0);
+            if (BCrypt.checkpw(password, user.getPassword())) {
+                return user;
+            } else{
+                return null;
+            }
         }
     }
 
