@@ -6,6 +6,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
+import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.service.UserService;
+
 @ManagedBean
 @SessionScoped
 public class NavigationController {
@@ -41,5 +44,13 @@ public class NavigationController {
 
         this.userLocale = lang;
         System.out.println("Language set to " + l);
+    }
+
+    public User getUser() {
+        return (User)FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("user");
     }
 }

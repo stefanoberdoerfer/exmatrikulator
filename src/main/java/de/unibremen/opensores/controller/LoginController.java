@@ -49,13 +49,12 @@ public class LoginController {
                 return "#";
             } else {
                 log.debug("login success");
-                //TODO Add user in SessionMap
                 FacesMessage facesMessage = new FacesMessage(//user.getRoles().get(0).toString() + " " +
                         user.getFirstName() + " you are registered, woohoo.");
                 facesContext.addMessage(null, facesMessage);
                 FacesContext.getCurrentInstance()
                         .getExternalContext().getSessionMap().put("user", user);
-                return "#";
+                return "index.xhtml";
             }
         } catch (ServiceException e) {
             e.printStackTrace();
