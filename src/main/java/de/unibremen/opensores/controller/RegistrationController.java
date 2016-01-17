@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 /**
  * Backing bean of the registration page.
  * Manages the validation of user inputs and inserts new user to the database.
- * TODO Also sends out authentications emails to newly registered users.
+ *
  * @author Kevin Scheck
  */
 @ManagedBean
@@ -62,11 +62,11 @@ public class RegistrationController {
             facesContext.addMessage("", new FacesMessage(text));
             return "#";
         }
-        
-        final User registeredUser = initUserFromInput();
-        userService.persist(registeredUser);
-        //TODO Send authentication email when the email service is ready
 
+        /* TODO wait until the admin confirmed the account and send an email to
+         * the user as soon as he did. */
+
+        userService.persist(initUserFromInput());
         return "/login.xhtml?faces-redirect=true";
     }
 
@@ -77,17 +77,23 @@ public class RegistrationController {
      */
     private User initUserFromInput() {
         final String hashPW = BCrypt.hashpw(password, BCrypt.gensalt());
-        final User registeredUser = new User();
-        registeredUser.setEmail(email);
-        registeredUser.setPassword(hashPW);
-        registeredUser.setFirstName(firstName);
-        registeredUser.setLastName(lastName);
-        //TODO Change language by radio buttons etc.
-        registeredUser.setLanguage("de");
-        registeredUser.getRoles().add(Role.USER);
-        return registeredUser;
-    }
+        final User newUser = new User();
 
+        /* Don't set language here. Only set the language column if the user
+         * explicitly requested it by changing his settings. JSF determines the
+         * locale it should use by looking at the HTTP Accept-Language Header.
+         * If it isn't set it uses the default-locale set in our
+         * faces-config.xml. */
+
+        newUser.setEmail(email);
+        newUser.setPassword(hashPW);
+        newUser.setFirstName(firstName);
+        newUser.setLastName(lastName);
+        newUser.setLanguage("de");
+        newUser.getRoles().add(Role.USER);
+
+        return newUser;
+    }
 
     /*
      * GETTERS AND SETTERS
