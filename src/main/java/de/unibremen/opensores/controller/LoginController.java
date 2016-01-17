@@ -1,86 +1,107 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.service.ServiceException;
+import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mindrot.jbcrypt.BCrypt;
 
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import java.util.ResourceBundle;
 
 /**
- * Provisional LoginController to show usage of log4j logging.
+ * The Backing Bean of the login page.
+ * Manages the authentication of the user.
+ * @author Sören Tempel
+ * @author Stefan Oberdörfer
+ * @author Kevin Scheck
  */
-
 @ManagedBean
-@SessionScoped
+@RequestScoped
 public class LoginController {
+
     /**
-     * @todo.
+     * The log4j logger.
      */
     private static Logger log = LogManager.getLogger(LoginController.class);
 
     /**
-     * @todo.
+     * The user service for connection to the database.
+     */
+    @EJB
+    private UserService userService;
+
+    /**
+     * The typed in email of the user who wants to log in.
      */
     private String email;
 
     /**
-     * @todo.
+     * The typed in plaintext password of the user who wants to log in.
      */
     private String password;
 
     /**
-     * @todo.
+     * Login method which tries to lookup user with given email and password.
+     * @return redirection link if user was successfully logged in. '#' if not.
      */
-    public final String login() {
-        log.error("login called");
-        if (validate()) {
-            log.debug("login succeeded");
-            FacesMessage msg = new FacesMessage("Login success");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return "/index.xhtml";
-        } else {
-            log.debug("login failed");
-            FacesMessage msg = new FacesMessage("Login failed");
-            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return "/index.xhtml?faces-redirect=true";
+    public String login() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        User user = null;
+        try {
+            user = userService.findByLogin(email, password);
+            if (user == null) {
+                ResourceBundle bundle =
+                        ResourceBundle.getBundle("messages",
+                                facesContext.getViewRoot().getLocale());
+                String text = bundle.getString("login.fail");
+                facesContext.addMessage("", new FacesMessage(text));
+                return "#";
+            } else {
+                FacesContext.getCurrentInstance()
+                        .getExternalContext().getSessionMap().put("user", user);
+                return "index.xhtml";
+            }
+        } catch (ServiceException e) {
+            log.error(e);
+            return "#";
         }
     }
 
     /**
-     * @todo.
+     * Gets the typed in email.
+     * @return The typed in email.
      */
-    private boolean validate() {
-        return (email == null || password == null);
-    }
-
-    /**
-     * @todo.
-     */
-    public final String getEmail() {
+    public String getEmail() {
         return email;
     }
 
     /**
-     * @todo.
+     * Sets the typed in email.
+     * @param email The typed in email.
      */
-    public final void setEmail(final String mail) {
-        this.email = mail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**
-     * @todo.
+     * Gets the typed in plaintext password.
+     * @return The typed in plaintext password.
      */
-    public final String getPassword() {
+    public String getPassword() {
         return password;
     }
 
     /**
-     * @todo.
+     * Sets the plaintext password.
+     * @param password The typed in password, not null
      */
-    public final void setPassword(final String pw) {
-        this.password = pw;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
