@@ -5,15 +5,15 @@
             datasource-classname="org.apache.derby.jdbc.BasicEmbeddedConnectionPoolDataSource40"
             name="java:app/jdbc/exmatrikulator_pool"
             res-type="javax.sql.DataSource">
-        <property name="serverName" value="localhost"/>
-        <property name="portNumber" value="1572"/>
-        <property name="databaseName" value="exmatrikulator-db"/>
-        <property name="User" value="exmatrikulator"/>
-        <property name="Password" value="password"/>
-        <property name="URL" value="jdbc:derby://localhost:1572/exmatrikulator-db"/>
+        <property name="serverName" value="localhost" />
+        <property name="portNumber" value="1572" />
+        <property name="databaseName" value="exmatrikulator-db" />
+        <property name="User" value="exmatrikulator" />
+        <property name="Password" value="password" />
+        <property name="URL" value="jdbc:derby://localhost:1572/exmatrikulator-db" />
         <property name="connectionAttributes" value=";create=true;user=exmatrikulator" />
-        <property name="driverClass" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        <property name="driverClass" value="org.apache.derby.jdbc.EmbeddedDriver" />
     </jdbc-connection-pool>
     <jdbc-resource enabled="true" jndi-name="java:app/jdbc/exmatrikulator"
-                   object-type="user" pool-name="java:app/jdbc/exmatrikulator_pool"/>
+                   object-type="user" pool-name="java:app/jdbc/exmatrikulator_pool" />
 </resources>

@@ -14,28 +14,30 @@
         <jta-data-source>java:app/jdbc/exmatrikulator</jta-data-source>
 
         <!-- All classes which should be mapped must be declared here -->
+        <class>de.unibremen.opensores.model.User</class>
 
         <!-- Properties of the persistence unit -->
         <properties>
             <!-- Settings for the JTA Transaction-->
-            <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform" />            <property name="hibernate.default_schema" value="exmatrikulator"/>
+            <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform" />
+            <property name="hibernate.default_schema" value="exmatrikulator" />
             <property name="hibernate.classloading.use_current_tccl_as_parent" value="false" />
 
             <!-- SQL Dialect for Derby -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
 
             <!-- Printing SQL statements in the terminal, true for development -->
-            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.show_sql" value="false" />
 
             <!-- Formatting the SQL Statements, truein development -->
-            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.format_sql" value="false" />
 
             <!-- Drops the Database schema and recreates it every deployment, true for development -->
-            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
 
             <!-- Loads a database initialisation script for populating the database with data for development -->
             <!-- TODO Add database prepoulation script when the data model is advanced enough-->
-            <!-- <property name="hibernate.hbm2ddl.import_files" value="/import.sql"/> -->
+            <!-- <property name="hibernate.hbm2ddl.import_files" value="/import.sql" /> -->
 
             <!-- Multiply lines can be used for the initialsation script with this class -->
             <property name="hibernate.hbm2ddl.import_files_sql_extractor" value="org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor" />
