@@ -56,7 +56,7 @@ public class RegistrationController {
         userService.persist(registeredUser);
 
         //TODO Zu Login mit Erf
-        return "login.xhtml";
+        return "/login.xhtml?faces-redirect=true";
     }
 
     public String getEmail() {
