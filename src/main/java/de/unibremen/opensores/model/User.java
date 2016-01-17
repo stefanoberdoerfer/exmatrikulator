@@ -1,8 +1,5 @@
 package de.unibremen.opensores.model;
 
-
-import org.hibernate.annotations.Entity;
-
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
@@ -11,16 +8,14 @@ import javax.persistence.ElementCollection;
 import javax.persistence.CollectionTable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-
+import javax.persistence.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Entity bean of the User class
- * @TODO Discuss Feedback from tutor
  * @TODO Discuss max. field length (e.g. firstName)
- * @TODO Add Activivation & Password-Recovery-Keys
  */
 @Entity
 @Table(name = "USER_TABLE")
