@@ -37,7 +37,7 @@ public class Course {
     private Student student;
 
     public String getName() {
-        return email;
+        return name;
     }
 
     public String getNumber() {

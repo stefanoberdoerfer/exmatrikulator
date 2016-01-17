@@ -75,7 +75,7 @@ public class Student {
     }
 
     public void setAcceptedInvitation(final boolean acceptedInvitation) {
-        this.accepted_invitation = acceptedInvitation;
+        this.acceptedInvitation = acceptedInvitation;
     }
 
     public void setPaboGrade(final int paboGrade) {
