@@ -1,10 +1,14 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Entity bean for the Student class.
  */
 @Entity
-@Table(name = "STUDENT_TABLE")
+@Table(name = "students")
 public class Student {
     @Id
     @Column(name = "student_id", nullable = false)

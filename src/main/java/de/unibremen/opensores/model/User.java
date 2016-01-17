@@ -11,7 +11,7 @@ import java.util.List;
  * @TODO Add Activivation & Password-Recovery-Keys
  */
 @Entity
-@Table(name = "USER_TABLE")
+@Table(name = "users")
 public class User {
     @Id
     @Column(name = "user_id", nullable = false)
