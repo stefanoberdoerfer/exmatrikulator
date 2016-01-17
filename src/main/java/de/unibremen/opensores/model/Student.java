@@ -25,7 +25,7 @@ public class Student {
     private Boolean acceptedInvitation;
 
     @Column(name = "pabo_grade", nullable = false)
-    private Integer paboGrade;
+    private PaboGrade paboGrade;
 
     @Column(name = "tries", nullable = false)
     private Integer tries;
@@ -42,7 +42,11 @@ public class Student {
 
     private Group group;
 
-    //private ParticipationType participationType: TODO
+    private ParticipationType participationType;
+
+    private List<Grading> grades;
+
+    private List<Upload> uploads;
 
     public boolean isAttending() {
         return isAttending;
@@ -56,7 +60,7 @@ public class Student {
         return acceptedInvitation;
     }
 
-    public int getPaboGrade() {
+    public PaboGrade getPaboGrade() {
         return paboGrade;
     }
 
@@ -84,7 +88,7 @@ public class Student {
         this.acceptedInvitation = acceptedInvitation;
     }
 
-    public void setPaboGrade(final int paboGrade) {
+    public void setPaboGrade(final PaboGrade paboGrade) {
         this.paboGrade = paboGrade;
 
     }
@@ -99,5 +103,37 @@ public class Student {
 
     public void setCourse(final Course course) {
         this.course = course;
+    }
+
+    public List<Upload> getUploads() {
+        return uploads;
+    }
+
+    public void setUploads(List<Upload> uploads) {
+        this.uploads = uploads;
+    }
+
+    public List<Grading> getGrades() {
+        return grades;
+    }
+
+    public void setGrades(List<Grading> grades) {
+        this.grades = grades;
+    }
+
+    public ParticipationType getParticipationType() {
+        return participationType;
+    }
+
+    public void setParticipationType(ParticipationType participationType) {
+        this.participationType = participationType;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }
