@@ -34,7 +34,13 @@ public class Course {
     private Integer maxGroupSize;
 
     @OneToOne(optional=false, mappedBy="student", targetEntity=Student.class)
-    private Student student;
+    private List<Student> students;
+
+    private List<Lecturer> lecturers;
+
+    private List<PrivilegedUser> tutors;
+
+    private Semester semester;
 
     public String getName() {
         return name;
@@ -82,5 +88,37 @@ public class Course {
 
     public void setMaxGroupSize(final int maxGroupSize) {
         this.maxGroupSize = maxGroupSize;
+    }
+
+    public Semester getSemester() {
+        return semester;
+    }
+
+    public void setSemester(Semester semester) {
+        this.semester = semester;
+    }
+
+    public List<Lecturer> getLecturers() {
+        return lecturers;
+    }
+
+    public void setLecturers(List<Lecturer> lecturers) {
+        this.lecturers = lecturers;
+    }
+
+    public List<PrivilegedUser> getTutors() {
+        return tutors;
+    }
+
+    public void setTutors(List<PrivilegedUser> tutors) {
+        this.tutors = tutors;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
     }
 }

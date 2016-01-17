@@ -38,6 +38,12 @@ public class Student {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    private Tutorial tutorial;
+
+    private Group group;
+
+    //private ParticipationType participationType: TODO
+
     public boolean isAttending() {
         return isAttending;
     }
