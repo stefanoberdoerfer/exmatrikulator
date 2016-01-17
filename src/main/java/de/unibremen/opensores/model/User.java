@@ -1,6 +1,5 @@
 package de.unibremen.opensores.model;
 
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +13,8 @@ import java.util.List;
 @Entity
 @Table(name = "USER_TABLE")
 public class User {
-
     @Id
+    @Column(name = "user_id", nullable = false)
     @GeneratedValue
     private Long userId;
 
@@ -46,11 +45,13 @@ public class User {
     @Column(name = "is_blocked", nullable = false)
     private Boolean isBlocked = false;
 
+    @OneToOne(optional=false, mappedBy="user", targetEntity=User.class)
+    private Student student;
+
     //@ElementCollection(fetch = FetchType.EAGER, targetClass = Role.class)
     //@CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     //@Column(name = "role")
     //private List<Role> roles = new ArrayList<>();
-
 
     public boolean hasRole(String roleString) {
         return true;
@@ -132,7 +133,7 @@ public class User {
     public void setBlocked(boolean blocked) {
         isBlocked = blocked;
     }
-    
+
     public Long getUserId() {
         return userId;
     }
