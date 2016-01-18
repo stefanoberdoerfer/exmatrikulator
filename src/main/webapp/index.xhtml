@@ -9,6 +9,6 @@
   </h:head>
 
   <h:body>
-    <p><h:outputText value="#{msg['index.helloworld']}" /></p>
+    <p><h:outputText value="#{msg['index.helloworld']}" rendered="#{userController.user.hasRole('USER')}" /></p>
   </h:body>
 </html>

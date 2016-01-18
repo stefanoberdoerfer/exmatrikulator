@@ -1,6 +1,7 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
+import org.hibernate.Hibernate;
 
 import java.util.List;
 import javax.annotation.Resource;
@@ -39,7 +40,10 @@ public class UserService extends GenericService<User> {
             return null;
         }
 
-        return (userList.isEmpty()) ? null : userList.get(0);
+        //initialise list of roles
+        Hibernate.initialize(userList.get(0).getRoles());
+
+        return userList.get(0);
     }
 
     /**

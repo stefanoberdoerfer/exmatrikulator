@@ -100,7 +100,7 @@ public class RegistrationController {
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
         newUser.setLanguage("de");
-        newUser.getRoles().add(Role.USER);
+        newUser.getRoles().add(Role.USER.getId());
 
         return newUser;
     }
@@ -151,7 +151,7 @@ public class RegistrationController {
 
     /**
      * Sets the confirmed plain text password.
-     * @param password The confirmed password, not null.
+     * @param passwordConfirmed The confirmed password, not null.
      */
     public void setPasswordConfirmed(String passwordConfirmed) {
         this.passwordConfirmed = passwordConfirmed;
