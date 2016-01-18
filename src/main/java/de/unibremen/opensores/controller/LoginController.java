@@ -56,21 +56,21 @@ public class LoginController {
         User user = null;
         try {
             user = userService.findByLogin(email, password);
-            if (user == null) {
-                ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                                facesContext.getViewRoot().getLocale());
-                String text = bundle.getString("login.fail");
-                facesContext.addMessage(null, new FacesMessage(text));
-            } else {
-                FacesContext.getCurrentInstance()
-                        .getExternalContext().getSessionMap().put("user", user);
-                return "index.xhtml";
-            }
         } catch (ServiceException e) {
             log.error(e);
         }
 
-        return "";
+        if (user == null) {
+            ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                    facesContext.getViewRoot().getLocale());
+            String text = bundle.getString("login.fail");
+            facesContext.addMessage(null, new FacesMessage(text));
+            return "";
+        }
+
+        FacesContext.getCurrentInstance().getExternalContext()
+            .getSessionMap().put("user", user);
+        return "index.xhtml";
     }
 
     /**
