@@ -1,7 +1,6 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.User;
-import de.unibremen.opensores.service.ServiceException;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,14 +52,8 @@ public class LoginController {
      */
     public String login() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        User user = null;
-        try {
-            user = userService.findByLogin(email, password);
-        } catch (ServiceException e) {
-            log.error(e);
-        }
-
-        if (user == null) {
+        User user = userService.findByEmail(email);
+        if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
             ResourceBundle bundle = ResourceBundle.getBundle("messages",
                     facesContext.getViewRoot().getLocale());
             String text = bundle.getString("login.fail");
