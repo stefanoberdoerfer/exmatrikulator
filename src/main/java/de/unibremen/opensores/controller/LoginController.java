@@ -1,7 +1,6 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.User;
-import de.unibremen.opensores.service.ServiceException;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,12 +52,7 @@ public class LoginController {
      */
     public String login() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        User user = null;
-        try {
-            user = userService.findByLogin(email, password);
-        } catch (ServiceException e) {
-            log.error(e);
-        }
+        User user = userService.findByLogin(email, password);
 
         if (user == null) {
             ResourceBundle bundle = ResourceBundle.getBundle("messages",

@@ -15,9 +15,11 @@ import java.util.List;
 
 /**
  * Service class for the User model class.
- * TODO Check if UserTransactions are better for exception handling
- * TODO JPA User search
+ * @todo Check if UserTransactions are better for exception handling
+ * @todo JPA User search
+ *
  * @author Kevin Scheck
+ * @author Sören Tempel
  */
 @Stateless
 public class UserService extends GenericService<User> {
@@ -25,33 +27,27 @@ public class UserService extends GenericService<User> {
     /**
      * Finds a user by his login credentials.
      * @param email The inserted email by the user;
-     *              must be an email and cant be null nor empty.
+     *     must be an email and cant be null nor empty.
      * @param password The inserted email by the user;
-     *              must be an email and cant be null nor empty.
-     * @return The found user; Null if the user is not found.
-     * @throws ServiceException If the database connection threw an exception.
+     *     must be an email and cant be null nor empty.
+     * @return The found user or null if the user was not found.
      */
-    public User findByLogin(String email, String password) throws ServiceException {
+    public User findByLogin(String email, String password) {
         List<User> userList = em.createQuery(
                 "SELECT DISTINCT u "
               + "FROM User u "
               + "WHERE u.email = :email", User.class)
-            .setParameter("email", email.toLowerCase())
-            //GetSingleResult() can throw a RunTimeException if there are no results
-            .getResultList();
+            .setParameter("email", email.toLowerCase()).getResultList();
 
-        if (userList.size() > 1) {
-            throw new ServiceException(
-                    "Multiple users found with logon credentials");
-        } else if (userList.isEmpty()) {
+        if (userList.isEmpty()) {
             return null;
+        }
+
+        final User user = userList.get(0);
+        if (BCrypt.checkpw(password, user.getPassword())) {
+            return user;
         } else {
-            final User user = userList.get(0);
-            if (BCrypt.checkpw(password, user.getPassword())) {
-                return user;
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 
