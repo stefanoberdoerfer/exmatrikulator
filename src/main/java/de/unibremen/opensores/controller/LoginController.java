@@ -52,9 +52,8 @@ public class LoginController {
      */
     public String login() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        User user = userService.findByLogin(email, password);
-
-        if (user == null) {
+        User user = userService.findByEmail(email);
+        if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
             ResourceBundle bundle = ResourceBundle.getBundle("messages",
                     facesContext.getViewRoot().getLocale());
             String text = bundle.getString("login.fail");
