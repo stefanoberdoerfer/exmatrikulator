@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 /**
  * The Backing Bean of the login page.
  * Manages the authentication of the user.
+ *
  * @author Sören Tempel
  * @author Stefan Oberdörfer
  * @author Kevin Scheck
@@ -56,12 +57,10 @@ public class LoginController {
         try {
             user = userService.findByLogin(email, password);
             if (user == null) {
-                ResourceBundle bundle =
-                        ResourceBundle.getBundle("messages",
+                ResourceBundle bundle = ResourceBundle.getBundle("messages",
                                 facesContext.getViewRoot().getLocale());
                 String text = bundle.getString("login.fail");
-                facesContext.addMessage("", new FacesMessage(text));
-                return "#";
+                facesContext.addMessage(null, new FacesMessage(text));
             } else {
                 FacesContext.getCurrentInstance()
                         .getExternalContext().getSessionMap().put("user", user);
@@ -69,8 +68,9 @@ public class LoginController {
             }
         } catch (ServiceException e) {
             log.error(e);
-            return "#";
         }
+
+        return "";
     }
 
     /**

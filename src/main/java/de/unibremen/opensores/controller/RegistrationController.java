@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
  * Manages the validation of user inputs and inserts new user to the database.
  *
  * @author Kevin Scheck
+ * @author Sören Tempel
  */
 @ManagedBean
 @RequestScoped
@@ -34,9 +35,14 @@ public class RegistrationController {
     private String email;
 
     /**
-     * The typed in plaintext password of the user.
+     * The typed in plain text password of the user.
      */
     private String password;
+
+    /**
+     * The confirmed password in plain text.
+     */
+    private String passwordConfirmed;
 
     /**
      * The zyped in first name of the user.
@@ -54,13 +60,17 @@ public class RegistrationController {
      */
     public String register() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                facesContext.getViewRoot().getLocale());
+
         if (userService.isEmailRegistered(email)) {
-            ResourceBundle bundle =
-                    ResourceBundle.getBundle("messages",
-                            facesContext.getViewRoot().getLocale());
             String text = bundle.getString("registration.alreadyRegistered");
-            facesContext.addMessage("", new FacesMessage(text));
-            return "#";
+            facesContext.addMessage(null, new FacesMessage(text));
+            return "";
+        } else if (!password.equals(passwordConfirmed)) {
+            String text = bundle.getString("registration.passwordDoNotMatch");
+            facesContext.addMessage(null, new FacesMessage(text));
+            return "";
         }
 
         /* TODO wait until the admin confirmed the account and send an email to
@@ -116,19 +126,35 @@ public class RegistrationController {
     }
 
     /**
-     * Gets the typed in plaintext password.
-     * @return The typed in plaintext password.
+     * Gets the typed in plain text password.
+     * @return The typed in plain text password.
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * Sets the plaintext password.
+     * Gets the typed in confirmed plain text password.
+     * @return The confirmed plain text password.
+     */
+    public String getPasswordConfirmed() {
+        return passwordConfirmed;
+    }
+
+    /**
+     * Sets the plain text password.
      * @param password The typed in password, not null.
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * Sets the confirmed plain text password.
+     * @param password The confirmed password, not null.
+     */
+    public void setPasswordConfirmed(String passwordConfirmed) {
+        this.passwordConfirmed = passwordConfirmed;
     }
 
     /**
