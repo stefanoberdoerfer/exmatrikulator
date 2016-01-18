@@ -40,7 +40,7 @@ public class User {
     @Column(name = "profile_info", nullable = true, length = 2048)
     private String profileInfo;
 
-    @Column(name = "language", nullable = false)
+    @Column(name = "language", nullable = true)
     private String language;
 
     @Column(name = "is_blocked", nullable = false)
