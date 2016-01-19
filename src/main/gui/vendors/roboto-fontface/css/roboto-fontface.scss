@@ -1,26 +1,26 @@
-$roboto-font-path: '../fonts' !default;
+$roboto-font-path: '../javax.faces.resource' !default;
 
 @mixin roboto-font($type, $weight, $style: normal) {
     @font-face {
         font-family: 'Roboto';
-        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot');
-        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot?#iefix') format('embedded-opentype'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.woff2') format('woff2'),
+        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot.xhtml?ln=fonts');
+        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot.xhtml?ln=fonts&#iefix') format('embedded-opentype'),
+             url('#{$roboto-font-path}/Roboto-#{$type}.woff2.xhtml?ln=fonts') format('woff2'),
              //url('#{$roboto-font-path}/Roboto-#{$type}.woff') format('woff'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.ttf') format('truetype'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.svg#Roboto') format('svg');
+             url('#{$roboto-font-path}/Roboto-#{$type}.ttf.xhtml?ln=fonts') format('truetype'),
+             url('#{$roboto-font-path}/Roboto-#{$type}.svg.xhtml?ln=fonts#Roboto') format('svg');
         font-weight: $weight;
         font-style: $style;
     }
 
     @font-face {
         font-family: 'Roboto-#{$type}';
-        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot');
-        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot?#iefix') format('embedded-opentype'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.woff2') format('woff2'),
+        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot.xhtml?ln=fonts');
+        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot.xhtml?ln=fonts&#iefix') format('embedded-opentype'),
+             url('#{$roboto-font-path}/Roboto-#{$type}.woff2.xhtml?ln=fonts') format('woff2'),
              //url('#{$roboto-font-path}/Roboto-#{$type}.woff') format('woff'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.ttf') format('truetype'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.svg#Roboto') format('svg');
+             url('#{$roboto-font-path}/Roboto-#{$type}.ttf.xhtml?ln=fonts') format('truetype'),
+             url('#{$roboto-font-path}/Roboto-#{$type}.svg.xhtml?ln=fonts#Roboto') format('svg');
     }
 }
 

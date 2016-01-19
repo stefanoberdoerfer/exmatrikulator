@@ -7,6 +7,9 @@ body
   padding:          6px 20px
   +sizeAndPosition(80%, $header-height, 0, 20%, absolute)
 
+  .active-language
+    text-transform: uppercase
+
   .user
     margin-top: 2px
 
@@ -181,3 +184,9 @@ img.loading
   .control-label
     &.text-left
       text-align: left !important
+
+ul.alert-danger,
+ul.alert-success,
+ul.alert-info,
+ul.alert-warning
+  list-style: none
