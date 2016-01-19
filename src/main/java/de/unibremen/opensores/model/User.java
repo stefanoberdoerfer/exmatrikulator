@@ -1,20 +1,27 @@
 package de.unibremen.opensores.model;
 
-import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.CollectionTable;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Entity;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Entity bean of the User class
- * @TODO Discuss Feedback from tutor
  * @TODO Discuss max. field length (e.g. firstName)
- * @TODO Add Activivation & Password-Recovery-Keys
  */
 @Entity
-@Table(name = "users")
+@Table(name = "USER_TABLE")
 public class User {
+
     @Id
-    @Column(name = "user_id", nullable = false)
     @GeneratedValue
     private Long userId;
 
@@ -33,29 +40,16 @@ public class User {
     @Column(name = "profile_info", nullable = true, length = 2048)
     private String profileInfo;
 
-    @Column(name = "language", nullable = false)
+    @Column(name = "language", nullable = true)
     private String language;
-
-    @Column(name = "is_lecturer", nullable = false)
-    private Boolean isLecturer = false;
-
-    @Column(name = "is_admin", nullable = false)
-    private Boolean isAdmin = false;
 
     @Column(name = "is_blocked", nullable = false)
     private Boolean isBlocked = false;
 
-    @OneToOne(optional=false, mappedBy="user", targetEntity=User.class)
-    private Student student;
-
-    //@ElementCollection(fetch = FetchType.EAGER, targetClass = Role.class)
-    //@CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    //@Column(name = "role")
-    //private List<Role> roles = new ArrayList<>();
-
-    public boolean hasRole(String roleString) {
-        return true;
-    }
+    @ElementCollection(fetch = FetchType.LAZY, targetClass = Integer.class)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private List<Integer> roles = new ArrayList<>();
 
 
     /*
@@ -110,22 +104,6 @@ public class User {
         this.language = language;
     }
 
-    public boolean isLecturer() {
-        return isLecturer;
-    }
-
-    public void setLecturer(boolean lecturer) {
-        isLecturer = lecturer;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
     public boolean isBlocked() {
         return isBlocked;
     }
@@ -142,11 +120,15 @@ public class User {
         this.userId = userId;
     }
 
-    //public List<Role> getRoles() {
-        //return roles;
-    //}
+    public List<Integer> getRoles() {
+        return roles;
+    }
 
-    //public void setRoles(List<Role> roles) {
-        //this.roles = roles;
-    //}
+    public void setRoles(List<Integer> roles) {
+        this.roles = roles;
+    }
+
+    public boolean hasRole(String roleString) {
+        return roles.contains(Role.valueOf(roleString).getId());
+    }
 }

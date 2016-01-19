@@ -7,33 +7,22 @@ import java.util.List;
 /**
  * Entity bean for the Course class.
  */
-@Entity
-@Table(name = "courses")
 public class Course {
-    @Id
-    @Column(name = "course_id", nullable = false)
-    @GeneratedValue
+
     private Long courseId;
 
-    @Column(name = "name", nullable = false, length = 128)
     private String name;
 
-    @Column(name = "number", nullable = false, length = 64)
     private String number;
 
-    @Column(name = "require_conformation", nullable = false)
     private Boolean requiresConformation;
 
-    @Column(name = "email_template", nullable = false)
     private String emailTemplate;
 
-    @Column(name = "min_group_size", nullable = false)
     private Integer minGroupSize;
 
-    @Column(name = "max_group_size", nullable = false)
     private Integer maxGroupSize;
 
-    @OneToOne(optional=false, mappedBy="student", targetEntity=Student.class)
     private List<Student> students;
 
     private List<Lecturer> lecturers;
