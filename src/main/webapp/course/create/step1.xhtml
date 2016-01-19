@@ -6,7 +6,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
     <!-- Define Params -->
-    <ui:param name="pageTitle" value="#{msg['courses.overview']}" />
+    <ui:param name="pageTitle" value="#{msg['courses.create']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
         <li><h:link value="#{msg['courses.overview']}" outcome="index" /></li>
@@ -16,7 +16,8 @@
     <ui:define name="content">
         <div class="headline">
             <div class="btn-group main-buttons pull-right">
-                <h:link value="#{msg['courses.copy']}" outcome="course/create/copy" class="btn btn-default create-course-button" />
+                <h:link value="#{msg['courses.copy']}" outcome="course/create/copy"
+                        class="btn btn-default create-course-button" />
             </div>
             <h1>#{msg['courses.create']}</h1>
         </div>
@@ -27,9 +28,112 @@
             <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step3']}</a></li>
             <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step4']}</a></li>
             <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step5']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step6']}</a></li>
         </ul>
 
         <h3>#{msg['courses.create.step1']}</h3>
+
+        <h:form layout="block" class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <h:outputLabel for="courseName" class="col-xs-3 control-label text-left"
+                                       value="#{msg['common.name']}"/>
+                        <div class="col-xs-9">
+                            <h:inputText type="text" class="form-control" id="courseName"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel for="courseNumber" class="col-xs-3 control-label text-left"
+                                       value="#{msg['courses.vak']}"/>
+                        <div class="col-xs-9">
+                            <h:inputText  type="text" class="form-control" id="courseNumber"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-9 col-xs-offset-3">
+                            <h:button type="button" class="btn btn-default" value="#{msg['courses.create.moreVAK']}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel for="courseSemester" class="col-xs-3 control-label text-left"
+                                       value="#{msg['common.semester']}"/>
+                        <div class="col-xs-9">
+                            <select class="form-control" id="courseSemester">
+                                <!-- TODO Get seemster from a controller -->
+                                <option>Sommersemester 2017</option>
+                                <option>Wintersemester 2016/2017</option>
+                                <option>Sommersemester 2016</option>
+                                <option>Wintersemester 2015/2016</option>
+                                <option>Sommersemester 2015</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <h:outputLabel for="courseCP" class="col-xs-3 control-label text-left"
+                                       value="#{msg['courses.creditpoints']}"/>
+                        <div class="col-xs-9">
+                            <h:inputText type="number" class="form-control" id="courseCP"
+                                         converter="javax.faces.Integer">
+                                <f:convertNumber integerOnly="true"/>
+                                <f:validateLongRange minimum="1"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel for="courseSWS" class="col-xs-3 control-label text-left"
+                                       value="#{msg['courses.sws']}"/>
+                        <div class="col-xs-9">
+                            <h:inputText type="number" class="form-control" id="courseSWS">
+                                <f:convertNumber integerOnly="true"/>
+                                <f:validateLongRange minimum="1"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-9 col-xs-offset-3">
+                            <label>
+                                <h:selectBooleanCheckbox id="publicFormula" />
+                                <h:outputLabel value="#{msg['courses.create.studentsCanSeeFormula']}"
+                                               for="publicFormula" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <h:outputLabel class="col-xs-3 control-label text-left" value="#{msg['common.lecturers']}" />
+                        <div class="col-xs-9 form-control-static">
+                            Rainer <strong>Kosche</strong>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-9 col-xs-offset-3">
+                            <button type="button" class="btn btn-danger pull-right">
+                                <i class="fa fa-remove"></i>
+                            </button>
+                            <div class="form-control-static">Karsten <strong>Hölscher</strong></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-9 col-xs-offset-3">
+                            <h:inputText type="text" placeholder="#{msg['courses.create.searchForLecturers']}"
+                                         class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row form-buttons">
+                <div class="col-xs-6">
+                    <h:link class="btn btn-default " value="#{msg['common.cancel']}" outcome="/index" />
+                </div>
+                <div class="col-xs-6 text-right">
+                    <div class="btn-group">
+                        <h:commandButton class="btn btn-primary"
+                                       value="#{msg['common.continue']}" type="submit" />
+                    </div>
+                </div>
+            </div>
+        </h:form>
     </ui:define>
 </ui:composition>

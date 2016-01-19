@@ -1,0 +1,81 @@
+<!-- Todo: Seite darf nur von Dozenten aufgerufen werden -->
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['courses.create']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li><h:link value="#{msg['courses.overview']}" outcome="index" /></li>
+        <li class="active">#{msg['courses.create']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <div class="btn-group main-buttons pull-right">
+                <h:link value="#{msg['courses.copy']}" outcome="course/create/copy"
+                        class="btn btn-default create-course-button" />
+            </div>
+            <h1>#{msg['courses.create']}</h1>
+        </div>
+
+        <ul class="nav nav-wizard">
+            <li><h:link outcome="/course/create/step1">
+                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step1']}</h:link></li>
+            <li><h:link outcome="/course/create/step2">
+                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step2']}</h:link></li>
+            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['courses.create.step3']}</a></li>
+            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step4']}</a></li>
+            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step5']}</a></li>
+        </ul>
+
+        <h3>#{msg['courses.create.step3']}</h3>
+
+        <h:form layout="block" class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-6">
+                    <p>#{msg['participationType.explanation']}</p>
+                    <table class="table table-invisible">
+                        <tbody>
+                        <tr class="table-row-blank">
+                            <td>
+                                <h:inputText type="text" class="form-control" />
+                            </td>
+                            <td class="table-common-options-one">
+                                <h:commandLink class="btn btn-danger">
+                                    <i class="fa fa-remove"></i>
+                                </h:commandLink>
+                            </td>
+                        </tr>
+                        <tr class="table-row-blank">
+                            <td colspan="2">
+                                <h:commandButton class="btn btn-default"
+                                                 value="#{msg['participationType.additional']}"></h:commandButton>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <hr />
+            <div class="row form-buttons">
+                <div class="col-xs-6">
+                    <h:link class="btn btn-default " value="#{msg['common.cancel']}" outcome="/index" />
+                </div>
+                <div class="col-xs-6 text-right">
+                    <div class="btn-group">
+                        <h:commandButton class="btn btn-default"
+                                         value="#{msg['common.back']}" />
+                        <h:commandButton class="btn btn-default"
+                                         value="#{msg['common.skip']}" />
+                        <h:commandButton class="btn btn-primary"
+                                         value="#{msg['common.continue']}" />
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
