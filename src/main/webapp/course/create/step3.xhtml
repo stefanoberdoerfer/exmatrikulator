@@ -25,42 +25,41 @@
         <ul class="nav nav-wizard">
             <li><h:link outcome="/course/create/step1">
                 <i class="fa fa-check-square-o"></i> #{msg['courses.create.step1']}</h:link></li>
-            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['courses.create.step2']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step3']}</a></li>
+            <li><h:link outcome="/course/create/step2">
+                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step2']}</h:link></li>
+            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['courses.create.step3']}</a></li>
             <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step4']}</a></li>
             <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step5']}</a></li>
         </ul>
 
-        <h:form layout="block">
-            <div class="btn-group main-buttons pull-right">
-                <h:commandLink class="btn btn-default" value="#{msg['examination.add']}" />
+        <h3>#{msg['courses.create.step3']}</h3>
+
+        <h:form layout="block" class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-6">
+                    <p>#{msg['participationType.explanation']}</p>
+                    <table class="table table-invisible">
+                        <tbody>
+                        <tr class="table-row-blank">
+                            <td>
+                                <h:inputText type="text" class="form-control" />
+                            </td>
+                            <td class="table-common-options-one">
+                                <h:commandLink class="btn btn-danger">
+                                    <i class="fa fa-remove"></i>
+                                </h:commandLink>
+                            </td>
+                        </tr>
+                        <tr class="table-row-blank">
+                            <td colspan="2">
+                                <h:commandButton class="btn btn-default"
+                                                 value="#{msg['participationType.additional']}"></h:commandButton>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <h3>#{msg['courses.create.step2']}</h3>
-
-            <table class="table table-hover table-examinations">
-                <thead>
-                <tr>
-                    <th class="table-examination-name">#{msg['examination.name']}</th>
-                    <th>#{msg['examination.shortcut']}</th>
-                    <th class="table-examination-grade">#{msg['examination.gradeType']}</th>
-                    <th class="table-common-options-two"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="vert-align-middle">
-                    <td>Übungsblatt 1</td>
-                    <td>ÜB1</td>
-                    <td>Prozent</td>
-                    <td>
-                        <div class="btn-group">
-                            <a href="examination/edit.php" class="btn btn-default"><i class="fa fa-pencil"></i></a>
-                            <a href="examination/remove.php" class="btn btn-danger"><i class="fa fa-remove"></i></a>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
             <hr />
             <div class="row form-buttons">
                 <div class="col-xs-6">
@@ -69,11 +68,11 @@
                 <div class="col-xs-6 text-right">
                     <div class="btn-group">
                         <h:commandButton class="btn btn-default"
-                                       value="#{msg['common.back']}" />
+                                         value="#{msg['common.back']}" />
                         <h:commandButton class="btn btn-default"
-                                       value="#{msg['common.skip']}" />
+                                         value="#{msg['common.skip']}" />
                         <h:commandButton class="btn btn-primary"
-                                       value="#{msg['common.continue']}" />
+                                         value="#{msg['common.continue']}" />
                     </div>
                 </div>
             </div>
