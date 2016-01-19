@@ -36,14 +36,7 @@ public class UserService extends GenericService<User> {
               + "WHERE u.email = :email", User.class)
             .setParameter("email", email.toLowerCase()).getResultList();
 
-        if (userList.isEmpty()) {
-            return null;
-        }
-
-        //initialise list of roles
-        Hibernate.initialize(userList.get(0).getRoles());
-
-        return userList.get(0);
+        return (userList.isEmpty()) ? null : userList.get(0);
     }
 
     /**

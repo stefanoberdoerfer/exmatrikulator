@@ -46,11 +46,10 @@ public class User {
     @Column(name = "is_blocked", nullable = false)
     private Boolean isBlocked = false;
 
-    @ElementCollection(fetch = FetchType.LAZY, targetClass = Integer.class)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     private List<Integer> roles = new ArrayList<>();
-
 
     /*
      * GETTERS AND SETTERS
@@ -111,7 +110,7 @@ public class User {
     public void setBlocked(boolean blocked) {
         isBlocked = blocked;
     }
-    
+
     public Long getUserId() {
         return userId;
     }
