@@ -5,7 +5,8 @@ body
 #header
   background-color: $header-bg
   padding:          6px 20px
-  +sizeAndPosition(80%, $header-height, 0, 20%, absolute)
+  +sizeAndPosition(80%, $header-height, 0, 20%, fixed)
+  z-index:          99
 
   .active-language
     text-transform: uppercase
@@ -36,7 +37,11 @@ body
   +sizeAndPosition(20%, 100%, 0, 0, absolute)
 
   .logo
-    padding:  11px 15px
+    padding:        11px 15px
+    position:       fixed
+    width:          20%
+    border-bottom:  solid 1px $nav-line
+    margin-bottom:  20px
 
   .logo-stallion
     width:  $nav-logo-width
@@ -92,11 +97,6 @@ body
 
     .fa
       margin-right: 10px
-
-  hr
-    border-color:   $nav-line
-    margin-top:     0
-    margin-bottom:  20px
 
   .course-icons
     .fa

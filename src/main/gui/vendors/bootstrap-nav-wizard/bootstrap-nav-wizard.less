@@ -2,6 +2,9 @@
 
 @arrow-size: 20px;
 @arrow-sep: 6px;
+// Overwrite because body-bg is not the color of the content pane
+@wizard-bg: #e4eaf1;
+@wizard-bg-hover: @wizard-bg;
 
 .arrow(@color) {
   width: 0px;
@@ -22,7 +25,7 @@
 
     > a {
       position: relative;
-      background-color: @nav-link-hover-bg;
+      background-color: @wizard-bg;
 
       .badge {
         margin-left: 3px;
@@ -42,7 +45,7 @@
       margin-right: @arrow-sep;
 
       &:after {
-        .arrow(@nav-link-hover-bg);
+        .arrow(@wizard-bg);
         right: -@arrow-size;
         z-index: 2;
       }
@@ -57,12 +60,12 @@
     }
 
     &:hover > a {
-      background-color: darken(@nav-link-hover-bg, 10%);
+      background-color: @wizard-bg-hover;
       &:before {
-        border-right-color: darken(@nav-link-hover-bg, 10%);
+        border-right-color: @wizard-bg-hover;
       }
       &:after {
-        border-left-color: darken(@nav-link-hover-bg, 10%);
+        border-left-color: @wizard-bg-hover;
       }
     }
 
@@ -105,12 +108,12 @@
     //     background-color: transparent;
     //     cursor: not-allowed;
     //   }
-    //     // background-color: darken(@nav-link-hover-bg, 20%);
+    //     // background-color: @wizard-bg-hover;
     //     // &:before {
-    //     //     border-right-color: darken(@nav-link-hover-bg, 20%);
+    //     //     border-right-color: @wizard-bg-hover;
     //     // }
     //     // &:after {
-    //     //     border-left-color: darken(@nav-link-hover-bg, 20%);
+    //     //     border-left-color: @wizard-bg-hover;
     //     // }
     // }
   }
