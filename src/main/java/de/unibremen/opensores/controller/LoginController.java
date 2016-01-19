@@ -108,6 +108,10 @@ public class LoginController {
      * @TODO Delete before deadline :^)
      */
     private void initDummyUsers(){
+        if (userService.findByEmail("user@uni-bremen.de") != null) {
+            return;
+        }
+
         final User newUser = new User();
         newUser.setEmail("user@uni-bremen.de");
         newUser.setPassword(BCrypt.hashpw("user",BCrypt.gensalt()));
