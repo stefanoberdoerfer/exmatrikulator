@@ -22,44 +22,41 @@
 </h:head>
 
 <h:body>
-    <h:panelGroup layout="block" id="header">
-        <h:panelGroup layout="block" class="btn-group user pull-right">
-            <h:panelGroup layout="block" class="btn btn-default">
-                <h:panelGroup layout="block" class="dropdown-toggle" h5:data-toggle="dropdown" h5:aria-haspopup="true" h5:aria-expanded="false">
-                    <!-- Todo: Aktuelle Sprache anzeigen -->
-                    #{userLocale}
-                </h:panelGroup>
+    <div id="header">
+        <div class="btn-group user pull-right">
+            <h:form layout="block" class="btn btn-default">
+                <div class="dropdown-toggle active-language" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    #{navigation.userLocale}
+                </div>
                 <ul class="dropdown-menu">
-                    <!-- Todo: Sprachen anzeigen und Umstelllogik -->
-                    <ui:repeat value="#{navigationController.languages}" var="lang">
-                        <li><h:link action="#{navigationController.setUserLocale(lang)}" value="#{lang}" /></li>
+                    <ui:repeat value="#{navigation.languages}" var="lang">
+                        <li><h:commandLink update="@all" action="#{navigation.setUserLocale(lang)}" value="#{lang}" /></li>
                     </ui:repeat>
                 </ul>
-            </h:panelGroup>
-            <h:panelGroup layout="block" class="btn btn-default">
-                <h:panelGroup layout="block" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <!-- Todo: Username anzeigen -->Placeholder <span class="caret"></span>
-                </h:panelGroup>
+            </h:form>
+            <div class="btn btn-default">
+                <div class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    #{user.firstName} #{user.lastName} <span class="caret"></span>
+                </div>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <!-- Todo: Links setzen -->
-                    <li><a>Mein Profil</a></li>
+                    <li><a>#{msg['common.myProfile']}</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a>Abmelden</a></li>
+                    <li><a>#{msg['common.logout']}</a></li>
                 </ul>
-            </h:panelGroup>
-        </h:panelGroup>
+            </div>
+        </div>
 
         <ol class="breadcrumb">
-            <!-- Todo: Links -->
-            <li><a>Exmatrikulator</a></li>
+            <li><h:link value="Exmatrikulator" outcome="index" /></li>
             <ui:insert name="breadcrumbs"></ui:insert>
         </ol>
-    </h:panelGroup>
+    </div>
 
-    <h:panelGroup layout="block" id="nav">
-        <h:panelGroup layout="block" class="logo text-center">
+    <div id="nav">
+        <div class="logo text-center">
             <h:graphicImage library="images" name="stallion_light.svg" class="logo-stallion" />
-        </h:panelGroup>
+        </div>
         <hr />
 
         <ul class="nav nav-pills nav-stacked system-links">
@@ -67,10 +64,10 @@
         </ul>
 
         <!-- Todo: Veranstaltungen anzeigen -->
-    </h:panelGroup>
+    </div>
 
-    <h:panelGroup layout="block" id="main">
+    <div id="main">
         <ui:insert name="content"></ui:insert>
-    </h:panelGroup>
+    </div>
 </h:body>
 </html>

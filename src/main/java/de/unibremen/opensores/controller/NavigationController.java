@@ -2,6 +2,7 @@ package de.unibremen.opensores.controller;
 
 import java.util.*;
 
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -9,16 +10,26 @@ import javax.faces.context.FacesContext;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.UserService;
 
-@ManagedBean
+@ManagedBean(name = "navigation")
 @SessionScoped
 public class NavigationController {
-    private Locale userLocale = Locale.GERMAN;
+    private Locale userLocale;
+
+    @EJB
+    private UserService userService;
 
     private static Map<String, Locale> languages;
     static {
         languages = new LinkedHashMap<> ();
         languages.put("Deutsch", Locale.GERMAN);
         languages.put("English", Locale.ENGLISH);
+    }
+
+    public NavigationController() {
+        this.userLocale = FacesContext
+                .getCurrentInstance()
+                .getViewRoot()
+                .getLocale();
     }
 
     public List<String> getLanguages() {

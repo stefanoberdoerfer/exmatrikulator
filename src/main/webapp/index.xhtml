@@ -1,14 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:h="http://java.sun.com/jsf/html">
-
-  <h:head>
-    <title>Exmatrikulator</title>
-  </h:head>
-
-  <h:body>
-    <p><h:outputText value="#{msg['index.helloworld']}" rendered="#{userController.user.hasRole('USER')}" /></p>
-  </h:body>
-</html>
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['courses.overview']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li class="active">#{msg['courses.overview']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <div class="btn-group main-buttons pull-right">
+                <h:link value="#{msg['courses.join']}" outcome="course/join" class="btn btn-default create-course-button" />
+                <!-- Todo: Veranstaltung erstellen nur bei Dozenten anzeigen -->
+                <h:link value="#{msg['courses.create']}" outcome="course/create/step1" class="btn btn-primary create-course-button" />
+            </div>
+            <h1>#{msg['courses.overview']}</h1>
+        </div>
+    </ui:define>
+</ui:composition>
