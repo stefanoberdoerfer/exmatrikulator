@@ -2,7 +2,7 @@ html,
 body
   height: 100%
 
-header
+#header
   background-color: $header-bg
   padding:          6px 20px
   +sizeAndPosition(80%, $header-height, 0, 20%, absolute)
@@ -27,7 +27,7 @@ header
     a
       color:  $header-breadcrumb-color
 
-nav
+#nav
   color:    $nav-color
   overflow: auto
   +sizeAndPosition(20%, 100%, 0, 0, absolute)
@@ -99,17 +99,11 @@ nav
     .fa
       margin-left:  5px
 
-main
+#main
   background-color: $main-bg
   min-height:       100%
   padding:          0 20px 30px
   +sizeAndPosition(80%, -1, $header-height, 20%, absolute)
-
-footer
-  bottom:     20px
-  color:      $footer-color
-  font-size:  $footer-font-size
-  +sizeAndPosition(17%, -1, -1, 0, fixed)
 
 .headline
   overflow:       auto
