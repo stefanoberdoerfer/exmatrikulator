@@ -46,10 +46,10 @@ public class User {
     @Column(name = "is_blocked", nullable = false)
     private Boolean isBlocked = false;
 
-    @ElementCollection(fetch = FetchType.LAZY, targetClass = Role.class)
+    @ElementCollection(fetch = FetchType.LAZY, targetClass = Integer.class)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
-    private List<Role> roles = new ArrayList<>();
+    private List<Integer> roles = new ArrayList<>();
 
 
     /*
@@ -120,15 +120,15 @@ public class User {
         this.userId = userId;
     }
 
-    public List<Role> getRoles() {
+    public List<Integer> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(List<Integer> roles) {
         this.roles = roles;
     }
 
-    public boolean hasRole(Role role) {
-        return roles.contains(role);
+    public boolean hasRole(String roleString) {
+        return roles.contains(Role.valueOf(roleString).getId());
     }
 }
