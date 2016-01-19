@@ -10,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Anmeldung · Exmatrikulator</title>
+    <title>#{msg['common.register']} · Exmatrikulator</title>
 
     <!-- Styles -->
     <h:outputStylesheet library="css" name="vendors.min.css"  />
@@ -34,30 +34,47 @@
             <h:panelGroup layout="block" class="form-group">
                 <h:outputLabel for="credentialUser" value="#{msg['common.email']}" />
                 <h:inputText type="email" class="form-control" id="credentialUser" h5:autofocus="true"
-                value="#{registrationController.email}"/>
+                    required="true" requiredMessage="#{msg['registration.missingEmail']}"
+                    value="#{registrationController.email}" validatorMessage="#{msg['registration.invalidEmail']}">
+                  <!-- XXX this regex is far from complete infact it's pretty hard to match email addresses using
+                    a regex but this one has also been used by the libAwesome project and is thus probably good enough. -->
+                  <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                </h:inputText>
             </h:panelGroup>
 
             <h:panelGroup layout="block" class="form-group">
                 <h:outputLabel for="credentialPassword" value="#{msg['common.password']}" />
                 <h:inputSecret type="password" class="form-control" id="credentialPassword"
-                               value="#{registrationController.password}"/>
+                    required="true" requiredMessage="#{msg['registration.missingPassword']}"
+                    value="#{registrationController.password}" validatorMessage="#{msg['registration.invalidPasswort']}" >
+                  <f:validateLength minimum="5" />
+                </h:inputSecret>
+            </h:panelGroup>
+
+            <h:panelGroup layout="block" class="form-group">
+                <h:outputLabel for="credentialPassworConfirm" value="#{msg['common.passwordConfirm']}" />
+                <h:inputSecret type="password" class="form-control" id="credentialPasswordConfirm"
+                  required="true" requiredMessage="#{msg['registration.missingConformationPassword']}"
+                  value="#{registrationController.passwordConfirmed}" />
             </h:panelGroup>
 
             <h:panelGroup layout="block" class="form-group">
                 <h:outputLabel for="credentialFirstName" value="#{msg['common.firstName']}" />
                 <h:inputText type="text" class="form-control" id="credentialFirstName"
-                             value="#{registrationController.firstName}"/>
+                  required="true" requiredMessage="#{msg['registration.missingFirstName']}"
+                  value="#{registrationController.firstName}"/>
             </h:panelGroup>
 
             <h:panelGroup layout="block" class="form-group">
                 <h:outputLabel for="credentialLastName" value="#{msg['common.lastName']}" />
                 <h:inputText type="text" class="form-control" id="credentialLastName"
-                             value="#{registrationController.lastName}"/>
+                  required="true" requiredMessage="#{msg['registration.missingLastName']}"
+                  value="#{registrationController.lastName}"/>
             </h:panelGroup>
 
             <h:panelGroup layout="block" class="form-group text-center">
                 <h:commandButton type="submit" class="btn btn-primary btn-block" value="#{msg['registration.submit']}"
-                action="#{registrationController.register()}"/>
+                  action="#{registrationController.register()}"/>
             </h:panelGroup>
         </h:form>
 

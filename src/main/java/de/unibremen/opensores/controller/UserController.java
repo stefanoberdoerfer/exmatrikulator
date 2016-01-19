@@ -10,34 +10,63 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 /**
- * This class implements the controller of the
+ * This class implements the Controller for managing the logged in user.
  */
 @SessionScoped
 @ManagedBean
 public class UserController {
 
     /**
-     * The currently logged in user
+     * The currently logged in user.
      */
     private User user;
 
+    /**
+     * The UserService for database connection.
+     */
     @EJB
     private UserService userService;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         user = (User) FacesContext.getCurrentInstance()
                 .getExternalContext().getSessionMap().get("user");
     }
 
     /**
-     * Logs the user out of the current session
-     * @return The of the login page
+     * Logs the user out of the current session.
+     * Invalidates the current session map.
+     * Redirects to the login page.
+     * TODO Maybe move this method to NavigationController
+     * @return The of the login page.
      */
-    public String logout(){
+    public String logout() {
         FacesContext.getCurrentInstance()
                 .getExternalContext().invalidateSession();
         return "/login.xhtml?faces-redirect=true";
     }
 
+    /**
+     * Saves the current user in the database.
+     * @Pre The user has valid fields.
+     */
+    public void saveUser() {
+        userService.update(user);
+    }
+
+    /**
+     * Gets the currently logged in user.
+     * @return The currently logged in user.
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * Sets the current user to a new user object.
+     * @param user A new logged in user, must have valid fields.
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

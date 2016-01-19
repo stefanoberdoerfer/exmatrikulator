@@ -12,11 +12,10 @@ build:
   tags:
     - linux
 
-cobertura:
+test:
   stage: test
   script:
-    - mvn cobertura:check
-    - mvn cobertura:clean
+    - mvn test
   only:
     - master
   tags:

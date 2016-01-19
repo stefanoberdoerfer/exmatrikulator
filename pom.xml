@@ -19,7 +19,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <checkstyle.config.location>custom_google_checkstyle.xml</checkstyle.config.location>
   </properties>
 
   <dependencies>
@@ -74,20 +73,21 @@
     </dependency>
 
     <dependency>
-        <groupId>org.mindrot</groupId>
-        <artifactId>jbcrypt</artifactId>
-        <version>0.3m</version>
+      <groupId>de.svenkubiak</groupId>
+      <artifactId>jBCrypt</artifactId>
+      <version>0.4</version>
     </dependency>
 
   </dependencies>
 
-    <build>
+  <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
         <configuration>
+          <compilerArgument>-Xlint:all</compilerArgument>
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
@@ -98,7 +98,6 @@
         <artifactId>maven-embedded-glassfish-plugin</artifactId>
         <version>4.1.1</version>
         <configuration>
-          <goalPrefix>embedded-glassfish</goalPrefix>
           <autoDelete>true</autoDelete>
           <port>8080</port>
         </configuration>
@@ -162,19 +161,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <check>
-            <lineRate>75</lineRate>
-            <branchRate>75</branchRate>
-            <haltOnFailure>true</haltOnFailure>
-          </check>
-        </configuration>
       </plugin>
 
     </plugins>

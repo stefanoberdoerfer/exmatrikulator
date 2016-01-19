@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="ERROR">
+    <Properties>
+        <Property name="log4j2.disable.jmx">true</Property>
+        <Property name="logPath">target/log</Property>
+    </Properties>
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%-5p] %c{1}:%L - %m%n" />
         </Console>
 
-        <RollingFile name="RollingFile" filename="target/log/exmatrikulator.log"
+        <RollingFile name="RollingFile" filename="${logPath}/exmatrikulator.log"
                      filepattern="${logPath}/%d{yyyyMMddHHmmss}-exmatrikulator.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%-5p] %c{1}:%L - %m%n" />
             <Policies>
