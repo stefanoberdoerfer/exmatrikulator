@@ -13,6 +13,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 /**
@@ -121,13 +122,15 @@ public class LoginController {
         newLecturer.setFirstName("Leo");
         newLecturer.setLastName("Lektor");
         newLecturer.getRoles().add(Role.LECTURER.getId());
+        newLecturer.getRoles().add(Role.USER.getId());
 
         final User newAdmin = new User();
         newAdmin.setEmail("admin@uni-bremen.de");
         newAdmin.setPassword(BCrypt.hashpw("admin",BCrypt.gensalt()));
         newAdmin.setFirstName("Adolf");
         newAdmin.setLastName("Admin");
-        newAdmin.getRoles().add(Role.LECTURER.getId());
+        newAdmin.getRoles().add(Role.ADMIN.getId());
+        newAdmin.getRoles().add(Role.USER.getId());
 
         userService.persist(newUser);
         userService.persist(newLecturer);
