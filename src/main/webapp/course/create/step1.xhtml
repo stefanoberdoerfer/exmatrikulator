@@ -1,0 +1,35 @@
+<!-- Todo: Seite darf nur von Dozenten aufgerufen werden -->
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['courses.overview']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li><h:link value="#{msg['courses.overview']}" outcome="index" /></li>
+        <li class="active">#{msg['courses.create']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <div class="btn-group main-buttons pull-right">
+                <h:link value="#{msg['courses.copy']}" outcome="course/create/copy" class="btn btn-default create-course-button" />
+            </div>
+            <h1>#{msg['courses.create']}</h1>
+        </div>
+
+        <ul class="nav nav-wizard">
+            <li class="active"><i class="fa fa-square-o"></i> #{msg['courses.create.step1']}</li>
+            <li><i class="fa fa-square-o"></i> #{msg['courses.create.step2']}</li>
+            <li><i class="fa fa-square-o"></i> #{msg['courses.create.step3']}</li>
+            <li><i class="fa fa-square-o"></i> #{msg['courses.create.step4']}</li>
+            <li><i class="fa fa-square-o"></i> #{msg['courses.create.step5']}</li>
+            <li><i class="fa fa-square-o"></i> #{msg['courses.create.step6']}</li>
+        </ul>
+
+        <h3>#{msg['courses.create.step1']}</h3>
+    </ui:define>
+</ui:composition>
