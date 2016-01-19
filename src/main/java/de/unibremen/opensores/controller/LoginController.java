@@ -1,11 +1,13 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -51,6 +53,8 @@ public class LoginController {
      * @return redirection link if user was successfully logged in. '#' if not.
      */
     public String login() {
+        initDummyUsers();
+
         FacesContext facesContext = FacesContext.getCurrentInstance();
         User user = userService.findByEmail(email);
         if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
@@ -97,4 +101,37 @@ public class LoginController {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    /**
+     * Inserts dummy users in the database at startup
+     * @TODO Delete before deadline :^)
+     */
+    private void initDummyUsers(){
+        final User newUser = new User();
+        newUser.setEmail("user@uni-bremen.de");
+        newUser.setPassword(BCrypt.hashpw("user",BCrypt.gensalt()));
+        newUser.setFirstName("Ute");
+        newUser.setLastName("User");
+        newUser.setLanguage("de");
+        newUser.getRoles().add(Role.USER.getId());
+
+        final User newLecturer = new User();
+        newLecturer.setEmail("lecturer@uni-bremen.de");
+        newLecturer.setPassword(BCrypt.hashpw("lecturer",BCrypt.gensalt()));
+        newLecturer.setFirstName("Leo");
+        newLecturer.setLastName("Lektor");
+        newLecturer.getRoles().add(Role.LECTURER.getId());
+
+        final User newAdmin = new User();
+        newAdmin.setEmail("admin@uni-bremen.de");
+        newAdmin.setPassword(BCrypt.hashpw("admin",BCrypt.gensalt()));
+        newAdmin.setFirstName("Adolf");
+        newAdmin.setLastName("Admin");
+        newAdmin.getRoles().add(Role.LECTURER.getId());
+
+        userService.persist(newUser);
+        userService.persist(newLecturer);
+        userService.persist(newAdmin);
+    }
+
 }
