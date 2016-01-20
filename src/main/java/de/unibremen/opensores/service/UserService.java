@@ -1,16 +1,8 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
-import org.hibernate.Hibernate;
-
-import java.util.List;
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
+import java.util.List;
 
 /**
  * Service class for the User model class.
@@ -35,6 +27,22 @@ public class UserService extends GenericService<User> {
               + "FROM User u "
               + "WHERE u.email = :email", User.class)
             .setParameter("email", email.toLowerCase()).getResultList();
+
+        return (userList.isEmpty()) ? null : userList.get(0);
+    }
+
+    /**
+     * Finds a user by his unique id.
+     *
+     * @param id Id which should be used for lookup.
+     * @return The user or null if a user with this id doesn't exist.
+     */
+    public User findById(long id) {
+        List<User> userList = em.createQuery(
+                "SELECT DISTINCT u "
+              + "FROM User u "
+              + "WHERE u.userId = :id", User.class)
+            .setParameter("id", id).getResultList();
 
         return (userList.isEmpty()) ? null : userList.get(0);
     }
