@@ -29,7 +29,7 @@
           </h:panelGroup>
 
           <h:form class="form">
-              <h:messages class="alert alert-danger" role="alert" />
+              <ui:include src="/WEB-INF/alerts.xhtml" />
 
               <h:panelGroup layout="block" class="form-group">
                   <h:outputLabel for="credentialUser" value="#{msg['common.email']}" />

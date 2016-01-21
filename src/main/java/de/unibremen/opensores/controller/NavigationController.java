@@ -3,6 +3,7 @@ package de.unibremen.opensores.controller;
 import java.util.*;
 
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -63,5 +64,18 @@ public class NavigationController {
                 .getExternalContext()
                 .getSessionMap()
                 .get("user");
+    }
+
+    public boolean isError(FacesMessage message) {
+        return  message.getSeverity().equals(FacesMessage.SEVERITY_ERROR)
+                || message.getSeverity().equals(FacesMessage.SEVERITY_FATAL);
+    }
+
+    public boolean isWarning(FacesMessage message) {
+        return  message.getSeverity().equals(FacesMessage.SEVERITY_WARN);
+    }
+
+    public boolean isSuccess(FacesMessage message) {
+        return  message.getSeverity().equals(FacesMessage.SEVERITY_INFO);
     }
 }
