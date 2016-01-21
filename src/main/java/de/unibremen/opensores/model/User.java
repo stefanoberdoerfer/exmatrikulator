@@ -9,6 +9,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.CascadeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +52,10 @@ public class User {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     private List<Integer> roles = new ArrayList<>();
+
+    @OneToOne(optional = true, mappedBy = "user", cascade = CascadeType.ALL,
+            targetEntity = PasswordReset.class, orphanRemoval = true)
+    private PasswordReset resetToken;
 
     /*
      * GETTERS AND SETTERS
@@ -125,6 +131,14 @@ public class User {
 
     public void setRoles(List<Integer> roles) {
         this.roles = roles;
+    }
+
+    public PasswordReset getToken() {
+        return resetToken;
+    }
+
+    public void setToken(PasswordReset resetToken) {
+        this.resetToken = resetToken;
     }
 
     public boolean hasRole(String roleString) {

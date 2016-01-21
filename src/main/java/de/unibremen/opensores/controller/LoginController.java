@@ -51,7 +51,8 @@ public class LoginController {
 
     /**
      * Login method which tries to lookup user with given email and password.
-     * @return redirection link if user was successfully logged in. '#' if not.
+     *
+     * @return Redirection link.
      */
     public String login() {
         initDummyUsers();
@@ -66,8 +67,7 @@ public class LoginController {
             return "";
         }
 
-        FacesContext.getCurrentInstance().getExternalContext()
-            .getSessionMap().put("user", user);
+        facesContext.getExternalContext().getSessionMap().put("user", user);
         return "index.xhtml";
     }
 
