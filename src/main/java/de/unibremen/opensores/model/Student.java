@@ -42,24 +42,19 @@ public class Student {
     @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
-    @JoinColumn(name = "groupId")
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = true)
     private Group group;
-
-    //@ManyToOne
-    //@JoinColumn(name = "tutorialId")
-    //private Tutorial tutorial;
 
     /*
     @ManyToOne
-    @JoinColumn(name="groupId")
-    private Group group;
+    @JoinColumn(name = "tutorialId")
+    private Tutorial tutorial;
+
 
     @ManyToOne
     @JoinColumn(name="patricipationId")
     private ParticipationType participationType;
-    */
-    /*
+
     private List<Grading> grades;
 
     private List<Upload> uploads;
@@ -102,6 +97,7 @@ public class Student {
 
     public void setTries(Integer tries) {
         this.tries = tries;
+    }
 
     public Group getGroup() {
         return group;
@@ -131,6 +127,10 @@ public class Student {
         this.group = group;
     }
 
+    public Long getStudentId() {
+        return studentId;
+    }
+
     /*
     public Tutorial getTutorial() {
         return tutorial;
@@ -138,10 +138,6 @@ public class Student {
 
     public void setTutorial(Tutorial tutorial) {
         this.tutorial = tutorial;
-    }
-
-    public Long getStudentId() {
-        return studentId;
     }
 
     public List<Upload> getUploads() {
@@ -166,14 +162,6 @@ public class Student {
 
     public void setParticipationType(ParticipationType participationType) {
         this.participationType = participationType;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
     }
     */
 }

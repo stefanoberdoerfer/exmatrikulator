@@ -39,7 +39,7 @@ public class Course {
     private List<Student> students = new ArrayList<>();
 
     @OneToMany(mappedBy = "groupId")
-    private List<Group> groups;
+    private List<Group> groups = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Lecturer> lecturers;

@@ -1,5 +1,6 @@
 package de.unibremen.opensores.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.CascadeType;
@@ -28,8 +29,8 @@ public class Group {
     @JoinColumn(name = "courseId")
     private Course course;
 
-    @OneToMany(mappedBy = "studentId")
-    private List<Student> students;
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    private List<Student> students = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "tutorialId")

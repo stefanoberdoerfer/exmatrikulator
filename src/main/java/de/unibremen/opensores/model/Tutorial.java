@@ -2,6 +2,7 @@ package de.unibremen.opensores.model;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Entity bean for the Tutorial class.
@@ -18,10 +19,11 @@ public class Tutorial {
     @JoinColumn(name = "courseId")
     private Course course;
 
-    @OneToMany(mappedBy = "tutorial")
+    @OneToMany(mappedBy = "tutorial", cascade = CascadeType.MERGE)
     private List<Student> students;
 
-    //private List<Group> groups;
+    @OneToMany(mappedBy = "tutorial", cascade = CascadeType.MERGE)
+    private List<Group> groups = new ArrayList<>();
 
     //private List<PrivilegedUser> tutors;
 
@@ -49,7 +51,6 @@ public class Tutorial {
         this.students = students;
     }
 
-    /*
     public List<Group> getGroups() {
         return groups;
     }
@@ -58,6 +59,7 @@ public class Tutorial {
         this.groups = groups;
     }
 
+    /*
     public List<PrivilegedUser> getTutors() {
         return tutors;
     }
@@ -66,4 +68,5 @@ public class Tutorial {
         this.tutors = tutors;
     }
     */
+
 }
