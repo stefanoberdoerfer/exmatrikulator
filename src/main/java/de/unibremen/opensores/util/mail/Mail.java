@@ -14,42 +14,41 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.Address;
 import javax.mail.internet.MimeMessage;
 import javax.mail.PasswordAuthentication;
+import java.util.StringJoiner;
 
 /**
-* Util used for sending mails.
-*
-* @author Lorenz Huether
-*/
+ * Util used for sending mails.
+ *
+ * @author Lorenz Hüther
+ */
 public final class Mail {
-
+    /**
+     * Properties file.
+     */
     private Properties props = null;
 
     /**
-    * Loads the properties file.
-    *
-    * @throws IOException Should the config file cannot be opened.
-    */
+     * Loads the properties file.
+     *
+     * @throws IOException Should the config file cannot be opened.
+     */
     public Mail() throws IOException {
         props = ServerProperties.getProperties();
     }
 
     /**
-    * Issues mails, supporting starttls only at the moment,
-    * uses BCC should there be more than one recipient.
-    *
-    * @param jobs list for the mail jobs.
-    *
-    * @return boolean true on success.
-    *
-    * @throws AddressException if something with the adress is wrong.
-    *
-    * @throws MessagingException if the mail cannot be sent.
-    */
-    public boolean issue(final MailJob[] jobs) throws AddressException,
+     * Issues mails, supporting starttls only at the moment,
+     * uses BCC should there be more than one recipient.
+     *
+     * @param jobs list for the mail jobs.
+     * @throws AddressException if something with the adress is wrong.
+     * @throws MessagingException if the mail cannot be sent.
+     */
+    public void issue(final MailJob[] jobs) throws AddressException,
             MessagingException {
-        String user = props.getProperty("de.unibremen.opensores.mail.user");
-        String pass = props.getProperty("de.unibremen.opensores.mail.pass");
-        String from = props.getProperty("de.unibremen.opensores.mail.from");
+        String user = props.getProperty("exmatrikulator.mail.user");
+        String pass = props.getProperty("exmatrikulator.mail.pass");
+        String from = props.getProperty("exmatrikulator.mail.from");
 
         Session session = Session.getInstance(props,
                 new javax.mail.Authenticator() {
@@ -60,12 +59,12 @@ public final class Mail {
         );
 
         for (MailJob j : jobs) {
-            String[] mail = j.getAddresses();
-            Address[] addr = new Address[mail.length];
-            for (int i = 0; i < mail.length; i++) {
-                addr[i] = InternetAddress.parse(mail[i])[0];
+            StringJoiner sj = new StringJoiner(",");
+            for (String mail : j.getAddresses()) {
+                sj.add(mail);
             }
 
+            Address[] addr = InternetAddress.parse(sj.toString());
             MimeMessage msg = new MimeMessage(session);
 
             if (addr.length > 1) {
@@ -82,6 +81,5 @@ public final class Mail {
             msg.setSentDate(new Date());
             Transport.send(msg);
         }
-        return true;
     }
 }
