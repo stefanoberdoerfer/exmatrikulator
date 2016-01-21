@@ -38,6 +38,9 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Student> students = new ArrayList<>();
 
+    @OneToMany(mappedBy = "groupId")
+    private List<Group> groups;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Lecturer> lecturers;
 
@@ -129,6 +132,14 @@ public class Course {
 
     public void setStudents(List<Student> students) {
         this.students = students;
+    }
+
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
     }
 
     public Long getCourseId() {

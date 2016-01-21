@@ -1,18 +1,38 @@
 package de.unibremen.opensores.model;
 
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * Entity bean for the Group class.
+ *
+ * @author Stefan Oberdoerfer, Lorenz Huether
  */
+@Entity
+@Table(name = "GROUPS")
 public class Group {
 
+    @Id
+    @GeneratedValue
     private Long groupId;
 
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @JoinColumn(name = "courseId")
     private Course course;
 
+    @OneToMany(mappedBy = "studentId")
     private List<Student> students;
 
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 
     public Long getGroupId() {

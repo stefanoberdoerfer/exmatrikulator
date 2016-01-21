@@ -42,6 +42,14 @@ public class Student {
     @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @JoinColumn(name = "groupId")
+    private Group group;
+
+    //@ManyToOne
+    //@JoinColumn(name = "tutorialId")
+    //private Tutorial tutorial;
+
     /*
     @ManyToOne
     @JoinColumn(name="groupId")
@@ -94,6 +102,9 @@ public class Student {
 
     public void setTries(Integer tries) {
         this.tries = tries;
+
+    public Group getGroup() {
+        return group;
     }
 
     public void setAcceptedInvitation(Boolean acceptedInvitation) {
@@ -116,6 +127,11 @@ public class Student {
         this.course = course;
     }
 
+    public void setGroup(final Course course) {
+        this.group = group;
+    }
+
+    /*
     public Tutorial getTutorial() {
         return tutorial;
     }
@@ -128,7 +144,6 @@ public class Student {
         return studentId;
     }
 
-    /*
     public List<Upload> getUploads() {
         return uploads;
     }
