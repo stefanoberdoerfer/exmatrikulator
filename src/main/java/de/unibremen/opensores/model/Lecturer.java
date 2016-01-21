@@ -1,14 +1,24 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.*;
+
 /**
  * Entity bean for the Lecturer class.
  */
+@Entity
+@Table(name = "LECTURERS")
 public class Lecturer {
 
+    @Id
+    @GeneratedValue
     private Long lecturerId;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "courseId")
     private Course course;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     public Long getLecturerId() {

@@ -15,6 +15,10 @@
 
         <!-- All classes which should be mapped must be declared here -->
         <class>de.unibremen.opensores.model.User</class>
+        <class>de.unibremen.opensores.model.Course</class>
+        <class>de.unibremen.opensores.model.Student</class>
+        <class>de.unibremen.opensores.model.Tutorial</class>
+        <class>de.unibremen.opensores.model.Lecturer</class>
 
         <!-- Properties of the persistence unit -->
         <properties>
@@ -44,6 +48,9 @@
 
             <!-- Statistics generation with hibernate, false for development -->
             <property name="hibernate.generate_statistics" value="false" />
+
+            <!-- Lazy loading enabled after transaction closed -->
+            <property name="hibernate.enable_lazy_load_no_trans" value="true" />
         </properties>
     </persistence-unit>
 </persistence>

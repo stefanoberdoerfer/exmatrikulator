@@ -1,12 +1,12 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
-import javax.ejb.Stateless;
+
 import java.util.List;
+import javax.ejb.Stateless;
 
 /**
  * Service class for the User model class.
- * @todo Check if UserTransactions are better for exception handling
  * @todo JPA User search
  *
  * @author Kevin Scheck

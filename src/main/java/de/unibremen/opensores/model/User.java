@@ -16,40 +16,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entity bean of the User class
+ * Entity bean of the User class.
  * @TODO Discuss max. field length (e.g. firstName)
  */
 @Entity
-@Table(name = "USER_TABLE")
+@Table(name = "USERS")
 public class User {
 
     @Id
     @GeneratedValue
     private Long userId;
 
-    @Column(name = "email", unique = true, nullable = false, length = 64)
+    @Column(unique = true, nullable = false, length = 64)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 256)
+    @Column(columnDefinition = "LONG VARCHAR", nullable = false)
     private String password;
 
-    @Column(name = "first_name", nullable = false, length = 32)
+    @Column(nullable = false, length = 32)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 32)
+    @Column(nullable = false, length = 32)
     private String lastName;
 
-    @Column(name = "profile_info", nullable = true, length = 2048)
+    @Column(nullable = true, length = 2048)
     private String profileInfo;
 
-    @Column(name = "language", nullable = true)
+    @Column(nullable = true)
     private String language;
 
-    @Column(name = "is_blocked", nullable = false)
+    @Column(nullable = false)
     private Boolean isBlocked = false;
 
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(joinColumns = @JoinColumn(name = "userId"))
     @Column(name = "role")
     private List<Integer> roles = new ArrayList<>();
 

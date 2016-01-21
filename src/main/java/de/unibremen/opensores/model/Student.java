@@ -7,32 +7,55 @@ import java.util.List;
 /**
  * Entity bean for the Student class.
  */
+@Entity
+@Table(name = "STUDENTS")
 public class Student {
+
+    @Id
+    @GeneratedValue
     private Long studentId;
 
+    @Column(nullable = false)
     private Boolean isAttending;
 
+    @Column(nullable = false)
     private Boolean isConfirmed;
 
+    @Column(nullable = false)
     private Boolean acceptedInvitation;
 
-    private PaboGrade paboGrade;
+    //@Column
+    //private PaboGrade paboGrade;
 
+    @Column(nullable = false)
     private Integer tries;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "courseId")
     private Course course;
 
+    @ManyToOne
+    @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 
+    /*
+    @ManyToOne
+    @JoinColumn(name="groupId")
     private Group group;
 
+    @ManyToOne
+    @JoinColumn(name="patricipationId")
     private ParticipationType participationType;
-
+    */
+    /*
     private List<Grading> grades;
 
     private List<Upload> uploads;
+    */
 
     public boolean isAttending() {
         return isAttending;
@@ -46,9 +69,16 @@ public class Student {
         return acceptedInvitation;
     }
 
+    /*
     public PaboGrade getPaboGrade() {
         return paboGrade;
     }
+
+    public void setPaboGrade(final PaboGrade paboGrade) {
+        this.paboGrade = paboGrade;
+
+    }
+    */
 
     public int getTries() {
         return tries;
@@ -62,25 +92,20 @@ public class Student {
         return course;
     }
 
-    public void setAttending(final boolean isAttending) {
-        this.isAttending = isAttending;
+    public void setTries(Integer tries) {
+        this.tries = tries;
     }
 
-    public void setConfirmed(final boolean isConfirmed) {
-        this.isConfirmed = isConfirmed;
-    }
-
-    public void setAcceptedInvitation(final boolean acceptedInvitation) {
+    public void setAcceptedInvitation(Boolean acceptedInvitation) {
         this.acceptedInvitation = acceptedInvitation;
     }
 
-    public void setPaboGrade(final PaboGrade paboGrade) {
-        this.paboGrade = paboGrade;
-
+    public void setConfirmed(Boolean confirmed) {
+        isConfirmed = confirmed;
     }
 
-    public void setTries(final int tries) {
-        this.tries = tries;
+    public void setAttending(Boolean attending) {
+        isAttending = attending;
     }
 
     public void setUser(final User user) {
@@ -91,6 +116,19 @@ public class Student {
         this.course = course;
     }
 
+    public Tutorial getTutorial() {
+        return tutorial;
+    }
+
+    public void setTutorial(Tutorial tutorial) {
+        this.tutorial = tutorial;
+    }
+
+    public Long getStudentId() {
+        return studentId;
+    }
+
+    /*
     public List<Upload> getUploads() {
         return uploads;
     }
@@ -122,4 +160,5 @@ public class Student {
     public void setGroup(Group group) {
         this.group = group;
     }
+    */
 }

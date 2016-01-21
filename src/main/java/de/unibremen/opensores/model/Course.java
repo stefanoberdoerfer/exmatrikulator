@@ -1,35 +1,53 @@
 package de.unibremen.opensores.model;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
 
 /**
  * Entity bean for the Course class.
+ *
+ * @author Stefan Oberdoerfer, Soeren Tempel, Lorenz Huether
  */
+@Entity
+@Table(name = "COURSES")
 public class Course {
 
+    @Id
+    @GeneratedValue
     private Long courseId;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String number;
 
+    @Column(nullable = false)
     private Boolean requiresConformation;
 
+    @Column(columnDefinition = "LONG VARCHAR")
     private String emailTemplate;
 
+    @Column
     private Integer minGroupSize;
 
+    @Column
     private Integer maxGroupSize;
 
-    private List<Student> students;
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    private List<Student> students = new ArrayList<>();
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Lecturer> lecturers;
 
+    /*
+    @Column(name = "tutors")
     private List<PrivilegedUser> tutors;
 
+    @Column(name = "semester")
     private Semester semester;
+    */
 
     public String getName() {
         return name;
@@ -79,20 +97,13 @@ public class Course {
         this.maxGroupSize = maxGroupSize;
     }
 
+    /*
     public Semester getSemester() {
         return semester;
     }
 
     public void setSemester(Semester semester) {
         this.semester = semester;
-    }
-
-    public List<Lecturer> getLecturers() {
-        return lecturers;
-    }
-
-    public void setLecturers(List<Lecturer> lecturers) {
-        this.lecturers = lecturers;
     }
 
     public List<PrivilegedUser> getTutors() {
@@ -102,6 +113,15 @@ public class Course {
     public void setTutors(List<PrivilegedUser> tutors) {
         this.tutors = tutors;
     }
+    */
+
+    public List<Lecturer> getLecturers() {
+        return lecturers;
+    }
+
+    public void setLecturers(List<Lecturer> lecturers) {
+        this.lecturers = lecturers;
+    }
 
     public List<Student> getStudents() {
         return students;
@@ -109,5 +129,9 @@ public class Course {
 
     public void setStudents(List<Student> students) {
         this.students = students;
+    }
+
+    public Long getCourseId() {
+        return courseId;
     }
 }

@@ -1,21 +1,29 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.*;
 import java.util.List;
 
 /**
  * Entity bean for the Tutorial class.
  */
+@Entity
+@Table(name = "TUTORIALS")
 public class Tutorial {
 
+    @Id
+    @GeneratedValue
     private Long tutorialId;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "courseId")
     private Course course;
 
+    @OneToMany(mappedBy = "tutorial")
     private List<Student> students;
 
-    private List<Group> groups;
+    //private List<Group> groups;
 
-    private List<PrivilegedUser> tutors;
+    //private List<PrivilegedUser> tutors;
 
     public Long getTutorialId() {
         return tutorialId;
@@ -41,6 +49,7 @@ public class Tutorial {
         this.students = students;
     }
 
+    /*
     public List<Group> getGroups() {
         return groups;
     }
@@ -56,4 +65,5 @@ public class Tutorial {
     public void setTutors(List<PrivilegedUser> tutors) {
         this.tutors = tutors;
     }
+    */
 }
