@@ -63,13 +63,16 @@ public class RegistrationController {
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 facesContext.getViewRoot().getLocale());
 
+        String msg = null;
         if (userService.isEmailRegistered(email)) {
-            String text = bundle.getString("registration.alreadyRegistered");
-            facesContext.addMessage(null, new FacesMessage(text));
-            return "";
+            msg = bundle.getString("registration.alreadyRegistered");
         } else if (!password.equals(passwordConfirmed)) {
-            String text = bundle.getString("registration.passwordDoNotMatch");
-            facesContext.addMessage(null, new FacesMessage(text));
+            msg = bundle.getString("registration.passwordDoNotMatch");
+        }
+
+        if (msg != null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
             return "";
         }
 

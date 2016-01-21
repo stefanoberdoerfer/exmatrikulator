@@ -67,7 +67,8 @@ public class NewPasswordController {
         }
 
         if (msg != null) {
-            facesContext.addMessage(null, new FacesMessage(msg));
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.
+                        SEVERITY_FATAL, bundle.getString("common.error"), msg));
             return;
         }
 
