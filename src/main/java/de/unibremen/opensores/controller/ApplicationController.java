@@ -1,6 +1,10 @@
 package de.unibremen.opensores.controller;
 
-import de.unibremen.opensores.model.*;
+import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.Role;
+import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UserService;
@@ -18,7 +22,7 @@ import javax.faces.bean.ManagedBean;
  *
  * @author Stefan Oberdörfer
  */
-@ManagedBean(eager=true)
+@ManagedBean(eager = true)
 @ApplicationScoped
 public class ApplicationController {
 
@@ -111,8 +115,10 @@ public class ApplicationController {
             log.debug("Lecturelist of course is not empty");
         }
 
-        log.debug("Got Student out of Course with id: " + student.getStudentId() + " and username " + student.getUser().getFirstName());
-        log.debug("Got Lecturer out of Course with id: " + lecturer.getLecturerId() + " and username " + lecturer.getUser().getFirstName());
+        log.debug("Got Student out of Course with id: "
+                + student.getStudentId() + " and username " + student.getUser().getFirstName());
+        log.debug("Got Lecturer out of Course with id: "
+                + lecturer.getLecturerId() + " and username " + lecturer.getUser().getFirstName());
     }
 
 }

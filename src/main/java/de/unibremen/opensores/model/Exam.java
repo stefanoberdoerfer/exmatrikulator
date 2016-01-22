@@ -13,7 +13,7 @@ public class Exam {
 
     private String name;
 
-    private Grade GradeType;
+    private Grade gradeType;
 
     private BigDecimal maxPoints;
 
@@ -34,11 +34,11 @@ public class Exam {
     }
 
     public Grade getGradeType() {
-        return GradeType;
+        return gradeType;
     }
 
     public void setGradeType(Grade gradeType) {
-        GradeType = gradeType;
+        gradeType = gradeType;
     }
 
     public BigDecimal getMaxPoints() {
