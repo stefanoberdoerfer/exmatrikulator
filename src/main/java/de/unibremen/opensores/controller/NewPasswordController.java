@@ -67,8 +67,8 @@ public class NewPasswordController {
         }
 
         if (msg != null) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.
-                        SEVERITY_FATAL, bundle.getString("common.error"), msg));
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"), msg));
             return;
         }
 
@@ -77,8 +77,8 @@ public class NewPasswordController {
         user.setPassword(hashpw);
         userService.update(user);
 
-        facesContext.addMessage(null, new FacesMessage(FacesMessage.
-                    SEVERITY_INFO, bundle.getString("common.success"),
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_INFO, bundle.getString("common.success"),
                     bundle.getString("newPassword.success")));
     }
 

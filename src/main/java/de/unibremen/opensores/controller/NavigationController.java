@@ -1,15 +1,18 @@
 package de.unibremen.opensores.controller;
 
-import java.util.*;
+import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.service.UserService;
 
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-
-import de.unibremen.opensores.model.User;
-import de.unibremen.opensores.service.UserService;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @ManagedBean(name = "navigation")
 @SessionScoped
@@ -20,12 +23,17 @@ public class NavigationController {
     private UserService userService;
 
     private static Map<String, Locale> languages;
+
     static {
-        languages = new LinkedHashMap<> ();
+        languages = new LinkedHashMap<>();
         languages.put("Deutsch", Locale.GERMAN);
         languages.put("English", Locale.ENGLISH);
     }
 
+
+    /**
+     * @todo.
+     */
     public NavigationController() {
         this.userLocale = FacesContext
                 .getCurrentInstance()
@@ -41,9 +49,13 @@ public class NavigationController {
         return userLocale;
     }
 
-    public void setUserLocale(String l) {
-        System.out.println("Language setting to " + l);
-        Locale lang = languages.get(l);
+    /**
+     * @todo.
+     * @param locale .
+     */
+    public void setUserLocale(String locale) {
+        System.out.println("Language setting to " + locale);
+        Locale lang = languages.get(locale);
 
         if (lang == null) {
             return;
@@ -55,9 +67,13 @@ public class NavigationController {
                 .setLocale(lang);
 
         this.userLocale = lang;
-        System.out.println("Language set to " + l);
+        System.out.println("Language set to " + locale);
     }
 
+    /**
+     * @todo.
+     * @return.
+     */
     public User getUser() {
         return (User)FacesContext
                 .getCurrentInstance()

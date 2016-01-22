@@ -59,17 +59,17 @@ public class ResetController {
     /**
      * Number of bits to use for creating the reset token.
      */
-    private final static int numBits = 130;
+    private static final int numBits = 130;
 
     /**
      * Radix to use for converting the BigInteger to a string.
      */
-    private final static int radix = 32;
+    private static final int radix = 32;
 
     /**
      * Amount of time a token is valid (in hours).
      */
-    private final static int validTime = 3;
+    private static final int validTime = 3;
 
     /**
      * The email of the user who requested a password reset.
@@ -105,7 +105,7 @@ public class ResetController {
 
         try {
             sendEmail(user);
-        } catch (MessagingException|IOException e) {
+        } catch (MessagingException | IOException e) {
             log.error(e);
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                         .SEVERITY_FATAL, bundle.getString("common.error"),
@@ -113,8 +113,8 @@ public class ResetController {
             return;
         }
 
-        facesContext.addMessage(null, new FacesMessage(FacesMessage.
-                    SEVERITY_INFO, bundle.getString("common.success"),
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_INFO, bundle.getString("common.success"),
                     bundle.getString("passwordReset.success")));
     }
 
@@ -126,16 +126,16 @@ public class ResetController {
      * @throws IOException If an IO related error occured.
      */
     private void sendEmail(User user) throws MessagingException, IOException {
-            HttpServletRequest request = (HttpServletRequest) facesContext
+        HttpServletRequest request = (HttpServletRequest) facesContext
                 .getExternalContext().getRequest();
-            String url = resetURL(request, user, user.getToken());
+        String url = resetURL(request, user, user.getToken());
 
-            String fmt = bundle.getString("passwordReset.mailBody");
-            String text = new MessageFormat(fmt).format(new Object[] {
+        String fmt = bundle.getString("passwordReset.mailBody");
+        String text = new MessageFormat(fmt).format(new Object[]{
                 user.getFirstName(), url});
 
-            String subject = bundle.getString("passwordReset.mailSubject");
-            user.sendEmail(subject, text);
+        String subject = bundle.getString("passwordReset.mailSubject");
+        user.sendEmail(subject, text);
     }
 
     /**
@@ -147,10 +147,10 @@ public class ResetController {
      *
      * @return Absolute URL for a password reset.
      * @throws MalformedURLException If a properly formatted URL couldn't
-     *   be created from the given data.
+     *      be created from the given data.
      */
-    public String resetURL(HttpServletRequest request, User user,
-            PasswordReset token) throws MalformedURLException {
+    public String resetURL(HttpServletRequest request, User user, PasswordReset token)
+            throws MalformedURLException {
         // XXX can this be tricked into returning another URL?
         StringBuffer requestUrl = request.getRequestURL();
 

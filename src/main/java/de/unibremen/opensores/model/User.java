@@ -1,5 +1,8 @@
 package de.unibremen.opensores.model;
 
+import de.unibremen.opensores.util.mail.Mail;
+import de.unibremen.opensores.util.mail.MailJob;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
@@ -13,9 +16,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.CascadeType;
 import javax.mail.internet.AddressException;
 import javax.mail.MessagingException;
-
-import de.unibremen.opensores.util.mail.Mail;
-import de.unibremen.opensores.util.mail.MailJob;
 
 import java.util.ArrayList;
 import java.util.List;

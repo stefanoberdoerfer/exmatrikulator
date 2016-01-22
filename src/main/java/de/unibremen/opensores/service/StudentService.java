@@ -10,6 +10,6 @@ import javax.ejb.Stateless;
  * @author Stefan Oberdörfer
  */
 @Stateless
-public class StudentService extends GenericService<Student>{
+public class StudentService extends GenericService<Student> {
 
 }

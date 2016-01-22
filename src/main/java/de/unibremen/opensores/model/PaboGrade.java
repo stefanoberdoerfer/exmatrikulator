@@ -21,9 +21,9 @@ public enum PaboGrade {
     private final double gradeValue;
     private final String gradeName;
 
-    PaboGrade(final double pGradeValue, final String pGradeName) {
-        this.gradeValue = pGradeValue;
-        this.gradeName = pGradeName;
+    PaboGrade(final double gradeValue, final String gradeName) {
+        this.gradeValue = gradeValue;
+        this.gradeName = gradeName;
     }
 
 

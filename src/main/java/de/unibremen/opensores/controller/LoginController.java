@@ -58,8 +58,8 @@ public class LoginController {
         if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
             ResourceBundle bundle = ResourceBundle.getBundle("messages",
                     facesContext.getViewRoot().getLocale());
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.
-                    SEVERITY_FATAL, bundle.getString("common.error"),
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
                     bundle.getString("login.fail")));
             return "";
         }
