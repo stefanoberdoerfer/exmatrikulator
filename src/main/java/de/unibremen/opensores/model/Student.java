@@ -48,7 +48,7 @@ public class Student {
     @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = true)
+    @ManyToOne(optional = true)
     private Group group;
 
     /*
