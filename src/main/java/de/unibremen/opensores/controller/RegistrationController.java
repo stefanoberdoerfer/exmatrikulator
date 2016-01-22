@@ -80,6 +80,11 @@ public class RegistrationController {
          * the user as soon as he did. */
 
         userService.persist(initUserFromInput());
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+            .SEVERITY_INFO, bundle.getString("common.success"),
+            bundle.getString("registration.success")));
+
+        facesContext.getExternalContext().getFlash().setKeepMessages(true);
         return "/login.xhtml?faces-redirect=true";
     }
 
