@@ -103,6 +103,16 @@ public class ApplicationController {
         lecturer.setCourse(course);
         lecturer.setUser(newLecturer);
 
+        Tutorial tutorial = new Tutorial();
+        tutorial.setCourse(course);
+
+        Group group = new Group();
+        group.setCourse(course);
+        group.setTutorial(tutorial);
+        course.getGroups().add(group);
+        tutorial.getGroups().add(group);
+        group.getStudents().add(student);
+
         course = courseService.update(course);
 
         if (course.getStudents().size() > 0) {

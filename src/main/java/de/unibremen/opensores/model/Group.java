@@ -25,14 +25,14 @@ public class Group {
     @GeneratedValue
     private Long groupId;
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
     private Course course;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Student> students = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 
