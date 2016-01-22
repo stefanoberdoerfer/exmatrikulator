@@ -29,7 +29,7 @@ public class Group {
     @JoinColumn(name = "courseId")
     private Course course;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.MERGE)
     private List<Student> students = new ArrayList<>();
 
     @ManyToOne(optional = false, cascade = CascadeType.MERGE)

@@ -1,28 +1,53 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.ws.rs.CookieParam;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Entity bean for the Exam class.
  */
+@Entity
+@Table(name = "EXAMS")
 public class Exam {
 
+    @Id
+    @GeneratedValue
     private Long examId;
 
+    @Column(nullable = false)
     private String name;
 
-    private Grade gradeType;
+    //private Grade gradeType;
 
+    @Column
     private BigDecimal maxPoints;
 
-    private Course course;
+    //@ManyToOne(optional = false)
+    //@JoinColumn(name = "courseId")
+    //private Course course;
 
+    @Column
     private Date deadline;
 
-    private List<String> allowedMimeTypes;
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(joinColumns = @JoinColumn(name = "examId"))
+    @Column
+    private List<String> allowedMimeTypes = new ArrayList<>();
 
+    @Column
     private Long maxFileSize;
 
     public String getName() {
@@ -33,6 +58,7 @@ public class Exam {
         this.name = name;
     }
 
+    /*
     public Grade getGradeType() {
         return gradeType;
     }
@@ -40,6 +66,7 @@ public class Exam {
     public void setGradeType(Grade gradeType) {
         gradeType = gradeType;
     }
+    */
 
     public BigDecimal getMaxPoints() {
         return maxPoints;
@@ -49,6 +76,7 @@ public class Exam {
         this.maxPoints = maxPoints;
     }
 
+    /*
     public Course getCourse() {
         return course;
     }
@@ -56,6 +84,7 @@ public class Exam {
     public void setCourse(Course course) {
         this.course = course;
     }
+    */
 
     public Date getDeadline() {
         return deadline;
