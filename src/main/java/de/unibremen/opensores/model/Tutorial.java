@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -27,19 +29,19 @@ public class Tutorial {
     private Course course;
 
     @OneToMany(mappedBy = "tutorial", cascade = CascadeType.MERGE)
-    private List<Student> students;
+    private List<Student> students = new ArrayList<>();
 
     @OneToMany(mappedBy = "tutorial", cascade = CascadeType.MERGE)
     private List<Group> groups = new ArrayList<>();
 
-    //private List<PrivilegedUser> tutors;
+    @ManyToMany
+    @JoinTable(name = "TUTORIAL_PRIVUSER",
+            joinColumns = {@JoinColumn(name = "tutorialId")},
+            inverseJoinColumns = {@JoinColumn(name = "privUserId")})
+    private List<PrivilegedUser> tutors = new ArrayList<>();
 
     public Long getTutorialId() {
         return tutorialId;
-    }
-
-    public void setTutorialId(Long tutorialId) {
-        this.tutorialId = tutorialId;
     }
 
     public Course getCourse() {
@@ -66,7 +68,6 @@ public class Tutorial {
         this.groups = groups;
     }
 
-    /*
     public List<PrivilegedUser> getTutors() {
         return tutors;
     }
@@ -74,6 +75,5 @@ public class Tutorial {
     public void setTutors(List<PrivilegedUser> tutors) {
         this.tutors = tutors;
     }
-    */
 
 }

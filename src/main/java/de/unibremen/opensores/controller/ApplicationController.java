@@ -1,11 +1,22 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Lecturer;
+<<<<<<< HEAD
+import de.unibremen.opensores.model.ParticipationType;
+=======
+>>>>>>> f817f1f... Tutorial and PrivilegedUser Relations + Dummyinsertions
+import de.unibremen.opensores.model.Privilege;
+import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Role;
+import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +46,9 @@ public class ApplicationController {
     @EJB
     private StudentService studentService;
 
+    @EJB
+    private SemesterService semesterService;
+
     /**
      * The log4j logger.
      */
@@ -50,6 +64,7 @@ public class ApplicationController {
      * @TODO Delete before deadline :^)
      */
     private void initDummyData() {
+        //Users
         final User newUser = new User();
         newUser.setEmail("user@uni-bremen.de");
         newUser.setPassword(BCrypt.hashpw("user",BCrypt.gensalt()));
@@ -81,14 +96,23 @@ public class ApplicationController {
         userService.persist(newAdmin);
         log.debug("Inserted Admin with id: " + newAdmin.getUserId());
 
+        //Current semester
+        Semester semester = new Semester();
+        semester.setIsWinter(true);
+        semester.setName("Wintersemester 15/16");
+        semesterService.persist(semester);
+
+        //Course with all relations filled
         Course course = new Course();
         course.setName("TestVeranstaltung");
         course.setNumber("VAK-Nummer123");
         course.setRequiresConformation(false);
+        course.setSemester(semester);
 
         course = courseService.persist(course);
         log.debug("Inserted Course with id: " + course.getCourseId());
 
+        //Student for course
         Student student = new Student();
         student.setAcceptedInvitation(false);
         student.setConfirmed(false);
@@ -99,13 +123,31 @@ public class ApplicationController {
         course.getStudents().add(student);
         student.setCourse(course);
 
+        //Lecturer for course
         Lecturer lecturer = new Lecturer();
-        lecturer.setCourse(course);
         lecturer.setUser(newLecturer);
 
+        lecturer.setCourse(course);
+        course.getLecturers().add(lecturer);
+
+        //Tutorial for course
         Tutorial tutorial = new Tutorial();
         tutorial.setCourse(course);
+        course.getTutorials().add(tutorial);
+        tutorial.getStudents().add(student);
+        student.setTutorial(tutorial);
 
+        //PrivilegedUser
+        PrivilegedUser privUser = new PrivilegedUser();
+        privUser.setSecretary(false);
+        privUser.getPrivileges().add(Privilege.ExportData.getId());
+        privUser.setUser(newLecturer);
+        privUser.setCourse(course);
+        course.getTutors().add(privUser);
+        privUser.getTutorials().add(tutorial);
+        tutorial.getTutors().add(privUser);
+
+        //Group for course and tutorial
         Group group = new Group();
         group.setCourse(course);
         group.setTutorial(tutorial);
@@ -113,8 +155,24 @@ public class ApplicationController {
         tutorial.getGroups().add(group);
         group.getStudents().add(student);
 
+        //ParticipationType
+        ParticipationType partType = new ParticipationType();
+        partType.setName("Informatik");
+        partType.setGroupPerformance(false);
+        partType.setRestricted(false);
+        partType.setCourse(course);
+        course.getParticipationTypes().add(partType);
+
+        //TODO: Exams dont work properly
+        Exam exam = new Exam();
+        exam.setName("TestPrüfung");
+        //exam.setCourse(course);
+        //course.getExams().add(exam);
+
+        //persist everything
         course = courseService.update(course);
 
+        //Testlogs
         if (course.getStudents().size() > 0) {
             student = course.getStudents().get(0);
             log.debug("Studentlist of course is not empty");
@@ -125,10 +183,29 @@ public class ApplicationController {
             log.debug("Lecturelist of course is not empty");
         }
 
+        if (course.getTutorials().size() > 0) {
+            tutorial = course.getTutorials().get(0);
+            log.debug("Tutoriallist of course is not empty");
+        }
+
+        if (course.getGroups().size() > 0) {
+            group = course.getGroups().get(0);
+            log.debug("Grouplist of course is not empty");
+        }
+
         log.debug("Got Student out of Course with id: "
                 + student.getStudentId() + " and username " + student.getUser().getFirstName());
         log.debug("Got Lecturer out of Course with id: "
                 + lecturer.getLecturerId() + " and username " + lecturer.getUser().getFirstName());
+        log.debug("Got Tutorial out of Course with id: "
+                + tutorial.getTutorialId() + " and Tutor "
+                + tutorial.getTutors().get(0).getUser().getFirstName());
+        log.debug("Got Group out of Course with id: " + group.getGroupId()
+                + " and groupmember: " + group.getStudents().get(0).getUser().getFirstName());
+
+        log.debug("ParticipationType: " + course.getParticipationTypes().get(0).getName()
+                + "; Semester: " + course.getSemester().getName() + " with id: "
+                + course.getSemester().getSemesterId());
     }
 
 }
