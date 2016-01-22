@@ -11,9 +11,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.CascadeType;
+import javax.mail.internet.AddressException;
+import javax.mail.MessagingException;
+
+import de.unibremen.opensores.util.mail.Mail;
+import de.unibremen.opensores.util.mail.MailJob;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
 
 /**
  * Entity bean of the User class.
@@ -57,9 +63,17 @@ public class User {
             targetEntity = PasswordReset.class, orphanRemoval = true)
     private PasswordReset resetToken;
 
-    /*
-     * GETTERS AND SETTERS
+    /**
+     * Send an email to this user.
+     *
+     * @param subject Subject of the email.
+     * @param text Body of the email.
      */
+    public void sendEmail(String subject, String text) throws AddressException,
+           MessagingException, IOException {
+        MailJob mj = new MailJob(new String[] {email}, subject, text);
+        new Mail().issue(new MailJob[] {mj});
+    }
 
     public String getEmail() {
         return email;

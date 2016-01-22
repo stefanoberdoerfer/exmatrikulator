@@ -79,6 +79,7 @@ public final class Mail {
             msg.setText(j.getText());
             msg.setFrom(new InternetAddress(from));
             msg.setSentDate(new Date());
+            msg.saveChanges();
             Transport.send(msg);
         }
     }
