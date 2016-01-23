@@ -9,16 +9,12 @@
     <ui:param name="pageTitle" value="#{msg['courses.create']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
-        <li><h:link value="#{msg['courses.overview']}" outcome="index" /></li>
+        <li><h:link value="#{msg['courses.overview']}" outcome="/index" /></li>
         <li class="active">#{msg['courses.create']}</li>
     </ui:define>
     <!-- Page Content -->
     <ui:define name="content">
         <div class="headline">
-            <div class="btn-group main-buttons pull-right">
-                <h:link value="#{msg['courses.copy']}" outcome="course/create/copy"
-                        class="btn btn-default create-course-button" />
-            </div>
             <h1>#{msg['courses.create']}</h1>
         </div>
 
@@ -32,6 +28,8 @@
             <li class="active"><a><i class="fa fa-square-o"></i> #{msg['courses.create.step4']}</a></li>
             <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step5']}</a></li>
         </ul>
+
+        <ui:include src="/WEB-INF/alerts.xhtml" />
 
         <h3>#{msg['courses.create.step4']}</h3>
 
