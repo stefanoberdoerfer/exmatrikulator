@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.UserService;
 
@@ -8,6 +9,8 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class implements the Controller for managing the logged in user.
@@ -68,5 +71,16 @@ public class UserController {
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * TODO: Implement
+     */
+    public List<Course> getActiveCourses() {
+        return null;
+    }
+
+    public List<Course> getHiddenCourses() {
+        return null;
     }
 }
