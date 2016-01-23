@@ -1,0 +1,74 @@
+<ui:composition template="/course/create/step2.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+    <!-- Instantly display modal -->
+    <ui:param name="showModal" value="#{true}" />
+    <!-- Modal content -->
+    <ui:define name="modal">
+        <h:form class="modal fade in" id="add-examination-modal">
+            <div class="modal-dialog">
+                <div class="modal-content form-horizontal">
+                    <div class="modal-header">
+                        <h:link outcome="/course/create/step2" class="close">
+                            <span aria-hidden="true">×</span>
+                        </h:link>
+                        <h4 class="modal-title">
+                            <h:graphicImage library="images" name="stallion_light.svg" class="modal-brand" />
+                            #{msg['examination.add']}
+                        </h4>
+                    </div>
+                    <ui:include src="/WEB-INF/alerts.xhtml" />
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="examinationName" class="col-xs-3 control-label">
+                                #{msg['examination.name']}
+                            </label>
+                            <div class="col-xs-8">
+                                <h:inputText type="text" class="form-control" id="examinationName" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="examinationIdentification" class="col-xs-3 control-label">
+                                #{msg['examination.shortcut']}</label>
+                            <div class="col-xs-8">
+                                <h:inputText type="text" class="form-control" id="examinationIdentification" />
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <h:outputLabel for="examinationGradeType" class="col-xs-3 control-label text-left"
+                                           value="#{msg['examination.add.gradeType']}"/>
+                            <div class="col-xs-8">
+                                <select class="form-control" id="examinationGradeType">
+                                    <option>#{msg['gradeType.grade']}</option>
+                                    <option>#{msg['gradeType.points']}</option>
+                                    <option>#{msg['gradeType.percent']}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <div class="col-xs-8 col-xs-offset-3">
+                                <div class="checkbox">
+                                    <h:selectBooleanCheckbox id="accessTutors" />
+                                    <h:outputLabel value="#{msg['examination.add.tutor']}" for="accessTutors" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <h:link outcome="/course/create/step2" class="btn btn-default"
+                                    value="#{msg['common.cancel']}" />
+                            <h:link outcome="/course/create/step2" class="btn btn-primary"
+                                    value="#{msg['common.add']}" />
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </h:form><!-- /.modal -->
+    </ui:define>
+</ui:composition>

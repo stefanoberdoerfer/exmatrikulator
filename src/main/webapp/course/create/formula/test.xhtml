@@ -1,0 +1,45 @@
+<ui:composition template="/course/create/step4.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+    <!-- Instantly display modal -->
+    <ui:param name="showModal" value="#{true}" />
+    <!-- Modal content -->
+    <ui:define name="modal">
+        <h:form class="modal fade in" id="add-examination-modal">
+            <div class="modal-dialog">
+                <div class="modal-content form-horizontal">
+                    <div class="modal-header">
+                        <h:link outcome="/course/create/step4" class="close">
+                            <span aria-hidden="true">×</span>
+                        </h:link>
+                        <h4 class="modal-title">
+                            <h:graphicImage library="images" name="stallion_light.svg" class="modal-brand" />
+                            #{msg['gradingformula.test']}
+                        </h4>
+                    </div>
+                    <ui:include src="/WEB-INF/alerts.xhtml" />
+                    <div class="modal-body">
+                        <p>#{msg['gradingformula.test.explanation']}</p>
+                        <div class="form-group">
+                            <label for="exam1" class="col-xs-3 control-label">ÜB1</label>
+                            <div class="col-xs-8">
+                                <h:inputText  type="text" class="form-control" id="exam1"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <h:link outcome="/course/create/step4" class="btn btn-default"
+                                    value="#{msg['common.cancel']}" />
+                            <h:link outcome="/course/create/step4" class="btn btn-primary"
+                                    value="#{msg['common.test']}" />
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </h:form><!-- /.modal -->
+    </ui:define>
+</ui:composition>

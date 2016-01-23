@@ -50,8 +50,9 @@ public class UserController {
      * Saves the current user in the database.
      * @Pre The user has valid fields.
      */
-    public void saveUser() {
+    public String saveUser() {
         userService.update(user);
+        return "profile.xhtml";
     }
 
     /**

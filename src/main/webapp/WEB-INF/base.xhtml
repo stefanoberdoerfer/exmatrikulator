@@ -28,7 +28,7 @@
     <h:outputScript library="js" name="exmatrikulator.min.js" />
 </h:head>
 
-<h:body>
+<h:body styleClass="#{showModal ? 'modal-open' : ''}">
     <div id="header">
         <div class="btn-group user pull-right">
             <h:form layout="block" class="btn btn-default">
@@ -47,7 +47,7 @@
                 </div>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <!-- Todo: Links setzen -->
-                    <li><a>#{msg['common.myProfile']}</a></li>
+                    <li><h:link value="#{msg['common.myProfile']}" outcome="profile" /></li>
                     <li role="separator" class="divider"></li>
                     <li><a>#{msg['common.logout']}</a></li>
                 </ul>
@@ -75,5 +75,8 @@
     <div id="main">
         <ui:insert name="content"></ui:insert>
     </div>
+
+    <ui:insert name="modal"></ui:insert>
+    <h:panelGroup layout="block" rendered="#{showModal}" class="modal-backdrop fade in"></h:panelGroup>
 </h:body>
 </html>
