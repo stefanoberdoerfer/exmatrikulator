@@ -15,12 +15,74 @@
         <div class="headline">
             <div class="btn-group main-buttons pull-right">
                 <h:link value="#{msg['courses.join']}" rendered="#{userController.user.hasRole('LECTURER')}"
-                        outcome="/course/join" class="btn btn-default create-course-button" />
+                        outcome="/course/join/search" class="btn btn-default create-course-button" />
                 <!-- Todo: Veranstaltung erstellen nur bei Dozenten anzeigen -->
                 <h:link value="#{msg['courses.create']}" rendered="#{userController.user.hasRole('LECTURER')}"
                         outcome="/course/create/step1" class="btn btn-primary create-course-button" />
             </div>
             <h1>#{msg['courses.overview']}</h1>
         </div>
+
+        <h3>#{msg['courses.overview.normal']}</h3>
+        <h:dataTable value="#{userController.activeCourses}" var="course"
+                     columnClasses="responsive,table-course-semester,table-common-number,table-common-number,table-common-options-two"
+                     styleClass="table table-hover table-courses-overview">
+            <h:column>
+                <f:facet name="header">#{msg['common.name']}</f:facet>
+                #{course.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.semester']}</f:facet>
+                #{course.semester}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['courses.creditpoints']}</f:facet>
+                #{course.creditPoints}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['courses.sws']}</f:facet>
+                #{course.sws}
+            </h:column>
+            <h:column>
+                <f:facet name="header"></f:facet>
+                <!-- Todo: Entfernen und verlassen korrekt anzeigen -->
+                <h:link outcome="course/leave" styleClass="btn btn-default" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="Veranstaltung verlassen"><i class="fa fa-sign-out"></i></h:link>
+                <h:link outcome="course/remove" styleClass="btn btn-danger"><i class="fa fa-remove"></i></h:link>
+                <h:link styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
+                        title="Veranstaltung ausblenden"><i class="fa fa-eye-slash"></i></h:link>
+            </h:column>
+        </h:dataTable>
+
+        <h3>#{msg['courses.overview.hidden']}</h3>
+        <h:dataTable value="#{userController.hiddenCourses}" var="course"
+                     columnClasses="responsive,table-course-semester,table-common-number,table-common-number,table-common-options-two"
+                     styleClass="table table-hover table-courses-overview">
+            <h:column>
+                <f:facet name="header">#{msg['common.name']}</f:facet>
+                #{course.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.semester']}</f:facet>
+                #{course.semester}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['courses.creditpoints']}</f:facet>
+                #{course.creditPoints}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['courses.sws']}</f:facet>
+                #{course.sws}
+            </h:column>
+            <h:column>
+                <f:facet name="header"></f:facet>
+                <!-- Todo: Entfernen und verlassen korrekt anzeigen -->
+                <h:link outcome="course/leave" styleClass="btn btn-default" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="Veranstaltung verlassen"><i class="fa fa-sign-out"></i></h:link>
+                <h:link outcome="course/remove" styleClass="btn btn-danger"><i class="fa fa-remove"></i></h:link>
+                <h:link styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
+                        title="Veranstaltung ausblenden"><i class="fa fa-eye-slash"></i></h:link>
+            </h:column>
+        </h:dataTable>
     </ui:define>
 </ui:composition>
