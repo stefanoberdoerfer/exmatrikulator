@@ -75,12 +75,15 @@ public class UserController {
     }
 
     /**
-     * TODO: Implement
+     * @todo Implement.
      */
     public List<Course> getActiveCourses() {
         return null;
     }
 
+    /**
+     * @todo Implement.
+     */
     public List<Course> getHiddenCourses() {
         return null;
     }
