@@ -2,6 +2,7 @@ package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.service.UserService;
 
 import javax.annotation.PostConstruct;
@@ -9,8 +10,10 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class implements the Controller for managing the logged in user.
@@ -18,7 +21,6 @@ import java.util.List;
 @SessionScoped
 @ManagedBean
 public class UserController {
-
     /**
      * The currently logged in user.
      */
@@ -75,16 +77,32 @@ public class UserController {
     }
 
     /**
-     * @todo Implement.
+     * Returns a list of all active courses.
+     *
+     * @return List of active courses.
      */
     public List<Course> getActiveCourses() {
-        return null;
+        List<Student> students = user.getStudents();
+        List<Course> list = students.stream()
+            .filter(s -> !s.isHidden())
+            .map(s -> s.getCourse())
+            .collect(Collectors.toList());
+
+        return list;
     }
 
     /**
-     * @todo Implement.
+     * Returns a list of hiden courses.
+     *
+     * @return List of hidden courses.
      */
     public List<Course> getHiddenCourses() {
-        return null;
+        List<Student> students = user.getStudents();
+        List<Course> list = students.stream()
+            .filter(s -> s.isHidden())
+            .map(s -> s.getCourse())
+            .collect(Collectors.toList());
+
+        return list;
     }
 }

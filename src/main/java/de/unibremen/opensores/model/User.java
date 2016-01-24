@@ -13,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.mail.internet.AddressException;
 import javax.mail.MessagingException;
@@ -54,6 +55,9 @@ public class User {
     @Column(nullable = false)
     private Boolean isBlocked = false;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Student> students = new ArrayList<>();
+
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
     @CollectionTable(joinColumns = @JoinColumn(name = "userId"))
     @Column
@@ -73,6 +77,10 @@ public class User {
            MessagingException, IOException {
         MailJob mj = new MailJob(new String[] {email}, subject, text);
         new Mail().issue(new MailJob[] {mj});
+    }
+
+    public List<Student> getStudents() {
+        return students;
     }
 
     public String getEmail() {
@@ -133,6 +141,10 @@ public class User {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
     }
 
     public void setUserId(Long userId) {

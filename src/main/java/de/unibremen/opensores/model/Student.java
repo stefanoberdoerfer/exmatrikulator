@@ -30,6 +30,9 @@ public class Student {
     @Column(nullable = false)
     private Boolean acceptedInvitation;
 
+    @Column(nullable = false)
+    private Boolean isHidden;
+
     //@Column
     //private PaboGrade paboGrade;
 
@@ -60,6 +63,10 @@ public class Student {
 
     private List<Upload> uploads;
     */
+
+    public boolean isHidden() {
+        return isHidden;
+    }
 
     public boolean isAttending() {
         return isAttending;
@@ -110,6 +117,10 @@ public class Student {
 
     public void setConfirmed(Boolean confirmed) {
         isConfirmed = confirmed;
+    }
+
+    public void setHidden(Boolean isHidden) {
+        this.isHidden = isHidden;
     }
 
     public void setAttending(Boolean attending) {

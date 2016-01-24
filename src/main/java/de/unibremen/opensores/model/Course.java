@@ -29,6 +29,12 @@ public class Course {
     private String name;
 
     @Column(nullable = false)
+    private Integer sws;
+
+    @Column(nullable = false)
+    private Integer creditPoints;
+
+    @Column(nullable = false)
     private String number;
 
     @Column(nullable = false)
@@ -67,6 +73,22 @@ public class Course {
     @ManyToOne(optional = false)
     @JoinColumn(name = "semesterId")
     private Semester semester;
+
+    public Integer getCreditPoints() {
+        return creditPoints;
+    }
+
+    public void setCreditPoints(Integer creditPoints) {
+        this.creditPoints = creditPoints;
+    }
+
+    public Integer getSws() {
+        return sws;
+    }
+
+    public void setSws(Integer sws) {
+        this.sws = sws;
+    }
 
     public String getName() {
         return name;
