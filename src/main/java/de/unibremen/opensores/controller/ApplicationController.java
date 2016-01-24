@@ -4,10 +4,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Lecturer;
-<<<<<<< HEAD
 import de.unibremen.opensores.model.ParticipationType;
-=======
->>>>>>> f817f1f... Tutorial and PrivilegedUser Relations + Dummyinsertions
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Role;
@@ -202,7 +199,6 @@ public class ApplicationController {
                 + tutorial.getTutors().get(0).getUser().getFirstName());
         log.debug("Got Group out of Course with id: " + group.getGroupId()
                 + " and groupmember: " + group.getStudents().get(0).getUser().getFirstName());
-
         log.debug("ParticipationType: " + course.getParticipationTypes().get(0).getName()
                 + "; Semester: " + course.getSemester().getName() + " with id: "
                 + course.getSemester().getSemesterId());

@@ -58,9 +58,6 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<PrivilegedUser> tutors = new ArrayList<>();
 
-    @Column(name = "tutors")
-    private List<PrivilegedUser> tutors;
-
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<ParticipationType> participationTypes = new ArrayList<>();
 
@@ -69,8 +66,6 @@ public class Course {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "semesterId")
-
-    @Column(name = "semester")
     private Semester semester;
 
     public String getName() {
