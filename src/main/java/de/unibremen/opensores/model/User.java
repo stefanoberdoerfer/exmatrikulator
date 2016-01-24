@@ -56,7 +56,7 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
     @CollectionTable(joinColumns = @JoinColumn(name = "userId"))
-    @Column(name = "role")
+    @Column
     private List<Integer> roles = new ArrayList<>();
 
     @OneToOne(optional = true, mappedBy = "user", cascade = CascadeType.ALL,

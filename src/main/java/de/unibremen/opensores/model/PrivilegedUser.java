@@ -1,38 +1,70 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Entity bean for the PrivilegedUser class.
  */
+@Entity
+@Table(name = "PRIVUSERS")
 public class PrivilegedUser {
 
-    private List<Privilege> privileges;
+    @Id
+    @GeneratedValue
+    private Long privUserId;
 
-    private boolean isSecretary;
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
+    @CollectionTable(joinColumns = @JoinColumn(name = "privUserId"))
+    @Column(name = "privs") //privileges is an SQL keyword
+    private List<Integer> privileges = new ArrayList<>();
 
+    @Column(nullable = false)
+    private Boolean isSecretary;
+
+    @Column
     private Date lastHit;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "courseId")
     private Course course;
 
-    private List<Tutorial> tutorials;
+    @ManyToMany(mappedBy = "tutors")
+    private List<Tutorial> tutorials = new ArrayList<>();
 
-    public List<Privilege> getPrivileges() {
+    public boolean hasPrivilege(String privString) {
+        return privileges.contains(Role.valueOf(privString).getId());
+    }
+
+    public List<Integer> getPrivileges() {
         return privileges;
     }
 
-    public void setPrivileges(List<Privilege> privileges) {
+    public void setPrivileges(List<Integer> privileges) {
         this.privileges = privileges;
     }
 
-    public boolean isSecretary() {
+    public Boolean isSecretary() {
         return isSecretary;
     }
 
-    public void setSecretary(boolean secretary) {
+    public void setSecretary(Boolean secretary) {
         isSecretary = secretary;
     }
 

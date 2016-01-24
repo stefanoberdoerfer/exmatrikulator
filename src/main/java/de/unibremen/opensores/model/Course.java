@@ -5,6 +5,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -44,19 +46,27 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Student> students = new ArrayList<>();
 
-    @OneToMany(mappedBy = "groupId")
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Group> groups = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<Lecturer> lecturers = new ArrayList<>();
 
-    /*
-    @Column(name = "tutors")
-    private List<PrivilegedUser> tutors;
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    private List<Tutorial> tutorials = new ArrayList<>();
 
-    @Column(name = "semester")
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    private List<PrivilegedUser> tutors = new ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    private List<ParticipationType> participationTypes = new ArrayList<>();
+
+    //@OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    //private List<Exam> exams = new ArrayList<>();
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "semesterId")
     private Semester semester;
-    */
 
     public String getName() {
         return name;
@@ -106,7 +116,6 @@ public class Course {
         this.maxGroupSize = maxGroupSize;
     }
 
-    /*
     public Semester getSemester() {
         return semester;
     }
@@ -122,7 +131,6 @@ public class Course {
     public void setTutors(List<PrivilegedUser> tutors) {
         this.tutors = tutors;
     }
-    */
 
     public List<Lecturer> getLecturers() {
         return lecturers;
@@ -151,4 +159,30 @@ public class Course {
     public Long getCourseId() {
         return courseId;
     }
+
+    public List<Tutorial> getTutorials() {
+        return tutorials;
+    }
+
+    public void setTutorials(List<Tutorial> tutorials) {
+        this.tutorials = tutorials;
+    }
+
+    public List<ParticipationType> getParticipationTypes() {
+        return participationTypes;
+    }
+
+    public void setParticipationTypes(List<ParticipationType> participationTypes) {
+        this.participationTypes = participationTypes;
+    }
+
+    /*
+    public List<Exam> getExams() {
+        return exams;
+    }
+
+    public void setExams(List<Exam> exams) {
+        this.exams = exams;
+    }
+    */
 }

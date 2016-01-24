@@ -1,33 +1,62 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Entity bean for the ParticipationType class.
  */
+@Entity
+@Table(name = "PARTICIPATIONTYPES")
 public class ParticipationType {
 
-    private Long parttypeId;
+    @Id
+    @GeneratedValue
+    private Long partTypeId;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private Boolean isGroupPerformance;
 
+    @Column
     private String performanceContent;
 
+    @Column
     private String performanceArea;
 
+    @Column(nullable = false)
     private Boolean isRestricted;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "courseId")
     private Course course;
 
-    private List<Exam> exams;
+    @ManyToMany
+    @JoinTable(name = "PARTTYPE_EXAM",
+            joinColumns = {@JoinColumn(name = "parttypeId")},
+            inverseJoinColumns = {@JoinColumn(name = "examId")})
+    private List<Exam> exams = new ArrayList<>();
 
-    private List<Student> students;
+    @OneToMany(mappedBy = "participationType")
+    private List<Student> students = new ArrayList<>();
 
-    private GradeFormula gradeFormula;
+    //private GradeFormula gradeFormula;
 
-    private List<GradeFormula> oldFormulas;
+    //private List<GradeFormula> oldFormulas;
+
+    //TODO: Boolean isDefault?
 
     public String getName() {
         return name;
@@ -77,14 +106,6 @@ public class ParticipationType {
         this.course = course;
     }
 
-    public List<Exam> getExams() {
-        return exams;
-    }
-
-    public void setExams(List<Exam> exams) {
-        this.exams = exams;
-    }
-
     public List<Student> getStudents() {
         return students;
     }
@@ -93,6 +114,19 @@ public class ParticipationType {
         this.students = students;
     }
 
+    public Long getPartTypeId() {
+        return partTypeId;
+    }
+
+    public List<Exam> getExams() {
+        return exams;
+    }
+
+    public void setExams(List<Exam> exams) {
+        this.exams = exams;
+    }
+
+    /*
     public GradeFormula getGradeFormula() {
         return gradeFormula;
     }
@@ -108,4 +142,5 @@ public class ParticipationType {
     public void setOldFormulas(List<GradeFormula> oldFormulas) {
         this.oldFormulas = oldFormulas;
     }
+    */
 }

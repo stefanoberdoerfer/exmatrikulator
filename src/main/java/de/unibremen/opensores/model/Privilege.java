@@ -4,5 +4,16 @@ package de.unibremen.opensores.model;
  * Enumeration of Privileges a PrivilegedUser can have.
  */
 public enum Privilege {
-    EditFormulas, EditExams, ManageStudents, ExportData, ManageTutorials, GenerateCredits
+    EditFormulas(0), EditExams(1), ManageStudents(2), ExportData(3), ManageTutorials(4),
+    GenerateCredits(5);
+
+    private Integer id;
+
+    Privilege(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 }
