@@ -101,6 +101,8 @@ public class ApplicationController {
 
         //Course with all relations filled
         Course course = new Course();
+        course.setSws(42);
+        course.setCreditPoints(1337);
         course.setName("TestVeranstaltung");
         course.setNumber("VAK-Nummer123");
         course.setRequiresConformation(false);
@@ -116,6 +118,7 @@ public class ApplicationController {
         student.setTries(0);
         student.setAttending(true);
         student.setUser(newUser);
+        student.setHidden(false);
 
         course.getStudents().add(student);
         student.setCourse(course);
