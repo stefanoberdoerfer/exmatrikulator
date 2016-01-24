@@ -1,6 +1,7 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Course;
 
 import java.util.List;
 import javax.ejb.Stateless;
@@ -60,5 +61,25 @@ public class UserService extends GenericService<User> {
                 .setParameter("email",email.toLowerCase())
                 .getResultList();
         return !registeredUserEmail.isEmpty();
+    }
+
+    /**
+     * Returns a list of courses this user takes part in.
+     *
+     * @param user User to lookup courses for.
+     * @param hidden Whether hidden courses should be included.
+     * @return List of courses or null if none where found.
+     */
+    public List<Course> getCourses(final User user, boolean hidden) {
+        List<Course> courses = em.createQuery(
+                "SELECT c FROM Course c"
+                + " INNER JOIN c.students AS s"
+                + " WHERE s.user = :user"
+                + " AND s.isHidden = :hidden", Course.class)
+            .setParameter("user", user)
+            .setParameter("hidden", hidden)
+            .getResultList();
+
+        return (courses.isEmpty()) ? null : courses;
     }
 }
