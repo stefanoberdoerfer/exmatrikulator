@@ -20,17 +20,17 @@
 
         <ul class="nav nav-wizard">
             <li><h:link outcome="/course/create/step1">
-                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step1']}</h:link></li>
+                <i class="fa fa-check-square-o"></i> #{msg['common.course.commonData']}</h:link></li>
             <li><h:link outcome="/course/create/step2">
-                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step2']}</h:link></li>
-            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['courses.create.step3']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step4']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step5']}</a></li>
+                <i class="fa fa-check-square-o"></i> #{msg['common.course.exams']}</h:link></li>
+            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['common.course.participationTypes']}</a></li>
+            <li><a><i class="fa fa-square-o"></i> #{msg['common.course.gradingFormula']}</a></li>
+            <li><a><i class="fa fa-square-o"></i> #{msg['common.course.participants']}</a></li>
         </ul>
 
         <ui:include src="/WEB-INF/alerts.xhtml" />
 
-        <h3>#{msg['courses.create.step3']}</h3>
+        <h3>#{msg['common.course.participationTypes']}</h3>
 
         <h:form layout="block" class="form-horizontal">
             <div class="row">
