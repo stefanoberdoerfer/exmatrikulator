@@ -53,9 +53,6 @@ public class Student {
 
     @ManyToOne
     @JoinColumn(name = "parttypeId")
-
-    @ManyToOne
-    @JoinColumn(name="patricipationId")
     private ParticipationType participationType;
 
     /*
