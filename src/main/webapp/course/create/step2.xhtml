@@ -20,11 +20,11 @@
 
         <ul class="nav nav-wizard">
             <li><h:link outcome="/course/create/step1">
-                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step1']}</h:link></li>
-            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['courses.create.step2']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step3']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step4']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['courses.create.step5']}</a></li>
+                <i class="fa fa-check-square-o"></i> #{msg['common.course.commonData']}</h:link></li>
+            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['common.course.exams']}</a></li>
+            <li><a><i class="fa fa-square-o"></i> #{msg['common.course.participationTypes']}</a></li>
+            <li><a><i class="fa fa-square-o"></i> #{msg['common.course.gradingFormula']}</a></li>
+            <li><a><i class="fa fa-square-o"></i> #{msg['common.course.participants']}</a></li>
         </ul>
 
         <ui:include src="/WEB-INF/alerts.xhtml" />
@@ -33,7 +33,7 @@
             <div class="btn-group main-buttons pull-right">
                 <h:link class="btn btn-default" value="#{msg['examination.add']}" outcome="/course/create/exams/add" />
             </div>
-            <h3>#{msg['courses.create.step2']}</h3>
+            <h3>#{msg['common.course.exams']}</h3>
 
             <table class="table table-hover table-examinations">
                 <thead>

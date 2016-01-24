@@ -20,19 +20,19 @@
 
         <ul class="nav nav-wizard">
             <li><h:link outcome="/course/create/step1">
-                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step1']}</h:link></li>
+                <i class="fa fa-check-square-o"></i> #{msg['common.course.commonData']}</h:link></li>
             <li><h:link outcome="/course/create/step2">
-                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step2']}</h:link></li>
+                <i class="fa fa-check-square-o"></i> #{msg['common.course.exams']}</h:link></li>
             <li><h:link outcome="/course/create/step3">
-                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step3']}</h:link></li>
+                <i class="fa fa-check-square-o"></i> #{msg['common.course.participationTypes']}</h:link></li>
             <li><h:link outcome="/course/create/step4">
-                <i class="fa fa-check-square-o"></i> #{msg['courses.create.step4']}</h:link></li>
-            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['courses.create.step5']}</a></li>
+                <i class="fa fa-check-square-o"></i> #{msg['common.course.gradingFormula']}</h:link></li>
+            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['common.course.participants']}</a></li>
         </ul>
 
         <ui:include src="/WEB-INF/alerts.xhtml" />
 
-        <h3>#{msg['courses.create.step5']}</h3>
+        <h3>#{msg['common.course.participants']}</h3>
 
         <h:form layout="block" enctype="multipart/form-data">
             <div class="row">
