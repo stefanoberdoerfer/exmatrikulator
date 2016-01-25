@@ -1,8 +1,7 @@
 package de.unibremen.opensores.controller;
 
-import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.User;
-import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.service.UserService;
 
 import javax.annotation.PostConstruct;
@@ -77,32 +76,20 @@ public class UserController {
     }
 
     /**
-     * Returns a list of all active courses.
+     * Returns a list of active courses for the current user.
      *
-     * @return List of active courses.
+     * @return List of active courses or null.
      */
     public List<Course> getActiveCourses() {
-        List<Student> students = user.getStudents();
-        List<Course> list = students.stream()
-            .filter(s -> !s.isHidden())
-            .map(s -> s.getCourse())
-            .collect(Collectors.toList());
-
-        return list;
+        return userService.getCourses(getUser(), false);
     }
 
     /**
-     * Returns a list of hiden courses.
+     * Returns a list of hidden courses for the current user.
      *
-     * @return List of hidden courses.
+     * @return List of hidden courses or null.
      */
     public List<Course> getHiddenCourses() {
-        List<Student> students = user.getStudents();
-        List<Course> list = students.stream()
-            .filter(s -> s.isHidden())
-            .map(s -> s.getCourse())
-            .collect(Collectors.toList());
-
-        return list;
+        return userService.getCourses(getUser(), true);
     }
 }
