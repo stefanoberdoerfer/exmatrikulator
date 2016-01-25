@@ -16,7 +16,7 @@
         <div class="headline">
             <div class="btn-group main-buttons pull-right">
                 <p:commandButton value="#{msg['courses.join']}" rendered="#{userController.user.hasRole('LECTURER')}"
-                                 type="button" onclick="PF('courseJoinSearch').show();"
+                                 type="button" onclick="return exModal('courseJoinSearch');"
                                  styleClass="btn btn-default create-course-button" />
                 <!-- Todo: Veranstaltung erstellen nur bei Dozenten anzeigen -->
                 <h:link value="#{msg['courses.create']}" rendered="#{userController.user.hasRole('LECTURER')}"
@@ -48,9 +48,14 @@
             <h:column>
                 <f:facet name="header"></f:facet>
                 <!-- Todo: Entfernen und verlassen korrekt anzeigen -->
-                <h:link outcome="course/leave" styleClass="btn btn-default" h5:data-toggle="tooltip"
-                        h5:data-placement="top" title="Veranstaltung verlassen"><i class="fa fa-sign-out"></i></h:link>
-                <h:link outcome="course/remove" styleClass="btn btn-danger"><i class="fa fa-remove"></i></h:link>
+                <h:link onclick="return exModal('courseLeave');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="Veranstaltung verlassen" class="btn btn-default">
+                    <i class="fa fa-sign-out"></i>
+                </h:link>
+                <h:link onclick="return exModal('courseRemove');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="Veranstaltung entfernen" class="btn btn-danger">
+                    <i class="fa fa-remove"></i>
+                </h:link>
                 <h:link styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
                         title="Veranstaltung ausblenden"><i class="fa fa-eye-slash"></i></h:link>
             </h:column>
@@ -79,14 +84,22 @@
             <h:column>
                 <f:facet name="header"></f:facet>
                 <!-- Todo: Entfernen und verlassen korrekt anzeigen -->
-                <h:link outcome="course/leave" styleClass="btn btn-default" h5:data-toggle="tooltip"
-                        h5:data-placement="top" title="Veranstaltung verlassen"><i class="fa fa-sign-out"></i></h:link>
-                <h:link outcome="course/remove" styleClass="btn btn-danger"><i class="fa fa-remove"></i></h:link>
+                <h:link onclick="return exModal('courseLeave');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="Veranstaltung verlassen" class="btn btn-default">
+                    <i class="fa fa-sign-out"></i>
+                </h:link>
+                <h:link onclick="return exModal('courseRemove');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="Veranstaltung entfernen" class="btn btn-danger">
+                    <i class="fa fa-remove"></i>
+                </h:link>
                 <h:link styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
                         title="Veranstaltung ausblenden"><i class="fa fa-eye-slash"></i></h:link>
             </h:column>
         </h:dataTable>
 
+        <ui:include src="/course/leave.xhtml" />
+        <ui:include src="/course/remove.xhtml" />
         <ui:include src="/course/join/search.xhtml" />
+        <ui:include src="/course/join/participationType.xhtml" />
     </ui:define>
 </ui:composition>

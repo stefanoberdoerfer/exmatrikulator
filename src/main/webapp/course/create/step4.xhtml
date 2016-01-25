@@ -39,7 +39,8 @@
                     <p>#{msg['gradingformula.explanation']}</p>
                     <h:inputTextarea rows="20" class="form-control calculation-formula" />
 
-                    <h:commandButton value="#{msg['gradingformula.test']}" class="btn btn-default" />
+                    <h:link onclick="return exModal('formulaTest');"
+                            class="btn btn-default" value="#{msg['gradingformula.test']}" />
                 </div>
                 <div class="col-xs-4">
                     <h3>#{msg['common.course.exams']}</h3>
@@ -98,5 +99,7 @@
                 </div>
             </div>
         </h:form>
+
+        <ui:include src="/course/create/formula/test.xhtml" />
     </ui:define>
 </ui:composition>

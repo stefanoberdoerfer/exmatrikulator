@@ -183,4 +183,20 @@ module.exports = function(grunt) {
             'compress'
         ]
     );
+
+    grunt.registerTask(
+        'dev',
+        [
+            'clean',
+            'grunt',
+            'sass',
+            'less',
+            'coffee',
+            'concat',
+            'copy',
+            'cssmin',
+            'uglify',
+            'compress'
+        ]
+    );
 };
