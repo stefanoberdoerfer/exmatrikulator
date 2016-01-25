@@ -65,13 +65,6 @@ module.exports = function(grunt) {
                     './build/bootstrap-nav-wizard.css'
                 ],
                 dest: './build/vendors.css'
-            },
-            jsvendors: {
-                src: [
-                    './vendors/jquery/dist/jquery.min.js',
-                    './vendors/bootstrap/dist/js/bootstrap.min.js'
-                ],
-                dest: './../webapp/resources/js/vendors.min.js'
             }
         },
         cssmin: {
@@ -105,6 +98,20 @@ module.exports = function(grunt) {
                 expand: true,
                 src: './img/*',
                 dest: './../webapp/resources/images/',
+                flatten: true,
+                filter: 'isFile'
+            },
+            primefacesTheme: {
+                expand: true,
+                src: './primefaces/*',
+                dest: './../webapp/resources/primefaces-exmatrikulator/',
+                flatten: true,
+                filter: 'isFile'
+            },
+            primefacesImages: {
+                expand: true,
+                src: './primefaces/images/*',
+                dest: './../webapp/resources/primefaces-exmatrikulator/images/',
                 flatten: true,
                 filter: 'isFile'
             }

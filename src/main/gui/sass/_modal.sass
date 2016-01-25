@@ -1,28 +1,40 @@
-.modal
-  display:    block
-  overflow-x: hidden
-  overflow-y: hidden
+.ui-button
+  padding:  6px 12px !important
 
-  .modal-brand
-    height:         24px
-    margin-right:   10px
-    vertical-align: -5px
+  .ui-button-text
+    padding:  3px 0 2px !important
 
-  .modal-title
-    text-transform: uppercase
-    font-weight:    bold
+.ui-dialog
+  top:    30px !important
+  width:  600px !important
+  border: none !important
 
-  .alert
-    margin-bottom:  10px
+  .ui-dialog-titlebar
+    height:               56px !important
+    padding:              15px !important
+    text-transform:       uppercase
+    font-size:            18px
+    background-image:     url('/exmatrikulator/javax.faces.resource/stallion_light.svg.xhtml?ln=images')
+    background-size:      24px 24px
+    background-repeat:    no-repeat
+    background-position:  15px
 
-  .modal-header
-    background-color: $modal-header-bg
+  .ui-dialog-title
+    margin:   2px 0 0 35px!important
 
-  .close
-    color:            $modal-close-color
-    background-color: $modal-close-bg
-    line-height:      28px
+  .modal-body,
+  .form-group
+    overflow: auto
 
   .form-group
-    input
-      margin-right: 10px
+    margin-left:  -15px
+    margin-right: -15px
+    
+  .ui-dialog-content
+    padding: 0 !important
+
+    a
+      &.btn-success,
+      &.btn-danger,
+      &.btn-warning
+        color:  #fff !important

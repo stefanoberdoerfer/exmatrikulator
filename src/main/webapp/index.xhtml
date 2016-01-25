@@ -3,7 +3,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
     <!-- Define Params -->
     <ui:param name="pageTitle" value="#{msg['courses.overview']}" />
     <!-- Breadcrumbs -->
@@ -14,8 +15,9 @@
     <ui:define name="content">
         <div class="headline">
             <div class="btn-group main-buttons pull-right">
-                <h:link value="#{msg['courses.join']}" rendered="#{userController.user.hasRole('LECTURER')}"
-                        outcome="/course/join/search" class="btn btn-default create-course-button" />
+                <p:commandButton value="#{msg['courses.join']}" rendered="#{userController.user.hasRole('LECTURER')}"
+                                 type="button" onclick="PF('courseJoinSearch').show();"
+                                 styleClass="btn btn-default create-course-button" />
                 <!-- Todo: Veranstaltung erstellen nur bei Dozenten anzeigen -->
                 <h:link value="#{msg['courses.create']}" rendered="#{userController.user.hasRole('LECTURER')}"
                         outcome="/course/create/step1" class="btn btn-primary create-course-button" />
@@ -84,5 +86,7 @@
                         title="Veranstaltung ausblenden"><i class="fa fa-eye-slash"></i></h:link>
             </h:column>
         </h:dataTable>
+
+        <ui:include src="/course/join/search.xhtml" />
     </ui:define>
 </ui:composition>
