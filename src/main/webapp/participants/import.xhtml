@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['participants.import']}" appendTo="@(body)" widgetVar="participantsImport" modal="true">
+        <h:form layout="block" enctype="multipart/form-data">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <p>#{msg['import.hint']}</p>
+            <br />
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>#{msg['import.filename']}</th>
+                    <th class="table-common-filesize">#{msg['import.filesize']}</th>
+                    <th class="table-common-options-one"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="vert-align-middle">
+                    <td>2015-09-12-StudIP.csv</td>
+                    <td>5.4 MB</td>
+                    <td>
+                        <h:commandLink class="btn btn-danger">
+                            <i class="fa fa-remove"></i>
+                        </h:commandLink>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h:inputFile id="file" />
+            <h:commandButton value="#{msg['import.upload']}" class="btn btn-primary"/>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                 onclick="return exModal(':participantsImport');" styleClass="btn btn-default" />
+                <h:link outcome="/index" class="btn btn-primary" value="#{msg['participants.import']}" />
+            </div>
+        </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>

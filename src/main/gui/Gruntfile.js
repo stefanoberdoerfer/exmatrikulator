@@ -111,7 +111,7 @@ module.exports = function(grunt) {
             primefacesImages: {
                 expand: true,
                 src: './primefaces/images/*',
-                dest: './../webapp/resources/primefaces-exmatrikulator/images/',
+                dest: './../webapp/resources/images/',
                 flatten: true,
                 filter: 'isFile'
             }
