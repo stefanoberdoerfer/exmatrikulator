@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['users.link']}" appendTo="@(body)" widgetVar="userLinkSearch" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <h:inputText type="text" class="form-control" h5:placeholder="#{msg['users.search']}"
+                                 h5:autofocus="autofocus" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-8">
+                    Max Mustermann
+                    <div class="table-common-sub">mustermann@uni-bremen.de, 123456</div>
+                </div>
+                <div class="col-xs-4 text-right">
+                    <h:link onclick="return exModal(':userLinkSearch', 'userLinkType');"
+                            class="btn btn-success">
+                        <i class="fa fa-plus"></i>
+                    </h:link>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.close']}" type="button"
+                                 onclick="return exModal(':userLinkSearch');" styleClass="btn btn-default" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>

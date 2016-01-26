@@ -1,0 +1,154 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.course.participants']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <!-- Todo: Veranstaltungsnamen anzeigen -->
+        <li>Veranstaltung trololol</li>
+        <li class="active">#{msg['common.course.participants']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <div class="btn-group main-buttons pull-right">
+                <h:form styleClass="section-search">
+                    <h:inputText styleClass="form-control" h5:placeholder="#{msg['participants.search']}" />
+                    <h:commandLink styleClass="btn btn-default"><i class="fa fa-search"></i></h:commandLink>
+                </h:form>
+                <h:link onclick="return exModal('userCreate');" value="#{msg['users.create']}"
+                        class="btn btn-default" />
+                <h:link onclick="return exModal('userLinkSearch');" value="#{msg['users.link']}"
+                        class="btn btn-default" />
+                <h:link onclick="return exModal('participantsImport');" value="#{msg['participants.import']}"
+                        class="btn btn-primary" />
+            </div>
+            <h1>#{msg['common.course.participants']}</h1>
+        </div>
+
+        <h3>#{msg['common.lecturers']}</h3>
+        <!-- Todo: value einfuegen -->
+        <h:dataTable var="lecturer"
+                     columnClasses="table-users-lastname,table-users-firstname,table-common-email,responsive,
+                     table-common-options-one"
+                     styleClass="table table-hover table-courses-overview">
+            <h:column>
+                <f:facet name="header">#{msg['common.lastName']}</f:facet>
+                #{lecturer.lastName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.firstName']}</f:facet>
+                #{lecturer.firstName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.email']}</f:facet>
+                #{lecturer.email}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
+                #{lecturer.matriculationNumber}
+            </h:column>
+            <h:column>
+                <f:facet name="header"></f:facet>
+                <h:link onclick="return exModal('participantRemove');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="#{msg['course.lecturer.remove']}" class="btn btn-danger">
+                    <i class="fa fa-remove"></i>
+                </h:link>
+            </h:column>
+        </h:dataTable>
+
+        <h3>#{msg['common.tutors']}</h3>
+        <!-- Todo: value einfuegen -->
+        <h:dataTable var="tutor"
+                     columnClasses="table-users-lastname,table-users-firstname,table-common-email,responsive,
+                     table-common-options-two"
+                     styleClass="table table-hover table-courses-overview">
+            <h:column>
+                <f:facet name="header">#{msg['common.lastName']}</f:facet>
+                #{tutor.lastName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.firstName']}</f:facet>
+                #{tutor.firstName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.email']}</f:facet>
+                #{tutor.email}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
+                #{tutor.matriculationNumber}
+            </h:column>
+            <h:column>
+                <f:facet name="header"></f:facet>
+                <div class="btn-group">
+                    <h:link onclick="return exModal('participantEdit');" h5:data-toggle="tooltip"
+                            h5:data-placement="top" title="#{msg['course.tutor.edit']}" class="btn btn-default">
+                        <i class="fa fa-pencil"></i>
+                    </h:link>
+                    <h:link onclick="return exModal('participantRemove');" h5:data-toggle="tooltip"
+                            h5:data-placement="top" title="#{msg['course.tutor.remove']}" class="btn btn-danger">
+                        <i class="fa fa-remove"></i>
+                    </h:link>
+                </div>
+            </h:column>
+        </h:dataTable>
+
+        <h3>#{msg['common.students']}</h3>
+        <!-- Todo: value einfuegen -->
+        <h:dataTable var="student"
+                     columnClasses="table-users-lastname,table-users-firstname,table-common-email,
+                     table-users-matriculation-nr,table-grades-grade,responsive,table-common-options-two"
+                     styleClass="table table-hover table-courses-overview">
+            <h:column>
+                <f:facet name="header">#{msg['common.lastName']}</f:facet>
+                #{student.lastName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.firstName']}</f:facet>
+                #{student.firstName}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.email']}</f:facet>
+                #{student.email}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
+                #{student.matriculationNumber}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
+                #{student.finalGrade}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.participationType']}</f:facet>
+                #{student.participationType}
+            </h:column>
+            <h:column>
+                <f:facet name="header"></f:facet>
+                <div class="btn-group">
+                    <h:link onclick="return exModal('participantEdit');" h5:data-toggle="tooltip"
+                            h5:data-placement="top" title="#{msg['course.student.edit']}" class="btn btn-default">
+                        <i class="fa fa-pencil"></i>
+                    </h:link>
+                    <h:link onclick="return exModal('participantRemove');" h5:data-toggle="tooltip"
+                            h5:data-placement="top" title="#{msg['course.student.remove']}" class="btn btn-danger">
+                        <i class="fa fa-remove"></i>
+                    </h:link>
+                </div>
+            </h:column>
+        </h:dataTable>
+
+        <ui:include src="/participants/create.xhtml" />
+        <ui:include src="/participants/edit.xhtml" />
+        <ui:include src="/participants/remove.xhtml" />
+        <ui:include src="/participants/import.xhtml" />
+        <ui:include src="/participants/link/search.xhtml" />
+        <ui:include src="/participants/link/participationType.xhtml" />
+    </ui:define>
+</ui:composition>

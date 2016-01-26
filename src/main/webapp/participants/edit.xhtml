@@ -1,0 +1,90 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['participants.edit']}" appendTo="@(body)" widgetVar="participantEdit" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="editUserFirstname" class="col-xs-3 control-label">#{msg['common.name']}</label>
+                <div class="col-xs-4">
+                    <h:inputText styleClass="form-control" id="editUserFirstname"
+                                 h5:placeholder="#{msg['common.firstName']}" autofocus="autofocus" />
+                </div>
+                <div class="col-xs-4">
+                    <h:inputText styleClass="form-control" id="editUserLastname"
+                                 h5:placeholder="#{msg['common.lastName']}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="editUserEmail" class="col-xs-3 control-label">#{msg['common.email']}</label>
+                <div class="col-xs-8">
+                    <h:inputText styleClass="form-control" id="editUserEmail" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="editUserMatriculation" class="col-xs-3 control-label">#{msg['common.studentNumber']}</label>
+                <div class="col-xs-8">
+                    <h:inputText styleClass="form-control" id="editUserMatriculation" />
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <label for="editUserType" class="col-xs-3 control-label">#{msg['common.type']}</label>
+                <div class="col-xs-8">
+                    <h:selectOneMenu styleClass="form-control" id="editUserType">
+                        <f:selectItem itemValue="" itemLabel="#{msg['common.tutor']}" />
+                        <f:selectItem itemValue="" itemLabel="#{msg['common.student']}" />
+                    </h:selectOneMenu>
+                </div>
+            </div>
+            <!-- Todo: Participation Type nur bei Type Student -->
+            <div class="form-group">
+                <label for="editParticipationType" class="col-xs-3 control-label">#{msg['common.participationType']}</label>
+                <div class="col-xs-8">
+                    <select class="form-control" id="editParticipationType"></select>
+                </div>
+            </div>
+            <!-- Todo: Additional Rights nur bei Type Tutor -->
+            <div class="form-group">
+                <label class="col-xs-3 control-label">#{msg['participants.additionalRights']}</label>
+                <div class="col-xs-8">
+                    <div class="checkbox">
+                        <h:selectBooleanCheckbox id="editAdditionalFormula" />
+                        <h:outputLabel value="#{msg['participants.additionalRights.formula']}"
+                                       for="editAdditionalFormula" />
+                    </div>
+                    <div class="checkbox">
+                        <h:selectBooleanCheckbox id="editAdditionalExams" />
+                        <h:outputLabel value="#{msg['participants.additionalRights.exams']}"
+                                       for="editAdditionalExams" />
+                    </div>
+                    <div class="checkbox">
+                        <h:selectBooleanCheckbox id="editAdditionalStudents" />
+                        <h:outputLabel value="#{msg['participants.additionalRights.students']}"
+                                       for="editAdditionalStudents" />
+                    </div>
+                    <div class="checkbox">
+                        <h:selectBooleanCheckbox id="editAdditionalExport" />
+                        <h:outputLabel value="#{msg['participants.additionalRights.export']}"
+                                       for="editAdditionalExport" />
+                    </div>
+                    <div class="checkbox">
+                        <h:selectBooleanCheckbox id="editAdditionalTutorials" />
+                        <h:outputLabel value="#{msg['participants.additionalRights.tutorials']}"
+                                       for="editAdditionalTutorials" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                 onclick="return exModal(':participantEdit');" styleClass="btn btn-default" />
+                <h:link outcome="/index" class="btn btn-primary" value="#{msg['common.saveChanges']}" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>

@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['users.link']}" appendTo="@(body)" widgetVar="userLinkType" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <p>#{msg['courses.join.select']}</p>
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <select class="form-control">
+                        <option>Informatik/Digitale Medien</option>
+                        <option>General Studies</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.close']}" type="button"
+                                 onclick="return exModal(':userLinkType');" styleClass="btn btn-default" />
+                <h:link outcome="/index" class="btn btn-default"
+                        value="#{msg['common.skip']}" />
+                <h:link outcome="/index" class="btn btn-primary"
+                        value="#{msg['common.select']}" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>
