@@ -1,6 +1,7 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Lecturer;
@@ -111,6 +112,13 @@ public class ApplicationController {
         course = courseService.persist(course);
         log.debug("Inserted Course with id: " + course.getCourseId());
 
+        // Mail template for course
+        MailTemplate mail = new MailTemplate();
+        mail.setCourse(course);
+        mail.setSubject("Durchgefallen");
+        mail.setText("Ihr seid ein paar Hurensöhne!");
+        course.setEmailTemplate(mail);
+
         //Student for course
         Student student = new Student();
         student.setAcceptedInvitation(false);
@@ -126,6 +134,7 @@ public class ApplicationController {
         //Lecturer for course
         Lecturer lecturer = new Lecturer();
         lecturer.setUser(newLecturer);
+        lecturer.setHidden(false);
 
         lecturer.setCourse(course);
         course.getLecturers().add(lecturer);
@@ -143,6 +152,7 @@ public class ApplicationController {
         privUser.getPrivileges().add(Privilege.ExportData.getId());
         privUser.setUser(newLecturer);
         privUser.setCourse(course);
+        privUser.setHidden(false);
         course.getTutors().add(privUser);
         privUser.getTutorials().add(tutorial);
         tutorial.getTutors().add(privUser);

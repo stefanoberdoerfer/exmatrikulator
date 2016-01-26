@@ -71,12 +71,21 @@ public class UserService extends GenericService<User> {
      * @return List of courses or null if none where found.
      */
     public List<Course> getCourses(final User user, boolean hidden) {
+        // We need to use the userId here instead of the user object
+        // Kown Bug: https://hibernate.atlassian.net/browse/HHH-2772
+
         List<Course> courses = em.createQuery(
-                "SELECT c FROM Course c"
-                + " INNER JOIN c.students AS s"
-                + " WHERE s.user = :user"
-                + " AND s.isHidden = :hidden", Course.class)
-            .setParameter("user", user)
+                "SELECT DISTINCT c FROM Course c"
+                + " LEFT JOIN c.students AS s"
+                + " WITH s.user.userId = :id"
+                + " LEFT JOIN c.tutors AS t"
+                + " WITH t.user.userId = :id"
+                + " LEFT JOIN c.lecturers AS l"
+                + " WITH l.user.userId = :id"
+                + " WHERE s.isHidden = :hidden OR"
+                + " l.isHidden = :hidden OR"
+                + " t.isHidden = :hidden", Course.class)
+            .setParameter("id", user.getUserId())
             .setParameter("hidden", hidden)
             .getResultList();
 
