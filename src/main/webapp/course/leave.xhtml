@@ -1,41 +1,23 @@
-<ui:composition template="/index.xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
-    <!-- Instantly display modal -->
-    <ui:param name="showModal" value="#{true}" />
-    <!-- Modal content -->
-    <ui:define name="modal">
-        <h:form class="modal fade in" id="add-examination-modal">
-            <div class="modal-dialog">
-                <div class="modal-content form-horizontal">
-                    <div class="modal-header">
-                        <h:link outcome="/index" class="close">
-                            <span aria-hidden="true">×</span>
-                        </h:link>
-                        <h4 class="modal-title">
-                            <h:graphicImage library="images" name="stallion_light.svg" class="modal-brand" />
-                            #{msg['courses.leave']}
-                        </h4>
-                    </div>
-                    <ui:include src="/WEB-INF/alerts.xhtml" />
-                    <div class="modal-body">
-                        #{msg['courses.leave.question']}<br />
-                        <br />
-                        #{msg['courses.leave.hint']}
-                    </div>
-                    <div class="modal-footer">
-                        <div class="btn-group">
-                            <h:link outcome="/index" class="btn btn-default"
-                                    value="#{msg['common.cancel']}" />
-                            <h:link outcome="/index" class="btn btn-danger"
-                                    value="#{msg['common.leave']}" />
-                        </div>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </h:form><!-- /.modal -->
-    </ui:define>
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['courses.leave']}" appendTo="@(body)" widgetVar="courseLeave" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            #{msg['courses.leave.question']}<br />
+            <br />
+            #{msg['courses.leave.hint']}
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.close']}" type="button" onclick="return exModal(':courseLeave');"
+                                 styleClass="btn btn-default" />
+                <h:link outcome="/index" class="btn btn-danger"
+                        value="#{msg['common.leave']}" />
+            </div>
+        </div>
+    </p:dialog>
 </ui:composition>

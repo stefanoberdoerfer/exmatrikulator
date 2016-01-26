@@ -31,7 +31,9 @@
 
         <h:form layout="block">
             <div class="btn-group main-buttons pull-right">
-                <h:link class="btn btn-default" value="#{msg['examination.add']}" outcome="/course/create/exams/add" />
+                <h:link onclick="return exModal('examAdd');"
+                        class="btn btn-default"
+                        value="#{msg['examination.add']}" />
             </div>
             <h3>#{msg['common.course.exams']}</h3>
 
@@ -51,8 +53,16 @@
                     <td>Prozent</td>
                     <td>
                         <div class="btn-group">
-                            <a href="examination/edit.php" class="btn btn-default"><i class="fa fa-pencil"></i></a>
-                            <a href="examination/remove.php" class="btn btn-danger"><i class="fa fa-remove"></i></a>
+                            <h:link onclick="return exModal('examEdit');"
+                                    class="btn btn-default" h5:data-toggle="tooltip"
+                                    h5:data-placement="top" title="#{msg['examination.add']}">
+                                <i class="fa fa-pencil"></i>
+                            </h:link>
+                            <h:link onclick="return exModal('examRemove');"
+                                    class="btn btn-danger" h5:data-toggle="tooltip"
+                                    h5:data-placement="top" title="#{msg['examination.remove']}">
+                                <i class="fa fa-remove"></i>
+                            </h:link>
                         </div>
                     </td>
                 </tr>
@@ -76,5 +86,9 @@
                 </div>
             </div>
         </h:form>
+
+        <ui:include src="/course/create/exams/add.xhtml" />
+        <ui:include src="/course/create/exams/edit.xhtml" />
+        <ui:include src="/course/create/exams/remove.xhtml" />
     </ui:define>
 </ui:composition>

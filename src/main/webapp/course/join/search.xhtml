@@ -1,53 +1,36 @@
-<ui:composition template="/index.xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
-    <!-- Instantly display modal -->
-    <ui:param name="showModal" value="#{true}" />
-    <!-- Modal content -->
-    <ui:define name="modal">
-        <h:form class="modal fade in" id="add-examination-modal">
-            <div class="modal-dialog">
-                <div class="modal-content form-horizontal">
-                    <div class="modal-header">
-                        <h:link outcome="/index" class="close">
-                            <span aria-hidden="true">×</span>
-                        </h:link>
-                        <h4 class="modal-title">
-                            <h:graphicImage library="images" name="stallion_light.svg" class="modal-brand" />
-                            #{msg['courses.join']}
-                        </h4>
-                    </div>
-                    <ui:include src="/WEB-INF/alerts.xhtml" />
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <div class="col-xs-12">
-                                <h:inputText type="text" class="form-control" h5:placeholder="#{msg['courses.search']}"
-                                             h5:autofocus="autofocus" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-xs-8">
-                                Software-Projekt 2
-                                <div class="table-common-sub">Wintersemester 2015/2016, VAK 03-BA-901.02</div>
-                            </div>
-                            <div class="col-xs-4 text-right">
-                                <h:link outcome="/course/join/participationType" class="btn btn-success">
-                                    <i class="fa fa-plus"></i>
-                                </h:link>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="btn-group">
-                            <h:link outcome="/index" class="btn btn-default"
-                                    value="#{msg['common.close']}" />
-                        </div>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </h:form><!-- /.modal -->
-    </ui:define>
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['courses.join']}" appendTo="@(body)" widgetVar="courseJoinSearch" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <h:inputText type="text" class="form-control" h5:placeholder="#{msg['courses.search']}"
+                                 h5:autofocus="autofocus" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-8">
+                    Software-Projekt 2
+                    <div class="table-common-sub">Wintersemester 2015/2016, VAK 03-BA-901.02</div>
+                </div>
+                <div class="col-xs-4 text-right">
+                    <h:link onclick="return exModal(':courseJoinSearch', 'courseJoinType');"
+                            class="btn btn-success">
+                        <i class="fa fa-plus"></i>
+                    </h:link>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.close']}" type="button"
+                                 onclick="return exModal(':courseJoinSearch');" styleClass="btn btn-default" />
+            </div>
+        </div>
+    </p:dialog>
 </ui:composition>

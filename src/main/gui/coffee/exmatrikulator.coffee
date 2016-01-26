@@ -1,13 +1,7 @@
 ###
 JQuery Wrapper manually added
 ###
-(($) ->
-  ###
-  Activate tooltips
-  ###
-  $('data-toggle="tooltip"').tooltip
-    container: 'body'
-
+exmatrikulatorInteractivity = ($) ->
   ###
   Toggle: Navigation
   ###
@@ -21,27 +15,21 @@ JQuery Wrapper manually added
 
       if isActive then  item.removeClass 'active'
       else              item.addClass 'active'
-
   ###
-  Toggle: Show/hide help
+  Show/hide modals
   ###
-  $ '.show-help'
-    .on 'click', ->
-      $ this
-        .hide()
+  window.exModal = ->
+    for name in arguments
+      # If name starts with :, hide the modal
+      if name.indexOf(':') == 0
+        modal = name.substring 1
 
-      $ this
-        .next '.help'
-        .show()
+        PF modal
+          .hide()
+      else
+        PF name
+          .show()
 
-  $ '.hide-help'
-    .on 'click', ->
-      help = $ this
-        .parents '.help'
+    return false
 
-      help
-        .hide()
-      help
-        .prev '.show-help'
-        .show()
-) jQuery
+exmatrikulatorInteractivity jQuery if jQuery?
