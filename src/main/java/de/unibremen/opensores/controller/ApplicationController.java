@@ -97,7 +97,7 @@ public class ApplicationController {
         //Current semester
         Semester semester = new Semester();
         semester.setIsWinter(true);
-        semester.setName("Wintersemester 15/16");
+        semester.setName("15/16");
         semesterService.persist(semester);
 
         //Course with all relations filled
