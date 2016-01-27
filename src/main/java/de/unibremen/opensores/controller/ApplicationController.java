@@ -15,11 +15,13 @@ import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
+import de.unibremen.opensores.model.Upload;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.StudentService;
+import de.unibremen.opensores.service.UploadService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +32,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Startup controller, creates dummy data.
@@ -54,6 +57,9 @@ public class ApplicationController {
 
     @EJB
     private SemesterService semesterService;
+
+    @EJB
+    private UploadService uploadService;
 
     /**
      * The log4j logger.
@@ -219,6 +225,15 @@ public class ApplicationController {
         grading.setGrade(grade);
         gradingService.persist(grading);
 
+        Upload upload = new Upload();
+        upload.setFileSize(100L);
+        upload.setPath("/blah/blah/upload.zip");
+        upload.setTime(new Date(123456L));
+        upload.setComment("lol");
+        upload.getUploaders().add(student);
+        student.getUploads().add(upload);
+
+        uploadService.persist(upload);
 
         //Testlogs
 
@@ -254,6 +269,8 @@ public class ApplicationController {
         log.debug("Student: " + student.getUser().getFirstName() + " has GradingValue: "
                 + student.getGradings().get(0).getGrade().getValue()
                 + " from " + student.getGradings().get(0).getCorrector().getFirstName());
+        log.debug("Upload with id " + upload.getUploadId() + " uploaded by "
+                + upload.getUploaders().get(0).getUser().getFirstName());
     }
 
 }

@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -35,8 +36,8 @@ public class Student {
     @Column(nullable = false)
     private Boolean isHidden;
 
-    //@Column
-    //private PaboGrade paboGrade;
+    @Column
+    private String paboGrade;
 
     @OneToMany(mappedBy = "student")
     private List<Grading> gradings = new ArrayList<>();
@@ -63,13 +64,8 @@ public class Student {
     @JoinColumn(name = "parttypeId")
     private ParticipationType participationType;
 
-    /*
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "gradingId")
-    private List<Grading> grades = new ArrayList<>();
-
+    @ManyToMany(mappedBy = "uploaders")
     private List<Upload> uploads;
-    */
 
     public boolean isHidden() {
         return isHidden;
@@ -87,16 +83,13 @@ public class Student {
         return acceptedInvitation;
     }
 
-    /*
-    public PaboGrade getPaboGrade() {
+    public String getPaboGrade() {
         return paboGrade;
     }
 
-    public void setPaboGrade(final PaboGrade paboGrade) {
+    public void setPaboGrade(String paboGrade) {
         this.paboGrade = paboGrade;
-
     }
-    */
 
     public int getTries() {
         return tries;
@@ -159,7 +152,6 @@ public class Student {
         this.tutorial = tutorial;
     }
 
-    /*
     public List<Upload> getUploads() {
         return uploads;
     }
@@ -167,7 +159,6 @@ public class Student {
     public void setUploads(List<Upload> uploads) {
         this.uploads = uploads;
     }
-    */
 
     public List<Grading> getGradings() {
         return gradings;
