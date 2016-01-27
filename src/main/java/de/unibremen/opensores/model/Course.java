@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -40,8 +41,8 @@ public class Course {
     @Column(nullable = false)
     private Boolean requiresConformation;
 
-    @Column(columnDefinition = "LONG VARCHAR")
-    private String emailTemplate;
+    @OneToOne(mappedBy = "course", cascade = CascadeType.MERGE)
+    private MailTemplate emailTemplate;
 
     @Column
     private Integer minGroupSize;
@@ -102,10 +103,6 @@ public class Course {
         return requiresConformation;
     }
 
-    public String getEmailTemplate() {
-        return emailTemplate;
-    }
-
     public int getMinGroupSize() {
         return minGroupSize;
     }
@@ -124,10 +121,6 @@ public class Course {
 
     public void setRequiresConformation(final boolean requiresConformation) {
         this.requiresConformation = requiresConformation;
-    }
-
-    public void setEmailTemplate(final String emailTemplate) {
-        this.emailTemplate = emailTemplate;
     }
 
     public void setMinGroupSize(final int minGroupSize) {
@@ -196,6 +189,14 @@ public class Course {
 
     public void setParticipationTypes(List<ParticipationType> participationTypes) {
         this.participationTypes = participationTypes;
+    }
+
+    public MailTemplate getEmailTemplate() {
+        return emailTemplate;
+    }
+
+    public void setEmailTemplate(MailTemplate emailTemplate) {
+        this.emailTemplate = emailTemplate;
     }
 
     /*

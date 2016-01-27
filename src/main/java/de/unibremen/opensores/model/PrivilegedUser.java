@@ -45,6 +45,9 @@ public class PrivilegedUser {
     @JoinColumn(name = "courseId")
     private Course course;
 
+    @Column(nullable = false)
+    private Boolean isHidden;
+
     @ManyToMany(mappedBy = "tutors")
     private List<Tutorial> tutorials = new ArrayList<>();
 
@@ -82,6 +85,14 @@ public class PrivilegedUser {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(Boolean isHidden) {
+        this.isHidden = isHidden;
     }
 
     public Course getCourse() {

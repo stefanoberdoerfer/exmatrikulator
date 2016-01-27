@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 
 /**
  * Entity bean for the MailTemplate Class.
@@ -19,11 +21,19 @@ public class MailTemplate {
     @GeneratedValue
     private Long mailTemplateId;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "courseId")
+    private Course course;
+
     @Column(name = "subject", nullable = false)
     private String subject;
 
-    @Column(name = "text", nullable = false)
+    @Column(name = "text", nullable = false, columnDefinition = "LONG VARCHAR")
     private String text;
+
+    public Course getCourse() {
+        return course;
+    }
 
     public String getSubject() {
         return subject;
@@ -31,6 +41,10 @@ public class MailTemplate {
 
     public String getText() {
         return text;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
     public void setSubject(String subject) {
