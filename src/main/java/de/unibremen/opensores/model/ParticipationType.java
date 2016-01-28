@@ -1,5 +1,6 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,11 +54,11 @@ public class ParticipationType {
     @OneToMany(mappedBy = "participationType")
     private List<Student> students = new ArrayList<>();
 
-    //private GradeFormula gradeFormula;
+    @OneToOne(optional = false, cascade = CascadeType.MERGE)
+    private GradeFormula gradeFormula;
 
-    //private List<GradeFormula> oldFormulas;
-
-    //TODO: Boolean isDefault?
+    @Column(nullable = false)
+    private Boolean isDefaultParttype;
 
     public String getName() {
         return name;
@@ -126,7 +128,6 @@ public class ParticipationType {
         this.exams = exams;
     }
 
-    /*
     public GradeFormula getGradeFormula() {
         return gradeFormula;
     }
@@ -135,12 +136,11 @@ public class ParticipationType {
         this.gradeFormula = gradeFormula;
     }
 
-    public List<GradeFormula> getOldFormulas() {
-        return oldFormulas;
+    public Boolean isDefaultParttype() {
+        return isDefaultParttype;
     }
 
-    public void setOldFormulas(List<GradeFormula> oldFormulas) {
-        this.oldFormulas = oldFormulas;
+    public void setIsDefaultParttype(Boolean defaultParttype) {
+        isDefaultParttype = defaultParttype;
     }
-    */
 }

@@ -41,4 +41,8 @@ public class TimeSlot {
     public void setDuration(int duration) {
         this.duration = duration;
     }
+
+    public Long getTimeSlotId() {
+        return timeSlotId;
+    }
 }
