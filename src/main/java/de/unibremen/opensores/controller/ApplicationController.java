@@ -1,17 +1,18 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.Grade;
+import de.unibremen.opensores.model.GradeFormula;
 import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Grading;
-import de.unibremen.opensores.model.MailTemplate;
-import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
-import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
@@ -188,7 +189,15 @@ public class ApplicationController {
         partType.setGroupPerformance(false);
         partType.setRestricted(false);
         partType.setCourse(course);
+        partType.setIsDefaultParttype(true);
         course.getParticipationTypes().add(partType);
+
+        //GradeFormula
+        GradeFormula formula = new GradeFormula();
+        formula.setTime(new Date(100L));
+        formula.setEditor(newLecturer);
+        formula.setFormula("(1336 + 1)*27");
+        partType.setGradeFormula(formula);
 
         //Exam
         Exam exam = new Exam();
@@ -264,7 +273,8 @@ public class ApplicationController {
                 + " and groupmember: " + group.getStudents().get(0).getUser().getFirstName());
         log.debug("ParticipationType: " + course.getParticipationTypes().get(0).getName()
                 + "; Semester: " + course.getSemester().getName() + " with id: "
-                + course.getSemester().getSemesterId());
+                + course.getSemester().getSemesterId() + " and GradeFormula: "
+                + course.getParticipationTypes().get(0).getGradeFormula().getFormula());
         log.debug("Exam: " + course.getExams().get(0).getName());
         log.debug("Student: " + student.getUser().getFirstName() + " has GradingValue: "
                 + student.getGradings().get(0).getGrade().getValue()

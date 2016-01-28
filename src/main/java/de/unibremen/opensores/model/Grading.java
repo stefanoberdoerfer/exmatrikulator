@@ -23,11 +23,12 @@ public class Grading {
     @GeneratedValue
     private Long gradingId;
 
-    @OneToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name = "userId")
     private User corrector;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "studentId", nullable = false)
     private Student student;
 
     @OneToOne(optional = false)
@@ -99,5 +100,9 @@ public class Grading {
 
     public void setExam(Exam exam) {
         this.exam = exam;
+    }
+
+    public Long getGradingId() {
+        return gradingId;
     }
 }

@@ -27,6 +27,7 @@ public class Upload {
     @Column(nullable = false)
     private Date time;
 
+    @Column
     private String comment;
 
     @Column(nullable = false)
