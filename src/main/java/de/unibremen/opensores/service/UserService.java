@@ -1,7 +1,11 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.PrivilegedUser;
 
 import java.util.List;
 import javax.ejb.Stateless;
@@ -61,6 +65,85 @@ public class UserService extends GenericService<User> {
                 .setParameter("email",email.toLowerCase())
                 .getResultList();
         return !registeredUserEmail.isEmpty();
+    }
+
+    /**
+     * Returns true if the given user is a lecturer in the given course.
+     *
+     * @param User User to check.
+     * @param Course Course to check.
+     * @return True if he is, false otherwise.
+     */
+    private boolean isLecturer(User user, Course course) {
+        List<Lecturer> lecturers = em.createQuery(
+                "SELECT DISTINCT l FROM Lecturer"
+                + "JOIN l.user    AS u WITH u.userId = :id"
+                + "JOIN l.course  AS c WITH c.courseId = :id", Lecturer.class)
+            .setParameter("uid", user.getUserId())
+            .setParameter("cid", course.getCourseId())
+            .getResultList();
+
+        return lecturers.isEmpty();
+    }
+
+    /**
+     * Returns true if the given user is a privileged user in the given course.
+     *
+     * @param User User to check.
+     * @param Course Course to check.
+     * @return True if he is, false otherwise.
+     */
+    private boolean isPrivileged(User user, Course course) {
+        List<PrivilegedUser> privUsers = em.createQuery(
+                "SELECT DISTINCT p FROM PrivilegedUser"
+                + "JOIN p.user    AS u WITH u.userId = :uid"
+                + "JOIN p.course  AS c WITH c.courseId = :cid", PrivilegedUser.class)
+            .setParameter("uid", user.getUserId())
+            .setParameter("cid", course.getCourseId())
+            .getResultList();
+
+        return privUsers.isEmpty();
+    }
+
+    /**
+     * Returns true if the given user is a student in the given course.
+     *
+     * @param User User to check.
+     * @param Course Course to check.
+     * @return True if he is, false otherwise.
+     */
+    private boolean isStudent(User user, Course course) {
+        List<Student> students = em.createQuery(
+                "SELECT DISTINCT s FROM Student"
+                + "JOIN s.user    AS u WITH u.userId = :uid"
+                + "JOIN s.course  AS c WITH c.courseId = :cid", Student.class)
+            .setParameter("uid", user.getUserId())
+            .setParameter("cid", course.getCourseId())
+            .getResultList();
+
+        return students.isEmpty();
+    }
+
+    /**
+     * Returns true if the user has the given role in the given course.
+     *
+     * @param user User whos roles should be checked.
+     * @param roleStr Role (as a string) the user should have.
+     * @param course Course context for the role.
+     * @return True if the user has the given role, false otherwise.
+     */
+    public boolean hasCourseRole(User user, String roleStr, Course course) {
+        Role role = Role.valueOf(roleStr);
+        switch (role) {
+            case LECTURER:
+                return isLecturer(user, course);
+            case PRIVILEGED_USER:
+                return isPrivileged(user, course);
+            case STUDENT:
+                return isStudent(user, course);
+            default:
+                return false;
+        }
     }
 
     /**

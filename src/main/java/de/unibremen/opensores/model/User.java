@@ -76,6 +76,18 @@ public class User {
         new Mail().issue(new MailJob[] {mj});
     }
 
+    /**
+     * Returns true if the user has the given global role.
+     *
+     * @param user user whos roles should be checked.
+     * @param roleStr Role (as a string) the user should have.
+     * @return True if he has the given role, false otherwise.
+     */
+    public boolean hasGlobalRole(String roleStr) {
+        GlobalRole role = GlobalRole.valueOf(roleStr);
+        return roles.contains(role.getId());
+    }
+
     public String getEmail() {
         return email;
     }
@@ -140,12 +152,16 @@ public class User {
         this.userId = userId;
     }
 
-    public List<Integer> getRoles() {
-        return roles;
+    public void addRole(GlobalRole role) {
+        roles.add(role.getId());
     }
 
     public void setRoles(List<Integer> roles) {
         this.roles = roles;
+    }
+
+    public List<Integer> getRoles() {
+        return roles;
     }
 
     public PasswordReset getToken() {
@@ -154,9 +170,5 @@ public class User {
 
     public void setToken(PasswordReset resetToken) {
         this.resetToken = resetToken;
-    }
-
-    public boolean hasRole(String roleString) {
-        return roles.contains(Role.valueOf(roleString).getId());
     }
 }
