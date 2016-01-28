@@ -1,6 +1,5 @@
 package de.unibremen.opensores.webapp;
 
-import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,10 +21,7 @@ import java.io.IOException;
  * This class handles HTTP requests and checks whether the request can be
  * directed to a secured page based on whether the user is logged in and if the
  * user has the required rights to access that page.
- * @todo Discuss: Add /app/* root folder for all secured pages, e.g. /course/*?
- * @todo Collab: Find way to filter user-course privileges (session map?)
  * @todo Handle AJAX /resource requests.
- * @todo Move index.xhtml to /course/ etc., it can't be in the root webapp .
  * @author Kevin Scheck
  */
 @WebFilter
@@ -54,6 +50,11 @@ public final class LoginFilter implements Filter {
     private static final String LECTURER_ONLY_PATH
             = "/course/create/";
 
+    /**
+     * The context path of the password recovery; There shouldn't be a logged
+     * in user when accessing this path.
+     */
+    private static final String UNREGISTERED_PATH = "/unregistered/";
 
     /**
      * Main method for filtering requests.
@@ -76,13 +77,26 @@ public final class LoginFilter implements Filter {
                 && (context.httpSession.getAttribute(SESSION_USER) != null);
         log.debug("User is logged in: " + loggedIn);
 
+        // Handle not logged in User
         if (!loggedIn) {
-            context.httpResponse
-                    .sendRedirect(context.httpRequest.getContextPath());
-            return;
+            if (path.startsWith(UNREGISTERED_PATH)) {
+                log.debug("Unregistered Path");
+                filterChain.doFilter(req, res);
+                return;
+            } else {
+                context.httpResponse
+                        .sendRedirect(context.httpRequest.getContextPath());
+                return;
+            }
+        } else {
+            if (path.startsWith(UNREGISTERED_PATH)) {
+                context.httpResponse
+                        .sendRedirect(context.httpRequest.getContextPath());
+                return;
+            }
         }
 
-        //Starting redirecting by specified static / dynamic user roles.
+        //Starting redirecting logged in users by static / dynamic .
         if (path.startsWith(ADMIN_PATH)) {
             filterAdminPath(context);
         } else if (path.startsWith(LECTURER_ONLY_PATH)) {
@@ -102,7 +116,7 @@ public final class LoginFilter implements Filter {
         log.debug("filterAdminPath has been called: "
                 + context.httpRequest.getRequestURI());
         User user = (User) context.httpSession.getAttribute(SESSION_USER);
-        if (user.hasRole("ADMIN")) {
+        if (user.hasGlobalRole("ADMIN")) {
             context.filterChain.doFilter(context.request, context.response);
         } else {
             context.httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -119,7 +133,7 @@ public final class LoginFilter implements Filter {
         log.debug("filterLecturerPath has been called: "
                 + context.httpRequest.getRequestURI());
         User user = (User) context.httpSession.getAttribute(SESSION_USER);
-        if (user.hasRole("LECTURER")) {
+        if (user.hasGlobalRole("LECTURER")) {
             context.filterChain.doFilter(context.request, context.response);
         } else {
             context.httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
