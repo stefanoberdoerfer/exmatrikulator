@@ -49,6 +49,6 @@ public class Semester {
             return null;
         }
 
-        return name + " " + ((isWinter) ? "WiSe" : "SoSe");
+        return ((isWinter) ? "WiSe" : "SoSe") + " " + name;
     }
 }
