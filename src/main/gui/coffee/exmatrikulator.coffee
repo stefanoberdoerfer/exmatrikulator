@@ -2,15 +2,18 @@
 JQuery Wrapper manually added
 ###
 exmatrikulatorInteractivity = ($) ->
+  console.debug 'Assigning exmatrikulator activity...'
   ###
   Toggle: Navigation
   ###
-  $ 'nav > .nav.semester-links > li > a'
+  $ '#nav .semester-links > li > a'
     .on "click", (e) ->
       e.preventDefault()
 
-      isActive = $ this
+      item = $ this
         .parent 'li'
+
+      isActive = item
         .hasClass 'active'
 
       if isActive then  item.removeClass 'active'
@@ -31,5 +34,33 @@ exmatrikulatorInteractivity = ($) ->
           .show()
 
     return false
+  ###
+  Dropdown toggle
+  ###
+  $ '.dropdown-toggle'
+    .on 'click', (e) ->
+      e.preventDefault()
 
-exmatrikulatorInteractivity jQuery if jQuery?
+      show = $ this
+               .next '.dropdown-menu'
+               .is ':visible'
+
+      $ '.dropdown-menu'
+        .hide()
+
+      if !show
+        $ this
+          .next '.dropdown-menu'
+          .show()
+
+  $ '.dropdown-menu a'
+    .on 'click', () ->
+      $ '.dropdown-menu'
+        .hide()
+###
+If jQuery defined, wait till DOM loaded, then add our interactivity
+###
+if jQuery?
+  jQuery document
+    .ready () ->
+      exmatrikulatorInteractivity jQuery
