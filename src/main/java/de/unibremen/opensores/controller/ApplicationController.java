@@ -11,7 +11,7 @@ import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
-import de.unibremen.opensores.model.Role;
+import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
@@ -83,23 +83,23 @@ public class ApplicationController {
         newUser.setFirstName("Ute");
         newUser.setLastName("User");
         newUser.setLanguage("de");
-        newUser.getRoles().add(Role.USER.getId());
+        newUser.addRole(GlobalRole.USER);
 
         final User newLecturer = new User();
         newLecturer.setEmail("lecturer@uni-bremen.de");
         newLecturer.setPassword(BCrypt.hashpw("lecturer",BCrypt.gensalt()));
         newLecturer.setFirstName("Leo");
         newLecturer.setLastName("Lektor");
-        newLecturer.getRoles().add(Role.LECTURER.getId());
-        newLecturer.getRoles().add(Role.USER.getId());
+        newLecturer.addRole(GlobalRole.LECTURER);
+        newLecturer.addRole(GlobalRole.USER);
 
         final User newAdmin = new User();
         newAdmin.setEmail("admin@uni-bremen.de");
         newAdmin.setPassword(BCrypt.hashpw("admin",BCrypt.gensalt()));
         newAdmin.setFirstName("Adolf");
         newAdmin.setLastName("Admin");
-        newAdmin.getRoles().add(Role.ADMIN.getId());
-        newAdmin.getRoles().add(Role.USER.getId());
+        newAdmin.addRole(GlobalRole.ADMIN);
+        newAdmin.addRole(GlobalRole.USER);
 
         userService.persist(newUser);
         log.debug("Inserted User with id: " + newUser.getUserId());

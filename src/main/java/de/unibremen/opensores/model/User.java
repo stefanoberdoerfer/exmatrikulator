@@ -83,8 +83,8 @@ public class User {
      * @param roleStr Role (as a string) the user should have.
      * @return True if he has the given role, false otherwise.
      */
-    public boolean hasGlobalRole(User user, String roleStr) {
-        Role role = Role.valueOf(roleStr);
+    public boolean hasGlobalRole(String roleStr) {
+        GlobalRole role = GlobalRole.valueOf(roleStr);
         return roles.contains(role.getId());
     }
 
@@ -152,12 +152,16 @@ public class User {
         this.userId = userId;
     }
 
-    public List<Integer> getRoles() {
-        return roles;
+    public void addRole(GlobalRole role) {
+        roles.add(role.getId());
     }
 
     public void setRoles(List<Integer> roles) {
         this.roles = roles;
+    }
+
+    public List<Integer> getRoles() {
+        return roles;
     }
 
     public PasswordReset getToken() {
