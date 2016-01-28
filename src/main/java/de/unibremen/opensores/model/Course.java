@@ -68,8 +68,8 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
     private List<ParticipationType> participationTypes = new ArrayList<>();
 
-    //@OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
-    //private List<Exam> exams = new ArrayList<>();
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    private List<Exam> exams = new ArrayList<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "semesterId")
@@ -199,7 +199,6 @@ public class Course {
         this.emailTemplate = emailTemplate;
     }
 
-    /*
     public List<Exam> getExams() {
         return exams;
     }
@@ -207,5 +206,5 @@ public class Course {
     public void setExams(List<Exam> exams) {
         this.exams = exams;
     }
-    */
+
 }

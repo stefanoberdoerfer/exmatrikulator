@@ -12,16 +12,16 @@ import javax.persistence.Table;
  * @author Lorenz Huether
  */
 @Entity
-@Table(name = "RestrictedTimeSlot")
+@Table(name = "RESTRICTEDTIMESLOTS")
 public class RestrictedTimeSlot extends TimeSlot {
 
-    @Column(name = "MINSTUDENTS", nullable = true)
+    @Column(nullable = true)
     private int minStudents;
 
-    @Column(name = "MAXSTUDENTS", nullable = true)
+    @Column(nullable = true)
     private int maxStudents;
 
-    @Column(name = "DEADLINE", nullable = false)
+    @Column(nullable = false)
     private Date deadline;
 
     public int getMinStudents() {

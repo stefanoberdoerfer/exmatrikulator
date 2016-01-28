@@ -1,6 +1,9 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Grade;
+import de.unibremen.opensores.model.GradeType;
+import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Group;
@@ -12,10 +15,13 @@ import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
+import de.unibremen.opensores.model.Upload;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.StudentService;
+import de.unibremen.opensores.service.UploadService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +31,8 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Startup controller, creates dummy data.
@@ -34,6 +42,9 @@ import javax.faces.bean.ManagedBean;
 @ManagedBean(eager = true)
 @ApplicationScoped
 public class ApplicationController {
+
+    @EJB
+    private GradingService gradingService;
 
     @EJB
     private UserService userService;
@@ -46,6 +57,9 @@ public class ApplicationController {
 
     @EJB
     private SemesterService semesterService;
+
+    @EJB
+    private UploadService uploadService;
 
     /**
      * The log4j logger.
@@ -114,9 +128,10 @@ public class ApplicationController {
 
         // Mail template for course
         MailTemplate mail = new MailTemplate();
-        mail.setCourse(course);
         mail.setSubject("Durchgefallen");
         mail.setText("Ihr seid ein paar Hurensöhne!");
+        mail.setLocale("de");
+        mail.setCourse(course);
         course.setEmailTemplate(mail);
 
         //Student for course
@@ -163,7 +178,9 @@ public class ApplicationController {
         group.setTutorial(tutorial);
         course.getGroups().add(group);
         tutorial.getGroups().add(group);
+        group.setTutorial(tutorial);
         group.getStudents().add(student);
+        student.setGroup(group);
 
         //ParticipationType
         ParticipationType partType = new ParticipationType();
@@ -173,11 +190,13 @@ public class ApplicationController {
         partType.setCourse(course);
         course.getParticipationTypes().add(partType);
 
-        //TODO: Exams dont work properly
+        //Exam
         Exam exam = new Exam();
         exam.setName("TestPrüfung");
-        //exam.setCourse(course);
-        //course.getExams().add(exam);
+        exam.setShortcut("TP1");
+        exam.setCourse(course);
+        exam.setGradeType(GradeType.Point.getId());
+        course.getExams().add(exam);
 
         //persist everything
         course = courseService.update(course);
@@ -187,6 +206,36 @@ public class ApplicationController {
             student = course.getStudents().get(0);
             log.debug("Studentlist of course is not empty");
         }
+
+        //Grading
+        Grading grading = new Grading();
+        grading.setCorrector(newLecturer);
+        grading.setStudent(student);
+        student.getGradings().add(grading);
+        grading.setExam(course.getExams().get(0));
+
+        //Grade
+        Grade grade = new Grade();
+        grade.setGradeType(exam.getGradeType());
+        if (exam.getGradeType().equals(GradeType.Point.getId())) {
+            grade.setMaxPoints(exam.getMaxPoints());
+        }
+        grade.setValue(new BigDecimal("1.0"));
+
+        grading.setGrade(grade);
+        gradingService.persist(grading);
+
+        Upload upload = new Upload();
+        upload.setFileSize(100L);
+        upload.setPath("/blah/blah/upload.zip");
+        upload.setTime(new Date(123456L));
+        upload.setComment("lol");
+        upload.getUploaders().add(student);
+        student.getUploads().add(upload);
+
+        uploadService.persist(upload);
+
+        //Testlogs
 
         if (course.getLecturers().size() > 0) {
             lecturer = course.getLecturers().get(0);
@@ -200,7 +249,8 @@ public class ApplicationController {
 
         if (course.getGroups().size() > 0) {
             group = course.getGroups().get(0);
-            log.debug("Grouplist of course is not empty");
+            log.debug("Grouplist of course has " + course.getGroups().size() + " groups");
+            log.debug("First group has " + group.getStudents().size() + " students");
         }
 
         log.debug("Got Student out of Course with id: "
@@ -215,6 +265,12 @@ public class ApplicationController {
         log.debug("ParticipationType: " + course.getParticipationTypes().get(0).getName()
                 + "; Semester: " + course.getSemester().getName() + " with id: "
                 + course.getSemester().getSemesterId());
+        log.debug("Exam: " + course.getExams().get(0).getName());
+        log.debug("Student: " + student.getUser().getFirstName() + " has GradingValue: "
+                + student.getGradings().get(0).getGrade().getValue()
+                + " from " + student.getGradings().get(0).getCorrector().getFirstName());
+        log.debug("Upload with id " + upload.getUploadId() + " uploaded by "
+                + upload.getUploaders().get(0).getUser().getFirstName());
     }
 
 }
