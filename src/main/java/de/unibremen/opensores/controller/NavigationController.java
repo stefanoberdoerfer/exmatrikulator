@@ -53,6 +53,9 @@ public class NavigationController {
                 .getLocale();
     }
 
+    /**
+     * Used to redirect to course-specific views.
+     */
     public String viewCourse(Course course, String view) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         facesContext.getExternalContext().getSessionMap().put("course", course);
