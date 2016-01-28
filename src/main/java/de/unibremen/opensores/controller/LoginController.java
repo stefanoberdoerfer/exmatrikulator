@@ -6,11 +6,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
+import java.io.IOException;
 import java.util.ResourceBundle;
 
 /**
@@ -25,6 +27,11 @@ import java.util.ResourceBundle;
 @RequestScoped
 public class LoginController {
 
+    /**
+     * The path to the course overview site.
+     */
+    private static final String PATH_TO_COURSE_OVERVIEW =
+            "/course/overview.xhtml?faces-redirect=true";
     /**
      * The log4j logger.
      */
@@ -47,12 +54,33 @@ public class LoginController {
     private String password;
 
     /**
+     * Initialisation method of the login controller.
+     * If an user is currently logged in during the session, the user gets
+     * redirected to the course-overview page.
+     */
+    @PostConstruct
+    public void init() {
+        log.debug("init() called");
+        if (FacesContext.getCurrentInstance()
+                .getExternalContext().getSessionMap().get("user") != null) {
+            log.debug("User is logged in during current session");
+            try {
+                FacesContext.getCurrentInstance()
+                        .getExternalContext().redirect(FacesContext
+                        .getCurrentInstance().getExternalContext()
+                        .getApplicationContextPath() + PATH_TO_COURSE_OVERVIEW);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * Login method which tries to lookup user with given email and password.
      *
      * @return Redirection link.
      */
     public String login() {
-
         FacesContext facesContext = FacesContext.getCurrentInstance();
         User user = userService.findByEmail(email);
         if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
@@ -65,7 +93,7 @@ public class LoginController {
         }
 
         facesContext.getExternalContext().getSessionMap().put("user", user);
-        return "/course/overview.xhtml?faces-redirect=true";
+        return PATH_TO_COURSE_OVERVIEW;
     }
 
     /**
