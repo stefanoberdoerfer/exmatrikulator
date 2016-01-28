@@ -65,7 +65,7 @@ public class LoginController {
         }
 
         facesContext.getExternalContext().getSessionMap().put("user", user);
-        return "/index.xhtml?faces-redirect=true";
+        return "/course/overview.xhtml?faces-redirect=true";
     }
 
     /**

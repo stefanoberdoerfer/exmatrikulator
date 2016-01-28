@@ -158,7 +158,7 @@ public class ResetController {
         String baseUrl = requestUrl.substring(0, baseIdx);
 
         return String.format("%s/%s?id=%d&token=%s", baseUrl,
-                "new-password.xhtml", user.getUserId(), token.getToken());
+                "recovery/new-password.xhtml", user.getUserId(), token.getToken());
     }
 
     /**
