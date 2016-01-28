@@ -42,4 +42,13 @@ public class Semester {
     public Long getSemesterId() {
         return semesterId;
     }
+
+    @Override
+    public String toString() {
+        if (name == null) {
+            return null;
+        }
+
+        return ((isWinter) ? "WiSe" : "SoSe") + " " + name;
+    }
 }

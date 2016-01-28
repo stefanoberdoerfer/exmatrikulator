@@ -1,6 +1,6 @@
 package de.unibremen.opensores.model;
 
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -22,6 +22,9 @@ public class Lecturer {
     @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
     private Course course;
+
+    @Column(nullable = false)
+    private Boolean isHidden;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "userId", nullable = false)
@@ -49,5 +52,13 @@ public class Lecturer {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(Boolean isHidden) {
+        this.isHidden = isHidden;
     }
 }

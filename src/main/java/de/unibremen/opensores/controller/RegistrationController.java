@@ -1,6 +1,6 @@
 package de.unibremen.opensores.controller;
 
-import de.unibremen.opensores.model.Role;
+import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.UserService;
 import org.mindrot.jbcrypt.BCrypt;
@@ -108,7 +108,7 @@ public class RegistrationController {
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
         newUser.setLanguage("de");
-        newUser.getRoles().add(Role.USER.getId());
+        newUser.addRole(GlobalRole.USER);
 
         return newUser;
     }

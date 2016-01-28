@@ -1,20 +1,48 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 /**
  * Entity bean for the Grading class.
+ *
+ * @author Stefan Oberdoerfer, Lorenz Huether
  */
+@Entity
+@Table(name = "GRADINGS")
 public class Grading {
 
+    @Id
+    @GeneratedValue
     private Long gradingId;
 
+    @OneToOne(optional = false)
     private User corrector;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "userId", nullable = false)
+    private Student student;
+
+    @OneToOne(optional = false)
+    private Exam exam;
+
+    @OneToOne(optional = false, cascade = CascadeType.PERSIST)
     private Grade grade;
 
+    @Column
     private String publicComment;
 
+    @Column
     private String privateComment;
 
+    @OneToOne(optional = true)
     private Group group;
 
     public User getCorrector() {
@@ -55,5 +83,21 @@ public class Grading {
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Exam getExam() {
+        return exam;
+    }
+
+    public void setExam(Exam exam) {
+        this.exam = exam;
     }
 }

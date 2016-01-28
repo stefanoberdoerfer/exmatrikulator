@@ -1,14 +1,14 @@
 package de.unibremen.opensores.model;
 
 /**
- * Enumeration with course specific roles.
+ * Enumeration of the different GradeTypes of a Grade.
  */
-public enum Role {
-    LECTURER(0), PRIVILEGED_USER(1), STUDENT(2);
+public enum GradeType {
+    Numeric(1), Boolean(2), Point(3);
 
     private Integer id;
 
-    Role(Integer id) {
+    GradeType(Integer id) {
         this.id = id;
     }
 
