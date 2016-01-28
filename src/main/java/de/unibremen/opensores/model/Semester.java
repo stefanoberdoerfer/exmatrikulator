@@ -44,20 +44,11 @@ public class Semester {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Semester) {
-            return ((Semester) obj).getSemesterId().equals(semesterId);
-        }
-
-        return false;
-    }
-
-    @Override
     public String toString() {
         if (name == null) {
             return null;
         }
 
-        return name + " " + ((isWinter) ? "WiSe" : "SoSe");
+        return ((isWinter) ? "WiSe" : "SoSe") + " " + name;
     }
 }
