@@ -1,6 +1,7 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.service.UserService;
 
 import javax.ejb.EJB;
@@ -50,6 +51,12 @@ public class NavigationController {
                 .getCurrentInstance()
                 .getViewRoot()
                 .getLocale();
+    }
+
+    public String viewCourse(Course course, String view) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        facesContext.getExternalContext().getSessionMap().put("course", course);
+        return view + ".xhtml?faces-redirect=true";
     }
 
     /**
