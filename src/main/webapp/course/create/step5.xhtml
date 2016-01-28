@@ -9,7 +9,7 @@
     <ui:param name="pageTitle" value="#{msg['courses.create']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
-        <li><h:link value="#{msg['courses.overview']}" outcome="/index" /></li>
+        <li><h:link value="#{msg['courses.overview']}" outcome="/course/overview" /></li>
         <li class="active">#{msg['courses.create']}</li>
     </ui:define>
     <!-- Page Content -->
@@ -69,7 +69,7 @@
             <hr />
             <div class="row form-buttons">
                 <div class="col-xs-6">
-                    <h:link class="btn btn-default " value="#{msg['common.cancel']}" outcome="/index" />
+                    <h:link class="btn btn-default " value="#{msg['common.cancel']}" outcome="/course/overview" />
                 </div>
                 <div class="col-xs-6 text-right">
                     <div class="btn-group">
