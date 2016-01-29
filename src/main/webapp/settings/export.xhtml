@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['settings.export']}" appendTo="@(body)" widgetVar="paboExport" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            #{msg['settings.export.confirmation']}
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.no']}" type="button"
+                                 onclick="return exModal(':paboExport');" styleClass="btn btn-default" />
+                <h:link outcome="/settings/overview" class="btn btn-primary" value="#{msg['common.yes']}" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>

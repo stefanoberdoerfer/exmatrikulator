@@ -1,0 +1,19 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['settings.finalize']}" appendTo="@(body)" widgetVar="finalizeSuccess" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            #{msg['settings.finalize.success']}
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.close']}" type="button"
+                                 onclick="return exModal(':finalizeSuccess');" styleClass="btn btn-default" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>
