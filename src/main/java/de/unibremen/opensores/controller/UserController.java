@@ -2,6 +2,7 @@ package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.service.UserService;
 
 import javax.annotation.PostConstruct;
@@ -12,6 +13,8 @@ import javax.faces.context.FacesContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -92,4 +95,28 @@ public class UserController {
     public List<Course> getHiddenCourses() {
         return userService.getCourses(getUser(), true);
     }
+
+    /**
+     * Returns a map from semesters to active courses.
+     *
+     * @return Map for active semester courses.
+     */
+    public Map<Semester, List<Course>> getCoursesBySemester() {
+        Map<Semester, List<Course>> map = new HashMap<>();
+
+        List<Course> courses = userService.getCourses(getUser(), false);
+        for (Course course : courses) {
+            Semester se = course.getSemester();
+            List<Course> cs = map.get(se);
+            if (cs == null) {
+                cs = new ArrayList<>();
+            }
+
+            cs.add(course);
+            map.put(se, cs);
+        }
+
+        return map;
+    }
+
 }

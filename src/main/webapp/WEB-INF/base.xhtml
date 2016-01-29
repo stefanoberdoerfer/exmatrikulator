@@ -38,7 +38,7 @@
     <div id="header">
         <div class="btn-group user pull-right">
             <h:form layout="block" class="btn btn-default">
-                <div class="dropdown-toggle active-language" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="dropdown-toggle active-language">
                     #{navigation.userLocale}
                 </div>
                 <ul class="dropdown-menu">
@@ -48,12 +48,12 @@
                 </ul>
             </h:form>
             <div class="btn btn-default">
-                <div class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="dropdown-toggle">
                     #{user.firstName} #{user.lastName} <span class="caret"></span>
                 </div>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <!-- Todo: Links setzen -->
-                    <li><h:link value="#{msg['common.myProfile']}" outcome="profile" /></li>
+                    <li><h:link value="#{msg['common.myProfile']}" outcome="/profile/show" /></li>
                     <li role="separator" class="divider"></li>
                     <li><a>#{msg['common.logout']}</a></li>
                 </ul>
@@ -71,11 +71,29 @@
             <h:graphicImage library="images" name="stallion_light.svg" class="logo-stallion" />
         </div>
 
-        <ul class="nav nav-pills nav-stacked system-links">
-            <!-- Todo: Links abhängig von der Benutzerrolle -->
-        </ul>
+        <h:form>
+            <ui:repeat value="#{userController.coursesBySemester.entrySet().toArray()}" var="semester">
+            <label>#{semester.key}</label>
+            <ul class="nav nav-pills nav-stacked semester-links">
+                <ui:repeat value="#{semester.value}" var="course">
+                <li>
+                    <h:link value="#{course.name}" />
+                    <ul class="nav nav-pills nav-stacked sub-pills">
+                        <li><h:commandLink action="#{navigation.viewCourse(course,
+                            &quot;/participants/overview&quot;)}" value="#{msg['common.course.participants']}" /></li>
+                        <li><h:commandLink action="#{navigation.viewCourse(course,
+                            &quot;/participants/overview&quot;)}" value="#{msg['courses.tutorialsGroups']}" /></li>
+                        <li><h:commandLink action="#{navigation.viewCourse(course,
+                            &quot;/participants/overviewl&quot;)}" value="#{msg['courses.grading']}" /></li>
+                        <li><h:commandLink action="#{navigation.viewCourse(course,
+                            &quot;/participants/overview&quot;)}" value="#{msg['common.settings']}" /></li>
+                    </ul>
+                </li>
+                </ui:repeat>
+            </ul>
+            </ui:repeat>
+        </h:form>
 
-        <!-- Todo: Veranstaltungen anzeigen -->
     </div>
 
     <div id="main">
