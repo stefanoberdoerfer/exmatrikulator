@@ -29,29 +29,29 @@
                     </div>
                 </h:link>
 
-                <a href="settings/examination.php" class="col-xs-12 settings-group">
+                <h:link outcome="/settings/exams/overview" class="col-xs-12 settings-group">
                     <div class="settings-group-icon"><i class="fa fa-file-text"></i></div>
                     <h3 class="settings-group-name">#{msg['common.course.exams']}</h3>
                     <div class="settings-group-desc">
                         #{msg['settings.explanations.exams']}
                     </div>
-                </a>
+                </h:link>
 
-                <a href="settings/participationtypes.php" class="col-xs-12 settings-group">
+                <h:link outcome="/settings/participationTypes" class="col-xs-12 settings-group">
                     <i class="fa fa-users"></i>
                     <h3 class="settings-group-name">#{msg['common.course.participationTypes']}</h3>
                     <div class="settings-group-desc">
                         #{msg['settings.explanations.participationTypes']}
                     </div>
-                </a>
+                </h:link>
 
-                <a href="settings/formula.php" class="col-xs-12 settings-group">
+                <h:link outcome="/settings/formula/overview" class="col-xs-12 settings-group">
                     <i class="fa fa-calculator"></i>
                     <h3 class="settings-group-name">#{msg['common.course.gradingFormula']}</h3>
                     <div class="settings-group-desc">
                         #{msg['settings.explanations.gradingFormula']}
                     </div>
-                </a>
+                </h:link>
 
                 <h:link onclick="return exModal('paboExport');" class="col-xs-12 settings-group">
                     <i class="fa fa-cloud-download"></i>

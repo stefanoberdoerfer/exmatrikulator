@@ -4,7 +4,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
     <!-- Define Params -->
     <ui:param name="pageTitle" value="#{msg['courses.create']}" />
     <!-- Breadcrumbs -->
@@ -36,11 +37,15 @@
         <h:form layout="block">
             <div class="row">
                 <div class="col-xs-8">
-                    <p>#{msg['gradingformula.explanation']}</p>
-                    <h:inputTextarea rows="20" class="form-control calculation-formula" />
+                    <p:tabView>
+                        <p:tab title="#{msg['gradingformula.standard']}">
+                            <p>#{msg['gradingformula.explanation']}</p>
+                            <h:inputTextarea rows="20" class="form-control calculation-formula" />
 
-                    <h:link onclick="return exModal('formulaTest');"
-                            class="btn btn-default" value="#{msg['gradingformula.test']}" />
+                            <h:link onclick="return exModal('formulaTest');"
+                                    class="btn btn-default" value="#{msg['gradingformula.test']}" />
+                        </p:tab>
+                    </p:tabView>
                 </div>
                 <div class="col-xs-4">
                     <h3>#{msg['common.course.exams']}</h3>
