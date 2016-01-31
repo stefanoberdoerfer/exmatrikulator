@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['examination.add']}" appendTo="@(body)" widgetVar="examAdd" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="addExaminationName" class="col-xs-3 control-label">
+                    #{msg['examination.name']}
+                </label>
+                <div class="col-xs-8">
+                    <h:inputText type="text" class="form-control" id="addExaminationName" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="addExaminationIdentification" class="col-xs-3 control-label">
+                    #{msg['examination.shortcut']}</label>
+                <div class="col-xs-8">
+                    <h:inputText type="text" class="form-control" id="addExaminationIdentification" />
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <h:outputLabel for="addExaminationGradeType" class="col-xs-3 control-label text-left"
+                               value="#{msg['examination.add.gradeType']}"/>
+                <div class="col-xs-8">
+                    <select class="form-control" id="addExaminationGradeType">
+                        <option>#{msg['gradeType.grade']}</option>
+                        <option>#{msg['gradeType.points']}</option>
+                        <option>#{msg['gradeType.percent']}</option>
+                    </select>
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <div class="col-xs-8 col-xs-offset-3">
+                    <div class="checkbox">
+                        <h:selectBooleanCheckbox id="addAccessTutors" />
+                        <h:outputLabel value="#{msg['examination.add.tutor']}" for="addAccessTutors" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.cancel']}" type="button" onclick="return exModal(':examAdd');"
+                                 styleClass="btn btn-default" />
+                <h:link outcome="/course/create/step2" class="btn btn-primary"
+                        value="#{msg['common.add']}" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>

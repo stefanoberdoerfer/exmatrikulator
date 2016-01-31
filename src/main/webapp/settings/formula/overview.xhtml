@@ -1,0 +1,84 @@
+<!-- Todo: Seite darf nur von Dozenten aufgerufen werden -->
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.course.gradingFormula']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <!-- Todo: Veranstaltungsnamen anzeigen -->
+        <li>Veranstaltung trololol</li>
+        <li><h:link value="#{msg['common.settings']}" outcome="/settings/overview" /></li>
+        <li class="active">#{msg['common.course.gradingFormula']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <div class="btn-group main-buttons pull-right">
+                <h:link class="btn btn-primary" value="#{msg['common.saveChanges']}"
+                        outcome="/settings/overview"/>
+            </div>
+            <h1>#{msg['common.course.gradingFormula']}</h1>
+        </div>
+
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+
+        <div class="row">
+            <div class="col-xs-8">
+                <p:tabView>
+                    <p:tab title="#{msg['gradingformula.standard']}">
+                        <p>#{msg['gradingformula.explanation']}</p>
+                        <h:inputTextarea rows="20" class="form-control calculation-formula" />
+
+                        <h:link onclick="return exModal('formulaTest');"
+                                class="btn btn-default" value="#{msg['gradingformula.test']}" />
+                    </p:tab>
+                </p:tabView>
+            </div>
+            <div class="col-xs-4">
+                <h3>#{msg['common.course.exams']}</h3>
+                <table class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>#{msg['examination.name']}</th>
+                        <th class="table-examination-identifier">#{msg['examination.shortcut']}</th>
+                        <th class="table-examination-grade">#{msg['examination.gradeType']}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Übungsblatt 1</td>
+                        <td>ÜB1</td>
+                        <td>Prozentzahl</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-info">#{msg['gradingformula.shortcutHint']}</div>
+                <p/><br />
+                <h3>#{msg['gradingformula.helpers']}</h3>
+                <table class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>#{msg['gradingformula.syntax']}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <strong>replace(x1, x2)</strong><br />
+                            Teilprüfung x1 wird dabei von Teilprüfung x2 ersetzt, falls für
+                            den Studenten bei x2 ein Ergebnis eingetragen wurde.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <ui:include src="/settings/formula/test.xhtml" />
+    </ui:define>
+</ui:composition>

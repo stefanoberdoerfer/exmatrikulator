@@ -1,0 +1,94 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.settings']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <!-- Todo: Veranstaltungsnamen anzeigen -->
+        <li>Veranstaltung trololol</li>
+        <li class="active">#{msg['common.settings']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <h1>#{msg['common.settings']}</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5">
+                <h:link onclick="return exModal('courseEdit');" class="col-xs-12 settings-group">
+                    <div class="settings-group-icon"><i class="fa fa-database"></i></div>
+                    <h3 class="settings-group-name">#{msg['common.course.commonData']}</h3>
+                    <div class="settings-group-desc">
+                        #{msg['settings.explanations.common']}
+                    </div>
+                </h:link>
+
+                <h:link outcome="/settings/exams/overview" class="col-xs-12 settings-group">
+                    <div class="settings-group-icon"><i class="fa fa-file-text"></i></div>
+                    <h3 class="settings-group-name">#{msg['common.course.exams']}</h3>
+                    <div class="settings-group-desc">
+                        #{msg['settings.explanations.exams']}
+                    </div>
+                </h:link>
+
+                <h:link outcome="/settings/participationTypes" class="col-xs-12 settings-group">
+                    <i class="fa fa-users"></i>
+                    <h3 class="settings-group-name">#{msg['common.course.participationTypes']}</h3>
+                    <div class="settings-group-desc">
+                        #{msg['settings.explanations.participationTypes']}
+                    </div>
+                </h:link>
+
+                <h:link outcome="/settings/formula/overview" class="col-xs-12 settings-group">
+                    <i class="fa fa-calculator"></i>
+                    <h3 class="settings-group-name">#{msg['common.course.gradingFormula']}</h3>
+                    <div class="settings-group-desc">
+                        #{msg['settings.explanations.gradingFormula']}
+                    </div>
+                </h:link>
+
+                <h:link onclick="return exModal('paboExport');" class="col-xs-12 settings-group">
+                    <i class="fa fa-cloud-download"></i>
+                    <h3 class="settings-group-name">#{msg['settings.export']}</h3>
+                    <div class="settings-group-desc">
+                        #{msg['settings.explanation.export']}
+                        <!-- Todo: Nur anzeigen wenn zutrifft -->
+                        <div class="alert alert-warning">
+                            #{msg['settings.export.warning']}
+                        </div>
+                    </div>
+                </h:link>
+            </div>
+            <div class="col-xs-6 col-xs-offset-1 settings-finalize">
+                <h3>#{msg['settings.finalize']}</h3>
+                <div class="alert alert-warning">
+                    <p>
+                        #{msg['settings.explanations.finalize']}<br />
+                        <br />
+                        #{msg['settings.finalize.last']}: #{msg['settings.finalize.never']}
+                    </p><br />
+
+                    <div>
+                        <h:link onclick="return exModal('finalizeConfirm');" class="btn btn-danger">
+                            #{msg['settings.finalize']}
+                        </h:link>
+                    </div>
+                </div>
+
+                <h3>#{msg['settings.export']}</h3>
+                <p>#{msg['settings.export.none']}</p>
+            </div>
+        </div>
+
+        <ui:include src="/settings/edit.xhtml" />
+        <ui:include src="/settings/export.xhtml" />
+        <ui:include src="/settings/finalize/confirm.xhtml" />
+        <ui:include src="/settings/finalize/success.xhtml" />
+    </ui:define>
+</ui:composition>

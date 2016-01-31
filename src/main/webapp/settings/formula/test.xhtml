@@ -1,0 +1,27 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['gradingformula.test']}" appendTo="@(body)" widgetVar="formulaTest" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <p>#{msg['gradingformula.test.explanation']}</p>
+            <div class="form-group">
+                <label for="exam1" class="col-xs-3 control-label">ÜB1</label>
+                <div class="col-xs-8">
+                    <h:inputText  type="text" class="form-control" id="exam1"/>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                 onclick="return exModal(':formulaTest');" styleClass="btn btn-default" />
+                <h:link outcome="/course/create/step4" class="btn btn-primary"
+                        value="#{msg['common.test']}" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>

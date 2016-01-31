@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['common.course.commonData']}" appendTo="@(body)" widgetVar="courseEdit" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <div class="form-group">
+                <h:outputLabel for="courseName" class="col-xs-3 control-label text-left"
+                               value="#{msg['common.name']}"/>
+                <div class="col-xs-8">
+                    <h:inputText type="text" class="form-control" id="courseName"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <h:outputLabel for="courseNumber" class="col-xs-3 control-label text-left"
+                               value="#{msg['courses.vak']}"/>
+                <div class="col-xs-8">
+                    <h:inputText  type="text" class="form-control" id="courseNumber"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-8 col-xs-offset-3">
+                    <h:button type="button" class="btn btn-default" value="#{msg['courses.create.moreVAK']}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <h:outputLabel for="courseSemester" class="col-xs-3 control-label text-left"
+                               value="#{msg['common.semester']}"/>
+                <div class="col-xs-8">
+                    <select class="form-control" id="courseSemester">
+                        <!-- TODO Get seemster from a controller -->
+                        <option>Sommersemester 2017</option>
+                        <option>Wintersemester 2016/2017</option>
+                        <option>Sommersemester 2016</option>
+                        <option>Wintersemester 2015/2016</option>
+                        <option>Sommersemester 2015</option>
+                    </select>
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <h:outputLabel for="courseCP" class="col-xs-3 control-label text-left"
+                               value="#{msg['courses.creditPoints']}"/>
+                <div class="col-xs-8">
+                    <h:inputText type="number" class="form-control" id="courseCP"
+                                 converter="javax.faces.Integer">
+                        <f:convertNumber integerOnly="true"/>
+                        <f:validateLongRange minimum="1"/>
+                    </h:inputText>
+                </div>
+            </div>
+            <div class="form-group">
+                <h:outputLabel for="courseSWS" class="col-xs-3 control-label text-left"
+                               value="#{msg['courses.sws']}"/>
+                <div class="col-xs-8">
+                    <h:inputText type="number" class="form-control" id="courseSWS">
+                        <f:convertNumber integerOnly="true"/>
+                        <f:validateLongRange minimum="1"/>
+                    </h:inputText>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-8 col-xs-offset-3">
+                    <h:selectBooleanCheckbox id="publicFormula" />
+                    <h:outputLabel value="#{msg['courses.create.studentsCanSeeFormula']}"
+                                   for="publicFormula" />
+                </div>
+            </div>
+            <hr />
+            <div class="form-group">
+                <h:outputLabel class="col-xs-3 control-label text-left" value="#{msg['common.lecturers']}" />
+                <div class="col-xs-8 form-control-static">
+                    Rainer <strong>Kosche</strong>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-8 col-xs-offset-3">
+                    <button type="button" class="btn btn-danger pull-right"><i class="fa fa-remove"></i></button>
+                    <div class="form-control-static">Karsten <strong>Hölscher</strong></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-8 col-xs-offset-3">
+                    <h:inputText type="text" placeholder="#{msg['courses.create.searchForLecturers']}"
+                                 class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                 onclick="return exModal(':courseEdit');" styleClass="btn btn-default" />
+                <h:link outcome="/settings/overview" class="btn btn-primary" value="#{msg['common.saveChanges']}" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>
