@@ -30,6 +30,9 @@ public class GradeFormula {
     @Column(nullable = false)
     private Date time;
 
+    @Column
+    private boolean valid;
+
     public String getFormula() {
         return formula;
     }
@@ -56,5 +59,13 @@ public class GradeFormula {
 
     public Long getFormulaId() {
         return formulaId;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

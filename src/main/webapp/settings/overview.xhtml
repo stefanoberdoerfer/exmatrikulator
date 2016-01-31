@@ -10,7 +10,7 @@
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
         <!-- Todo: Veranstaltungsnamen anzeigen -->
-        <li>Veranstaltung trololol</li>
+        <li>#{courseSettings.course.name}</li>
         <li class="active">#{msg['common.settings']}</li>
     </ui:define>
     <!-- Page Content -->
@@ -18,7 +18,6 @@
         <div class="headline">
             <h1>#{msg['common.settings']}</h1>
         </div>
-
         <div class="row">
             <div class="col-xs-5">
                 <h:link onclick="return exModal('courseEdit');" class="col-xs-12 settings-group">
@@ -30,6 +29,7 @@
                 </h:link>
 
                 <h:link outcome="/settings/exams/overview" class="col-xs-12 settings-group">
+                    <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <div class="settings-group-icon"><i class="fa fa-file-text"></i></div>
                     <h3 class="settings-group-name">#{msg['common.course.exams']}</h3>
                     <div class="settings-group-desc">
@@ -85,7 +85,6 @@
                 <p>#{msg['settings.export.none']}</p>
             </div>
         </div>
-
         <ui:include src="/settings/edit.xhtml" />
         <ui:include src="/settings/export.xhtml" />
         <ui:include src="/settings/finalize/confirm.xhtml" />

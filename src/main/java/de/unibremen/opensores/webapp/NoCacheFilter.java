@@ -51,9 +51,6 @@ public class NoCacheFilter implements Filter {
                          ServletResponse response,
                          FilterChain chain)
             throws IOException, ServletException {
-
-        log.debug("doFilter() called");
-
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
@@ -61,7 +58,6 @@ public class NoCacheFilter implements Filter {
         // you can customize that to be applied for specific pages
         if (!req.getRequestURI().startsWith(req.getContextPath()
                 + ResourceHandler.RESOURCE_IDENTIFIER)) {
-            log.debug("Disabling caching in this request");
             // Skip JSF resources (CSS/JS/Images/etc)
             res.setHeader("Cache-Control",
                     "no-cache, no-store, must-revalidate"); // HTTP 1.1.

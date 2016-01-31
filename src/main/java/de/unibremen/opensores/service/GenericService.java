@@ -40,9 +40,10 @@ public abstract class GenericService<T> {
      * Removes an entity from the database.
      * @param entity The entity to be removed, can't be null and
      *               must be an entity in the database.
-     * @return The updated entity
      */
     public void remove(T entity) {
-        em.remove(entity);
+        //The to be deleted entity must be in the current transaction
+        //http://stackoverflow.com/questions/17027398/java-lang-illegalargumentexception-removing-a-detached-instance-com-test-user5
+        em.remove(em.contains(entity) ? entity : em.merge(entity));
     }
 }
