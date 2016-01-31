@@ -1,0 +1,122 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['courses.tutorialsGroups']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <!-- Todo: Veranstaltungsnamen anzeigen -->
+        <li>Veranstaltung trololol</li>
+        <li class="active">#{msg['courses.tutorialsGroups']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <div class="btn-group main-buttons pull-right">
+                <h:link onclick="return exModal('tutorialCreate');" value="#{msg['tutorials.create']}"
+                        class="btn btn-primary" />
+            </div>
+            <h1>#{msg['courses.tutorialsGroups']}</h1>
+        </div>
+
+        <!-- Todo: tutorials auslesen -->
+        <ui:repeat var="tutorial">
+            <div class="row table-groups-header">
+                <div class="col-xs-8">
+                    <h3>#{tutorial.name}</h3>
+                    <h4 class="table-groups-tutors">
+                        <strong>#{msg['common.tutors']}:</strong>
+                        <ui:repeat var="tutor" value="#{tutorial.tutors}">#{tutor.name}</ui:repeat>
+                    </h4>
+                </div>
+                <div class="col-xs-4 text-right">
+                    <div class="btn-group">
+                        <h:link onclick="return exModal('tutorialEdit');" class="btn btn-default">
+                            <i class="fa fa-pencil"></i>
+                        </h:link>
+                        <h:link onclick="return exModal('tutorialRemove');" class="btn btn-danger">
+                            <i class="fa fa-remove"></i>
+                        </h:link>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-hover table-groups">
+                <thead>
+                <tr>
+                    <th class="table-groups-name">#{msg['groups.name']}</th>
+                    <th class="table-groups-students-name">#{msg['common.students']}</th>
+                    <th>#{msg['common.studentNumber']}</th>
+                    <th class="table-common-options-one"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <ui:repeat var="student" value="#{tutorial.students}">
+                <tr class="vert-align-middle">
+                    <td></td>
+                    <td>
+                        #{student.firstName} <strong>#{student.lastName}</strong>
+                    </td>
+                    <td>111111</td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <h:link onclick="return exModal('studentRemove');" class="btn btn-danger">
+                                <i class="fa fa-remove"></i>
+                            </h:link>
+                        </div>
+                    </td>
+                </tr>
+                </ui:repeat>
+                <ui:repeat var="group" value="#{tutorial.groups}" varStatus="groupStatus">
+                    <ui:repeat var="student" value="#{tutorial.groups}">
+                    <tr class="vert-align-middle">
+                        <td>
+                            <h:panelGroup rendered="#{groupStatus.first}">
+                                <strong>#{group.name}</strong>
+                                <div class="btn-group pull-right">
+                                    <h:link onclick="return exModal('groupEdit');" class="btn btn-default">
+                                        <i class="fa fa-pencil"></i>
+                                    </h:link>
+                                    <h:link onclick="return exModal('groupRemove');" class="btn btn-danger">
+                                        <i class="fa fa-remove"></i>
+                                    </h:link>
+                                </div>
+                            </h:panelGroup>
+                        </td>
+                        <td>
+                            #{student.firstName} <strong>#{student.lastName}</strong>
+                        </td>
+                        <td>111111</td>
+                        <td class="text-right">
+                            <div class="btn-group">
+                                <h:link onclick="return exModal('studentRemove');" class="btn btn-danger">
+                                    <i class="fa fa-remove"></i>
+                                </h:link>
+                            </div>
+                        </td>
+                    </tr>
+                    </ui:repeat>
+                </ui:repeat>
+                </tbody>
+            </table>
+
+            <div class="table-groups-buttons btn-group">
+                <h:link onclick="return exModal('groupCreate');" class="btn btn-default" value="#{msg['groups.add']}" />
+                <h:link onclick="return exModal('studentAdd');" class="btn btn-default" value="#{msg['students.add']}" />
+            </div>
+        </ui:repeat>
+
+        <ui:include src="/tutorialsGroups/tutorials/create.xhtml" />
+        <ui:include src="/tutorialsGroups/tutorials/edit.xhtml" />
+        <ui:include src="/tutorialsGroups/tutorials/remove.xhtml" />
+        <ui:include src="/tutorialsGroups/groups/create.xhtml" />
+        <ui:include src="/tutorialsGroups/groups/edit.xhtml" />
+        <ui:include src="/tutorialsGroups/groups/remove.xhtml" />
+        <ui:include src="/tutorialsGroups/students/create.xhtml" />
+        <ui:include src="/tutorialsGroups/students/remove.xhtml" />
+    </ui:define>
+</ui:composition>

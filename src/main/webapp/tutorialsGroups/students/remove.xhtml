@@ -1,0 +1,23 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['students.remove']}" appendTo="@(body)" widgetVar="studentRemove" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            #{msg['students.remove.question']}<br />
+            <br />
+            #{msg['students.remove.hint']}
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                 onclick="return exModal(':studentRemove');" styleClass="btn btn-default" />
+                <h:link outcome="/tutorialsGroups/overview" class="btn btn-danger"
+                        value="#{msg['common.remove']}" />
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>
