@@ -1,0 +1,36 @@
+Exmatrikulator Capybara
+=======================
+
+Frontend tests for Exmatrikulator with capybara.
+
+Installation
+------------
+
+You need ruby 1.9.3 (or higher) and rubygems in order to run the tests.
+
+Furthermore, bundler is required to install the dependencies. If you
+setup ruby and rubygems properly you should be able to install bundler
+by invoking the following command:
+
+	# gem install bundler
+
+If you don't want to install it globally pass the `--user-install` flag,
+otherwise you will need to run it as root. Afterwards you can install
+capybara and other dependencies for the tests using:
+
+	$ bundle install --path vendor/bundle
+
+Keep in mind that some of our dependencies depend on C libraries and
+software like xvfb and qt-webkit so make sure you have those installed
+as well.
+
+Usage
+-----
+
+To run the tests using webkit on a 'fake' framebuffer X server invoke:
+
+	$  xvfb-run -a bundle exec ruby run_tests.rb
+
+The `run_tests.rb` uses a dirty hack to start the embedded glassfish
+server using `mvn` it also removes the `exmatrikulator-db` to drop the
+database.

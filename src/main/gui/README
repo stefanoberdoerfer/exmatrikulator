@@ -1,6 +1,8 @@
 Exmatrikulator Grunt
 ====================
 
+Frontend files for Exmatrikulator.
+
 Node Installation
 -----------------
 
@@ -12,21 +14,25 @@ Node Installation
 Install grunt client
 --------------------
 
-Open terminal and execute:
-npm install -g grunt-cli
-(Can be possible that it's necessary to use sudo.)
+To install grunt invoke the following command:
+
+	$ npm install -g grunt-cli
 
 
 Install dependencies
 --------------------
 
-Open path exmatrikaltor-code/src/main/gui in terminal and execute:
-npm install
-Then same command in folder exmatrikaltor-code/src/main/gui/vendors/bootstrap
+Go to `src/main/gui` and invoke:
+
+	$ npm install
+
+Afterwards go to `src/main/gui/vendors/bootstrap` and run the same
+command again to install the bootstrap dependencies too.
 
 
 Build Stylesheets and Javascript
 --------------------------------
 
-Open path exmatrikaltor-code/src/main/gui in terminal and execute:
-grunt build
+Go to `src/main/gui` and invoke:
+
+	$ grunt build
