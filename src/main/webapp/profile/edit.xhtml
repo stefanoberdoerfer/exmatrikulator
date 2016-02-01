@@ -3,7 +3,11 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+  <pe:importConstants className="de.unibremen.opensores.util.Constants" var="EXcons" />
+
   <!-- Define Params -->
   <ui:param name="pageTitle" value="Veranstaltungsübersicht" />
   <!-- Breadcrumbs -->
@@ -31,7 +35,9 @@
                 <div class="form-group">
                   <h:outputLabel class="col-xs-3 control-label" value="#{msg['common.email']}"/>
                     <div class="col-xs-8">
-                      <h:inputText type="email" class="form-control" value="#{userController.user.email}" />
+                      <h:inputText type="email" class="form-control" value="#{userController.user.email}">
+                        <f:validateRegex pattern="#{EXcons.EMAIL_REGEX}" />
+                      </h:inputText>
                     </div>
                 </div>
 
