@@ -7,8 +7,6 @@ build:
   stage: build
   script:
     - mvn compile
-  only:
-    - master
   tags:
     - linux
 
@@ -16,21 +14,12 @@ test:
   stage: test
   script:
     - mvn test
-  only:
-    - master
   tags:
     - linux
 
-findbugs:
+verify:
   stage: verify
   script:
-    - mvn findbugs:check
-  tags:
-    - linux
-
-checkstyle:
-  stage: verify
-  script:
-    - mvn checkstyle:check
+    - mvn verify -DskipTests
   tags:
     - linux
