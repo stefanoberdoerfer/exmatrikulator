@@ -1,0 +1,74 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['courses.grading']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <!-- Todo: Veranstaltungsnamen anzeigen -->
+        <li>Veranstaltung trololol</li>
+        <li class="active">#{msg['courses.grading']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <div class="btn-group main-buttons pull-right">
+                <h:form styleClass="section-search">
+                    <h:inputText styleClass="form-control" h5:placeholder="#{msg['gradings.search']}" />
+                    <h:commandLink styleClass="btn btn-default"><i class="fa fa-search"></i></h:commandLink>
+                </h:form>
+                <h:link onclick="return exModal('finalGradesCalculate');" value="#{msg['gradings.finalGrade.calculate']}"
+                        class="btn btn-default" />
+                <h:link onclick="return exModal('gradeInsert');" value="#{msg['gradings.insert']}"
+                        class="btn btn-primary" />
+            </div>
+            <h1>#{msg['courses.grading']}</h1>
+        </div>
+
+        <div class="alert alert-info">
+            #{msg['gradings.hints.email']}
+        </div>
+
+        <ul class="nav nav-tabs inverted" role="tablist">
+            <li class="active">
+                <h:link outcome="/grading/overview" value="#{msg['gradings.forStudents']}" />
+            </li>
+            <li>
+                <h:link outcome="/grading/groups" value="#{msg['gradings.forGroups']}" />
+            </li>
+        </ul>
+
+        <h:dataTable var="student" value="#{gradingController.students}"
+                     columnClasses="table-common-options-one,table-grades-name,responsive,
+                     table-grades-grade,table-common-options-two"
+                     styleClass="table table-hover table-courses-overview">
+            <p:column>
+                <p:rowToggler />
+            </p:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.student']}</f:facet>
+                #{student.firstName} <strong>#{student.lastName}</strong>
+                <div class="table-common-sub">#{student.email}</div>
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
+                #{student.studentNumber}
+            </h:column>
+            <h:column>
+                <f:facet name="header">#{msg['gradings.finalGrade']}</f:facet>
+                #{student.finalGrade}
+            </h:column>
+            <h:column>
+                <f:facet name="header"></f:facet>
+                <h:link onclick="return exModal('gradeEdit');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" class="btn btn-default">
+                    <i class="fa fa-edit"></i>
+                </h:link>
+            </h:column>
+        </h:dataTable>
+    </ui:define>
+</ui:composition>
