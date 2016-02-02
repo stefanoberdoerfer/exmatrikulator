@@ -57,7 +57,7 @@ public class NewPasswordController {
             facesContext.getViewRoot().getLocale());
 
         User user = (userId == null || userId.trim().isEmpty()) ? null :
-            userService.find(Integer.valueOf(userId).longValue());
+            userService.find(User.class, Integer.valueOf(userId).longValue());
 
         String msg = null;
         if (user == null || !verify(user.getToken(), tokenStr)) {

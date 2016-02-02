@@ -11,11 +11,6 @@ import javax.persistence.PersistenceException;
  * @author Sören Tempel
  */
 public abstract class GenericService<T> {
-    /**
-     * Entity class for this service.
-     */
-    private Class<T> entityClass;
-
     @PersistenceContext
     protected EntityManager em;
 
@@ -56,10 +51,12 @@ public abstract class GenericService<T> {
     /**
      * Finds an item by its primary key.
      *
+     * @param entityClass Entity result class.
      * @param primaryKey PrimaryKey to use for lookup.
+     *
      * @return Found entity or null if it doesn't exist.
      */
-    public T find(Object primaryKey) {
+    public T find(Class<T> entityClass, Object primaryKey) {
         return em.find(entityClass, primaryKey);
     }
 }
