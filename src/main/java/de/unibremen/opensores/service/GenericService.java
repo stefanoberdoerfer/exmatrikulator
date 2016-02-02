@@ -5,9 +5,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
 /**
- * Created by kevin on 14.01.16.
+ * Abstract class for services.
+ *
+ * @author Kevin Scheck
+ * @author Sören Tempel
  */
 public abstract class GenericService<T> {
+    /**
+     * Entity class for this service.
+     */
+    private Class<T> entityClass;
 
     @PersistenceContext
     protected EntityManager em;
@@ -44,5 +51,15 @@ public abstract class GenericService<T> {
      */
     public void remove(T entity) {
         em.remove(entity);
+    }
+
+    /**
+     * Finds an item by its primary key.
+     *
+     * @param primaryKey PrimaryKey to use for lookup.
+     * @return Found entity or null if it doesn't exist.
+     */
+    public T find(Object primaryKey) {
+        return em.find(entityClass, primaryKey);
     }
 }

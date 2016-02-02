@@ -37,22 +37,6 @@ public class UserService extends GenericService<User> {
     }
 
     /**
-     * Finds a user by his unique id.
-     *
-     * @param id Id which should be used for lookup.
-     * @return The user or null if a user with this id doesn't exist.
-     */
-    public User findById(long id) {
-        List<User> userList = em.createQuery(
-                "SELECT DISTINCT u "
-              + "FROM User u "
-              + "WHERE u.userId = :id", User.class)
-            .setParameter("id", id).getResultList();
-
-        return (userList.isEmpty()) ? null : userList.get(0);
-    }
-
-    /**
      * Checks if given email is already an registered account.
      * @param email email as typed in by the user
      * @return true if email has already been used for registration, false otherwise
