@@ -5,12 +5,13 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
+
     <!-- Define Params -->
     <ui:param name="pageTitle" value="#{msg['courses.tutorialsGroups']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
         <!-- Todo: Veranstaltungsnamen anzeigen -->
-        <li>Veranstaltung trololol</li>
+        <li>#{tutorialGroupController.course.name}</li>
         <li class="active">#{msg['courses.tutorialsGroups']}</li>
     </ui:define>
     <!-- Page Content -->
@@ -24,13 +25,13 @@
         </div>
 
         <!-- Todo: tutorials auslesen -->
-        <ui:repeat var="tutorial">
+        <ui:repeat var="tutorial" value="#{tutorialGroupController.tutorials}">
             <div class="row table-groups-header">
                 <div class="col-xs-8">
                     <h3>#{tutorial.name}</h3>
                     <h4 class="table-groups-tutors">
                         <strong>#{msg['common.tutors']}:</strong>
-                        <ui:repeat var="tutor" value="#{tutorial.tutors}">#{tutor.name}</ui:repeat>
+                        <ui:repeat var="tutor" value="#{tutorial.tutors}">#{tutor.user}</ui:repeat>
                     </h4>
                 </div>
                 <div class="col-xs-4 text-right">
@@ -59,7 +60,7 @@
                 <tr class="vert-align-middle">
                     <td></td>
                     <td>
-                        #{student.firstName} <strong>#{student.lastName}</strong>
+                      #{student.user}
                     </td>
                     <td>111111</td>
                     <td class="text-right">
@@ -72,7 +73,7 @@
                 </tr>
                 </ui:repeat>
                 <ui:repeat var="group" value="#{tutorial.groups}" varStatus="groupStatus">
-                    <ui:repeat var="student" value="#{tutorial.groups}">
+                    <ui:repeat var="student" value="#{group.students}">
                     <tr class="vert-align-middle">
                         <td>
                             <h:panelGroup rendered="#{groupStatus.first}">
@@ -88,7 +89,7 @@
                             </h:panelGroup>
                         </td>
                         <td>
-                            #{student.firstName} <strong>#{student.lastName}</strong>
+                          <strong>#{student.user}</strong>
                         </td>
                         <td>111111</td>
                         <td class="text-right">

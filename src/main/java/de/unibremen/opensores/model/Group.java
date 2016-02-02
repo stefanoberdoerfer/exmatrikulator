@@ -25,6 +25,9 @@ public class Group {
     @GeneratedValue
     private Long groupId;
 
+    @Column(nullable = false, length = 32)
+    private String name;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
     private Course course;
@@ -66,5 +69,13 @@ public class Group {
 
     public void setTutorial(Tutorial tutorial) {
         this.tutorial = tutorial;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

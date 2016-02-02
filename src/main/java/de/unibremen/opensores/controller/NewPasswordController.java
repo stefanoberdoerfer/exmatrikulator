@@ -56,8 +56,13 @@ public class NewPasswordController {
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
 
-        User user = (userId == null || userId.trim().isEmpty()) ? null :
-            userService.find(User.class, Integer.valueOf(userId).longValue());
+        User user = null;
+        try {
+            user = (userId == null || userId.trim().isEmpty()) ? null :
+                userService.find(User.class, Integer.valueOf(userId).longValue());
+        } catch (NumberFormatException e) {
+            user = null;
+        }
 
         String msg = null;
         if (user == null || !verify(user.getToken(), tokenStr)) {

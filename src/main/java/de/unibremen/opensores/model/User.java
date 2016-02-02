@@ -171,4 +171,9 @@ public class User {
     public void setToken(PasswordReset resetToken) {
         this.resetToken = resetToken;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", firstName, lastName);
+    }
 }
