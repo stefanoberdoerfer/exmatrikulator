@@ -79,14 +79,18 @@
                 <li>
                     <h:link value="#{course.name}" />
                     <ul class="nav nav-pills nav-stacked sub-pills">
-                        <li><h:commandLink action="#{navigation.viewCourse(course,
-                            &quot;/participants/overview&quot;)}" value="#{msg['common.course.participants']}" /></li>
-                        <li><h:commandLink action="#{navigation.viewCourse(course,
-                            &quot;/tutorialsGroups/overview&quot;)}" value="#{msg['courses.tutorialsGroups']}" /></li>
-                        <li><h:commandLink action="#{navigation.viewCourse(course,
-                            &quot;/participants/overviewl&quot;)}" value="#{msg['courses.grading']}" /></li>
-                        <li><h:commandLink action="#{navigation.viewCourse(course,
-                            &quot;/settings/overview&quot;)}" value="#{msg['common.settings']}" /></li>
+                        <li><h:link outcome="/participants/overview" value="#{msg['common.course.participants']}">
+                            <f:param name="course-id" value="#{course.courseId}"/>
+                        </h:link></li>
+                        <li><h:link outcome="/tutorialsGroups/overview}" value="#{msg['courses.tutorialsGroups']}">
+                            <f:param name="course-id" value="#{course.courseId}"/>
+                        </h:link></li>
+                        <li><h:link outcome="/participants/overviewl" value="#{msg['courses.grading']}">
+                            <f:param name="course-id" value="#{course.courseId}"/>
+                        </h:link></li>
+                        <li><h:link outcome="/settings/overview" value="#{msg['common.settings']}">
+                            <f:param name="course-id" value="#{course.courseId}"/>
+                        </h:link></li>
                     </ul>
                 </li>
                 </ui:repeat>

@@ -4,22 +4,39 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['examination.edit']}" appendTo="@(body)" widgetVar="examEdit" modal="true">
+    <p:dialog header="#{msg['examination.edit']}" id="examEditDialog" appendTo="@(body)" widgetVar="examEdit" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
-        <div class="modal-body">
+        <h:form id="editExamForm">
+            <div class="modal-body">
             <div class="form-group">
-                <label for="editExaminationName" class="col-xs-3 control-label">
+                <label for="addExaminationName" class="col-xs-3 control-label">
                     #{msg['examination.name']}
                 </label>
                 <div class="col-xs-8">
-                    <h:inputText type="text" class="form-control" id="editExaminationName" />
+                    <h:inputText type="text" class="form-control" id="addExaminationName"
+                                 value="#{examController.selectedExam.name}" required="true">
+                        <f:validateLength minimum="1" maximum="250"/>
+                    </h:inputText>
                 </div>
             </div>
             <div class="form-group">
                 <label for="editExaminationIdentification" class="col-xs-3 control-label">
                     #{msg['examination.shortcut']}</label>
                 <div class="col-xs-8">
-                    <h:inputText type="text" class="form-control" id="editExaminationIdentification" />
+                    <h:message for="editExaminationIdentification"/>
+                    <h:inputText type="text" class="form-control" id="editExaminationIdentification"
+                                 validator="#{examController.validateShortCut}"
+                                 value="#{examController.selectedExam.shortcut}"
+                                 required="true"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-8 col-xs-offset-3">
+                    <div class="checkbox">
+                        <h:selectBooleanCheckbox id="editAccessTutors" required="true"
+                                                 value="#{examController.selectedExam.gradableByTutors}"/>
+                        <h:outputLabel value="#{msg['examination.add.tutor']}" for="editAccessTutors" />
+                    </div>
                 </div>
             </div>
             <hr />
@@ -27,30 +44,112 @@
                 <h:outputLabel for="editExaminationGradeType" class="col-xs-3 control-label text-left"
                                value="#{msg['examination.add.gradeType']}"/>
                 <div class="col-xs-8">
-                    <select class="form-control" id="editExaminationGradeType">
-                        <option>#{msg['gradeType.grade']}</option>
-                        <option>#{msg['gradeType.points']}</option>
-                        <option>#{msg['gradeType.percent']}</option>
-                    </select>
+                    <div class="alert alert-danger">
+                        <h:outputText value="#{msg['examination.warningChangeGradeType']}"/>
+                    </div>
+
+                    <h:selectOneMenu id="editExaminationGradeType" styleClass="form-control"
+                                     value="#{examController.selectedExam.gradeType}">
+                        <f:selectItems value="#{examController.gradeTypeLabels.entrySet()}"
+                                       var="gradeTypeLabel" itemValue="#{gradeTypeLabel.key}"
+                                       itemLabel="#{gradeTypeLabel.value}"/>
+                        <f:ajax render=":editExamForm:editMaxPointsGroup"/>
+                    </h:selectOneMenu>
                 </div>
             </div>
+
+                <h:panelGroup class="form-group" id="editMaxPointsGroup" layout="block">
+                <h:outputLabel for="editmaxPointsInputText" class="col-xs-3 control-label text-left"
+                               value="#{msg['examination.maxPoints']}"
+                               rendered="#{examController.selectedExam.gradeType == 3}"/>
+                <h:panelGroup class="col-xs-8" id="editmaxPointsInputText" layout="block">
+                    <h:inputText value="#{examController.selectedExam.maxPoints}"
+                                 validator="#{examController.validateExamMaxPoints}"
+                                 styleClass="form-control"
+                                 rendered="#{examController.selectedExam.gradeType == 3}">
+                        <f:converter converterId="javax.faces.BigDecimal" />
+                    </h:inputText>
+                </h:panelGroup>
+            </h:panelGroup>
             <hr />
+
             <div class="form-group">
-                <div class="col-xs-8 col-xs-offset-3">
+                <h:outputLabel for="editExamUpload" class="col-xs-3 control-label text-left"
+                               value="#{msg['examination.uploadAssignment']}"/>
+                <div class="col-xs-8">
                     <div class="checkbox">
-                        <h:selectBooleanCheckbox id="editEditAccessTutors" />
-                        <h:outputLabel value="#{msg['examination.add.tutor']}" for="editAccessTutors" />
+                        <h:selectBooleanCheckbox id="editExamUpload" required="true" binding="#{editUploadCheckBox}"
+                                                 value="#{examController.selectedExam.uploadAssignment}">
+                            <f:ajax render=":editExamForm:editUploadDeadlineGroup" />
+                        </h:selectBooleanCheckbox>
+                        <h:outputLabel value="#{msg['examination.examHasUploadText']}" for="editExamUpload" />
                     </div>
                 </div>
             </div>
-        </div>
+
+
+            <h:panelGroup id="editUploadDeadlineGroup" layout="block">
+                <h:panelGroup styleClass="form-group" layout="block">
+                    <p:outputLabel for="uploadDeadLineCal"
+                                   class="col-xs-3 control-label"
+                                   rendered="#{editUploadCheckBox.value}"
+                                   value="#{msg['examination.deadlineUpload']}" />
+                    <h:panelGroup id="editUploadDeadLine" styleClass="col-xs-8"
+                                  layout="block"
+                                  rendered="#{editUploadCheckBox.value}">
+                        <p:calendar id="uploadDeadLineCal"
+                                    value="#{examController.selectedExam.deadline}"
+                                    validator="#{examController.validateDeadline}"
+                                    pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="form-group" layout="block">
+                    <p:outputLabel for="editUploadMaxFileSize" value="#{msg['examination.maxFileSizeMB']}"
+                                   class="col-xs-3 control-label"
+                                   rendered="#{editUploadCheckBox.value}"/>
+                    <h:panelGroup id="editUploadMaxFileSize" styleClass="col-xs-8"
+                                  layout="block"
+                                  rendered="#{editUploadCheckBox.value}">
+                        <h:inputText id="uploadFileSize" class="form-control"
+                                     value="#{examController.selectedExam.maxFileSizeMB}" required="true"
+                                     converter="javax.faces.Long" validatorMessage="#{msg['examination.messageMaxFileSize']}">
+                            <f:validateLongRange minimum="1" maximum="100" />
+                        </h:inputText>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="form-group" layout="block" >
+                    <p:outputLabel for="editAllowedFileEndings" value="#{msg['examination.mimeType']}"
+                                   class="col-xs-3 control-label"
+                                   rendered="#{editUploadCheckBox.value}"/>
+                    <h:panelGroup id="fileEndingsGroup" styleClass="col-xs-8"
+                                  layout="block"
+                                  rendered="#{editUploadCheckBox.value}">
+                        <h:outputText value="#{msg['examination.textFileEndings']}" escape="false"/>
+                        <h:inputText id="editAllowedFileEndings" class="form-control"
+                                     value="#{examController.allowedFileEndings}"
+                                     validator="#{examController.validateFileEndings}"
+                                     validatorMessage="#{msg['examination.notValidFileEndings']}">
+                        </h:inputText>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
+            </div>
+
         <div class="modal-footer">
             <div class="btn-group">
-                <p:commandButton value="#{msg['common.cancel']}" type="button" onclick="return exModal(':examEdit');"
-                                 styleClass="btn btn-default" />
-                <h:link outcome="/course/create/step2" class="btn btn-primary"
-                        value="#{msg['common.saveChanges']}" />
+                <h:link class="btn btn-default" onclick="return exModal(':examEdit');"
+                        value="#{msg['common.cancel']}" />
+                <p:commandLink value="#{msg['common.saveChanges']}"
+                               update=":examTblForm:examTbl"
+                               oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':examEdit');"
+                               styleClass="btn btn-primary">
+                    <f:actionListener binding="#{examController.editExam()}"/>
+                </p:commandLink>
             </div>
         </div>
+
+        </h:form>
     </p:dialog>
 </ui:composition>

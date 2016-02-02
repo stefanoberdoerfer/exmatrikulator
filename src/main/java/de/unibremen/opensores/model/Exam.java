@@ -1,5 +1,8 @@
 package de.unibremen.opensores.model;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -26,7 +29,7 @@ public class Exam {
     private Long examId;
 
     @Column(nullable = false)
-    private String name;
+    private String name = new String();
 
     @Column(nullable = false)
     private String shortcut;
@@ -39,18 +42,35 @@ public class Exam {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
-    private Course course;
+    @NotFound(action = NotFoundAction.IGNORE)
+    //@NotFound because of
+    //http://stackoverflow.com/questions/10347218/null-object-if-entity-not-found
+    //Creating new course because of
+    //http://stackoverflow.com/questions/13539050/entitynotfoundexception-in-hibernate-many-to-one-mapping-however-data-exist
+    private Course course = new Course();
+
+    /**
+     * Boolean value to indicate if the exam has an upload to it.
+     */
+    @Column
+    private boolean uploadAssignment;
 
     @Column
     private Date deadline;
 
     @ElementCollection
-    @CollectionTable(name = "EXAM_ALLOWEDMIMES", joinColumns = @JoinColumn(name = "examId"))
+    @CollectionTable(name = "EXAM_ALLOWED_FILE_TYPES", joinColumns = @JoinColumn(name = "examId"))
     @Column
-    private List<String> allowedMimeTypes = new ArrayList<>();
+    private List<String> allowedFileEndings = new ArrayList<>();
+
+    /**
+     * The maximal file size in MegaByte.
+     */
+    @Column
+    private Long maxFileSizeMB;
 
     @Column
-    private Long maxFileSize;
+    private boolean gradableByTutors;
 
     public String getName() {
         return name;
@@ -84,20 +104,12 @@ public class Exam {
         this.deadline = deadline;
     }
 
-    public List<String> getAllowedMimeTypes() {
-        return allowedMimeTypes;
+    public Long getMaxFileSizeMB() {
+        return maxFileSizeMB;
     }
 
-    public void setAllowedMimeTypes(List<String> allowedMimeTypes) {
-        this.allowedMimeTypes = allowedMimeTypes;
-    }
-
-    public Long getMaxFileSize() {
-        return maxFileSize;
-    }
-
-    public void setMaxFileSize(Long maxFileSize) {
-        this.maxFileSize = maxFileSize;
+    public void setMaxFileSizeMB(Long maxFileSizeMB) {
+        this.maxFileSizeMB = maxFileSizeMB;
     }
 
     public Long getExamId() {
@@ -122,5 +134,29 @@ public class Exam {
 
     public void setShortcut(String shortcut) {
         this.shortcut = shortcut;
+    }
+
+    public boolean isGradableByTutors() {
+        return gradableByTutors;
+    }
+
+    public void setGradableByTutors(boolean gradableByTutors) {
+        this.gradableByTutors = gradableByTutors;
+    }
+
+    public boolean isUploadAssignment() {
+        return uploadAssignment;
+    }
+
+    public void setUploadAssignment(boolean uploadAssignment) {
+        this.uploadAssignment = uploadAssignment;
+    }
+
+    public List<String> getAllowedFileEndings() {
+        return allowedFileEndings;
+    }
+
+    public void setAllowedFileEndings(List<String> allowedFileEndings) {
+        this.allowedFileEndings = allowedFileEndings;
     }
 }

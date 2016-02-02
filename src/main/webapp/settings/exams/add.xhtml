@@ -4,22 +4,39 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['examination.add']}" appendTo="@(body)" widgetVar="examAdd" modal="true">
+    <p:dialog header="#{msg['examination.add']}" id="examAddDialog" appendTo="@(body)" widgetVar="examAdd" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
-        <div class="modal-body">
+        <h:form id="addExamForm">
+            <div class="modal-body">
             <div class="form-group">
                 <label for="addExaminationName" class="col-xs-3 control-label">
                     #{msg['examination.name']}
                 </label>
                 <div class="col-xs-8">
-                    <h:inputText type="text" class="form-control" id="addExaminationName" />
+                    <h:inputText type="text" class="form-control" id="addExaminationName"
+                        value="#{examController.selectedExam.name}" required="true">
+                        <f:validateLength minimum="1" maximum="250"/>
+                    </h:inputText>
                 </div>
             </div>
             <div class="form-group">
                 <label for="addExaminationIdentification" class="col-xs-3 control-label">
                     #{msg['examination.shortcut']}</label>
                 <div class="col-xs-8">
-                    <h:inputText type="text" class="form-control" id="addExaminationIdentification" />
+                    <h:message for="addExaminationIdentification"/>
+                    <h:inputText type="text" class="form-control" id="addExaminationIdentification"
+                                 validator="#{examController.validateShortCut}"
+                                 value="#{examController.selectedExam.shortcut}"
+                                 required="true"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-8 col-xs-offset-3">
+                    <div class="checkbox">
+                        <h:selectBooleanCheckbox id="addAccessTutors" required="true"
+                                                 value="#{examController.selectedExam.gradableByTutors}"/>
+                        <h:outputLabel value="#{msg['examination.add.tutor']}" for="addAccessTutors" />
+                    </div>
                 </div>
             </div>
             <hr />
@@ -27,30 +44,104 @@
                 <h:outputLabel for="addExaminationGradeType" class="col-xs-3 control-label text-left"
                                value="#{msg['examination.add.gradeType']}"/>
                 <div class="col-xs-8">
-                    <select class="form-control" id="addExaminationGradeType">
-                        <option>#{msg['gradeType.grade']}</option>
-                        <option>#{msg['gradeType.points']}</option>
-                        <option>#{msg['gradeType.percent']}</option>
-                    </select>
+                    <h:selectOneMenu id="addExaminationGradeType" styleClass="form-control"
+                                     value="#{examController.selectedExam.gradeType}">
+                        <f:selectItems value="#{examController.gradeTypeLabels.entrySet()}"
+                                       var="gradeTypeLabel" itemValue="#{gradeTypeLabel.key}"
+                                       itemLabel="#{gradeTypeLabel.value}"/>
+                        <f:ajax render=":addExamForm:maxPointsGroup"/>
+                    </h:selectOneMenu>
                 </div>
             </div>
+            <h:panelGroup class="form-group" id="maxPointsGroup" layout="block">
+                    <h:outputLabel for="addmaxPointsInputText" class="col-xs-3 control-label text-left"
+                               value="#{msg['examination.maxPoints']}"
+                                   rendered="#{examController.selectedExam.gradeType == 3}"/>
+                    <h:panelGroup class="col-xs-8" id="addmaxPointsInputText" layout="block">
+                        <h:inputText value="#{examController.selectedExam.maxPoints}"
+                                 validator="#{examController.validateExamMaxPoints}"
+                                     styleClass="form-control"
+                                 rendered="#{examController.selectedExam.gradeType == 3}">
+                        <f:converter converterId="javax.faces.BigDecimal" />
+                    </h:inputText>
+                </h:panelGroup>
+            </h:panelGroup>
             <hr />
-            <div class="form-group">
-                <div class="col-xs-8 col-xs-offset-3">
-                    <div class="checkbox">
-                        <h:selectBooleanCheckbox id="addAccessTutors" />
-                        <h:outputLabel value="#{msg['examination.add.tutor']}" for="addAccessTutors" />
+                <div class="form-group">
+                    <h:outputLabel for="addExamUpload" class="col-xs-3 control-label text-left"
+                                   value="#{msg['examination.uploadAssignment']}"/>
+                    <div class="col-xs-8">
+                        <div class="checkbox">
+                            <h:selectBooleanCheckbox id="addExamUpload" required="true" binding="#{uploadCheckBox}"
+                                                 value="#{examController.selectedExam.uploadAssignment}">
+                                <f:ajax render=":addExamForm:addUploadDeadlineGroup" />
+                            </h:selectBooleanCheckbox>
+                        <h:outputLabel value="#{msg['examination.examHasUploadText']}" for="addExamUpload" />
                     </div>
                 </div>
-            </div>
+             </div>
+            <h:panelGroup id="addUploadDeadlineGroup" layout="block">
+
+                <h:panelGroup styleClass="form-group" layout="block">
+                    <p:outputLabel for="uploadDeadLineCal"
+                                   class="col-xs-3 control-label"
+                                   rendered="#{uploadCheckBox.value}"
+                                   value="#{msg['examination.deadlineUpload']}" />
+                    <h:panelGroup id="addUploadDeadLine" styleClass="col-xs-8"
+                                  layout="block"
+                                  rendered="#{uploadCheckBox.value}">
+                        <p:calendar id="uploadDeadLineCal"
+                                    value="#{examController.selectedExam.deadline}"
+                                    validator="#{examController.validateDeadline}"
+                                    pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="form-group" layout="block">
+                    <p:outputLabel for="uploadDeadLineCal" value="#{msg['examination.maxFileSizeMB']}"
+                                   class="col-xs-3 control-label"
+                                   rendered="#{uploadCheckBox.value}"/>
+                    <h:panelGroup id="addUploadMaxFileSize" styleClass="col-xs-8"
+                                  layout="block"
+                                  rendered="#{uploadCheckBox.value}">
+                        <h:inputText id="uploadFileSize" class="form-control"
+                                     value="#{examController.selectedExam.maxFileSizeMB}" required="true"
+                                     converter="javax.faces.Long" validatorMessage="#{msg['examination.messageMaxFileSize']}">
+                            <f:validateLongRange minimum="1" maximum="100" />
+                        </h:inputText>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="form-group" layout="block" >
+                    <p:outputLabel for="allowedFileEndings" value="#{msg['examination.mimeType']}"
+                                   class="col-xs-3 control-label"
+                                   rendered="#{uploadCheckBox.value}"/>
+                    <h:panelGroup id="fileEndingsGroup" styleClass="col-xs-8"
+                                  layout="block"
+                                  rendered="#{uploadCheckBox.value}">
+                        <h:outputText value="#{msg['examination.textFileEndings']}" escape="false" />
+                        <h:inputText id="allowedFileEndings" class="form-control"
+                                     value="#{examController.allowedFileEndings}"
+                                     validator="#{examController.validateFileEndings}"
+                                     validatorMessage="#{msg['examination.notValidFileEndings']}">
+                        </h:inputText>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
+
         </div>
-        <div class="modal-footer">
+            <div class="modal-footer">
             <div class="btn-group">
-                <p:commandButton value="#{msg['common.cancel']}" type="button" onclick="return exModal(':examAdd');"
-                                 styleClass="btn btn-default" />
-                <h:link outcome="/course/create/step2" class="btn btn-primary"
-                        value="#{msg['common.add']}" />
+                <h:link class="btn btn-default" onclick="return exModal(':examAdd');"
+                        value="#{msg['common.cancel']}" />
+                <p:commandLink value="#{msg['common.add']}"
+                               update=":examTblForm:examTbl"
+                               oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':examAdd');"
+                               styleClass="btn btn-primary">
+                    <f:actionListener binding="#{examController.addExam()}"/>
+                </p:commandLink>
             </div>
         </div>
+        </h:form>
     </p:dialog>
 </ui:composition>
