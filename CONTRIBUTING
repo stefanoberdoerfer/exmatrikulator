@@ -65,3 +65,8 @@ XML
 ---
 
 See: [Maven conventions](https://maven.apache.org/developers/conventions/code.html#XML).
+
+Ruby
+----
+
+Use two spaces for indention everything else is pretty much irrelevant.
