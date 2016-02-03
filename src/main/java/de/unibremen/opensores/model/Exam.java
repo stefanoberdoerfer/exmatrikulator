@@ -29,7 +29,7 @@ public class Exam {
     private Long examId;
 
     @Column(nullable = false)
-    private String name = new String();
+    private String name = "";
 
     @Column(nullable = false)
     private String shortcut;
@@ -97,11 +97,13 @@ public class Exam {
     }
 
     public Date getDeadline() {
-        return new Date(deadline.getTime());
+        return (deadline == null) ? null :
+            new Date(deadline.getTime());
     }
 
     public void setDeadline(Date deadline) {
-        this.deadline = new Date(deadline.getTime());
+        this.deadline = (deadline == null) ? null :
+            new Date(deadline.getTime());
     }
 
     public Long getMaxFileSizeMB() {
