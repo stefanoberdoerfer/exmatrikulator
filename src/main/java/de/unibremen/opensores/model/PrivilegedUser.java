@@ -72,11 +72,11 @@ public class PrivilegedUser {
     }
 
     public Date getLastHit() {
-        return lastHit;
+        return new Date(lastHit.getTime());
     }
 
     public void setLastHit(Date lastHit) {
-        this.lastHit = lastHit;
+        this.lastHit = new Date(lastHit.getTime());
     }
 
     public User getUser() {

@@ -1,25 +1,39 @@
 package de.unibremen.opensores.util.mail;
 
+import java.util.Arrays;
+
 /**
  * MailJob Class for creating mail jobs to be processed by
  * the Mail Class.
  *
  * @author Lorenz Hüther
+ * @author Sören Tempel
  */
 public class MailJob {
-    private String[] address = null;
+    /**
+     * Addresses addressed by this email.
+     */
+    private String[] addresses = null;
+
+    /**
+     * Subject for this email.
+     */
     private String subject = null;
+
+    /**
+     * Body for this email.
+     */
     private String text = null;
 
     /**
      * Consturctor for the MailJob class.
      *
-     * @param address String Array of E-Mail addresses.
-     * @param subject String mail subject.
-     * @param text String body of the mail.
+     * @param addresses Array of E-Mail addresses.
+     * @param subject Mail subject.
+     * @param text Body of the mail.
      */
-    public MailJob(String[] address, String subject, String text) {
-        this.address = address;
+    public MailJob(String[] addresses, String subject, String text) {
+        this.addresses = Arrays.copyOf(addresses, addresses.length);
         this.subject = subject;
         this.text = text;
     }
@@ -30,7 +44,7 @@ public class MailJob {
      * @return String Array of addresses.
      */
     public String[] getAddresses() {
-        return address;
+        return Arrays.copyOf(addresses, addresses.length);
     }
 
     /**

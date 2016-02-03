@@ -33,7 +33,7 @@ public class RestrictedTimeSlot extends TimeSlot {
     }
 
     public Date getDeadline() {
-        return deadline;
+        return new Date(deadline.getTime());
     }
 
     public void setMinStudents(int minStudents) {
@@ -45,6 +45,6 @@ public class RestrictedTimeSlot extends TimeSlot {
     }
 
     public void setDeadline(Date deadline) {
-        this.deadline = deadline;
+        this.deadline = new Date(deadline.getTime());
     }
 }

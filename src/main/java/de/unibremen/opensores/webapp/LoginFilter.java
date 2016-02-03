@@ -160,7 +160,7 @@ public final class LoginFilter implements Filter {
     /**
      * Private helper class which structures the context of a filtering.
      */
-    private final class FilterContext {
+    private static final class FilterContext {
         private ServletRequest request;
         private ServletResponse response;
         private FilterChain filterChain;

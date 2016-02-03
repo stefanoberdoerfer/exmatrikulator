@@ -97,11 +97,11 @@ public class Exam {
     }
 
     public Date getDeadline() {
-        return deadline;
+        return new Date(deadline.getTime());
     }
 
     public void setDeadline(Date deadline) {
-        this.deadline = deadline;
+        this.deadline = new Date(deadline.getTime());
     }
 
     public Long getMaxFileSizeMB() {
