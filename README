@@ -13,6 +13,11 @@ Checkout the source code using:
 Usage
 -----
 
+Before starting the Java EE container itself you need to compile all
+SASS files to CSS and all CofeeScript files to JavaScript. To do that
+take a look at the `README` in the `src/main/gui` directory. If you skip
+this step the frontend will look ugly.
+
 Apache maven is used as the build system. A few plugins are shipped to
 make it easier to perform various common tasks. One of these plugins is
 the embedded glassfish plugin, this plugin makes it easy to get a
@@ -23,6 +28,21 @@ development setup up and running by invoking:
 This creates a .war archive for the Exmatrikulator application and
 starts the embedded glassfish server. If you didn't see any errors
 the webapp should be running at: http://0.0.0.0:8080/exmatrikulator/
+
+Tests
+-----
+
+Tests are automatically run using GitLab CI. Basically we have three
+kinds of tests:
+
+1. JUnit backend tests
+2. Formal code verification
+3. Capybara frontend tests
+
+The first are automatically invoked by the GitLab CI runner, the last
+was doesn't work properly on a GitLab CI runner and needs to be run
+manually. Instructions for running the capybara test suite are available
+in `src/test/capybara`.
 
 License
 -------

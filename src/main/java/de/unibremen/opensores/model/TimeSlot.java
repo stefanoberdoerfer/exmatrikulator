@@ -27,7 +27,7 @@ public class TimeSlot {
     private int duration;
 
     public Date getStart() {
-        return start;
+        return new Date(start.getTime());
     }
 
     public int getDuration() {
@@ -35,7 +35,7 @@ public class TimeSlot {
     }
 
     public void setStart(Date start) {
-        this.start = start;
+        this.start = new Date(start.getTime());
     }
 
     public void setDuration(int duration) {

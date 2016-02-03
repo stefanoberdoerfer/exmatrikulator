@@ -1,0 +1,4 @@
+source "https://rubygems.org"
+gem "capybara", "~> 2.6"
+gem "capybara-webkit", "~> 1.8"
+gem "mime-types", "~> 2.99"

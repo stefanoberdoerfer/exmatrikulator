@@ -176,7 +176,7 @@ public class ExamController {
         log.debug("onAddExamDialogCalled() called");
 
         selectedExam = new Exam();
-        allowedFileEndings = new String();
+        allowedFileEndings = "";
     }
 
     /**
@@ -188,7 +188,7 @@ public class ExamController {
         selectedExam = exam;
         allowedFileEndings = getAllowedFileEndingsString(selectedExam.getAllowedFileEndings());
         oldSelectedGradeTypeId = exam.getExamId();
-        allowedFileEndings = new String();
+        allowedFileEndings = "";
     }
 
     /**
@@ -198,7 +198,7 @@ public class ExamController {
     public void onDeleteExamDialogCalled(@NotNull Exam exam) {
         log.debug("onDeleteExamDialogCalled called: " + exam);
         selectedExam = exam;
-        examNameDeletionTextInput = new String();
+        examNameDeletionTextInput = "";
     }
 
     /**
@@ -440,8 +440,7 @@ public class ExamController {
      */
     public String gradeLabelFromId(int gradeId) {
         return (gradeTypeLabels.containsKey(gradeId))
-                ? gradeTypeLabels.get(gradeId)
-                : new String();
+                ? gradeTypeLabels.get(gradeId) : "";
     }
 
     /*
@@ -477,8 +476,8 @@ public class ExamController {
 
         String allowedFileEndingsString = buffer.toString();
         if (!allowedFileEndingsString.isEmpty()) {
-            allowedFileEndingsString.substring(allowedFileEndingsString.length() - 1,
-                                               allowedFileEndingsString.length());
+            final String str = allowedFileEndingsString;
+            allowedFileEndings = str.substring(str.length() - 1, str.length());
         }
 
         log.debug("allowedFileEndings: " + allowedFileEndingsString);

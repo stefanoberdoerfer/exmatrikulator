@@ -14,7 +14,7 @@ public class ServerProperties {
     /**
      * Properties singleton.
      */
-    public static Properties props = null;
+    private static Properties props = null;
 
     /**
      * Constructor set to private because of
@@ -29,7 +29,7 @@ public class ServerProperties {
      *
      * @throws IOException If the file cannot be opened.
      */
-    public static Properties getProperties() throws IOException {
+    public static synchronized Properties getProperties() throws IOException {
         if (props == null) {
             props = new Properties();
             InputStream in = ServerProperties.class.getClassLoader()

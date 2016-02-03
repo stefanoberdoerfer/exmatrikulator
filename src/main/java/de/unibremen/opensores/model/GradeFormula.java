@@ -50,11 +50,11 @@ public class GradeFormula {
     }
 
     public Date getTime() {
-        return time;
+        return new Date(time.getTime());
     }
 
     public void setTime(Date time) {
-        this.time = time;
+        this.time = new Date(time.getTime());
     }
 
     public Long getFormulaId() {

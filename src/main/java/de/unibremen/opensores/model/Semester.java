@@ -46,7 +46,7 @@ public class Semester {
     @Override
     public String toString() {
         if (name == null) {
-            return null;
+            return "";
         }
 
         return ((isWinter) ? "WiSe" : "SoSe") + " " + name;

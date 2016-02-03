@@ -90,9 +90,10 @@ public final class StudIpParser {
      */
     public static List<User> parseCSV(final File studIpCSVFile)
             throws IOException {
-        if (studIpCSVFile == null
-               || !Files.probeContentType(studIpCSVFile.toPath())
-                        .equals(CSV_CONTENT_TYPE)) {
+        String contentType = (studIpCSVFile == null) ? null :
+            Files.probeContentType(studIpCSVFile.toPath());
+
+        if (contentType == null || !contentType.equals(CSV_CONTENT_TYPE)) {
             throw new IllegalArgumentException(
                     "The parameter studIpCSVFile must be a valid CSV File");
         }
