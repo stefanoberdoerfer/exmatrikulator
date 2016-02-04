@@ -46,7 +46,7 @@ public class Course {
     private List<String> numbers = new ArrayList<>();
 
     @Column(nullable = false)
-    private Boolean requiresConformation;
+    private Boolean requiresConfirmation;
 
     @Column(nullable = false)
     private Boolean studentsCanSeeFormula;
@@ -252,32 +252,8 @@ public class Course {
         return name;
     }
 
-    public boolean requiresConformation() {
-        return requiresConformation;
-    }
-
-    public int getMinGroupSize() {
-        return minGroupSize;
-    }
-
-    public int getMaxGroupSize() {
-        return maxGroupSize;
-    }
-
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public void setRequiresConformation(final boolean requiresConformation) {
-        this.requiresConformation = requiresConformation;
-    }
-
-    public void setMinGroupSize(final int minGroupSize) {
-        this.minGroupSize = minGroupSize;
-    }
-
-    public void setMaxGroupSize(final int maxGroupSize) {
-        this.maxGroupSize = maxGroupSize;
     }
 
     public Semester getSemester() {
@@ -375,5 +351,29 @@ public class Course {
 
     public void setNumbers(List<String> numbers) {
         this.numbers = numbers;
+    }
+
+    public Boolean getRequiresConfirmation() {
+        return requiresConfirmation;
+    }
+
+    public void setRequiresConfirmation(Boolean requiresConfirmation) {
+        this.requiresConfirmation = requiresConfirmation;
+    }
+
+    public Integer getMinGroupSize() {
+        return minGroupSize;
+    }
+
+    public void setMinGroupSize(Integer minGroupSize) {
+        this.minGroupSize = minGroupSize;
+    }
+
+    public Integer getMaxGroupSize() {
+        return maxGroupSize;
+    }
+
+    public void setMaxGroupSize(Integer maxGroupSize) {
+        this.maxGroupSize = maxGroupSize;
     }
 }

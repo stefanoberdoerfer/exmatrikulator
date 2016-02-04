@@ -66,7 +66,7 @@ public final class DataHelper {
         course.getNumbers().add("VAK TEST-COURSE");
         course.setMinGroupSize(1);
         course.setMaxGroupSize(6);
-        course.setRequiresConformation(true);
+        course.setRequiresConfirmation(true);
         course.setSws(2);
 
         Semester semester = new Semester();

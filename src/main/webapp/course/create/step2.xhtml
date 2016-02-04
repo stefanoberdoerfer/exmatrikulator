@@ -72,8 +72,8 @@
             <hr />
             <div class="row form-buttons">
                 <div class="col-xs-6">
-                    <h:commandButton class="btn btn-default" action="return-node"
-                                     value="#{msg['common.cancel']}" />
+                    <h:commandButton class="btn btn-default" action="#{courseCreateFlowController.getReturnValue()}"
+                                     value="#{msg['common.cancel']}" immediate="true" />
                 </div>
                 <div class="col-xs-6 text-right">
                     <div class="btn-group">
@@ -81,9 +81,13 @@
                         <h:commandButton class="btn btn-default" action="coursecreate"
                                        value="#{msg['common.back']}" />
                         <h:commandButton class="btn btn-default" action="step3"
-                                       value="#{msg['common.skip']}" />
+                                       value="#{msg['common.skip']}">
+                            <f:actionListener binding="#{courseCreateFlowController.setStepFinished(2)}"/>
+                        </h:commandButton>
                         <h:commandButton class="btn btn-primary" action="step3"
-                                       value="#{msg['common.continue']}" />
+                                         value="#{msg['common.continue']}" type="submit">
+                            <f:actionListener binding="#{courseCreateFlowController.setStepFinished(2)}"/>
+                        </h:commandButton>
                         </h:form>
                     </div>
                 </div>

@@ -106,6 +106,14 @@ public class ApplicationController {
         newLecturer.addRole(GlobalRole.LECTURER);
         newLecturer.addRole(GlobalRole.USER);
 
+        final User newLecturer2 = new User();
+        newLecturer2.setEmail("courseholder@uni-bremen.de");
+        newLecturer2.setPassword(BCrypt.hashpw("courseholder",BCrypt.gensalt()));
+        newLecturer2.setFirstName("Cord");
+        newLecturer2.setLastName("Courseholder");
+        newLecturer2.addRole(GlobalRole.LECTURER);
+        newLecturer2.addRole(GlobalRole.USER);
+
         final User newAdmin = new User();
         newAdmin.setEmail("admin@uni-bremen.de");
         newAdmin.setPassword(BCrypt.hashpw("admin",BCrypt.gensalt()));
@@ -141,6 +149,8 @@ public class ApplicationController {
         log.debug("Inserted User with id: " + unconfirmedUser.getUserId());
         userService.persist(newLecturer);
         log.debug("Inserted Lecturer with id: " + newLecturer.getUserId());
+        userService.persist(newLecturer2);
+        log.debug("Inserted another Lecturer with id: " + newLecturer2.getUserId());
         userService.persist(newAdmin);
         log.debug("Inserted Admin with id: " + newAdmin.getUserId());
 
@@ -162,7 +172,7 @@ public class ApplicationController {
         course.setCreditPoints(1337);
         course.setName("TestVeranstaltung");
         course.getNumbers().add("VAK-Nummer123");
-        course.setRequiresConformation(false);
+        course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
         course.setSemester(semester);
 
@@ -197,7 +207,7 @@ public class ApplicationController {
         Lecturer lecturer = new Lecturer();
         lecturer.setUser(newLecturer);
         lecturer.setHidden(false);
-
+        lecturer.setIsCourseCreator(true);
         lecturer.setCourse(course);
         course.getLecturers().add(lecturer);
 
@@ -255,6 +265,22 @@ public class ApplicationController {
         formula.setFormula("(1336 + 1)*27");
         partType.setGradeFormula(formula);
         //winf.setGradeFormula(formula);
+
+        //ParticipationType 2
+        ParticipationType partType2 = new ParticipationType();
+        partType2.setName("Systems Engineering");
+        partType2.setGroupPerformance(false);
+        partType2.setRestricted(false);
+        partType2.setCourse(course);
+        partType2.setIsDefaultParttype(false);
+        course.getParticipationTypes().add(partType2);
+
+        //GradeFormula
+        GradeFormula formula2 = new GradeFormula();
+        formula2.setTime(new Date(100L));
+        formula2.setEditor(newLecturer);
+        formula2.setFormula("(1336 + 1)*27");
+        partType2.setGradeFormula(formula2);
 
         //Exam
         Exam exam = new Exam();

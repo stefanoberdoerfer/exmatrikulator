@@ -11,6 +11,13 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <!-- UNCOMMENT FOR MORE VIEW DEBUG MESSAGES
+  <context-param>
+    <param-name>javax.faces.PROJECT_STAGE</param-name>
+    <param-value>Development</param-value>
+  </context-param>
+  -->
+
   <welcome-file-list>
     <welcome-file>login.xhtml</welcome-file>
   </welcome-file-list>
@@ -23,6 +30,11 @@
   <context-param>
     <param-name>primefaces.THEME</param-name>
     <param-value>exmatrikulator</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>primefaces.UPLOADER</param-name>
+    <param-value>commons</param-value>
   </context-param>
 
   <filter>
@@ -59,4 +71,14 @@
     <filter-name>LoginFilter</filter-name>
     <url-pattern>/unregistered/*</url-pattern>
   </filter-mapping>
+
+  <filter>
+    <filter-name>PrimeFaces FileUpload Filter</filter-name>
+    <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>PrimeFaces FileUpload Filter</filter-name>
+    <servlet-name>Faces Servlet</servlet-name>
+  </filter-mapping>
+
 </web-app>

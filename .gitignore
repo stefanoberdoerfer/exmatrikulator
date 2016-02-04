@@ -13,3 +13,4 @@ src/main/gui/vendors/bootstrap/dist/
 src/main/webapp/resources/
 derby.log
 exmatrikulator-db/
+fileuploads/
