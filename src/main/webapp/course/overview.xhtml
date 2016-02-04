@@ -15,12 +15,15 @@
     <ui:define name="content">
         <div class="headline">
             <div class="btn-group main-buttons pull-right">
-                <p:commandButton value="#{msg['courses.join']}" rendered="#{userController.user.hasGlobalRole('LECTURER')}"
+                <h:commandButton value="#{msg['courses.join']}" rendered="#{userController.user.hasGlobalRole('LECTURER')}"
                                  type="button" onclick="return exModal('courseJoinSearch');"
                                  styleClass="btn btn-default create-course-button" />
-                <!-- Todo: Veranstaltung erstellen nur bei Dozenten anzeigen -->
-                <h:link value="#{msg['courses.create']}" rendered="#{userController.user.hasGlobalRole('LECTURER')}"
-                        outcome="/course/create/step1" class="btn btn-primary create-course-button" />
+                <h:form>
+                <h:commandButton value="#{msg['courses.create']}" rendered="#{userController.user.hasGlobalRole('LECTURER')}"
+                                 type="button" action="coursecreate"
+                                 styleClass="btn btn-primary create-course-button" />
+                <h:commandButton action="coursecreate" value="TEST WIZARD" />
+                </h:form>
             </div>
             <h1>#{msg['courses.overview']}</h1>
         </div>

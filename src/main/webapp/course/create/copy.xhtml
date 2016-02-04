@@ -6,65 +6,62 @@
                 xmlns:p="http://primefaces.org/ui">
     <p:dialog header="#{msg['courses.copy']}" appendTo="@(body)" widgetVar="courseCopy" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form>
         <div class="modal-body">
             <div class="form-group">
                 <label for="courseSelect" class="col-xs-3 control-label">#{msg['common.course']}</label>
                 <div class="col-xs-8">
-                    <select class="form-control" id="courseSelect">
-                        <optgroup label="Wintersemester 2015/2016">
-                            <option>Software-Projekt 2</option>
-                            <option>Praktische Informatik 3</option>
-                        </optgroup>
-                        <optgroup label="Sommersemester 2015">
-                            <option>Software-Projekt 1</option>
-                            <option>Mathematische Grundlagen</option>
-                        </optgroup>
-                    </select>
+                    <h:selectOneMenu value="#{courseCopyController.copyCourseId}"
+                                     styleClass="form-control" id="courseSelect">
+                        <f:selectItems value="#{courseCopyController.copyCourses}" var="course"
+                                       itemValue="#{course.courseId}" itemLabel="#{course.name}" />
+                    </h:selectOneMenu>
                 </div>
             </div>
             <hr />
             <div class="form-group">
                 <label class="col-xs-3 control-label">#{msg['courses.copy.sources']}</label>
                 <div class="col-xs-8">
-                    <h:selectBooleanCheckbox id="copyCourseData" />
+                    <h:selectBooleanCheckbox id="copyCourseData" value="#{courseCopyController.copyCommonData}" />
                     <h:outputLabel value="#{msg['courses.copy.courseData']}" for="copyCourseData" />
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-8 col-xs-offset-3">
-                    <h:selectBooleanCheckbox id="copyExams" />
+                    <h:selectBooleanCheckbox id="copyExams" value="#{courseCopyController.copyExams}" />
                     <h:outputLabel value="#{msg['courses.copy.exams']}" for="copyExams" />
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-8 col-xs-offset-3">
-                    <h:selectBooleanCheckbox id="copyParticipationTypes" />
+                    <h:selectBooleanCheckbox id="copyParticipationTypes"
+                                             value="#{courseCopyController.copyParticipationTypes}" />
                     <h:outputLabel value="#{msg['courses.copy.participationTypes']}"
                                    for="copyParticipationTypes" />
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-8 col-xs-offset-3">
-                    <h:selectBooleanCheckbox id="copyFormula" />
+                    <h:selectBooleanCheckbox id="copyFormula"  value="#{courseCopyController.copyFormulas}" />
                     <h:outputLabel value="#{msg['courses.copy.formula']}" for="copyFormula" />
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-8 col-xs-offset-3">
-                    <h:selectBooleanCheckbox id="copyTutorials" />
+                    <h:selectBooleanCheckbox id="copyTutorials"  value="#{courseCopyController.copyTutorials}" />
                     <h:outputLabel value="#{msg['courses.copy.tutorials']}" for="copyTutorials" />
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-8 col-xs-offset-3">
-                    <h:selectBooleanCheckbox id="copyLecturers" />
-                    <h:outputLabel value="#{msg['courses.copy.lecturers']}" for="copyLecturers" />
+                    <h:selectBooleanCheckbox id="copyLecturers"  value="#{courseCopyController.copyLecturers}" />
+                    <h:outputLabel value="#{msg['common.lecturers']}" for="copyLecturers" />
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-xs-8 col-xs-offset-3">
-                    <h:selectBooleanCheckbox id="copyTutors" />
-                    <h:outputLabel value="#{msg['courses.copy.tutors']}" for="copyTutors" />
+                    <h:selectBooleanCheckbox id="copyTutors"  value="#{courseCopyController.copyTutors}" />
+                    <h:outputLabel value="#{msg['common.tutors']}" for="copyTutors" />
                 </div>
             </div>
         </div>
@@ -72,9 +69,19 @@
             <div class="btn-group">
                 <p:commandButton value="#{msg['common.cancel']}" type="button" onclick="return exModal(':courseCopy');"
                                  styleClass="btn btn-default" />
-                <h:link outcome="/course/create/step1" class="btn btn-primary"
-                        value="#{msg['common.copy']}" />
+                <p:commandButton value="#{msg['common.copy']}" type="button"
+                                 styleClass="btn btn-primary">
+                    <f:ajax listener="#{courseCopyController.copyAction()}"
+                            execute="@form"
+                            render="commonDataForm"
+                    />
+                    <f:ajax listener="#{commonDataController.reloadCourseNumbers()}"
+                            render="commonDataForm"
+                    />
+                </p:commandButton>
+
             </div>
         </div>
+    </h:form>
     </p:dialog>
 </ui:composition>

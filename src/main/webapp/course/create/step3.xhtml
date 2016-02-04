@@ -38,22 +38,68 @@
                     <p>#{msg['participationType.explanation']}</p>
                     <table class="table table-invisible">
                         <tbody>
+                        <ui:repeat value="#{parttypeController.course.participationTypes}" var="value" id="parttype">
                         <tr class="table-row-blank">
-                            <td>
-                                <h:inputText type="text" class="form-control" />
+                            <td class="col-xs-9 form-control-static">
+                                <strong>#{value.name}</strong>
                             </td>
                             <td class="table-common-options-one">
-                                <h:commandLink class="btn btn-danger">
+                                <h:commandLink class="btn btn-danger" rendered="#{!value.isDefaultParttype()}">
                                     <i class="fa fa-remove"></i>
+                                    <f:ajax listener="#{parttypeController.removePartType(value)}"
+                                            execute="@form"
+                                            render="@form"
+                                    />
                                 </h:commandLink>
+                            </td>
+                        </tr>
+                        </ui:repeat>
+                        </tbody>
+                    </table>
+                            <h4>#{msg['participationType.newParticipationType']}</h4>
+                    <table>
+                        <tbody>
+                        <tr class="table-row-blank">
+                            <td>
+                                <h:outputLabel for="partTypeName" class="col-xs-4 control-label text-left"
+                                               value="#{msg['common.name']}"/>
+                                <div class="col-xs-10 col-xs-offset-1" >
+                                    <h:inputText value="#{parttypeController.currentPartType.name}" class="form-control"
+                                                 id="partTypeName"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="table-row-blank">
+                            <td>
+                                <h:selectBooleanCheckbox styleClass="col-xs-3"
+                                        id="isGroupPerformance"
+                                        value="#{parttypeController.currentPartType.groupPerformance}"/>
+                                <h:outputLabel value="#{msg['participationType.groupPerformance']}"
+                                               for="isGroupPerformance" styleClass="col-xs-offset-1"/>
+                            </td>
+                        </tr>
+                        <tr class="table-row-blank">
+                            <td>
+                                <h:outputLabel for="partTypeContent" class="col-xs-4 control-label text-left"
+                                               value="#{msg['participationType.performanceContent']}"/>
+                                <div class="col-xs-10 col-xs-offset-1" >
+                                    <h:inputText value="#{parttypeController.currentPartType.performanceContent}"
+                                                 class="form-control"
+                                                 id="partTypeContent"/>
+                                </div>
                             </td>
                         </tr>
                         <tr class="table-row-blank">
                             <td colspan="2">
-                                <h:commandButton class="btn btn-default"
-                                                 value="#{msg['participationType.additional']}"></h:commandButton>
+                                <h:commandButton value="#{msg['participationType.add']}" class="btn btn-default">
+                                    <f:ajax listener="#{parttypeController.addPartType()}"
+                                            execute="@form"
+                                            render="@form"
+                                    />
+                                </h:commandButton>
                             </td>
                         </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -61,15 +107,16 @@
             <hr />
             <div class="row form-buttons">
                 <div class="col-xs-6">
-                    <h:link class="btn btn-default " value="#{msg['common.cancel']}" outcome="/course/overview" />
+                    <h:commandButton class="btn btn-default" action="return-node"
+                                     value="#{msg['common.cancel']}" />
                 </div>
                 <div class="col-xs-6 text-right">
                     <div class="btn-group">
-                        <h:commandButton class="btn btn-default"
+                        <h:commandButton class="btn btn-default" action="step2"
                                          value="#{msg['common.back']}" />
-                        <h:commandButton class="btn btn-default"
+                        <h:commandButton class="btn btn-default" action="step4"
                                          value="#{msg['common.skip']}" />
-                        <h:commandButton class="btn btn-primary"
+                        <h:commandButton class="btn btn-primary" action="step4"
                                          value="#{msg['common.continue']}" />
                     </div>
                 </div>

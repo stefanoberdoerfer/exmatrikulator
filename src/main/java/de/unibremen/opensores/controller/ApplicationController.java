@@ -115,13 +115,20 @@ public class ApplicationController {
         semester.setName("15/16");
         semesterService.persist(semester);
 
+        //next semester
+        Semester semester2 = new Semester();
+        semester2.setIsWinter(false);
+        semester2.setName("16");
+        semesterService.persist(semester2);
+
         //Course with all relations filled
         Course course = new Course();
         course.setSws(42);
         course.setCreditPoints(1337);
         course.setName("TestVeranstaltung");
-        course.setNumber("VAK-Nummer123");
+        course.getNumbers().add("VAK-Nummer123");
         course.setRequiresConformation(false);
+        course.setStudentsCanSeeFormula(true);
         course.setSemester(semester);
 
         course = courseService.persist(course);

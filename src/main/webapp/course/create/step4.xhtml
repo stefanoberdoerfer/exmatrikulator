@@ -90,15 +90,16 @@
             <hr />
             <div class="row form-buttons">
                 <div class="col-xs-6">
-                    <h:link class="btn btn-default " value="#{msg['common.cancel']}" outcome="/course/overview" />
+                    <h:commandButton class="btn btn-default" action="return-node"
+                                     value="#{msg['common.cancel']}" />
                 </div>
                 <div class="col-xs-6 text-right">
                     <div class="btn-group">
-                        <h:commandButton class="btn btn-default"
+                        <h:commandButton class="btn btn-default" action="step3"
                                          value="#{msg['common.back']}" />
-                        <h:commandButton class="btn btn-default"
+                        <h:commandButton class="btn btn-default" action="step5"
                                          value="#{msg['common.skip']}" />
-                        <h:commandButton class="btn btn-primary"
+                        <h:commandButton class="btn btn-primary" action="step5"
                                          value="#{msg['common.continue']}" />
                     </div>
                 </div>

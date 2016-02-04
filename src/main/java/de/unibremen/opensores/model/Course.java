@@ -1,7 +1,9 @@
 package de.unibremen.opensores.model;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -37,11 +39,16 @@ public class Course {
     @Column(nullable = false)
     private Integer creditPoints;
 
-    @Column(nullable = false)
-    private String number;
+    @ElementCollection
+    @CollectionTable(name = "COURSE_NUMBERS", joinColumns = @JoinColumn(name = "courseId"))
+    @Column
+    private List<String> numbers = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean requiresConformation;
+
+    @Column(nullable = false)
+    private Boolean studentsCanSeeFormula;
 
     @OneToOne(mappedBy = "course", cascade = CascadeType.MERGE)
     private MailTemplate emailTemplate;
@@ -97,10 +104,6 @@ public class Course {
         return name;
     }
 
-    public String getNumber() {
-        return number;
-    }
-
     public boolean requiresConformation() {
         return requiresConformation;
     }
@@ -115,10 +118,6 @@ public class Course {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public void setNumber(final String number) {
-        this.number = number;
     }
 
     public void setRequiresConformation(final boolean requiresConformation) {
@@ -209,4 +208,19 @@ public class Course {
         this.exams = exams;
     }
 
+    public Boolean getStudentsCanSeeFormula() {
+        return studentsCanSeeFormula;
+    }
+
+    public void setStudentsCanSeeFormula(Boolean studentsCanSeeFormula) {
+        this.studentsCanSeeFormula = studentsCanSeeFormula;
+    }
+
+    public List<String> getNumbers() {
+        return numbers;
+    }
+
+    public void setNumbers(List<String> numbers) {
+        this.numbers = numbers;
+    }
 }
