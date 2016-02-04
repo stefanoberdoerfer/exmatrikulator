@@ -16,7 +16,9 @@ import java.util.List;
 /**
  * Entity bean for the Course class.
  *
- * @author Stefan Oberdoerfer, Soeren Tempel, Lorenz Huether
+ * @author Stefan Oberdoerfer
+ * @author Sören Tempel
+ * @author Lorenz Hüther
  */
 @Entity
 @Table(name = "COURSES")

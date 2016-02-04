@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -23,6 +24,9 @@ public class Tutorial {
     @Id
     @GeneratedValue
     private Long tutorialId;
+
+    @Column(nullable = false, length = 32)
+    private String name;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
@@ -76,4 +80,11 @@ public class Tutorial {
         this.tutors = tutors;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

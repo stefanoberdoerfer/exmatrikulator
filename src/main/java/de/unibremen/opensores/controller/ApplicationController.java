@@ -157,6 +157,7 @@ public class ApplicationController {
 
         //Tutorial for course
         Tutorial tutorial = new Tutorial();
+        tutorial.setName("Schmick Tutorial");
         tutorial.setCourse(course);
         course.getTutorials().add(tutorial);
         tutorial.getStudents().add(student);
@@ -175,6 +176,7 @@ public class ApplicationController {
 
         //Group for course and tutorial
         Group group = new Group();
+        group.setName("420 Blaze it");
         group.setCourse(course);
         group.setTutorial(tutorial);
         course.getGroups().add(group);
