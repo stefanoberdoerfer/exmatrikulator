@@ -163,27 +163,27 @@
 }
 .ui-icon,
 .ui-widget-content .ui-icon {
-	background-image: url("images/ui-icons_444444_256x240.png");
+	background-image: url("images/ui-icons_444444_256x240.png.xhtml?ln=primefaces-exmatrikulator");
 }
 .ui-widget-header .ui-icon {
-	background-image: url("images/ui-icons_25323A_256x240.png");
+	background-image: url("images/ui-icons_25323A_256x240.png.xhtml?ln=primefaces-exmatrikulator");
 }
 .ui-state-default .ui-icon {
-	background-image: url("images/ui-icons_777777_256x240.png");
+	background-image: url("images/ui-icons_777777_256x240.png.xhtml?ln=primefaces-exmatrikulator");
 }
 .ui-state-hover .ui-icon,
 .ui-state-focus .ui-icon {
-	background-image: url("images/ui-icons_555555_256x240.png");
+	background-image: url("images/ui-icons_555555_256x240.png.xhtml?ln=primefaces-exmatrikulator");
 }
 .ui-state-active .ui-icon {
-	background-image: url("images/ui-icons_ffffff_256x240.png");
+	background-image: url("images/ui-icons_ffffff_256x240.png.xhtml?ln=primefaces-exmatrikulator");
 }
 .ui-state-highlight .ui-icon {
-	background-image: url("images/ui-icons_cc9e43_256x240.png");
+	background-image: url("images/ui-icons_cc9e43_256x240.png.xhtml?ln=primefaces-exmatrikulator");
 }
 .ui-state-error .ui-icon,
 .ui-state-error-text .ui-icon {
-	background-image: url("images/ui-icons_cc4371_256x240.png");
+	background-image: url("images/ui-icons_cc4371_256x240.png.xhtml?ln=primefaces-exmatrikulator");
 }
 
 /* positioning */

@@ -18,7 +18,7 @@
         <div class="headline">
             <div class="btn-group main-buttons pull-right">
                 <h:form styleClass="section-search">
-                    <h:inputText styleClass="form-control" h5:placeholder="#{msg['gradings.search']}" />
+                    <h:inputText styleClass="form-control" h5:placeholder="#{msg['gradings.search.students']}" />
                     <h:commandLink styleClass="btn btn-default"><i class="fa fa-search"></i></h:commandLink>
                 </h:form>
                 <h:link onclick="return exModal('finalGradesCalculate');" value="#{msg['gradings.finalGrade.calculate']}"
@@ -35,40 +35,53 @@
 
         <ul class="nav nav-tabs inverted" role="tablist">
             <li class="active">
-                <h:link outcome="/grading/overview" value="#{msg['gradings.forStudents']}" />
+                <h:link outcome="/grading/overview" value="#{msg['gradings.forStudents']}">
+                    <f:param name="course-id" value="#{gradingController.course.courseId}"/>
+                </h:link>
             </li>
             <li>
-                <h:link outcome="/grading/groups" value="#{msg['gradings.forGroups']}" />
+                <h:link outcome="/grading/groups" value="#{msg['gradings.forGroups']}">
+                    <f:param name="course-id" value="#{gradingController.course.courseId}"/>
+                </h:link>
             </li>
         </ul>
 
-        <h:dataTable var="student" value="#{gradingController.students}"
-                     columnClasses="table-common-options-one,table-grades-name,responsive,
-                     table-grades-grade,table-common-options-two"
-                     styleClass="table table-hover table-courses-overview">
-            <p:column>
-                <p:rowToggler />
+        <p:dataTable var="student" value="#{gradingController.students}"
+                     styleClass="table table-hover table-courses-overview"
+                     paginatior="true" rows="15">
+            <p:column styleClass="table-common-options-one">
+                <p:rowToggler/>
             </p:column>
-            <h:column>
+            <p:column styleClass="table-grades-name">
                 <f:facet name="header">#{msg['common.student']}</f:facet>
-                #{student.firstName} <strong>#{student.lastName}</strong>
-                <div class="table-common-sub">#{student.email}</div>
-            </h:column>
-            <h:column>
+                #{student.user.firstName} <strong>#{student.user.lastName}</strong>
+                <div class="table-common-sub">#{student.user.email}</div>
+            </p:column>
+            <p:column>
                 <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
-                #{student.studentNumber}
-            </h:column>
-            <h:column>
-                <f:facet name="header">#{msg['gradings.finalGrade']}</f:facet>
-                #{student.finalGrade}
-            </h:column>
-            <h:column>
+            </p:column>
+            <p:column styleClass="table-grades-grade text-center">
+                <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
+                <strong>#{student.paboGrade}</strong>
+            </p:column>
+            <p:column styleClass="table-common-options-two text-right">
                 <f:facet name="header"></f:facet>
                 <h:link onclick="return exModal('gradeEdit');" h5:data-toggle="tooltip"
                         h5:data-placement="top" class="btn btn-default">
                     <i class="fa fa-edit"></i>
                 </h:link>
-            </h:column>
-        </h:dataTable>
+            </p:column>
+
+            <p:rowExpansion>
+                <div class="row">
+                    <ui:repeat value="#{gradingController.getStudentGradings(student).keySet().toArray()}" var="exam">
+                        <div class="col-xs-3">
+                            <strong>#{exam.getName()}</strong><br />
+                            #{gradingController.getStudentGradings(student).get(exam).grade.value}
+                        </div>
+                    </ui:repeat>
+                </div>
+            </p:rowExpansion>
+        </p:dataTable>
     </ui:define>
 </ui:composition>

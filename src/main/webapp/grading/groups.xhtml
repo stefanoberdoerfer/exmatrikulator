@@ -35,10 +35,14 @@
 
         <ul class="nav nav-tabs inverted" role="tablist">
             <li>
-                <h:link outcome="/grading/overview" value="#{msg['gradings.forStudents']}" />
+                <h:link outcome="/grading/overview" value="#{msg['gradings.forStudents']}">
+                    <f:param name="course-id" value="#{gradingController.course.courseId}"/>
+                </h:link>
             </li>
             <li class="active">
-                <h:link outcome="/grading/groups" value="#{msg['gradings.forGroups']}" />
+                <h:link outcome="/grading/groups" value="#{msg['gradings.forGroups']}">
+                    <f:param name="course-id" value="#{gradingController.course.courseId}"/>
+                </h:link>
             </li>
         </ul>
 

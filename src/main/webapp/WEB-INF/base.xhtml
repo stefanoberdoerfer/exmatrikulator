@@ -21,10 +21,10 @@
     <meta http-equiv="pragma" content="no-cache" />
 
     <link rel="shortcut icon" type="image/x-icon"
-          href="#{request.contextPath}/javax.faces.resource/favicon.ico.xhtml?ln=images" />
+          href="#{request.contextPath}/resources/images/favicon.ico" />
     <!-- other browsers -->
     <link rel="icon" type="image/x-icon"
-          href="#{request.contextPath}/javax.faces.resource/favicon.ico.xhtml?ln=images" />
+          href="#{request.contextPath}/resources/images/favicon.ico" />
 
     <title>#{pageTitle} · Exmatrikulator</title>
 
@@ -33,6 +33,7 @@
     <h:outputStylesheet library="css" name="exmatrikulator.min.css"  />
 
     <!-- Interactivity -->
+    <h:outputScript library="primefaces" name="jquery/jquery.js" />
     <h:outputScript library="js" name="exmatrikulator.min.js" />
 </h:head>
 

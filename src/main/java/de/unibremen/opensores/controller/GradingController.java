@@ -1,26 +1,24 @@
 package main.java.de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.Grading;
+import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.GradingService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 /**
  * Created by matthias on 19.01.16.
@@ -48,6 +46,22 @@ public class GradingController {
      * The course which exams get edited.
      */
     private Course course;
+    /**
+     * Student gradings. Stored here so it won't be loaded multiple times.
+     */
+    private Map<Student, Map<Exam, Grading>> studentGradings = new HashMap<>();
+
+    /**
+     * CourseService for database transactions related to courses.
+     */
+    @EJB
+    private CourseService courseService;
+
+    /**
+     * CourseService for database transactions related to courses.
+     */
+    @EJB
+    private GradingService gradingService;
     /**
      * Method called after initialisation.
      * Gets the corresponding course from the http param.
@@ -85,23 +99,53 @@ public class GradingController {
                         .getExternalContext().redirect(FacesContext
                         .getCurrentInstance().getExternalContext()
                         .getApplicationContextPath() + PATH_TO_COURSE_OVERVIEW);
-                return;
             } catch (IOException e) {
                 e.printStackTrace();
                 log.fatal("Could not redirect to " + PATH_TO_COURSE_OVERVIEW);
-                return;
             }
         }
-        log.debug("Course exam list size: " + course.getExams().size());
+    }
 
-        gradeTypeLabels = new HashMap<>();
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                facesContext.getViewRoot().getLocale());
+    /**
+     * Returns the course.
+     *
+     * @return Course
+     */
+    public Course getCourse() {
+        return course;
+    }
 
-        gradeTypeLabels.put(GradeType.Numeric.getId(), bundle.getString("gradeType.grade"));
-        gradeTypeLabels.put(GradeType.Point.getId(), bundle.getString("gradeType.points"));
-        gradeTypeLabels.put(GradeType.Boolean.getId(), bundle.getString("gradeType.boolean"));
-        gradeTypeLabels.put(GradeType.Percent.getId(), bundle.getString("gradeType.percent"));
+    /**
+     * Returns a list of all students of the opened course.
+     *
+     * @return List of students or null
+     */
+    public List<Student> getStudents() {
+        return gradingService.getStudents(course);
+    }
+
+    /**
+     * Returns the student gradings for a student. Uses map because gradings
+     * are only stored for graded exams. But we want all exams to show up.
+     * @param s Student whose gradings shall be loaded
+     * @return Map of exams with gradings
+     */
+    public Map<Exam, Grading> getStudentGradings(Student s) {
+        log.debug("load student gradings for student "
+                + s.getUser().getFirstName());
+
+        Map<Exam, Grading> gradings = studentGradings.get(s);
+
+        log.debug("Gradings is " +
+                (gradings == null ? "not loaded" : "already loaded"));
+
+        if (gradings == null) {
+            gradings = gradingService.getStudentGradings(course, s);
+            log.debug("Loaded gradings is " +
+                    (gradings == null ? "null" : "not null"));
+            studentGradings.put(s, gradings);
+        }
+
+        return gradings;
     }
 }

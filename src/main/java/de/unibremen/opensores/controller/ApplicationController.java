@@ -176,12 +176,13 @@ public class ApplicationController {
 
         //Student for course
         Student student = new Student();
-        student.setAcceptedInvitation(false);
-        student.setConfirmed(false);
+        student.setAcceptedInvitation(true);
+        student.setConfirmed(true);
         student.setTries(0);
         student.setDeleted(false);
         student.setUser(newUser);
         student.setHidden(false);
+        student.setPaboGrade("1.3");
 
         course.getStudents().add(student);
         student.setCourse(course);
