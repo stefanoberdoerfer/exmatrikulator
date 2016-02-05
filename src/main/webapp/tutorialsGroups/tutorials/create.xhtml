@@ -4,38 +4,48 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['tutorials.create']}" appendTo="@(body)" widgetVar="tutorialCreate" modal="true">
-        <ui:include src="/WEB-INF/alerts.xhtml" />
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="createTutorialName" class="col-xs-3 control-label">#{msg['common.name']}</label>
-                <div class="col-xs-8">
-                    <h:inputText styleClass="form-control" id="createTutorialName" />
-                </div>
-            </div>
-            <hr />
-            <div class="form-group">
-                <label class="col-xs-3 control-label">#{msg['common.tutors']}</label>
-                <div class="col-xs-8">
-                    <button type="button" class="btn btn-danger pull-right"><i class="fa fa-remove"></i></button>
-                    <div class="form-control-static">Torben <strong>Tankstelle</strong></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-xs-8 col-xs-offset-3">
-                    <h:inputText h5:placeholder="#{msg['tutorials.create.search']}" styleClass="form-control" />
-                    <div class="alert alert-info">
-                        #{msg['tutorials.create.hint']}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <div class="btn-group">
-                <p:commandButton value="#{msg['common.close']}" type="button" styleClass="btn btn-default"
-                                 onclick="return exModal(':tutorialCreate');" />
-                <h:link outcome="/tutorialsGroups/overview" class="btn btn-primary" value="#{msg['common.add']}" />
-            </div>
-        </div>
+        <p:dialog header="#{msg['tutorials.create']}" appendTo="@(body)" widgetVar="tutorialCreate" modal="true">
+        <h:panelGroup id="facesMessagesDialogPanel">
+          <ui:include src="/WEB-INF/alerts.xhtml" />
+        </h:panelGroup>
+
+        <h:form id="createTutorialForm">
+          <div class="modal-body">
+              <div class="form-group">
+                  <label for="createTutorialName" class="col-xs-3 control-label">#{msg['common.name']}</label>
+                  <div class="col-xs-8">
+                    <h:inputText type="text" styleClass="form-control" id="createTutorialName"
+                        value="#{tutorialGroupController.createTutorialName}" required="true">
+                      <f:validateLength minimum="1" maximum="32" />
+                    </h:inputText>
+                  </div>
+              </div>
+              <hr />
+              <div class="form-group">
+                  <label for="createTutorialTutors" class="col-xs-3 control-label">#{msg['common.tutors']}</label>
+                  <div class="col-xs-8">
+                      <h:inputText type="text" styleClass="form-control" id="createTutorialTutors"
+                          value="#{tutorialGroupController.createTutorialTutors}" required="true"
+                          requiredMessage="#{msg['registration.missingEmail']}" />
+                      <div class="alert alert-info">
+                          #{msg['tutorials.create.hint']}
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <div class="btn-group">
+                  <p:commandButton value="#{msg['common.close']}" type="button" styleClass="btn btn-default"
+                      onclick="return exModal(':tutorialCreate');" />
+
+                  <p:commandLink value="#{msg['common.add']}"
+                      update=":facesMessagesDialogPanel :tutorialList"
+                      oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':tutorialCreate');"
+                      class="btn btn-default">
+                    <f:actionListener binding="#{tutorialGroupController.createTutorial()}" />
+                  </p:commandLink>
+              </div>
+          </div>
+        </h:form>
     </p:dialog>
 </ui:composition>
