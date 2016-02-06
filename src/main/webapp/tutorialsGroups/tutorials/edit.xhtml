@@ -5,38 +5,47 @@
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
     <p:dialog header="#{msg['tutorials.edit']}" appendTo="@(body)" widgetVar="tutorialEdit" modal="true">
-        <ui:include src="/WEB-INF/alerts.xhtml" />
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="editTutorialName" class="col-xs-3 control-label">#{msg['common.name']}</label>
-                <div class="col-xs-8">
-                    <h:inputText styleClass="form-control" id="editTutorialName" />
-                </div>
-            </div>
-            <hr />
-            <div class="form-group">
-                <label class="col-xs-3 control-label">#{msg['common.tutors']}</label>
-                <div class="col-xs-8">
-                    <button type="button" class="btn btn-danger pull-right"><i class="fa fa-remove"></i></button>
-                    <div class="form-control-static">Torben <strong>Tankstelle</strong></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-xs-8 col-xs-offset-3">
-                    <h:inputText h5:placeholder="#{msg['tutorials.create.search']}" styleClass="form-control" />
-                    <div class="alert alert-info">
-                        #{msg['tutorials.create.hint']}
+       <h:panelGroup id="facesMessagesEditTutorial">
+          <ui:include src="/WEB-INF/alerts.xhtml" />
+        </h:panelGroup>
+
+        <h:form id="editTutorialForm">
+          <div class="modal-body">
+              <div class="form-group">
+                  <label for="editTutorialName" class="col-xs-3 control-label">#{msg['common.name']}</label>
+                  <div class="col-xs-8">
+                    <h:inputText type="text" styleClass="form-control" id="editTutorialName"
+                        value="#{tutorialController.tutorialName}" required="true">
+                      <f:validateLength minimum="1" maximum="32" />
+                    </h:inputText>
+                  </div>
+              </div>
+              <hr />
+              <div class="form-group">
+                  <label for="createTutorialTutors" class="col-xs-3 control-label">#{msg['common.tutors']}</label>
+                    <div class="col-xs-8">
+                        <h:inputText type="text" styleClass="form-control" id="editTutorialTutors"
+                            value="#{tutorialController.tutorialTutors}" required="true"
+                            requiredMessage="#{msg['registration.missingEmail']}" />
+                        <div class="alert alert-info">
+                            #{msg['tutorials.create.hint']}
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <div class="btn-group">
-                <p:commandButton value="#{msg['common.cancel']}" type="button" styleClass="btn btn-default"
-                                 onclick="return exModal(':tutorialEdit');" />
-                <h:link outcome="/tutorialsGroups/overview" class="btn btn-primary"
-                        value="#{msg['common.saveChanges']}" />
-            </div>
-        </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <div class="btn-group">
+                  <p:commandButton value="#{msg['common.cancel']}" type="button" styleClass="btn btn-default"
+                      onclick="return exModal(':tutorialEdit');" />
+
+                  <p:commandLink value="#{msg['common.saveChanges']}"
+                      update=":facesMessagesEditTutorial :tutorialList"
+                      oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':tutorialEdit');"
+                      class="btn btn-primary">
+                    <f:actionListener binding="#{tutorialController.editTutorial()}" />
+                  </p:commandLink>
+              </div>
+          </div>
+        </h:form>
     </p:dialog>
 </ui:composition>

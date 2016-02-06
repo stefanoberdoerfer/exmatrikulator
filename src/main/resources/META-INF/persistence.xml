@@ -22,6 +22,9 @@
 
         <!-- Properties of the persistence unit -->
         <properties>
+            <!-- https://hibernate.atlassian.net/browse/HHH-9106 -->
+            <property name="hibernate.event.merge.entity_copy_observer" value="allow" />
+
             <!-- Settings for the JTA Transaction-->
             <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform" />
             <property name="hibernate.default_schema" value="exmatrikulator" />
