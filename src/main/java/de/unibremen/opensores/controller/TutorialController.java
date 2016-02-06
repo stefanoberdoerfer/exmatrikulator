@@ -56,14 +56,14 @@ public class TutorialController implements Serializable {
     private transient CourseService courseService;
 
     /**
-     * Name for a new tutorial.
+     * Name of the current tutorial.
      */
-    public String createTutorialName;
+    public String tutorialName;
 
     /**
-     * Comma seperated string of tutor emails;
+     * Comma seperated string of tutor emails for the current tutorial.
      */
-    public String createTutorialTutors;
+    public String tutorialTutors;
 
     /**
      * Course for this tutorial.
@@ -124,7 +124,7 @@ public class TutorialController implements Serializable {
 
         Tutorial tutorial = new Tutorial();
         tutorial.setCourse(course);
-        tutorial.setName(createTutorialName);
+        tutorial.setName(tutorialName);
 
         try {
             updateTutors(tutorial);
@@ -134,7 +134,7 @@ public class TutorialController implements Serializable {
 
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_FATAL, bundle.getString("common.error"), msg));
-             return;
+            return;
         }
 
         course.getTutorials().add(tutorial);
@@ -151,8 +151,8 @@ public class TutorialController implements Serializable {
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
 
-        Tutorial tutorial = courseService.findTutorial(course, createTutorialName);
-        tutorial.setName(createTutorialName);
+        Tutorial tutorial = courseService.findTutorial(course, tutorialName);
+        tutorial.setName(tutorialName);
 
         try {
             updateTutors(tutorial);
@@ -162,7 +162,7 @@ public class TutorialController implements Serializable {
 
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_FATAL, bundle.getString("common.error"), msg));
-             return;
+            return;
         }
     }
 
@@ -173,7 +173,7 @@ public class TutorialController implements Serializable {
      * @throws ValidationException If a user with the given email didn't exist.
      */
     private void updateTutors(Tutorial tutorial) {
-        String[] emails = createTutorialTutors.split(",");
+        String[] emails = tutorialTutors.split(",");
         for (String email : emails) {
             email = email.trim();
             User user = userService.findByEmail(email);
@@ -226,38 +226,38 @@ public class TutorialController implements Serializable {
     }
 
     /**
-     * Sets the name for a new tutorial.
+     * Sets the name for the current tutorial.
      *
-     * @param createTutorialName Tutorial name.
+     * @param tutorialName Tutorial name.
      */
-    public void setCreateTutorialName(String createTutorialName) {
-        this.createTutorialName = createTutorialName;
+    public void setTutorialName(String tutorialName) {
+        this.tutorialName = tutorialName;
     }
 
     /**
-     * Returns the name for a new tutorial.
+     * Returns the name of the current tutorial.
      *
-     * @return Name for a new tutorial.
+     * @return Name of the current tutorial.
      */
-    public String getCreateTutorialName() {
-        return createTutorialName;
+    public String getTutorialName() {
+        return tutorialName;
     }
 
     /**
-     * Sets the tutors for a new tutorial.
+     * Sets the tutors for the current tutorial.
      *
-     * @param createTutorialTutors Tutor name.
+     * @param tutorialTutors Seperated list of tutor emails.
      */
-    public void setCreateTutorialTutors(String createTutorialTutors) {
-        this.createTutorialTutors = createTutorialTutors;
+    public void setTutorialTutors(String tutorialTutors) {
+        this.tutorialTutors = tutorialTutors;
     }
 
     /**
-     * Returns the tutors for a new tutorial.
+     * Returns the tutors for the current tutorial.
      *
      * @return Comma seperated string of emails.
      */
-    public String getCreateTutorialTutors() {
-        return createTutorialTutors;
+    public String getTutorialTutors() {
+        return tutorialTutors;
     }
 }
