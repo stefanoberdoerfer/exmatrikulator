@@ -26,13 +26,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
 
 /**
- * Controller for managing tutorial groups.
+ * Controller for managing tutorials.
  *
  * @author Sören Tempel
  */
 @ManagedBean
 @ViewScoped
-public class TutorialGroupController implements Serializable {
+public class TutorialController implements Serializable {
     /**
      * Unique serial version uid.
      */
@@ -41,7 +41,7 @@ public class TutorialGroupController implements Serializable {
     /**
      * The log4j logger.
      */
-    private Logger log = LogManager.getLogger(TutorialGroupController.class);
+    private Logger log = LogManager.getLogger(TutorialController.class);
 
     /**
      * The user service for connection to the database.

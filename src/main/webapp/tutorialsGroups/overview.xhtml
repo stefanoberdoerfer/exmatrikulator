@@ -11,7 +11,7 @@
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
         <!-- Todo: Veranstaltungsnamen anzeigen -->
-        <li>#{tutorialGroupController.course.name}</li>
+        <li>#{tutorialController.course.name}</li>
         <li class="active">#{msg['courses.tutorialsGroups']}</li>
     </ui:define>
     <!-- Page Content -->
@@ -25,7 +25,7 @@
         </div>
 
         <h:panelGroup id="tutorialList">
-          <ui:repeat var="tutorial" value="#{tutorialGroupController.tutorials}">
+          <ui:repeat var="tutorial" value="#{tutorialController.tutorials}">
               <div class="row table-groups-header">
                   <div class="col-xs-8">
                       <h3>#{tutorial.name}</h3>

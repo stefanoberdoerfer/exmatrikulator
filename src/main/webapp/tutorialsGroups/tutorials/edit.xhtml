@@ -15,7 +15,7 @@
                   <label for="editTutorialName" class="col-xs-3 control-label">#{msg['common.name']}</label>
                   <div class="col-xs-8">
                     <h:inputText type="text" styleClass="form-control" id="editTutorialName"
-                        value="#{tutorialGroupController.createTutorialName}" required="true">
+                        value="#{tutorialController.createTutorialName}" required="true">
                       <f:validateLength minimum="1" maximum="32" />
                     </h:inputText>
                   </div>
@@ -25,7 +25,7 @@
                   <label for="createTutorialTutors" class="col-xs-3 control-label">#{msg['common.tutors']}</label>
                     <div class="col-xs-8">
                         <h:inputText type="text" styleClass="form-control" id="editTutorialTutors"
-                            value="#{tutorialGroupController.createTutorialTutors}" required="true"
+                            value="#{tutorialController.createTutorialTutors}" required="true"
                             requiredMessage="#{msg['registration.missingEmail']}" />
                         <div class="alert alert-info">
                             #{msg['tutorials.create.hint']}
@@ -42,7 +42,7 @@
                       update=":facesMessagesEditTutorial :tutorialList"
                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':tutorialEdit');"
                       class="btn btn-primary">
-                    <f:actionListener binding="#{tutorialGroupController.editTutorial()}" />
+                    <f:actionListener binding="#{tutorialController.editTutorial()}" />
                   </p:commandLink>
               </div>
           </div>
