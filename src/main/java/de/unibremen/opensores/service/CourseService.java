@@ -2,6 +2,7 @@ package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Course;
 
 import javax.ejb.Stateless;
@@ -35,6 +36,26 @@ public class CourseService extends GenericService<Course> {
             .getResultList();
 
         return (privUsers.isEmpty()) ? null : privUsers.get(0);
+    }
+
+    /**
+     * Find tutorial by name.
+     *
+     * @param course Course tutorial belongs to.
+     * @param name Name of the tutorial.
+     * @return Tutorial with the given name or null.
+     */
+    public Tutorial findTutorial(Course course, String name) {
+        List<Tutorial> tutorials = em.createQuery(
+                "SELECT DISTINCT t FROM Tutorial t"
+                + " JOIN t.course AS c"
+                + " WITH c.courseId = :courseId"
+                + " WHERE t.name = :tutorial", Tutorial.class)
+            .setParameter("courseId", course.getCourseId())
+            .setParameter("tutorial", name)
+            .getResultList();
+
+        return (tutorials.isEmpty()) ? null : tutorials.get(0);
     }
 
     /**

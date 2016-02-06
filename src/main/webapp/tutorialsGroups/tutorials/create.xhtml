@@ -5,7 +5,7 @@
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
         <p:dialog header="#{msg['tutorials.create']}" appendTo="@(body)" widgetVar="tutorialCreate" modal="true">
-        <h:panelGroup id="facesMessagesDialogPanel">
+        <h:panelGroup id="facesMessagesCreateTutorial">
           <ui:include src="/WEB-INF/alerts.xhtml" />
         </h:panelGroup>
 
@@ -35,13 +35,13 @@
           </div>
           <div class="modal-footer">
               <div class="btn-group">
-                  <p:commandButton value="#{msg['common.close']}" type="button" styleClass="btn btn-default"
+                  <p:commandButton value="#{msg['common.cancel']}" type="button" styleClass="btn btn-default"
                       onclick="return exModal(':tutorialCreate');" />
 
                   <p:commandLink value="#{msg['common.add']}"
-                      update=":facesMessagesDialogPanel :tutorialList"
+                      update=":facesMessagesCreateTutorial :tutorialList"
                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':tutorialCreate');"
-                      class="btn btn-default">
+                      class="btn btn-primary">
                     <f:actionListener binding="#{tutorialGroupController.createTutorial()}" />
                   </p:commandLink>
               </div>

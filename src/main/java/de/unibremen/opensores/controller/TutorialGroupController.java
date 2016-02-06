@@ -23,6 +23,7 @@ import javax.faces.context.FacesContext;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ValidationException;
 
 /**
  * Controller for managing tutorial groups.
@@ -125,18 +126,59 @@ public class TutorialGroupController implements Serializable {
         tutorial.setCourse(course);
         tutorial.setName(createTutorialName);
 
-        List<PrivilegedUser> tutors = new ArrayList<>();
+        try {
+            updateTutors(tutorial);
+        } catch (ValidationException e) {
+            String fmt = bundle.getString("common.studentDoesNotExist");
+            String msg = new MessageFormat(fmt).format(new Object[]{e.toString()});
+
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+             return;
+        }
+
+        course.getTutorials().add(tutorial);
+        course = courseService.update(course);
+
+        log.debug("Created new tutorial " + tutorial.getName());
+    }
+
+    /**
+     * Edits an existing tutorial.
+     */
+    public void editTutorial() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        Tutorial tutorial = courseService.findTutorial(course, createTutorialName);
+        tutorial.setName(createTutorialName);
+
+        try {
+            updateTutors(tutorial);
+        } catch (ValidationException e) {
+            String fmt = bundle.getString("common.studentDoesNotExist");
+            String msg = new MessageFormat(fmt).format(new Object[]{e.toString()});
+
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+             return;
+        }
+    }
+
+    /**
+     * Updates tutors for the given tutorial in this course.
+     *
+     * @param tutorial Tutorial to update tutors for.
+     * @throws ValidationException If a user with the given email didn't exist.
+     */
+    private void updateTutors(Tutorial tutorial) {
         String[] emails = createTutorialTutors.split(",");
         for (String email : emails) {
             email = email.trim();
             User user = userService.findByEmail(email);
             if (user == null) {
-                String fmt = bundle.getString("common.studentDoesNotExist");
-                String msg = new MessageFormat(fmt).format(new Object[]{email});
-
-                facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_FATAL, bundle.getString("common.error"), msg));
-                return;
+                throw new ValidationException(email);
             }
 
             PrivilegedUser tutor = courseService.findTutor(course, user);
@@ -154,11 +196,6 @@ public class TutorialGroupController implements Serializable {
             tutorial.getTutors().add(tutor);
             course.getTutors().add(tutor);
         }
-
-        course.getTutorials().add(tutorial);
-        course = courseService.update(course);
-
-        log.debug("Created new tutorial " + tutorial.getName());
     }
 
     /**
