@@ -13,6 +13,7 @@ import de.unibremen.opensores.service.CourseService;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.text.MessageFormat;
 
@@ -24,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
+import javax.validation.constraints.NotNull;
 
 /**
  * Controller for managing tutorials.
@@ -59,6 +61,11 @@ public class TutorialController implements Serializable {
      * Name of the current tutorial.
      */
     public String tutorialName;
+
+    /**
+     * New tutorial name, used when the tutorial is being edited.
+     */
+    public String newTutorialName = null;
 
     /**
      * Comma seperated string of tutor emails for the current tutorial.
@@ -127,7 +134,7 @@ public class TutorialController implements Serializable {
         tutorial.setName(tutorialName);
 
         try {
-            updateTutors(tutorial);
+            tutorial = updateTutors(tutorial);
         } catch (ValidationException e) {
             String fmt = bundle.getString("common.studentDoesNotExist");
             String msg = new MessageFormat(fmt).format(new Object[]{e.toString()});
@@ -144,6 +151,18 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Changes the current tutorial context.
+     *
+     * @param tutorial Tutorial to switch to.
+     */
+    public void changeCurrentTutorial(@NotNull Tutorial tutorial) {
+        tutorialName = tutorial.getName();
+        tutorialTutors = tutorial.getTutors().stream()
+            .map(pu -> pu.getUser().getEmail())
+            .collect(Collectors.joining(","));
+    }
+
+    /**
      * Edits an existing tutorial.
      */
     public void editTutorial() {
@@ -152,10 +171,11 @@ public class TutorialController implements Serializable {
             facesContext.getViewRoot().getLocale());
 
         Tutorial tutorial = courseService.findTutorial(course, tutorialName);
-        tutorial.setName(tutorialName);
+        tutorial.setName(newTutorialName);
+        newTutorialName = null;
 
         try {
-            updateTutors(tutorial);
+            tutorial = updateTutors(tutorial);
         } catch (ValidationException e) {
             String fmt = bundle.getString("common.studentDoesNotExist");
             String msg = new MessageFormat(fmt).format(new Object[]{e.toString()});
@@ -164,15 +184,19 @@ public class TutorialController implements Serializable {
                 .SEVERITY_FATAL, bundle.getString("common.error"), msg));
             return;
         }
+
+        course.getTutorials().add(tutorial);
+        course = courseService.update(course);
     }
 
     /**
      * Updates tutors for the given tutorial in this course.
      *
      * @param tutorial Tutorial to update tutors for.
+     * @return Updated Tutorial.
      * @throws ValidationException If a user with the given email didn't exist.
      */
-    private void updateTutors(Tutorial tutorial) {
+    private Tutorial updateTutors(Tutorial tutorial) {
         String[] emails = tutorialTutors.split(",");
         for (String email : emails) {
             email = email.trim();
@@ -192,10 +216,14 @@ public class TutorialController implements Serializable {
                 tutor.setHidden(false);
             }
 
-            tutor.getTutorials().add(tutorial);
-            tutorial.getTutors().add(tutor);
-            course.getTutors().add(tutor);
+            if (tutorial.getTutors().contains(tutor)) {
+                tutor.getTutorials().add(tutorial);
+                tutorial.getTutors().add(tutor);
+                course.getTutors().add(tutor);
+            }
         }
+
+        return tutorial;
     }
 
     /**
@@ -241,6 +269,24 @@ public class TutorialController implements Serializable {
      */
     public String getTutorialName() {
         return tutorialName;
+    }
+
+    /**
+     * Sets the new name for the current tutorial.
+     *
+     * @param newTutorialName New Tutorial name.
+     */
+    public void setNewTutorialName(String newTutorialName) {
+        this.newTutorialName = newTutorialName;
+    }
+
+    /**
+     * Returns the new name for the current tutorial.
+     *
+     * @return New or current tutorial name.
+     */
+    public String getNewTutorialName() {
+        return (newTutorialName == null) ? tutorialName : newTutorialName;
     }
 
     /**

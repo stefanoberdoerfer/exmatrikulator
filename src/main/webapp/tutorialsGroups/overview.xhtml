@@ -36,12 +36,18 @@
                   </div>
                   <div class="col-xs-4 text-right">
                       <div class="btn-group">
-                          <h:link onclick="return exModal('tutorialEdit');" class="btn btn-default">
-                              <i class="fa fa-pencil"></i>
-                          </h:link>
-                          <h:link onclick="return exModal('tutorialRemove');" class="btn btn-danger">
-                              <i class="fa fa-remove"></i>
-                          </h:link>
+                          <h:form id="prepareTutorialDialogForm">
+                            <p:commandLink update=":editTutorialForm"
+                              oncomplete="return exModal('tutorialEdit');"
+                              class="btn btn-default">
+                                <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                                <i class="fa fa-pencil"></i>
+                            </p:commandLink>
+
+                            <h:link onclick="return exModal('tutorialRemove');" class="btn btn-danger">
+                                <i class="fa fa-remove"></i>
+                            </h:link>
+                          </h:form>
                       </div>
                   </div>
               </div>
