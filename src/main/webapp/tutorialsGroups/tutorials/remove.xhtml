@@ -5,22 +5,33 @@
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
     <p:dialog header="#{msg['tutorials.remove']}" appendTo="@(body)" widgetVar="tutorialRemove" modal="true">
-        <ui:include src="/WEB-INF/alerts.xhtml" />
-        <div class="modal-body">
-            #{msg['tutorials.remove.question']}<br />
-            <br />
-            #{msg['tutorials.remove.confirm']}<br />
-            <h:inputText type="text" class="form-control" />
-            <br />
-            #{msg['tutorials.remove.hint']}
-        </div>
-        <div class="modal-footer">
-            <div class="btn-group">
-                <p:commandButton value="#{msg['common.cancel']}" type="button"
-                                 onclick="return exModal(':tutorialRemove');" styleClass="btn btn-default" />
-                <h:link outcome="/tutorialsGroups/overview" class="btn btn-danger"
-                        value="#{msg['common.remove']}" />
-            </div>
-        </div>
+        <h:panelGroup id="facesMessagesRemoveTutorial">
+          <ui:include src="/WEB-INF/alerts.xhtml" />
+        </h:panelGroup>
+
+        <h:form id="removeTutorialForm">
+          <div class="modal-body">
+              #{msg['tutorials.remove.question']}<br />
+              <br />
+              #{msg['tutorials.remove.confirm']}<br />
+              <h:inputText type="text" styleClass="form-control" id="removalConformation"
+                value="#{tutorialController.removalConformation}" required="true"/>
+              <br />
+              #{msg['tutorials.remove.hint']}
+          </div>
+          <div class="modal-footer">
+              <div class="btn-group">
+                  <p:commandButton value="#{msg['common.cancel']}" type="button" styleClass="btn btn-default"
+                      onclick="return exModal(':tutorialRemove');" />
+
+                  <p:commandLink value="#{msg['common.remove']}"
+                      update=":facesMessagesRemoveTutorial :tutorialList"
+                      oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':tutorialRemove');"
+                      class="btn btn-danger">
+                    <f:actionListener binding="#{tutorialController.removeTutorial()}" />
+                  </p:commandLink>
+              </div>
+          </div>
+        </h:form>
     </p:dialog>
 </ui:composition>
