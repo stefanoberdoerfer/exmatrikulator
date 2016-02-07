@@ -74,7 +74,7 @@ public class CourseSettingsController {
         }
 
         if (courseId != -1) {
-            course = courseService.findById(courseId);
+            course = courseService.find(Course.class, courseId);
         }
 
         log.debug("Loaded course object: " + course);
