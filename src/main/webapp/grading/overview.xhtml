@@ -10,7 +10,7 @@
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
         <!-- Todo: Veranstaltungsnamen anzeigen -->
-        <li>Veranstaltung trololol</li>
+        <li>#{gradingController.course.name}</li>
         <li class="active">#{msg['courses.grading']}</li>
     </ui:define>
     <!-- Page Content -->
@@ -83,5 +83,7 @@
                 </div>
             </p:rowExpansion>
         </p:dataTable>
+
+        <ui:include src="/grading/insert.xhtml" />
     </ui:define>
 </ui:composition>

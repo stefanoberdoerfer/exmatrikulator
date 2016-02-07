@@ -1,4 +1,4 @@
-package main.java.de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.grading;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by matthias on 19.01.16.
+ * @author Matthias Reichmann
  */
 @ManagedBean
 @ViewScoped

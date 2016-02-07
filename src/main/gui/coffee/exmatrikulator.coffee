@@ -33,6 +33,8 @@ exmatrikulatorInteractivity = ($) ->
         PF name
           .show()
 
+        gradingFormula();
+
     return false
   ###
   Dropdown toggle
@@ -57,6 +59,39 @@ exmatrikulatorInteractivity = ($) ->
     .on 'click', () ->
       $ '.dropdown-menu'
         .hide()
+  ###
+  Inputs for grading
+  ###
+  $ '#gradeExamination select'
+    .on 'change', () ->
+      gradingFormula()
+
+  gradingFormula = () ->
+    value = $ '#gradeExamination select'
+      .val()
+
+    if value == "-1"
+      $ '#pabo-grade-selection'
+        .show()
+      $ '#other-grade-selection'
+        .hide()
+    else
+      $ '#pabo-grade-selection'
+        .hide()
+      $ '#other-grade-selection'
+        .show()
+  ###
+  Called to handle a request made in a modal dialog
+  ###
+  window.modalRequest = (name, xhr, status, args) ->
+    if args.success
+      if name.indexOf(':') == -1
+        window.exModal ':' + name
+      else
+        window.exModal name
+    else
+      console.debug 'modalRequest called but no success'
+
 ###
 If jQuery defined, wait till DOM loaded, then add our interactivity
 ###

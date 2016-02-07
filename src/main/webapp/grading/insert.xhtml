@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['gradings.insert']}" appendTo="@(body)" widgetVar="gradeInsert" modal="true">
+        <h:form id="gradeInsertForm">
+            <ui:include src="/WEB-INF/alerts.xhtml" />
+            <h:panelGroup layout="block" styleClass="modal-body">
+                <div class="form-group">
+                    <label for="gradeExamination" class="col-xs-3 control-label">
+                        #{msg['common.course.exam']}
+                    </label>
+                    <div class="col-xs-9" id="gradeExamination">
+                        <h:selectOneMenu value="#{gradingInsertController.gradingExam}"
+                                         styleClass="form-control">
+                            <f:selectItem itemValue="-1" itemLabel="#{msg['gradeType.paboGrade']}" />
+                            <f:selectItem itemValue="0" itemLabel="- - #{msg['common.pleaseSelect']} - -" />
+                            <f:selectItems value="#{gradingController.course.exams}" var="exam"
+                                           itemLabel="#{exam.name}" itemValue="#{exam.examId}" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="gradeStudent" class="col-xs-3 control-label">
+                        #{msg['common.student']}
+                    </label>
+                    <div class="col-xs-9">
+                        <h:inputText styleClass="form-control" id="gradeStudent"
+                                     value="#{gradingInsertController.gradingStudent}" h5:autofocus="true" />
+                        <div class="alert alert-info">
+                            #{msg['gradings.insert.student']}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="gradeValue" class="col-xs-3 control-label">#{msg['common.result']}</label>
+                    <div class="col-xs-9" id="pabo-grade-selection">
+                        <h:selectOneMenu value="#{gradingInsertController.gradingPabo}"
+                                         styleClass="form-control">
+                            <f:selectItems value="#{gradingInsertController.paboGrades}" var="grade"
+                                           itemLabel="#{grade.gradeName}" itemValue="#{grade.gradeValue}" />
+                        </h:selectOneMenu>
+                    </div>
+                    <div class="col-xs-9" id="other-grade-selection">
+                        <h:inputText styleClass="form-control"
+                                     value="#{gradingInsertController.gradingValue}"/>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-group">
+                    <label for="publicComment" class="col-xs-3 control-label">
+                        #{msg['gradings.comments.public']}
+                    </label>
+                    <div class="col-xs-9">
+                        <h:inputTextarea styleClass="form-control" id="publicComment" rows="4"
+                                         value="#{gradingInsertController.gradingPublicComment}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="privateComment" class="col-xs-3 control-label">
+                        #{msg['gradings.comments.private']}
+                    </label>
+                    <div class="col-xs-9">
+                        <h:inputTextarea styleClass="form-control" id="privateComment" rows="4"
+                                         value="#{gradingInsertController.gradingPrivateComment}" />
+                    </div>
+                </div>
+            </h:panelGroup>
+            <div class="modal-footer">
+                <div class="btn-group">
+                    <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                     onclick="return exModal(':gradeInsert');"
+                                     styleClass="btn btn-default" />
+                    <p:commandButton value="#{msg['gradings.insert']}" type="button"
+                                     styleClass="btn btn-primary">
+                        <f:ajax listener="#{gradingInsertController.store()}"
+                                execute="@form"
+                                render="gradeInsertForm"
+                                />
+                    </p:commandButton>
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>
