@@ -44,9 +44,12 @@
                                 <i class="fa fa-pencil"></i>
                             </p:commandLink>
 
-                            <h:link onclick="return exModal('tutorialRemove');" class="btn btn-danger">
+                            <p:commandLink update=":removeTutorialForm"
+                              oncomplete="return exModal('tutorialRemove');"
+                              class="btn btn-danger">
+                                <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
                                 <i class="fa fa-remove"></i>
-                            </h:link>
+                            </p:commandLink>
                           </h:form>
                       </div>
                   </div>

@@ -9,6 +9,7 @@ import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.TutorialService;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -58,6 +59,12 @@ public class TutorialController implements Serializable {
     private transient CourseService courseService;
 
     /**
+     * The tutorial service for connection to the database.
+     */
+    @EJB
+    private transient TutorialService tutorialService;
+
+    /**
      * Course for this tutorial.
      */
     private transient Course course;
@@ -76,6 +83,11 @@ public class TutorialController implements Serializable {
      * New tutorial name, used when the tutorial is being edited.
      */
     private String newTutorialName = null;
+
+    /**
+     * Removal conformation required to remove a tutorial.
+     */
+    private String removalConformation;
 
     /**
      * Comma seperated string of tutor emails for the current tutorial.
@@ -191,6 +203,32 @@ public class TutorialController implements Serializable {
         }
 
         course = courseService.update(course);
+    }
+
+    /**
+     * Removes the current tutorial.
+     */
+    public void removeTutorial() {
+        log.debug("REMOVE called");
+        log.debug(tutorial.getName());
+        log.debug(removalConformation);
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        String name = tutorial.getName();
+        if (!removalConformation.equals(name)) {
+            String msg = bundle.getString("examination.messageDeleteWrongConfirm");
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+            return;
+        }
+
+        tutorialService.remove(tutorial);
+        tutorial = null;
+
+        log.debug("Removed tutorial " + name + " from course " + course.getName());
     }
 
     /**
@@ -311,5 +349,23 @@ public class TutorialController implements Serializable {
      */
     public String getTutorialTutors() {
         return tutorialTutors;
+    }
+
+    /**
+     * Sets the removal conformation for the current tutorial.
+     *
+     * @param removalConformation Removal conformation.
+     */
+    public void setRemovalConformation(String removalConformation) {
+        this.removalConformation = removalConformation;
+    }
+
+    /**
+     * Returns the removal conformation for the current tutorial.
+     *
+     * @return Removal conformation for the current tutorial.
+     */
+    public String getRemovalConformation() {
+        return removalConformation;
     }
 }
