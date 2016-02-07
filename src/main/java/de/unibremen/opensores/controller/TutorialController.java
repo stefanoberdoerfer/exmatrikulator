@@ -58,24 +58,29 @@ public class TutorialController implements Serializable {
     private transient CourseService courseService;
 
     /**
+     * Course for this tutorial.
+     */
+    private transient Course course;
+
+    /**
+     * Current tutorial object.
+     */
+    private transient Tutorial tutorial;
+
+    /**
      * Name of the current tutorial.
      */
-    public String tutorialName;
+    private String tutorialName;
 
     /**
      * New tutorial name, used when the tutorial is being edited.
      */
-    public String newTutorialName = null;
+    private String newTutorialName = null;
 
     /**
      * Comma seperated string of tutor emails for the current tutorial.
      */
-    public String tutorialTutors;
-
-    /**
-     * Course for this tutorial.
-     */
-    private transient Course course;
+    private String tutorialTutors;
 
     /**
      * Method called on bean initialization.
@@ -129,7 +134,7 @@ public class TutorialController implements Serializable {
             return;
         }
 
-        Tutorial tutorial = new Tutorial();
+        tutorial = new Tutorial();
         tutorial.setCourse(course);
         tutorial.setName(tutorialName);
 
@@ -156,8 +161,9 @@ public class TutorialController implements Serializable {
      * @param tutorial Tutorial to switch to.
      */
     public void changeCurrentTutorial(@NotNull Tutorial tutorial) {
-        tutorialName = tutorial.getName();
-        tutorialTutors = tutorial.getTutors().stream()
+        this.tutorial = tutorial;
+        this.tutorialName = tutorial.getName();
+        this.tutorialTutors = tutorial.getTutors().stream()
             .map(pu -> pu.getUser().getEmail())
             .collect(Collectors.joining(","));
     }
@@ -170,7 +176,6 @@ public class TutorialController implements Serializable {
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
 
-        Tutorial tutorial = courseService.findTutorial(course, tutorialName);
         tutorial.setName(newTutorialName);
         newTutorialName = null;
 
@@ -185,7 +190,6 @@ public class TutorialController implements Serializable {
             return;
         }
 
-        course.getTutorials().add(tutorial);
         course = courseService.update(course);
     }
 
@@ -197,6 +201,7 @@ public class TutorialController implements Serializable {
      * @throws ValidationException If a user with the given email didn't exist.
      */
     private Tutorial updateTutors(Tutorial tutorial) {
+        List<PrivilegedUser> tutors = new ArrayList<>();
         String[] emails = tutorialTutors.split(",");
         for (String email : emails) {
             email = email.trim();
@@ -207,22 +212,23 @@ public class TutorialController implements Serializable {
 
             PrivilegedUser tutor = courseService.findTutor(course, user);
             if (tutor == null) {
-                log.debug("Made user with email " + user.getEmail() + " a tutor");
+                log.debug("Made user with email " + email + " a tutor");
                 tutor = new PrivilegedUser();
 
                 tutor.setSecretary(false);
                 tutor.setCourse(course);
                 tutor.setUser(user);
                 tutor.setHidden(false);
+
+                if (!course.getTutors().contains(tutor)) {
+                    course.getTutors().add(tutor);
+                }
             }
 
-            if (tutorial.getTutors().contains(tutor)) {
-                tutor.getTutorials().add(tutorial);
-                tutorial.getTutors().add(tutor);
-                course.getTutors().add(tutor);
-            }
+            tutors.add(tutor);
         }
 
+        tutorial.setTutors(tutors);
         return tutorial;
     }
 

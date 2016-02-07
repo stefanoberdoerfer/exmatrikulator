@@ -39,26 +39,6 @@ public class CourseService extends GenericService<Course> {
     }
 
     /**
-     * Find tutorial by name.
-     *
-     * @param course Course tutorial belongs to.
-     * @param name Name of the tutorial.
-     * @return Tutorial with the given name or null.
-     */
-    public Tutorial findTutorial(Course course, String name) {
-        List<Tutorial> tutorials = em.createQuery(
-                "SELECT DISTINCT t FROM Tutorial t"
-                + " JOIN t.course AS c"
-                + " WITH c.courseId = :courseId"
-                + " WHERE t.name = :tutorial", Tutorial.class)
-            .setParameter("courseId", course.getCourseId())
-            .setParameter("tutorial", name)
-            .getResultList();
-
-        return (tutorials.isEmpty()) ? null : tutorials.get(0);
-    }
-
-    /**
      * Lists all courses of the COURSES table.
      * @return A list of all courses or an empty list if no courses were found.
      */
