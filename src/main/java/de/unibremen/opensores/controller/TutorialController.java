@@ -139,13 +139,6 @@ public class TutorialController implements Serializable {
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
 
-        if (course == null) {
-            String msg = bundle.getString("courses.fail");
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
-            return;
-        }
-
         tutorial = new Tutorial();
         tutorial.setCourse(course);
         tutorial.setName(tutorialName);
@@ -153,8 +146,8 @@ public class TutorialController implements Serializable {
         try {
             tutorial = updateTutors(tutorial);
         } catch (ValidationException e) {
-            String fmt = bundle.getString("common.studentDoesNotExist");
-            String msg = new MessageFormat(fmt).format(new Object[]{e.toString()});
+            String fmt = bundle.getString("courses.studentDoesNotExist");
+            String msg = new MessageFormat(fmt).format(new Object[]{e.getMessage()});
 
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_FATAL, bundle.getString("common.error"), msg));
@@ -194,8 +187,8 @@ public class TutorialController implements Serializable {
         try {
             tutorial = updateTutors(tutorial);
         } catch (ValidationException e) {
-            String fmt = bundle.getString("common.studentDoesNotExist");
-            String msg = new MessageFormat(fmt).format(new Object[]{e.toString()});
+            String fmt = bundle.getString("courses.studentDoesNotExist");
+            String msg = new MessageFormat(fmt).format(new Object[]{e.getMessage()});
 
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_FATAL, bundle.getString("common.error"), msg));
@@ -209,17 +202,13 @@ public class TutorialController implements Serializable {
      * Removes the current tutorial.
      */
     public void removeTutorial() {
-        log.debug("REMOVE called");
-        log.debug(tutorial.getName());
-        log.debug(removalConformation);
-
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
 
         String name = tutorial.getName();
         if (!removalConformation.equals(name)) {
-            String msg = bundle.getString("examination.messageDeleteWrongConfirm");
+            String msg = bundle.getString("courses.tutorialDeleteConfirm");
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_FATAL, bundle.getString("common.error"), msg));
             return;
@@ -228,6 +217,7 @@ public class TutorialController implements Serializable {
         tutorialService.remove(tutorial);
         tutorial = null;
 
+        removalConformation = null;
         log.debug("Removed tutorial " + name + " from course " + course.getName());
     }
 

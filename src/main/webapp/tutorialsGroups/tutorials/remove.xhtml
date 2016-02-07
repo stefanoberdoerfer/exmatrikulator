@@ -4,10 +4,9 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['tutorials.remove']}" appendTo="@(body)" widgetVar="tutorialRemove" modal="true">
-        <h:panelGroup id="facesMessagesRemoveTutorial">
-          <ui:include src="/WEB-INF/alerts.xhtml" />
-        </h:panelGroup>
+      <p:dialog header="#{msg['tutorials.remove']}" appendTo="@(body)" widgetVar="tutorialRemove"
+          id="removeTutorialDialog" modal="true" visible="#{not empty facesContext.messageList}">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
 
         <h:form id="removeTutorialForm">
           <div class="modal-body">
@@ -25,8 +24,7 @@
                       onclick="return exModal(':tutorialRemove');" />
 
                   <p:commandLink value="#{msg['common.remove']}"
-                      update=":facesMessagesRemoveTutorial :tutorialList"
-                      oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':tutorialRemove');"
+                      update=":removeTutorialDialog :tutorialList"
                       class="btn btn-danger">
                     <f:actionListener binding="#{tutorialController.removeTutorial()}" />
                   </p:commandLink>
