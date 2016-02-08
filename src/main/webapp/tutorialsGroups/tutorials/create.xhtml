@@ -4,10 +4,9 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-        <p:dialog header="#{msg['tutorials.create']}" appendTo="@(body)" widgetVar="tutorialCreate" modal="true">
-        <h:panelGroup id="facesMessagesCreateTutorial">
-          <ui:include src="/WEB-INF/alerts.xhtml" />
-        </h:panelGroup>
+      <p:dialog header="#{msg['tutorials.create']}" appendTo="@(body)" widgetVar="tutorialCreate"
+          id="createTutorialDialog" modal="true" visible="#{not empty facesContext.messageList}">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
 
         <h:form id="createTutorialForm">
           <div class="modal-body">
@@ -39,8 +38,7 @@
                       onclick="return exModal(':tutorialCreate');" />
 
                   <p:commandLink value="#{msg['common.add']}"
-                      update=":facesMessagesCreateTutorial :tutorialList"
-                      oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':tutorialCreate');"
+                      update=":createTutorialDialog :tutorialList"
                       class="btn btn-primary">
                     <f:actionListener binding="#{tutorialController.createTutorial()}" />
                   </p:commandLink>
