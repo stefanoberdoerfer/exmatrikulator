@@ -172,6 +172,10 @@ public class Course {
         this.groups = groups;
     }
 
+    public void setCourseId(long id) {
+        this.courseId = id;
+    }
+
     public Long getCourseId() {
         return courseId;
     }

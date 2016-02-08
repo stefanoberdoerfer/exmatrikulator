@@ -52,6 +52,9 @@ public class User {
     @Column(nullable = true)
     private String language;
 
+    @Column(nullable = true)
+    private String matriculationNumber;
+
     @Column(nullable = false)
     private Boolean isBlocked = false;
 
@@ -79,7 +82,6 @@ public class User {
     /**
      * Returns true if the user has the given global role.
      *
-     * @param user user whos roles should be checked.
      * @param roleStr Role (as a string) the user should have.
      * @return True if he has the given role, false otherwise.
      */
@@ -175,5 +177,13 @@ public class User {
     @Override
     public String toString() {
         return firstName + " " + lastName;
+    }
+
+    public String getMatriculationNumber() {
+        return matriculationNumber;
+    }
+
+    public void setMatriculationNumber(String matriculationNumber) {
+        this.matriculationNumber = matriculationNumber;
     }
 }

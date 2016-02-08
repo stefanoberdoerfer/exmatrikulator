@@ -103,6 +103,10 @@ public class Student {
         return course;
     }
 
+    public void setStudentId(long id) {
+        this.studentId = id;
+    }
+
     public void setTries(Integer tries) {
         this.tries = tries;
     }

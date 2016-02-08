@@ -116,6 +116,10 @@ public class ParticipationType {
         this.students = students;
     }
 
+    public void setPartTypeId(long id) {
+        this.partTypeId = id;
+    }
+
     public Long getPartTypeId() {
         return partTypeId;
     }
