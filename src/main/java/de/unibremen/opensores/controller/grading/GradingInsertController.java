@@ -3,15 +3,20 @@ package de.unibremen.opensores.controller.grading;
 import de.unibremen.opensores.model.*;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
+import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 
 import org.primefaces.context.RequestContext;
+
+import java.util.ResourceBundle;
 
 /**
  * @author Matthias Reichmann
@@ -28,12 +33,12 @@ public class GradingInsertController {
     /**
      * Data set by the formula of the modal to insert grades.
      */
-    private int gradingExam;
-    private String gradingStudent;
-    private int gradingPabo;
-    private String gradingValue;
-    private String gradingPrivateComment;
-    private String gradingPublicComment;
+    private Long formExam;
+    private String formStudent;
+    private String formPaboGrading;
+    private String formGrading;
+    private String formPrivateComment;
+    private String formPublicComment;
 
     /**
      * CourseService for database transactions related to courses.
@@ -42,64 +47,191 @@ public class GradingInsertController {
     private CourseService courseService;
 
     /**
-     * CourseService for database transactions related to courses.
+     * UserService for database transactions related to users.
+     */
+    @EJB
+    private UserService userService;
+
+    /**
+     * CourseService for database transactions related to gradings.
      */
     @EJB
     private GradingService gradingService;
 
-    public int getGradingExam() {
-        return gradingExam;
-    }
+    public void storeUserGrading(Course course, boolean overwrite) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                facesContext.getViewRoot().getLocale());
+        /*
+        Load the user
+         */
+        User user = (User)FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("user");
+        /*
+        Check if the user is a lecturer or tutors
+         */
+        if (!userService.hasCourseRole(user, "PRIVILEGED_USER", course) &&
+                !userService.hasCourseRole(user, "LECTURER", course)) {
 
-    public void setGradingExam(int gradingExam) {
-        this.gradingExam = gradingExam;
-    }
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("common.noAccess")));
+            return;
+        }
+        /*
+        Check if the student exists and if he/she is part of this course.
+         */
+        if (formStudent == null || formStudent.trim().length() == 0) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.noStudent")));
+            return;
+        }
 
-    public String getGradingStudent() {
-        return gradingStudent;
-    }
+        log.debug("Grading: searching for student " + formStudent);
 
-    public void setGradingStudent(String gradingStudent) {
-        this.gradingStudent = gradingStudent;
-    }
+        Student student = gradingService.findStudent(course, formStudent);
 
-    public int getGradingPabo() {
-        return gradingPabo;
-    }
+        log.debug("Grading: found student? " + (student == null ? "no" : "yes"));
 
-    public void setGradingPabo(int gradingPabo) {
-        this.gradingPabo = gradingPabo;
-    }
+        if (student == null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.unknownStudent")));
+            return;
+        }
+        /*
+        Todo: If the user is a tutor, check if he may grade this student
+         */
+        /*
+        -1 means final/pabo grade. Validation for this is different.
+         */
+        if (formExam != -1) {
+            /*
+            Load the exam.
+             */
+            Exam exam = gradingService.getExam(course, formExam);
 
-    public String getGradingValue() {
-        return gradingValue;
-    }
+            if (exam == null) {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
+                        bundle.getString("gradings.unknownExam")));
+                return;
+            }
+            /*
+            Check if there is already a grading for this student
+             */
+            Grading grading = gradingService.getGrading(student, exam);
 
-    public void setGradingValue(String gradingValue) {
-        this.gradingValue = gradingValue;
+            log.debug("Overwrite? " + (overwrite ? "yes" : "no"));
+
+            if (grading != null && !overwrite) {
+                throw new IllegalArgumentException("GRADE_ALREADY_EXISTS");
+            }
+            /*
+            Todo: Check if the grading is valid
+             */
+            /*
+            Store the grading
+             */
+            if (grading == null) {
+                gradingService.storeGrade(user, student, exam, formGrading,
+                        formPublicComment, formPrivateComment);
+            }
+            else {
+                gradingService.storeGrade(user, grading, formGrading,
+                        formPublicComment, formPrivateComment);
+            }
+        }
+        else {
+            /*
+            Check if there is already a final grade for this student. Throwing
+            an exception so the ajax error function gets called.
+             */
+            log.debug("Overwrite? " + (overwrite ? "yes" : "no"));
+
+            if (student.getPaboGrade() != null && !overwrite) {
+                throw new IllegalArgumentException("GRADE_ALREADY_EXISTS");
+            }
+            /*
+            Check the grading
+             */
+            PaboGrade paboGrade;
+
+            try {
+                paboGrade = PaboGrade.valueOf(formPaboGrading);
+            } catch (Exception e) {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_WARN, bundle.getString("common.warning"),
+                        bundle.getString("gradings.invalidGrading")));
+                return;
+            }
+            /*
+            Store the final grade
+            Todo: Kommentare speichern
+             */
+            gradingService.storeGrade(student, paboGrade);
+        }
+        /*
+        Success
+         */
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_INFO, bundle.getString("common.success"),
+                bundle.getString("gradings.stored")));
     }
 
     public PaboGrade[] getPaboGrades() {
         return PaboGrade.values();
     }
 
-    public String getGradingPrivateComment() {
-        return gradingPrivateComment;
+    public void setFormExam(Long formExam) {
+        this.formExam = formExam;
     }
 
-    public void setGradingPrivateComment(String gradingPrivateComment) {
-        this.gradingPrivateComment = gradingPrivateComment;
+    public Long getFormExam() {
+        return this.formExam;
     }
 
-    public String getGradingPublicComment() {
-        return gradingPublicComment;
+    public void setFormStudent(String formStudent) {
+        this.formStudent = formStudent;
     }
 
-    public void setGradingPublicComment(String gradingPublicComment) {
-        this.gradingPublicComment = gradingPublicComment;
+    public String getFormStudent() {
+        return this.formStudent;
     }
 
-    public void store() {
-        log.debug("store: called without parameter");
+    public void setFormPaboGrading(String formPaboGrading) {
+        this.formPaboGrading = formPaboGrading;
+    }
+
+    public String getFormPaboGrading() {
+        return this.formPaboGrading;
+    }
+
+    public String getFormGrading() {
+        return formGrading;
+    }
+
+    public void setFormGrading(String formGrading) {
+        this.formGrading = formGrading;
+    }
+
+    public String getFormPrivateComment() {
+        return formPrivateComment;
+    }
+
+    public void setFormPrivateComment(String formPrivateComment) {
+        this.formPrivateComment = formPrivateComment;
+    }
+
+    public String getFormPublicComment() {
+        return formPublicComment;
+    }
+
+    public void setFormPublicComment(String formPublicComment) {
+        this.formPublicComment = formPublicComment;
     }
 }

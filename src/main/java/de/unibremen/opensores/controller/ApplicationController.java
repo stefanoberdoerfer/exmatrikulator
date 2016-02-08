@@ -252,11 +252,18 @@ public class ApplicationController {
 
         //Exam
         Exam exam = new Exam();
-        exam.setName("TestPrüfung");
+        exam.setName("Testprüfung");
         exam.setShortcut("TP1");
         exam.setCourse(course);
         exam.setGradeType(GradeType.Point.getId());
         course.getExams().add(exam);
+
+        Exam exam2 = new Exam();
+        exam2.setName("Mündliche Prüfung");
+        exam2.setShortcut("MP");
+        exam2.setCourse(course);
+        exam2.setGradeType(GradeType.Percent.getId());
+        course.getExams().add(exam2);
 
         //persist everything
         course = courseService.update(course);

@@ -79,14 +79,14 @@ public class UserService extends GenericService<User> {
      */
     private boolean isLecturer(User user, Course course) {
         List<Lecturer> lecturers = em.createQuery(
-                "SELECT DISTINCT l FROM Lecturer"
-                + "JOIN l.user    AS u WITH u.userId = :id"
-                + "JOIN l.course  AS c WITH c.courseId = :id", Lecturer.class)
+                "SELECT DISTINCT l FROM Lecturer l "
+                + "JOIN l.user    AS u WITH u.userId = :uid "
+                + "JOIN l.course  AS c WITH c.courseId = :cid", Lecturer.class)
             .setParameter("uid", user.getUserId())
             .setParameter("cid", course.getCourseId())
             .getResultList();
 
-        return lecturers.isEmpty();
+        return !lecturers.isEmpty();
     }
 
     /**
@@ -98,14 +98,14 @@ public class UserService extends GenericService<User> {
      */
     private boolean isPrivileged(User user, Course course) {
         List<PrivilegedUser> privUsers = em.createQuery(
-                "SELECT DISTINCT p FROM PrivilegedUser"
-                + "JOIN p.user    AS u WITH u.userId = :uid"
+                "SELECT DISTINCT p FROM PrivilegedUser p "
+                + "JOIN p.user    AS u WITH u.userId = :uid "
                 + "JOIN p.course  AS c WITH c.courseId = :cid", PrivilegedUser.class)
             .setParameter("uid", user.getUserId())
             .setParameter("cid", course.getCourseId())
             .getResultList();
 
-        return privUsers.isEmpty();
+        return !privUsers.isEmpty();
     }
 
     /**
@@ -117,14 +117,14 @@ public class UserService extends GenericService<User> {
      */
     private boolean isStudent(User user, Course course) {
         List<Student> students = em.createQuery(
-                "SELECT DISTINCT s FROM Student"
-                + "JOIN s.user    AS u WITH u.userId = :uid"
+                "SELECT DISTINCT s FROM Student s "
+                + "JOIN s.user    AS u WITH u.userId = :uid "
                 + "JOIN s.course  AS c WITH c.courseId = :cid", Student.class)
             .setParameter("uid", user.getUserId())
             .setParameter("cid", course.getCourseId())
             .getResultList();
 
-        return students.isEmpty();
+        return !students.isEmpty();
     }
 
     /**

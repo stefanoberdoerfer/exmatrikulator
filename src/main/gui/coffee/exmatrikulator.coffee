@@ -33,7 +33,8 @@ exmatrikulatorInteractivity = ($) ->
         PF name
           .show()
 
-        gradingFormula();
+        if name == "gradeInsert"
+          gradingModal true
 
     return false
   ###
@@ -60,26 +61,56 @@ exmatrikulatorInteractivity = ($) ->
       $ '.dropdown-menu'
         .hide()
   ###
-  Inputs for grading
+  Logic for grading modals
   ###
-  $ '#gradeExamination select'
-    .on 'change', () ->
-      gradingFormula()
-
-  gradingFormula = () ->
+  gradingModal = (buttons) ->
     value = $ '#gradeExamination select'
       .val()
 
     if value == "-1"
       $ '#pabo-grade-selection'
-        .show()
+      .show()
       $ '#other-grade-selection'
-        .hide()
+      .hide()
     else
       $ '#pabo-grade-selection'
-        .hide()
+      .hide()
       $ '#other-grade-selection'
+      .show()#
+
+    if buttons
+      gradingModalButtons false
+
+  gradingModalButtons = (overwrite) ->
+    console.log "show overwriting?", overwrite ? "yes" : "no"
+
+    if overwrite
+      $ '#gradeInsertForm\\:gradeInsertNormal'
+        .hide()
+      $ '#gradeInsertForm\\:gradeInsertOverwrite'
         .show()
+      $ '#gradeInsertOverwriteHint'
+        .show()
+    else
+      $ '#gradeInsertForm\\:gradeInsertNormal'
+        .show()
+      $ '#gradeInsertForm\\:gradeInsertOverwrite'
+        .hide()
+      $ '#gradeInsertOverwriteHint'
+        .hide()
+  ###
+  Inputs for grading
+  ###
+  $ '.ui-widget'
+    .on 'change', '#gradeExamination select', () ->
+      console.log "change select"
+      gradingModal false
+      gradingModalButtons false
+
+  $ '.ui-widget'
+    .on 'change', '#gradeStudent input', () ->
+      console.log "change input"
+      gradingModalButtons false
   ###
   Called to handle a request made in a modal dialog
   ###
@@ -91,6 +122,22 @@ exmatrikulatorInteractivity = ($) ->
         window.exModal name
     else
       console.debug 'modalRequest called but no success'
+  ###
+  Called for the events of the ajax for the student grading
+  ###
+  window.gradingAjaxEvent = (data) ->
+    console.log data
+
+    if data.status == "success"
+      gradingModal false
+    else if data.status == "begin"
+      gradingModalButtons false
+
+  window.gradingAjaxError = (err) ->
+    console.log err
+
+    if err.errorMessage == "GRADE_ALREADY_EXISTS"
+      gradingModalButtons true
 
 ###
 If jQuery defined, wait till DOM loaded, then add our interactivity
