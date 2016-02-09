@@ -3,9 +3,12 @@ package de.unibremen.opensores.controller;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GradeType;
+import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.ExamService;
 import de.unibremen.opensores.service.GradingService;
+import de.unibremen.opensores.service.LogService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,6 +75,13 @@ public class ExamController {
     private GradingService gradingService;
 
     /**
+     * The LogService for creating Exmatrikulator business domain logs.
+     */
+    @EJB
+    private LogService logService;
+
+
+    /**
      * The course which exams get edited.
      */
     private Course course;
@@ -106,6 +116,10 @@ public class ExamController {
      */
     private String allowedFileEndings;
 
+    /**
+     * The logged in user.
+     */
+    private User loggedInUser;
 
     /**
      * Method called after initialisation.
@@ -151,12 +165,15 @@ public class ExamController {
                 return;
             }
         }
+
         log.debug("Course exam list size: " + course.getExams().size());
 
         gradeTypeLabels = new HashMap<>();
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 facesContext.getViewRoot().getLocale());
+
+        loggedInUser = (User) facesContext.getExternalContext().getSessionMap().get("user");
 
         gradeTypeLabels.put(GradeType.Numeric.getId(), bundle.getString("gradeType.grade"));
         gradeTypeLabels.put(GradeType.Point.getId(), bundle.getString("gradeType.points"));
@@ -184,8 +201,9 @@ public class ExamController {
      * @param exam The to be edited exam (not null).
      */
     public void onEditExamDialogCalled(@NotNull Exam exam) {
-        log.debug("onEditExamDialogCalled called: " + exam);
+        log.debug("onEditExamDialogCalled called: " + exam.getName());
         selectedExam = exam;
+        logExamOpenToEdit(exam);
         allowedFileEndings = getAllowedFileEndingsString(selectedExam.getAllowedFileEndings());
         oldSelectedGradeTypeId = exam.getExamId();
         allowedFileEndings = "";
@@ -196,7 +214,7 @@ public class ExamController {
      * @param exam The to be deleted exam (not null).
      */
     public void onDeleteExamDialogCalled(@NotNull Exam exam) {
-        log.debug("onDeleteExamDialogCalled called: " + exam);
+        log.debug("onDeleteExamDialogCalled called: " + exam.getName());
         selectedExam = exam;
         examNameDeletionTextInput = "";
     }
@@ -229,6 +247,7 @@ public class ExamController {
         examService.persist(selectedExam);
         log.debug("Number of exams before updating course: " + course.getExams().size());
         course = courseService.update(course);
+        logExamCreated(selectedExam);
     }
 
     /**
@@ -239,9 +258,10 @@ public class ExamController {
      */
     public void editExam() {
         log.debug("editExam() called");
-
+        logExamEdited(selectedExam);
         if (oldSelectedGradeTypeId != selectedExam.getGradeType()) {
             log.debug("Deleting all gradings from exam");
+            logGradesFromExamDeleted(selectedExam);
             gradingService.deleteAllGradingsFromExam(selectedExam);
         }
         course = courseService.update(course); // Assuming CascadeType.MERGE
@@ -256,7 +276,9 @@ public class ExamController {
      */
     public void deleteExam() {
         log.debug("deleteExam() called");
+        logGradesFromExamDeleted(selectedExam);
         gradingService.deleteAllGradingsFromExam(selectedExam);
+        logExamDeleted(selectedExam);
         course.getExams().remove(selectedExam);
         course = courseService.update(course);
         examService.remove(selectedExam);
@@ -483,6 +505,58 @@ public class ExamController {
         log.debug("allowedFileEndings: " + allowedFileEndingsString);
         return allowedFileEndingsString;
     }
+
+    /*
+     * Private Log methods
+     */
+
+    /**
+     * Logs that the exam was created by the current user.
+     * @param exam The created exam.
+     */
+    private void logExamCreated(Exam exam) {
+        String description = "Has created the exam " + exam.getName();
+        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+    }
+
+    /**
+     * Logs the old version of the exam when the edit dialog has been opened.
+     * @param exam The to be edited exam.
+     */
+    private void logExamOpenToEdit(Exam exam) {
+        String description = "Has opened the exam for editing: " + exam.getName();
+        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+    }
+
+
+    /**
+     * Logs that the exam has been edited by the current user
+     * @param exam The edited exam.
+     */
+    private void logExamEdited(Exam exam) {
+        String description = "Has edited the exam " + exam.getName();
+        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+    }
+
+    /**
+     * Logs that all gradings from the exam get deleted.
+     * @param exam The exam from which the gradings get deleted.
+     */
+    private void logGradesFromExamDeleted(Exam exam) {
+        String description = "All gradings from exam " + exam.getName() + " get deleted.";
+        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+    }
+
+
+    /**
+     * Logs tha the exam gets deleted.
+     * @param exam The to be deleted exam.
+     */
+    private void logExamDeleted(Exam exam) {
+        String description = "The exam " + exam.getName() + " gets deleted.";
+        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+    }
+
 
     /*
      * Getters and Setters

@@ -9,6 +9,7 @@ import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Privilege;
@@ -20,6 +21,7 @@ import de.unibremen.opensores.model.Upload;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UploadService;
@@ -61,6 +63,9 @@ public class ApplicationController {
 
     @EJB
     private UploadService uploadService;
+
+    @EJB
+    private LogService logService;
 
     /**
      * The log4j logger.
@@ -133,6 +138,9 @@ public class ApplicationController {
 
         course = courseService.persist(course);
         log.debug("Inserted Course with id: " + course.getCourseId());
+
+        logService.persist(Log.from(newLecturer,course.getCourseId(),
+                "Course has been created."));
 
         // Mail template for course
         MailTemplate mail = new MailTemplate();

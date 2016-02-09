@@ -6,6 +6,7 @@ package de.unibremen.opensores.util;
  * @author Sören Tempel
  */
 public class Constants {
+
     /**
      * Minimum password length.
      */
@@ -28,4 +29,9 @@ public class Constants {
      * pages.
      */
     public static final String HTTP_PARAM_COURSE_ID = "course-id";
+
+    /**
+     * The timezone of the system in Exmatrikulator.
+     */
+    public static final String SYSTEM_TIMEZONE = "Europe/Berlin";
 }
