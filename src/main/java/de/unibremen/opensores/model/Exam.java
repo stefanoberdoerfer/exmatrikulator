@@ -118,6 +118,10 @@ public class Exam {
         return examId;
     }
 
+    public void setExamId(Long examId) {
+        this.examId = examId;
+    }
+
     public Integer getGradeType() {
         return gradeType;
     }

@@ -4,8 +4,10 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
-      xmlns:p="http://primefaces.org/ui">
-
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+<pe:importConstants className="de.unibremen.opensores.util.Constants" var="EXcons" />
+<pe:importEnum type="de.unibremen.opensores.model.Role" var="Role" allSuffix="ALL_ROLES" />
 <h:head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -47,7 +49,7 @@
                     </ui:repeat>
                 </ul>
             </h:form>
-            <div class="btn btn-default">
+            <h:form class="btn btn-default">
                 <div class="dropdown-toggle">
                     #{user.firstName} #{user.lastName} <span class="caret"></span>
                 </div>
@@ -55,9 +57,9 @@
                     <!-- Todo: Links setzen -->
                     <li><h:link value="#{msg['common.myProfile']}" outcome="/profile/show" /></li>
                     <li role="separator" class="divider"></li>
-                    <li><a>#{msg['common.logout']}</a></li>
+                    <li><h:commandLink value="#{msg['common.logout']}" action="#{userController.logout}"/></li>
                 </ul>
-            </div>
+            </h:form>
         </div>
 
         <ol class="breadcrumb">
@@ -73,33 +75,31 @@
 
         <h:form>
             <ui:repeat value="#{userController.coursesBySemester.entrySet().toArray()}" var="semester">
-            <label>#{semester.key}</label>
-            <ul class="nav nav-pills nav-stacked semester-links">
-                <ui:repeat value="#{semester.value}" var="course">
-                <li>
-                    <h:link value="#{course.name}" />
-                    <ul class="nav nav-pills nav-stacked sub-pills">
-                        <li><h:link outcome="/participants/overview" value="#{msg['common.course.participants']}">
-                            <f:param name="course-id" value="#{course.courseId}"/>
-                        </h:link></li>
-                        <li><h:link outcome="/tutorialsGroups/overview" value="#{msg['courses.tutorialsGroups']}">
-                            <f:param name="course-id" value="#{course.courseId}"/>
-                        </h:link></li>
-                        <li><h:link outcome="/participants/overviewl" value="#{msg['courses.grading']}">
-                            <f:param name="course-id" value="#{course.courseId}"/>
-                        </h:link></li>
-                        <li><h:link outcome="/settings/overview" value="#{msg['common.settings']}">
-                            <f:param name="course-id" value="#{course.courseId}"/>
-                        </h:link></li>
-                    </ul>
-                </li>
-                </ui:repeat>
-            </ul>
+                <label>#{semester.key}</label>
+                <ul class="nav nav-pills nav-stacked semester-links">
+                    <ui:repeat value="#{semester.value}" var="course">
+                        <li>
+                            <h:link value="#{course.name}" />
+                            <ul class="nav nav-pills nav-stacked sub-pills">
+                                <li><h:link outcome="/participants/overview" value="#{msg['common.course.participants']}">
+                                    <f:param name="course-id" value="#{course.courseId}"/>
+                                </h:link></li>
+                                <li><h:link outcome="/tutorialsGroups/overview" value="#{msg['courses.tutorialsGroups']}">
+                                    <f:param name="course-id" value="#{course.courseId}"/>
+                                </h:link></li>
+                                <li><h:link outcome="/participants/overview" value="#{msg['courses.grading']}">
+                                    <f:param name="course-id" value="#{course.courseId}"/>
+                                </h:link></li>
+                                <li><h:link outcome="/settings/overview" value="#{msg['common.settings']}">
+                                    <f:param name="course-id" value="#{course.courseId}"/>
+                                </h:link></li>
+                            </ul>
+                        </li>
+                    </ui:repeat>
+                </ul>
             </ui:repeat>
         </h:form>
-
     </div>
-
     <div id="main">
         <ui:insert name="content"></ui:insert>
     </div>

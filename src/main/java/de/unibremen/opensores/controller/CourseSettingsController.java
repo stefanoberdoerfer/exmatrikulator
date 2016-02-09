@@ -87,7 +87,7 @@ public class CourseSettingsController {
                         .getApplicationContextPath() + PATH_TO_COURSE_OVERVIEW);
                 return;
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e);
                 log.fatal("Could not redirect to " + PATH_TO_COURSE_OVERVIEW);
                 return;
             }

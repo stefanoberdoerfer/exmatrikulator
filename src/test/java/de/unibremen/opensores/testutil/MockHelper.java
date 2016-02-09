@@ -48,14 +48,13 @@ public final class MockHelper {
         if (course == null) {
             throw new IllegalArgumentException(
                     "The course object can't be null. Create a test data course"
-                    + " object and pass it as parameter.");
+                            + " object and pass it as parameter.");
         }
 
         CourseService courseServiceMock = Mockito.mock(CourseService.class);
-        //TODO Uncomment when kevins branch is merged
-        //when(courseServiceMock.findById(course.get)).thenReturn(course);
-        //when(courseServiceMock.update(course)).thenReturn(course);
-        //when(courseServiceMock.findByIdWithParticipants(DataHelper.COURSE_ID)).thenReturn(course);
+        when(courseServiceMock.find(Course.class, DataHelper.COURSE_ID)).thenReturn(course);
+        when(courseServiceMock.update(course)).thenReturn(course);
+        when(courseServiceMock.findByIdWithParticipants(DataHelper.COURSE_ID)).thenReturn(course);
         return courseServiceMock;
     }
 
@@ -104,8 +103,10 @@ public final class MockHelper {
      */
     public static FacesContext addViewRootMock(FacesContext contextMock) {
         UIViewRoot uiViewRootMock = Mockito.mock(UIViewRoot.class);
-        when(uiViewRootMock.getLocale()).thenReturn(new Locale(LOCALE_COUNTRY));
-        when(contextMock.getViewRoot()).thenReturn(uiViewRootMock);
+        Mockito.when(contextMock.getViewRoot())
+                .thenReturn(uiViewRootMock);
+        Mockito.when(contextMock.getViewRoot().getLocale())
+                .thenReturn(new Locale(LOCALE_COUNTRY));
         return contextMock;
     }
 }

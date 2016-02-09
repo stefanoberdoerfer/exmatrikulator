@@ -4,33 +4,67 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['users.link']}" appendTo="@(body)" widgetVar="userLinkSearch" modal="true">
+    <p:dialog header="#{msg['users.link']}" id="userSearchDialog"
+              appendTo="@(body)" widgetVar="userLinkSearch" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
         <div class="modal-body">
+            <h:form id="searchForm">
             <div class="form-group">
-                <div class="col-xs-12">
-                    <h:inputText type="text" class="form-control" h5:placeholder="#{msg['users.search']}"
-                                 h5:autofocus="autofocus" />
+                <div class="col-xs-9">
+                    <h:inputText id="searchInputText"
+                            type="text" class="form-control" h5:placeholder="#{msg['users.search']}"
+                                 h5:autofocus="autofocus"
+                                 value="#{participantsController.userTextInput}"
+                                 validatorMessage="#{msg['participants.messageValidateSearch']}">
+                        <f:validateLength minimum="1"/>
+                    </h:inputText>
+                    <h:message for="searchInputText" />
+                </div>
+                <div class="col-xs-3 text-right">
+                    <p:commandLink value="#{msg['common.search']}"
+                                   class="btn btn-primary"
+                                   action="#{participantsController.searchForExternalUsers()}"
+                                update=":searchResultForm"/>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-xs-8">
-                    Max Mustermann
-                    <div class="table-common-sub">mustermann@uni-bremen.de, 123456</div>
-                </div>
-                <div class="col-xs-4 text-right">
-                    <h:link onclick="return exModal(':userLinkSearch', 'userLinkType');"
-                            class="btn btn-success">
-                        <i class="fa fa-plus"></i>
-                    </h:link>
+            </h:form>
+            <h:form id="searchResultForm">
+                        <ui:repeat id="searchResultTbl"
+                                     widgetVar="searchTable"
+                                     value="#{participantsController.userSearchResultList}"
+                                     var="user">
+                            <div class="form-group">
+                                <div class="col-xs-8">
+                                    <h:outputText value="#{user.firstName.concat(' '.concat(user.lastName))}"/>
+                                    <div class="table-common-sub">
+                                       #{participantsController.loggedInUser.hasGlobalRole('LECTURER') || (user.matriculationNumber != null)
+                                                ? user.email.concat(', ').concat(user.matriculationNumber)
+                                                : user.email}
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 text-right">
+                                    <p:commandButton
+                                            oncomplete="PF('userLinkSearch').hide();
+                                                        return exModal('userCreate')"
+                                            class="btn btn-success"
+                                            update=":createUserDialog"
+                                            value="#{msg['common.add']}">
+                                        <f:actionListener binding="#{participantsController.onAddExistingUserCalled(user)}"/>
+                                    </p:commandButton>
+                                </div>
+                            </div>
+                        </ui:repeat>
+            </h:form>
+            <h:form>
+            <div class="modal-footer">
+                <div class="btn-group">
+                    <p:commandButton value="#{msg['common.close']}"
+                                     action="#{participantsController.resetSelectedValues()}"
+                                     oncomplete="PF('userLinkSearch').hide();" styleClass="btn btn-default">
+                    </p:commandButton>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <div class="btn-group">
-                <p:commandButton value="#{msg['common.close']}" type="button"
-                                 onclick="return exModal(':userLinkSearch');" styleClass="btn btn-default" />
-            </div>
+            </h:form>
         </div>
     </p:dialog>
 </ui:composition>

@@ -3,6 +3,11 @@ package de.unibremen.opensores.controller;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GradeType;
+import de.unibremen.opensores.model.Grading;
+import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.ExamService;
+import de.unibremen.opensores.service.GradingService;
+import de.unibremen.opensores.util.Constants;
 import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
@@ -21,7 +26,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -46,38 +50,39 @@ public class ExamController {
             "/course/overview.xhtml?faces-redirect=true";
 
     /**
-     * The http parameter key by which the course id gets passed.
-     */
-    private static final String HTTP_PARAM_COURSE_ID = "course-id";
-
-    /**
      * The log4j logger.
      */
     private static Logger log = LogManager.getLogger(ExamController.class);
 
     /**
+     * The FacesContext of the bean, provides ResourceBundles, HTTPRequests etc.
+     */
+    private FacesContext context;
+
+    /**
+     * The used ResourceBundle used for string properties.
+     */
+    private ResourceBundle bundle;
+
+    /**
      * CourseService for database transactions related to courses.
      */
-    @EJB
     private CourseService courseService;
 
     /**
      * ExamService for database transactions related to exams.
      */
-    @EJB
     private ExamService examService;
 
     /**
      * GradingService for database transactions related to gradings.
      * Is used to delete all gradings once the exam gets deleted.
      */
-    @EJB
     private GradingService gradingService;
 
     /**
      * The LogService for creating Exmatrikulator business domain logs.
      */
-    @EJB
     private LogService logService;
 
 
@@ -128,12 +133,11 @@ public class ExamController {
     @PostConstruct
     public void init() {
         log.debug("init() called");
-
+        context = FacesContext.getCurrentInstance();
         HttpServletRequest httpReq
-                = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext().getRequest();
+                = (HttpServletRequest) context.getExternalContext().getRequest();
         log.debug("Request URI: " + httpReq.getRequestURI());
-        final String courseIdString = httpReq.getParameter(HTTP_PARAM_COURSE_ID);
+        final String courseIdString = httpReq.getParameter(Constants.HTTP_PARAM_COURSE_ID);
 
         log.debug("course-id: " + courseIdString);
         long courseId = -1;
@@ -160,7 +164,7 @@ public class ExamController {
                         .getApplicationContextPath() + PATH_TO_COURSE_OVERVIEW);
                 return;
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e);
                 log.fatal("Could not redirect to " + PATH_TO_COURSE_OVERVIEW);
                 return;
             }
@@ -169,16 +173,18 @@ public class ExamController {
         log.debug("Course exam list size: " + course.getExams().size());
 
         gradeTypeLabels = new HashMap<>();
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                facesContext.getViewRoot().getLocale());
+        bundle = ResourceBundle.getBundle("messages",
+                context.getViewRoot().getLocale());
 
-        loggedInUser = (User) facesContext.getExternalContext().getSessionMap().get("user");
+        loggedInUser = (User) context.getExternalContext()
+                .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
 
         gradeTypeLabels.put(GradeType.Numeric.getId(), bundle.getString("gradeType.grade"));
         gradeTypeLabels.put(GradeType.Point.getId(), bundle.getString("gradeType.points"));
         gradeTypeLabels.put(GradeType.Boolean.getId(), bundle.getString("gradeType.boolean"));
         gradeTypeLabels.put(GradeType.Percent.getId(), bundle.getString("gradeType.percent"));
+
+        selectedExam = new Exam();
     }
 
 
@@ -199,22 +205,29 @@ public class ExamController {
     /**
      * Method called when the edit dialog for an exam is called.
      * @param exam The to be edited exam (not null).
+     * @throws IllegalArgumentException if the exam is null.
      */
-    public void onEditExamDialogCalled(@NotNull Exam exam) {
-        log.debug("onEditExamDialogCalled called: " + exam.getName());
+    public void onEditExamDialogCalled(Exam exam) {
+        log.debug("onEditExamDialogCalled called: " + exam);
+        if (exam == null) {
+            throw new IllegalArgumentException("Exam can't be null");
+        }
         selectedExam = exam;
         logExamOpenToEdit(exam);
         allowedFileEndings = getAllowedFileEndingsString(selectedExam.getAllowedFileEndings());
-        oldSelectedGradeTypeId = exam.getExamId();
-        allowedFileEndings = "";
+        oldSelectedGradeTypeId = exam.getGradeType();
     }
 
     /**
      * Method called when the deleted dialog for exam is called.
      * @param exam The to be deleted exam (not null).
+     * @throws IllegalArgumentException if the exam is null.
      */
-    public void onDeleteExamDialogCalled(@NotNull Exam exam) {
-        log.debug("onDeleteExamDialogCalled called: " + exam.getName());
+    public void onDeleteExamDialogCalled(Exam exam) {
+        log.debug("onDeleteExamDialogCalled called: " + exam);
+        if (exam == null) {
+            throw new IllegalArgumentException("Exam can't be null");
+        }
         selectedExam = exam;
         examNameDeletionTextInput = "";
     }
@@ -236,10 +249,8 @@ public class ExamController {
         if (!selectedExam.isUploadAssignment()) {
             selectedExam.setDeadline(null);
             selectedExam.setMaxFileSizeMB(null);
-        } else {
-            if (!allowedFileEndings.isEmpty()) {
-                selectedExam.setAllowedFileEndings(getAllowedFileEndingList());
-            }
+        } else if (!allowedFileEndings.isEmpty()) {
+            selectedExam.setAllowedFileEndings(getAllowedFileEndingList());
         }
 
         selectedExam.setCourse(course);
@@ -269,7 +280,7 @@ public class ExamController {
 
     /**
      * Deletes the selected exam and all grades associated with the exam.
-     * @Pre
+     * @Pre onDeleteExamDialogCalled was called priorly.
      * @Post The selected exam is deleted from the course and the database.
      *       All Gradings related to the exam get deleted from the database.
      *       Grade Formulas using this exam are unvalid now.
@@ -304,8 +315,6 @@ public class ExamController {
                              UIComponent comp,
                              Object value) {
         log.debug("validateShortCut() called");
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                ctx.getViewRoot().getLocale());
 
         List<FacesMessage> msgs = new ArrayList<FacesMessage>();
         if (!(value instanceof String) || ((String)value).trim().isEmpty()) {
@@ -347,9 +356,6 @@ public class ExamController {
     public void validateExamDeletionName(FacesContext ctx,
                                  UIComponent comp,
                                  Object value) {
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                ctx.getViewRoot().getLocale());
-
         List<FacesMessage> msgs = new ArrayList<FacesMessage>();
         if (!(value instanceof String) || ((String)value).trim().isEmpty()) {
             msgs.add(new FacesMessage(bundle.getString("examination.messageDeleteGiveInput")));
@@ -367,17 +373,14 @@ public class ExamController {
 
     /**
      * Validates the user input for setting the max points of an exam with gradetype
-     * points.
+     * points. Only positive decimal values seperated by a points are valid
      * @param ctx The FacesContext for which the validation occurs.
      * @param comp The corresponding ui component.
-     * @param value The value of the input (the user input).
+     * @param value The value of the input (the maximal Points as BigDecimal).
      */
     public void validateExamMaxPoints(FacesContext ctx,
                                          UIComponent comp,
                                          Object value) {
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                ctx.getViewRoot().getLocale());
-
         List<FacesMessage> msgs = new ArrayList<FacesMessage>();
         if (!(value instanceof BigDecimal)) {
             log.debug("Value not instanceof BigDecimal");
@@ -401,9 +404,6 @@ public class ExamController {
      * @param value The value of the input (the user input).
      */
     public void validateFileEndings(FacesContext ctx, UIComponent comp, Object value) {
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                ctx.getViewRoot().getLocale());
-
         List<FacesMessage> msgs = new ArrayList<FacesMessage>();
         if (!(value instanceof String) || ((String)value).trim().isEmpty()) {
             // No file endings allowed
@@ -414,7 +414,8 @@ public class ExamController {
         String[] fileEndings = stringValue.split(",");
         for (String fileEnding: fileEndings) {
             for (char c: fileEnding.toCharArray()) {
-                if (!Character.isDigit(c) && !Character.isAlphabetic(c)) {
+                if (!Character.isDigit(c) && !Character.isAlphabetic(c)
+                        && c != '.' && c != '_') {
                     msgs.add(new FacesMessage(bundle
                             .getString("examination.notValidFileEndings")));
                     throw new ValidatorException(msgs);
@@ -431,9 +432,6 @@ public class ExamController {
      * @param value The value of the input (the user input).
      */
     public void validateDeadline(FacesContext ctx, UIComponent comp, Object value) {
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                ctx.getViewRoot().getLocale());
-
         List<FacesMessage> msgs = new ArrayList<FacesMessage>();
         if (!(value instanceof Date)) {
             msgs.add(new FacesMessage(bundle.getString("examination.messageGiveDate")));
@@ -493,18 +491,18 @@ public class ExamController {
 
         for (String fileEnding: fileEndings) {
             log.debug("File ending: " + fileEnding);
-            buffer.append("fileEnding" + ",");
+            buffer.append(fileEnding + ",");
         }
 
-        String allowedFileEndingsString = buffer.toString();
-        if (!allowedFileEndingsString.isEmpty()) {
-            final String str = allowedFileEndingsString;
-            allowedFileEndings = str.substring(str.length() - 1, str.length());
+        String filesString = buffer.toString();
+        if (!filesString.isEmpty()) {
+            filesString = filesString.substring(0, filesString.length() - 1);
         }
 
-        log.debug("allowedFileEndings: " + allowedFileEndingsString);
-        return allowedFileEndingsString;
+        log.debug("allowedFileEndings: " + filesString);
+        return filesString;
     }
+
 
     /*
      * Private Log methods
@@ -561,6 +559,43 @@ public class ExamController {
     /*
      * Getters and Setters
      */
+
+
+    /**
+     * Injects the logService in to ExamController.
+     * @param logService The logService to be injected.
+     */
+    @EJB
+    public void setLogService(LogService logService) {
+        this.logService = logService;
+    }
+
+    /**
+     * Injects the course service to the ExamController.
+     * @param courseService The course service to be injected to the bean.
+     */
+    @EJB
+    public void setCourseService(CourseService courseService) {
+        this.courseService = courseService;
+    }
+
+    /**
+     * Injects the exam service to the ExamController.
+     * @param examService The service to be injected to the bean.
+     */
+    @EJB
+    public void setExamService(ExamService examService) {
+        this.examService = examService;
+    }
+
+    /**
+     * Injects the grading service to the ExamController.
+     * @param gradingService The service to be injected to the bean.
+     */
+    @EJB
+    public void setGradingService(GradingService gradingService) {
+        this.gradingService = gradingService;
+    }
 
     public Map<Integer, String> getGradeTypeLabels() {
         return gradeTypeLabels;

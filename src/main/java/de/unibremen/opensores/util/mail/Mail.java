@@ -68,10 +68,10 @@ public final class Mail {
             MimeMessage msg = new MimeMessage(session);
 
             if (addr.length > 1) {
-                msg.setRecipients(javax.mail.Message.RecipientType.BCC,
+                msg.setRecipients(Message.RecipientType.BCC,
                         addr);
             } else {
-                msg.setRecipients(javax.mail.Message.RecipientType.TO,
+                msg.setRecipients(Message.RecipientType.TO,
                         addr);
             }
 

@@ -2,6 +2,7 @@ package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
@@ -83,7 +84,8 @@ public class LoginController {
     public String login() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         User user = userService.findByEmail(email);
-        if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
+        if (user == null || user.getPassword() == null
+                || !BCrypt.checkpw(password, user.getPassword())) {
             ResourceBundle bundle = ResourceBundle.getBundle("messages",
                     facesContext.getViewRoot().getLocale());
             facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -92,7 +94,7 @@ public class LoginController {
             return "";
         }
 
-        facesContext.getExternalContext().getSessionMap().put("user", user);
+        facesContext.getExternalContext().getSessionMap().put(Constants.SESSION_MAP_KEY_USER, user);
         return PATH_TO_COURSE_OVERVIEW;
     }
 

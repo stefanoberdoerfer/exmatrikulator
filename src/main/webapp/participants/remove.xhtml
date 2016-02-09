@@ -4,23 +4,41 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['participants.remove']}" appendTo="@(body)" widgetVar="participantRemove" modal="true">
-        <ui:include src="/WEB-INF/alerts.xhtml" />
-        <div class="modal-body">
-            #{msg['participants.remove.question']}<br />
-            <br />
-            #{msg['participants.remove.confirm']}<br />
-            <h:inputText type="text" class="form-control" />
-            <br />
-            #{msg['participants.remove.hint']}
-        </div>
-        <div class="modal-footer">
-            <div class="btn-group">
-                <p:commandButton value="#{msg['common.cancel']}" type="button"
-                                 onclick="return exModal(':participantRemove');" styleClass="btn btn-default" />
-                <h:link outcome="/course/overview" class="btn btn-danger"
-                        value="#{msg['common.remove']}" />
-            </div>
-        </div>
+    <p:dialog header="#{msg['participants.remove']}" id="participantRemoveDialog"
+              appendTo="@(body)" widgetVar="participantRemove" modal="true">
+        <h:form>
+            <p:panel id="removeDlgPnl">
+                <ui:include src="/WEB-INF/alerts.xhtml" />
+                <div class="modal-body">
+                    #{msg['participants.remove.question']}<br />
+                    <strong>
+                        #{participantsController.selectedUser.firstName
+                                .concat(' ')
+                                .concat(participantsController.selectedUser.lastName)}
+                    </strong>
+                    <br />
+                    #{msg['participants.remove.confirm']}<br />
+                    <h:inputText type="text" id="userNameInput" class="form-control"
+                                 value="#{participantsController.userTextInput}" required="true"
+                                 validator="#{participantsController.validateDeletionNameInput}"/>
+                    <h:message for="userNameInput"/>
+                    <br />
+                    #{msg['participants.remove.hint']}
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                         onclick="return exModal(':participantRemove');" styleClass="btn btn-default" />
+                        <p:commandLink id="removeBtn"
+                                       action="#{participantsController.deleteSelectedParticipation}"
+                                       class="btn btn-danger" value="#{msg['common.remove']}"
+                                       update=":lecturerForm:lecturerTbl :studentForm:studentTbl :tutorForm:tutorTbl :unconfirmedStudentForm:unconfirmedStudentsTbl"
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':participantRemove')" />
+
+                    </div>
+                </div>
+            </p:panel>
+            <p:blockUI block="removeDlgPnl" trigger="removeBtn"/>
+        </h:form>
     </p:dialog>
 </ui:composition>

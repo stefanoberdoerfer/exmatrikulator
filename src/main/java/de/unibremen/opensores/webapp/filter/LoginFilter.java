@@ -1,4 +1,4 @@
-package de.unibremen.opensores.webapp;
+package de.unibremen.opensores.webapp.filter;
 
 import de.unibremen.opensores.model.User;
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +64,6 @@ public final class LoginFilter implements Filter {
                          ServletResponse res,
                          FilterChain filterChain)
             throws IOException, ServletException {
-        log.debug("doFilter() called");
         final FilterContext context = new FilterContext(req, res, filterChain);
         log.debug("Context Path: " + context.httpRequest.getContextPath());
         //The requested path from the http request
@@ -84,14 +83,12 @@ public final class LoginFilter implements Filter {
                 filterChain.doFilter(req, res);
                 return;
             } else {
-                context.httpResponse
-                        .sendRedirect(context.httpRequest.getContextPath());
+                context.httpResponse.sendRedirect(context.httpRequest.getContextPath());
                 return;
             }
         } else {
             if (path.startsWith(UNREGISTERED_PATH)) {
-                context.httpResponse
-                        .sendRedirect(context.httpRequest.getContextPath());
+                context.httpResponse.sendRedirect(context.httpRequest.getContextPath());
                 return;
             }
         }

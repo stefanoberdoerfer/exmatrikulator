@@ -3,4 +3,4 @@
  * or the login fitler
  * @author Kevin Scheck
  */
-package de.unibremen.opensores.webapp;
+package de.unibremen.opensores.webapp.filter;

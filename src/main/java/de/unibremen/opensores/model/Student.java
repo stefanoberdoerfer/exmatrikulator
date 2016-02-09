@@ -147,7 +147,6 @@ public class Student {
         return studentId;
     }
 
-
     public Tutorial getTutorial() {
         return tutorial;
     }

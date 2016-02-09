@@ -88,6 +88,7 @@ public class ApplicationController {
         newUser.setPassword(BCrypt.hashpw("user",BCrypt.gensalt()));
         newUser.setFirstName("Ute");
         newUser.setLastName("User");
+        newUser.setMatriculationNumber("123456");
         newUser.setLanguage("de");
         newUser.addRole(GlobalRole.USER);
 
@@ -107,8 +108,31 @@ public class ApplicationController {
         newAdmin.addRole(GlobalRole.ADMIN);
         newAdmin.addRole(GlobalRole.USER);
 
+        // User who isnt in the default course
+        final User notInCourse = new User();
+        notInCourse.setEmail("notincourse@uni-bremen.de");
+        notInCourse.setPassword(BCrypt.hashpw("exmatrikuliert", BCrypt.gensalt()));
+        notInCourse.setFirstName("Nick");
+        notInCourse.setLastName("Imcuas");
+        notInCourse.setMatriculationNumber("133742");
+        notInCourse.addRole(GlobalRole.USER);
+
+
+        final User unconfirmedUser = new User();
+        unconfirmedUser.setEmail("unconfirmed@uni-bremen.de");
+        unconfirmedUser.setPassword(BCrypt.hashpw("exmatrikuliert", BCrypt.gensalt()));
+        unconfirmedUser.setFirstName("Nod");
+        unconfirmedUser.setLastName("Komfirmed");
+        unconfirmedUser.setMatriculationNumber("113742");
+        unconfirmedUser.addRole(GlobalRole.USER);
+
+
+        userService.persist(notInCourse);
+        log.debug("Inserted User with id: " + notInCourse.getUserId());
         userService.persist(newUser);
         log.debug("Inserted User with id: " + newUser.getUserId());
+        userService.persist(unconfirmedUser);
+        log.debug("Inserted User with id: " + unconfirmedUser.getUserId());
         userService.persist(newLecturer);
         log.debug("Inserted Lecturer with id: " + newLecturer.getUserId());
         userService.persist(newAdmin);
@@ -145,7 +169,7 @@ public class ApplicationController {
         // Mail template for course
         MailTemplate mail = new MailTemplate();
         mail.setSubject("Durchgefallen");
-        mail.setText("Ihr seid ein paar Hurensöhne!");
+        mail.setText("ihr seid durchgefallen");
         mail.setLocale("de");
         mail.setCourse(course);
         course.setEmailTemplate(mail);
@@ -208,6 +232,14 @@ public class ApplicationController {
         partType.setCourse(course);
         partType.setIsDefaultParttype(true);
         course.getParticipationTypes().add(partType);
+        student.setParticipationType(partType);
+        //ParticipationType winf = new ParticipationType();
+        //winf.setName("Wirtschaftsinformatik");
+        //winf.setGroupPerformance(false);
+        //winf.setRestricted(false);
+        //winf.setCourse(course);
+        //winf.setIsDefaultParttype(false);
+        //course.getParticipationTypes().add(winf);
 
         //GradeFormula
         GradeFormula formula = new GradeFormula();
@@ -215,6 +247,7 @@ public class ApplicationController {
         formula.setEditor(newLecturer);
         formula.setFormula("(1336 + 1)*27");
         partType.setGradeFormula(formula);
+        //winf.setGradeFormula(formula);
 
         //Exam
         Exam exam = new Exam();
