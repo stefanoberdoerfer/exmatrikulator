@@ -150,9 +150,14 @@ public class GradingService extends GenericService<Grading> {
      * Updates the pabo grade of the given student.
      * @param student Student that should be updated
      * @param paboGrade Pabo grade for this student
+     * @param publicComment Public comment of the corrector
+     * @param privateComment Private comment of the corrector
      */
-    public void storeGrade(Student student, PaboGrade paboGrade) {
+    public void storeGrade(Student student, PaboGrade paboGrade,
+                           String publicComment, String privateComment) {
         student.setPaboGrade(paboGrade.getGradeName());
+        student.setPublicComment(publicComment);
+        student.setPrivateComment(privateComment);
 
         studentService.update(student);
     }
@@ -250,5 +255,23 @@ public class GradingService extends GenericService<Grading> {
         } catch(NoResultException e) {
             return null;
         }
+    }
+
+    /**
+     * Returns if a tutor may grade a student.
+     * @param tutor Tutor who grades
+     * @param student Student who should be graded
+     * @return true if he may grade the student
+     */
+    public boolean mayGradeStudent(User tutor, Student student) {
+        List<PrivilegedUser> privileged = student.getTutorial().getTutors();
+
+        for (PrivilegedUser p : privileged) {
+            if (p.getUser().getUserId() == tutor.getUserId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

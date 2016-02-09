@@ -255,6 +255,7 @@ public class ApplicationController {
         exam.setName("Testprüfung");
         exam.setShortcut("TP1");
         exam.setCourse(course);
+        exam.setMaxPoints(new BigDecimal(20));
         exam.setGradeType(GradeType.Point.getId());
         course.getExams().add(exam);
 

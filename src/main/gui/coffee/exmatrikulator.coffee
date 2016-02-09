@@ -137,6 +137,7 @@ exmatrikulatorInteractivity = ($) ->
     console.log err
 
     if err.errorMessage == "GRADE_ALREADY_EXISTS"
+      console.log "show overwriting buttons"
       gradingModalButtons true
 
 ###

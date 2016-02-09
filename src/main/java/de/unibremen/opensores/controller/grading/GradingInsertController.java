@@ -104,8 +104,16 @@ public class GradingInsertController {
             return;
         }
         /*
-        Todo: If the user is a tutor, check if he may grade this student
+        If the user is a tutor, check if he may grade this student
          */
+        if (userService.hasCourseRole(user, "LECTURER", course) &&
+                !gradingService.mayGradeStudent(user, student)) {
+
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("common.notGradable")));
+            return;
+        }
         /*
         -1 means final/pabo grade. Validation for this is different.
          */
@@ -132,8 +140,14 @@ public class GradingInsertController {
                 throw new IllegalArgumentException("GRADE_ALREADY_EXISTS");
             }
             /*
-            Todo: Check if the grading is valid
+            Check if the grading is valid
              */
+            if (!exam.isValidGrading(formGrading)) {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
+                        bundle.getString("gradings.invalidGrading")));
+                return;
+            }
             /*
             Store the grading
              */
@@ -165,15 +179,15 @@ public class GradingInsertController {
                 paboGrade = PaboGrade.valueOf(formPaboGrading);
             } catch (Exception e) {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
-                        .SEVERITY_WARN, bundle.getString("common.warning"),
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
                         bundle.getString("gradings.invalidGrading")));
                 return;
             }
             /*
             Store the final grade
-            Todo: Kommentare speichern
              */
-            gradingService.storeGrade(student, paboGrade);
+            gradingService.storeGrade(student, paboGrade,
+                    formPublicComment, formPrivateComment);
         }
         /*
         Success
