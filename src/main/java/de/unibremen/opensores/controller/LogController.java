@@ -135,9 +135,17 @@ public class LogController {
         }
 
         rawLogs = logService.getLogFromCourse(course);
-
         log.debug("Raw logs size: " + rawLogs);
 
+        setDefaultDateRange();
+        filterByDates();
+    }
+
+    /**
+     * Sets the start and end date range to the first log and the current time.
+     */
+    public void setDefaultDateRange() {
+        log.debug("setDefaultDateRange()");
         //Assuming the logs are sorted by date with newest date first
         beginDate = (rawLogs.isEmpty())
                 ? DateUtil.getDateTime()
@@ -146,7 +154,6 @@ public class LogController {
 
         log.debug("Begin date:" + beginDate);
         log.debug("End date: " + endDate);
-        filterByDates();
     }
 
     /**
@@ -159,6 +166,14 @@ public class LogController {
                         && log.getDate().before(endDate))
                 .collect(Collectors.toList());
         log.debug("logs size: " + logs.size());
+    }
+
+    /**
+     * Resets the date range and filters the logs by the dates.
+     */
+    public void resetDateRange() {
+        setDefaultDateRange();
+        filterByDates();
     }
 
 
@@ -201,18 +216,18 @@ public class LogController {
     }
 
     public Date getBeginDate() {
-        return beginDate;
+        return new Date(beginDate.getTime());
     }
 
     public void setBeginDate(Date beginDate) {
-        this.beginDate = beginDate;
+        this.beginDate = new Date(beginDate.getTime());
     }
 
     public Date getEndDate() {
-        return endDate;
+        return new Date(endDate.getTime());
     }
 
     public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+        this.endDate = new Date(endDate.getTime());
     }
 }

@@ -18,8 +18,17 @@
     <!-- Page Content -->
     <ui:define name="content">
         <ui:include src="/WEB-INF/alerts.xhtml" />
-        <h1>#{msg['settings.logs']}</h1>
         <h:form id="logForm">
+            <div class="headline">
+                <div class="btn-group main-buttons pull-right">
+                    <p:commandLink update="logTbl"
+                                   styleClass="btn btn-default"
+                                   value="#{msg['settings.logs.resetDates']}">
+                        <f:actionListener binding="#{logController.resetDateRange()}"/>
+                    </p:commandLink>
+                </div>
+                <h1>#{msg['settings.logs']}</h1>
+            </div>
             <div class="form-group">
                 <p:dataTable id="logTbl"
                              value="#{logController.logs}"
@@ -29,7 +38,7 @@
                              paginatorTemplate="{RowsPerPageDropdown}
                          {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
                          {NextPageLink} {LastPageLink}"
-                             rowsPerPageTemplate="20,50,100"
+                             rowsPerPageTemplate="50,100,1000"
                              emptyMessage="#{msg['settings.logs.noLogsMessage']}">
                     <p:column
                             filterMatchMode="contains"
@@ -51,7 +60,7 @@
                                             listener="#{logController.filterByDates()}"
                                             update="logTbl"/>
                                 </p:calendar>
-                                </div>
+                            </div>
                             <div class="row">
                                 <strong>#{msg['common.to'].concat(': ')}</strong>
                                 <p:calendar id="endDate"
