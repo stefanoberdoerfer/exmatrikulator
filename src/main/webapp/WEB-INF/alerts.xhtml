@@ -2,21 +2,7 @@
         xmlns="http://www.w3.org/1999/xhtml"
         xmlns:f="http://xmlns.jcp.org/jsf/core"
         xmlns:h="http://xmlns.jcp.org/jsf/html"
-        xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-    <ui:repeat value="#{facesContext.messageList}" var="message">
-        <h:panelGroup rendered="#{navigation.isError(message)}" layout="block" styleClass="alert alert-danger">
-            <strong>#{message.summary}</strong>
-            #{message.detail}
-        </h:panelGroup>
-
-        <h:panelGroup rendered="#{navigation.isWarning(message)}" layout="block" styleClass="alert alert-warning">
-            <strong>#{message.summary}</strong>
-            #{message.detail}
-        </h:panelGroup>
-
-        <h:panelGroup rendered="#{navigation.isSuccess(message)}" layout="block" styleClass="alert alert-success">
-            <strong>#{message.summary}</strong>
-            #{message.detail}
-        </h:panelGroup>
-    </ui:repeat>
+        xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui">
+    <p:messages showDetail="true" autoUpdate="true" />
 </ui:composition>
