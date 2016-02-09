@@ -21,7 +21,7 @@
                     <h:inputText styleClass="form-control" h5:placeholder="#{msg['gradings.search.students']}" />
                     <h:commandLink styleClass="btn btn-default"><i class="fa fa-search"></i></h:commandLink>
                 </h:form>
-                <h:link onclick="return exModal('finalGradesCalculate');" value="#{msg['gradings.finalGrade.calculate']}"
+                <h:link onclick="return exModal('gradeCalculateFinal');" value="#{msg['gradings.finalGrade.calculate']}"
                         class="btn btn-default" />
                 <h:link onclick="return exModal('gradeInsert');" value="#{msg['gradings.insert']}"
                         class="btn btn-primary" />
@@ -85,5 +85,6 @@
         </p:dataTable>
 
         <ui:include src="/grading/insert.xhtml" />
+        <ui:include src="/grading/finalgrades.xhtml" />
     </ui:define>
 </ui:composition>

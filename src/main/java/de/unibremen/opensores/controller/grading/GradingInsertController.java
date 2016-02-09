@@ -58,6 +58,63 @@ public class GradingInsertController {
     @EJB
     private GradingService gradingService;
 
+    public PaboGrade[] getPaboGrades() {
+        return PaboGrade.values();
+    }
+
+    public void setFormExam(Long formExam) {
+        this.formExam = formExam;
+    }
+
+    public Long getFormExam() {
+        return this.formExam;
+    }
+
+    public void setFormStudent(String formStudent) {
+        this.formStudent = formStudent;
+    }
+
+    public String getFormStudent() {
+        return this.formStudent;
+    }
+
+    public void setFormPaboGrading(String formPaboGrading) {
+        this.formPaboGrading = formPaboGrading;
+    }
+
+    public String getFormPaboGrading() {
+        return this.formPaboGrading;
+    }
+
+    public String getFormGrading() {
+        return formGrading;
+    }
+
+    public void setFormGrading(String formGrading) {
+        this.formGrading = formGrading;
+    }
+
+    public String getFormPrivateComment() {
+        return formPrivateComment;
+    }
+
+    public void setFormPrivateComment(String formPrivateComment) {
+        this.formPrivateComment = formPrivateComment;
+    }
+
+    public String getFormPublicComment() {
+        return formPublicComment;
+    }
+
+    public void setFormPublicComment(String formPublicComment) {
+        this.formPublicComment = formPublicComment;
+    }
+
+    /**
+     * Stores the grading for the given course.
+     * @param course Course that is related to the exam
+     * @param overwrite If true, overwrite an existing grade
+     */
     public void storeUserGrading(Course course, boolean overwrite) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
@@ -197,55 +254,39 @@ public class GradingInsertController {
                 bundle.getString("gradings.stored")));
     }
 
-    public PaboGrade[] getPaboGrades() {
-        return PaboGrade.values();
-    }
-
-    public void setFormExam(Long formExam) {
-        this.formExam = formExam;
-    }
-
-    public Long getFormExam() {
-        return this.formExam;
-    }
-
-    public void setFormStudent(String formStudent) {
-        this.formStudent = formStudent;
-    }
-
-    public String getFormStudent() {
-        return this.formStudent;
-    }
-
-    public void setFormPaboGrading(String formPaboGrading) {
-        this.formPaboGrading = formPaboGrading;
-    }
-
-    public String getFormPaboGrading() {
-        return this.formPaboGrading;
-    }
-
-    public String getFormGrading() {
-        return formGrading;
-    }
-
-    public void setFormGrading(String formGrading) {
-        this.formGrading = formGrading;
-    }
-
-    public String getFormPrivateComment() {
-        return formPrivateComment;
-    }
-
-    public void setFormPrivateComment(String formPrivateComment) {
-        this.formPrivateComment = formPrivateComment;
-    }
-
-    public String getFormPublicComment() {
-        return formPublicComment;
-    }
-
-    public void setFormPublicComment(String formPublicComment) {
-        this.formPublicComment = formPublicComment;
+    /**
+     * Calculates the final grades for the given course.
+     * @param course Course which final grades shall be calculated
+     */
+    public void calculateFinalGrades(Course course) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                facesContext.getViewRoot().getLocale());
+        /*
+        Load the user
+         */
+        User user = (User)FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("user");
+        /*
+        Check if the user is a lecturer
+         */
+        if (!userService.hasCourseRole(user, "LECTURER", course)) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("common.noAccess")));
+            return;
+        }
+        /*
+        Todo: Calculate the final grades
+         */
+        /*
+        Success
+         */
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_INFO, bundle.getString("common.success"),
+                bundle.getString("gradings.calculated")));
     }
 }
