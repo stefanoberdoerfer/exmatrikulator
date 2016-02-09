@@ -53,6 +53,15 @@
                     </div>
                 </h:link>
 
+                <h:link outcome="/settings/logs" class="col-xs-12 settings-group">
+                    <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
+                    <div class="settings-group-icon"><i class="fa fa-file-text"></i></div>
+                    <h3 class="settings-group-name">#{msg['settings.logs']}</h3>
+                    <div class="settings-group-desc">
+                        #{msg['settings.explanations.logs']}
+                    </div>
+                </h:link>
+
                 <h:link onclick="return exModal('paboExport');" class="col-xs-12 settings-group">
                     <i class="fa fa-cloud-download"></i>
                     <h3 class="settings-group-name">#{msg['settings.export']}</h3>
@@ -64,6 +73,7 @@
                         </div>
                     </div>
                 </h:link>
+
             </div>
             <div class="col-xs-6 col-xs-offset-1 settings-finalize">
                 <h3>#{msg['settings.finalize']}</h3>

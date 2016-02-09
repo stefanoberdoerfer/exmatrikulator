@@ -1,0 +1,99 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['settings.logs']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li>#{logController.course.name}</li>
+        <li><h:link value="#{msg['common.settings']}" outcome="/settings/overview">
+            <f:param name="course-id" value="#{logController.course.courseId}"/>
+        </h:link></li>
+        <li class="active">#{msg['settings.logs']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form id="logForm">
+            <div class="headline">
+                <div class="btn-group main-buttons pull-right">
+                    <p:commandLink update="logTbl"
+                                   styleClass="btn btn-default"
+                                   value="#{msg['settings.logs.resetDates']}">
+                        <f:actionListener binding="#{logController.resetDateRange()}"/>
+                    </p:commandLink>
+                </div>
+                <h1>#{msg['settings.logs']}</h1>
+            </div>
+            <div class="form-group">
+                <p:dataTable id="logTbl"
+                             value="#{logController.logs}"
+                             var="log"
+                             filteredValue="#{logController.filteredLogs}"
+                             paginator="true"
+                             paginatorTemplate="{RowsPerPageDropdown}
+                         {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                         {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="50,100,1000"
+                             emptyMessage="#{msg['settings.logs.noLogsMessage']}">
+                    <p:column
+                            filterMatchMode="contains"
+                            filterBy="#{log.date}"
+                            sortBy="#{log.date}"
+                            style="width: 250px;">
+                        <f:facet name="filter">
+                            <h:inputHidden id="filter" />
+                        </f:facet>
+                        <f:facet name="header">
+                            #{msg['common.date']}
+                            <div class="row">
+                                <strong>#{msg['common.from'].concat(': ')}</strong>
+                                <p:calendar id="beginDate"
+                                            value="#{logController.beginDate}"
+                                            styleClass="calendarFilter"
+                                            pattern="MM/dd/yyyy HH:mm:ss">
+                                    <p:ajax event="dateSelect"
+                                            listener="#{logController.filterByDates()}"
+                                            update="logTbl"/>
+                                </p:calendar>
+                            </div>
+                            <div class="row">
+                                <strong>#{msg['common.to'].concat(': ')}</strong>
+                                <p:calendar id="endDate"
+                                            value="#{logController.endDate}"
+                                            styleClass="calendarFilter"
+                                            pattern="MM/dd/yyyy HH:mm:ss">
+                                    <p:ajax event="dateSelect"
+                                            listener="#{logController.filterByDates()}"
+                                            update="logTbl"/>
+                                </p:calendar>
+                            </div>
+                        </f:facet>
+                        <h:outputText value="#{log.date}">
+                            <div align="center">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                            </div>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="#{msg['common.user']}"
+                              filterBy="#{log.loggedInUser.toString()}"
+                              filterMatchMode="contains"
+                              sortBy="#{log.loggedInUser.toString()}"
+                              style="width: 250px;">
+                        <h:outputText value="#{log.loggedInUser.toString()}"/>
+                    </p:column>
+                    <p:column headerText="#{msg['common.action']}"
+                              filterMatchMode="contains"
+                              filterBy="#{log.actionDescription}"
+                              sortBy="#{log.actionDescription}">
+                        <h:outputText value="#{log.actionDescription}"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
