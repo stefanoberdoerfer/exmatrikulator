@@ -81,13 +81,15 @@ exmatrikulatorInteractivity = ($) ->
 
     if !overwrite
       console.log "Reset form inputs"
-      $ '#gradeStudent input'
+      $ '#other-grade-selection input'
         .val ''
-        .focus()
       $ '#gradeInsertForm\\:publicComment'
         .val ''
       $ '#gradeInsertForm\\:privateComment'
         .val ''
+      $ '#gradeStudent input'
+        .val ''
+        .focus()
 
       gradingModalButtons false
     else

@@ -1,6 +1,7 @@
 
 package de.unibremen.opensores.service;
 
+import de.unibremen.opensores.exception.*;
 import de.unibremen.opensores.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +22,11 @@ import java.util.Map;
  */
 @Stateless
 public class GradingService extends GenericService<Grading> {
+    /**
+     * The log4j logger.
+     */
+    private static Logger log = LogManager.getLogger(
+            GradingService.class);
 
     /**
      * StudentService for database transactions related to students.
@@ -33,6 +39,12 @@ public class GradingService extends GenericService<Grading> {
      */
     @EJB
     private GradeService gradeService;
+
+    /**
+     * UserService for database transactions related to users.
+     */
+    @EJB
+    private UserService userService;
 
     /**
      * Lists all gradings of the GRADINGS table.
@@ -143,7 +155,7 @@ public class GradingService extends GenericService<Grading> {
      * @param search Value to search for
      * @return Student or null
      */
-    public Student findStudent(Course course, String search) {
+    private Student findStudent(Course course, String search) {
         try {
             return em.createQuery("SELECT DISTINCT s " +
                         "FROM Student s " +
@@ -167,13 +179,142 @@ public class GradingService extends GenericService<Grading> {
      * @param publicComment Public comment of the corrector
      * @param privateComment Private comment of the corrector
      */
-    public void storeGrade(Student student, PaboGrade paboGrade,
+    private void persistGrade(Student student, PaboGrade paboGrade,
                            String publicComment, String privateComment) {
         student.setPaboGrade(paboGrade.getGradeName());
         student.setPublicComment(publicComment);
         student.setPrivateComment(privateComment);
 
         studentService.update(student);
+    }
+
+    public void storePaboGrade(final Course course, final User corrector,
+                               final String pStudent, final String pGrading,
+                               final String pPrivateComment,
+                               final String pPublicComment,
+                               final boolean overwrite)
+        throws NoAccessException, StudentNotFoundException,
+            InvalidGradingException, OverwritingGradeException {
+        /*
+        Check if the user is a lecturer. Only lecturers may change final
+        grades.
+         */
+        if (!userService.hasCourseRole(corrector, "LECTURER", course)) {
+            throw new NoAccessException();
+        }
+        /*
+        Check if the student exists and if he/she is part of this course.
+         */
+        if (pStudent == null || pStudent.trim().length() == 0) {
+            throw new StudentNotFoundException();
+        }
+
+        log.debug("Grading: searching for student " + pStudent);
+
+        Student student = this.findStudent(course, pStudent);
+
+        log.debug("Grading: found student? " + (student == null ? "no" : "yes"));
+
+        if (student == null) {
+            throw new StudentNotFoundException();
+        }
+        /*
+        Check if there is already a final grade for this student. Throwing
+        an exception so the ajax error function gets called.
+         */
+        log.debug("Overwrite? " + (overwrite ? "yes" : "no"));
+
+        if (student.getPaboGrade() != null && !overwrite) {
+            throw new OverwritingGradeException();
+        }
+        /*
+        Check the grading
+         */
+        PaboGrade paboGrade;
+
+        try {
+            paboGrade = PaboGrade.valueOf(pGrading);
+        } catch (Exception e) {
+            throw new InvalidGradingException();
+        }
+        /*
+        Store the final grade
+         */
+        this.persistGrade(student, paboGrade, pPublicComment, pPrivateComment);
+    }
+
+    public void storeGrade(final Course course, final User corrector,
+                           final Long pExam, final String pStudent,
+                           final String pGrading, final String pPrivateComment,
+                           final String pPublicComment, final boolean overwrite)
+        throws NoAccessException, StudentNotFoundException,
+            NotGradableException, ExamNotFoundException,
+            InvalidGradingException, OverwritingGradeException {
+        /*
+        Check if the user is a lecturer or tutors
+         */
+        if (!userService.hasCourseRole(corrector, "PRIVILEGED_USER", course) &&
+                !userService.hasCourseRole(corrector, "LECTURER", course)) {
+            throw new NoAccessException();
+        }
+        /*
+        Check if the student exists and if he/she is part of this course.
+         */
+        if (pStudent == null || pStudent.trim().length() == 0) {
+            throw new StudentNotFoundException();
+        }
+
+        log.debug("Grading: searching for student " + pStudent);
+
+        Student student = this.findStudent(course, pStudent);
+
+        log.debug("Grading: found student? " + (student == null ? "no" : "yes"));
+
+        if (student == null) {
+            throw new StudentNotFoundException();
+        }
+        /*
+        If the user is a tutor, check if he may grade this student
+         */
+        if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course) &&
+                !this.mayGradeStudent(corrector, student)) {
+            throw new NotGradableException();
+        }
+        /*
+        Load the exam.
+         */
+        Exam exam = this.getExam(course, pExam);
+
+        if (exam == null) {
+            throw new ExamNotFoundException();
+        }
+        /*
+        Check if there is already a grading for this student
+         */
+        Grading grading = this.getGrading(student, exam);
+
+        log.debug("Overwrite? " + (overwrite ? "yes" : "no"));
+
+        if (grading != null && !overwrite) {
+            throw new OverwritingGradeException();
+        }
+        /*
+        Check if the grading is valid
+         */
+        if (!exam.isValidGrading(pGrading)) {
+            throw new InvalidGradingException();
+        }
+        /*
+        Store the grading
+         */
+        if (grading == null) {
+            this.persistGrade(corrector, student, exam, pGrading,
+                    pPublicComment, pPrivateComment);
+        }
+        else {
+            this.persistGrade(corrector, grading, pGrading,
+                    pPublicComment, pPrivateComment);
+        }
     }
 
     /**
@@ -185,7 +326,7 @@ public class GradingService extends GenericService<Grading> {
      * @param publicComment Public comment of the corrector
      * @param privateComment Private comment of the corrector
      */
-    public void storeGrade(User corrector, Student student, Exam exam, String value,
+    private void persistGrade(User corrector, Student student, Exam exam, String value,
                            String publicComment, String privateComment) {
         BigDecimal decimal = new BigDecimal(value.replace(',', '.'));
 
@@ -213,7 +354,7 @@ public class GradingService extends GenericService<Grading> {
      * @param publicComment Public comment of the corrector
      * @param privateComment Private comment of the corrector
      */
-    public void storeGrade(User corrector, Grading grading, String value,
+    private void persistGrade(User corrector, Grading grading, String value,
                            String publicComment, String privateComment) {
         BigDecimal decimal = new BigDecimal(value.replace(',', '.'));
 
@@ -235,7 +376,7 @@ public class GradingService extends GenericService<Grading> {
      * @param exam Id of the exam
      * @return Exam or null
      */
-    public Exam getExam(Course course, Long exam) {
+    private Exam getExam(Course course, Long exam) {
         try {
             return em.createQuery("SELECT DISTINCT e " +
                         "FROM Exam e " +

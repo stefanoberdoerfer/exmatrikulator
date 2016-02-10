@@ -11,11 +11,8 @@ import org.apache.logging.log4j.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-
-import org.primefaces.context.RequestContext;
 
 import java.util.ResourceBundle;
 
@@ -24,12 +21,12 @@ import java.util.ResourceBundle;
  */
 @ManagedBean
 @ViewScoped
-public class GradingInsertController {
+public class GradingEditController {
     /**
      * The log4j logger.
      */
     private static Logger log = LogManager.getLogger(
-            GradingInsertController.class);
+            GradingEditController.class);
 
     /**
      * Data set by the formula of the modal to insert grades.
@@ -175,5 +172,28 @@ public class GradingInsertController {
         facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_INFO, bundle.getString("common.success"),
                 bundle.getString("gradings.stored")));
+    }
+
+    public void useGrading(final Student student, final Exam exam,
+                           Grading grading) {
+        log.debug("Use existing grading for " + student.getUser().
+                getFirstName() + " and exam " + exam.getName());
+        /*
+        If there isn't a grading, load it
+         */
+        if (grading == null) {
+            grading = gradingService.getGrading(student, exam);
+        }
+        /*
+        Set the data
+         */
+        this.formExam = exam.getExamId();
+        this.formStudent = student.getUser().getEmail();
+
+        if (grading != null) {
+            this.formGrading = grading.getGrade().getValue().toString();
+            this.formPrivateComment = grading.getPrivateComment();
+            this.formPublicComment = grading.getPublicComment();
+        }
     }
 }

@@ -72,10 +72,12 @@
                 <div class="row student-gradings">
                     <ui:repeat value="#{gradingController.getStudentGradings(student).keySet().toArray()}" var="exam">
                         <div class="col-xs-3">
-                            <h:link onclick="return exModal('gradeEdit');" h5:data-toggle="tooltip"
-                                    h5:data-placement="top" styleClass="btn btn-default pull-left">
+                            <p:commandLink action="#{gradingInsertController.useGrading(student, exam,
+                                                    gradingController.getStudentGradings(student).get(exam))}"
+                                           oncomplete="return exModal('gradeEdit');" update="gradeEditForm"
+                                           styleClass="btn btn-default pull-left">
                                 <i class="fa fa-edit"></i>
-                            </h:link>
+                            </p:commandLink>
                             <strong>#{exam.getName()}</strong><br />
                             #{gradingController.getStudentGradings(student).get(exam).grade.value}
                         </div>
@@ -85,6 +87,7 @@
         </p:dataTable>
 
         <ui:include src="/grading/insert.xhtml" />
+        <ui:include src="/grading/edit.xhtml" />
         <ui:include src="/grading/finalgrades.xhtml" />
     </ui:define>
 </ui:composition>

@@ -30,7 +30,7 @@
                                      styleClass="btn btn-default" />
                     <p:commandButton value="#{msg['gradings.finalGrade.calculate']}" type="button"
                                      styleClass="btn btn-primary">
-                        <f:ajax listener="#{gradingInsertController.calculateFinalGrades(gradingController.course)}"
+                        <f:ajax listener="#{gradingCalculateController.calculateFinalGrades(gradingController.course)}"
                                 execute="@form"
                                 render="gradeCalculateFinalForm"
                                 />
