@@ -84,6 +84,10 @@ exmatrikulatorInteractivity = ($) ->
       $ '#gradeStudent input'
         .val ''
         .focus()
+      $ '#gradeInsertForm\\:publicComment'
+        .val ''
+      $ '#gradeInsertForm\\:privateComment'
+        .val ''
 
       gradingModalButtons false
     else
