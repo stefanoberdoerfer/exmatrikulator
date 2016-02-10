@@ -73,12 +73,12 @@
                 </div>
             </h:panelGroup>
             <div class="modal-footer">
-                <div class="btn-group">
+                <div class="btn-group" id="gradeInsertButtons">
                     <p:commandButton value="#{msg['common.cancel']}" type="button"
                                      onclick="return exModal(':gradeInsert');"
                                      styleClass="btn btn-default" />
                     <p:commandButton value="#{msg['gradings.insert']}" type="button"
-                                     styleClass="btn btn-primary" id="gradeInsertNormal">
+                                     styleClass="btn btn-primary">
                         <f:ajax listener="#{gradingInsertController.storeUserGrading(gradingController.course, false)}"
                                 execute="@form"
                                 render="gradeInsertForm"
@@ -87,7 +87,7 @@
                                 />
                     </p:commandButton>
                     <p:commandButton value="#{msg['gradings.overwrite']}" type="button"
-                                     styleClass="btn btn-danger" id="gradeInsertOverwrite">
+                                     styleClass="btn btn-danger">
                         <f:ajax listener="#{gradingInsertController.storeUserGrading(gradingController.course, true)}"
                                 execute="@form"
                                 render="gradeInsertForm"

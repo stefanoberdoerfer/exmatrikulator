@@ -3,6 +3,7 @@ JQuery Wrapper manually added
 ###
 exmatrikulatorInteractivity = ($) ->
   console.debug 'Assigning exmatrikulator activity...'
+  overwrite = false
   ###
   Toggle: Navigation
   ###
@@ -76,7 +77,17 @@ exmatrikulatorInteractivity = ($) ->
       $ '#pabo-grade-selection'
       .hide()
       $ '#other-grade-selection'
-      .show()#
+      .show()
+
+    if !overwrite
+      console.log "Reset form inputs"
+      $ '#gradeStudent input'
+        .val ''
+        .focus()
+
+      gradingModalButtons false
+    else
+      overwrite = false
 
     if buttons
       gradingModalButtons false
@@ -85,16 +96,16 @@ exmatrikulatorInteractivity = ($) ->
     console.log "show overwriting?", overwrite ? "yes" : "no"
 
     if overwrite
-      $ '#gradeInsertForm\\:gradeInsertNormal'
+      $ '#gradeInsertButtons .btn:nth-child(2)'
         .hide()
-      $ '#gradeInsertForm\\:gradeInsertOverwrite'
+      $ '#gradeInsertButtons .btn:nth-child(3)'
         .show()
       $ '#gradeInsertOverwriteHint'
         .show()
     else
-      $ '#gradeInsertForm\\:gradeInsertNormal'
+      $ '#gradeInsertButtons .btn:nth-child(2)'
         .show()
-      $ '#gradeInsertForm\\:gradeInsertOverwrite'
+      $ '#gradeInsertButtons .btn:nth-child(3)'
         .hide()
       $ '#gradeInsertOverwriteHint'
         .hide()
@@ -103,13 +114,11 @@ exmatrikulatorInteractivity = ($) ->
   ###
   $ '.ui-widget'
     .on 'change', '#gradeExamination select', () ->
-      console.log "change select"
       gradingModal false
       gradingModalButtons false
 
   $ '.ui-widget'
     .on 'change', '#gradeStudent input', () ->
-      console.log "change input"
       gradingModalButtons false
   ###
   Called to handle a request made in a modal dialog
@@ -137,6 +146,7 @@ exmatrikulatorInteractivity = ($) ->
     console.log err
 
     if err.errorMessage == "GRADE_ALREADY_EXISTS"
+      overwrite = true
       console.log "show overwriting buttons"
       gradingModalButtons true
 
