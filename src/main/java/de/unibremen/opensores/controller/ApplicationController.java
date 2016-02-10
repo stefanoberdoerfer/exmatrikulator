@@ -179,7 +179,7 @@ public class ApplicationController {
         student.setAcceptedInvitation(false);
         student.setConfirmed(false);
         student.setTries(0);
-        student.setAttending(true);
+        student.setDeleted(false);
         student.setUser(newUser);
         student.setHidden(false);
 

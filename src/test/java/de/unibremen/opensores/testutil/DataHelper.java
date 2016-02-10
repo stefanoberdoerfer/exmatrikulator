@@ -161,7 +161,7 @@ public final class DataHelper {
         student.setStudentId(idCount++);
         student.setHidden(false);
         student.setUser(user);
-        student.setAttending(true);
+        student.setDeleted(false);
         student.setTries(0);
         student.setHidden(false);
         student.setConfirmed(true);

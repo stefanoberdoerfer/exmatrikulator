@@ -97,7 +97,6 @@ public class Course {
         if (user == null) {
             return false;
         }
-
         for (Student student: students) {
             if (student.getUser().equals(user)) {
                 return true;
@@ -130,13 +129,11 @@ public class Course {
         if (user == null) {
             return null;
         }
-
         for (Student student: students) {
             if (student.getUser().equals(user)) {
                 return student;
             }
         }
-
         return null;
     }
 
@@ -152,13 +149,11 @@ public class Course {
         if (user == null) {
             return null;
         }
-
         for (PrivilegedUser privilegedUser: tutors) {
             if (privilegedUser.getUser().equals(user)) {
                 return privilegedUser;
             }
         }
-
         return null;
     }
 
@@ -182,11 +177,11 @@ public class Course {
 
     /**
      * Gets the students which are not hidden in this course
-     * @return The unhidden students of this course.
+     * @return The undeleted students of this course.
      */
-    public List<Student> getConfirmedUnhiddenStudents() {
+    public List<Student> getConfirmedUndeletedStudents() {
         return students.stream()
-                .filter(student -> !student.isHidden() && student.isConfirmed())
+                .filter(student -> !student.isDeleted() && student.isConfirmed())
                 .collect(Collectors.toList());
     }
 
@@ -196,9 +191,9 @@ public class Course {
      * also shouldn't be hidden.
      * @return The list of unconfirmed students.
      */
-    public List<Student> getUnconfirmedAndUnhiddenStudents() {
+    public List<Student> getUnconfirmedAndUndeletedStudents() {
         return students.stream()
-                .filter(student -> !student.isConfirmed() && !student.isHidden())
+                .filter(student -> !student.isDeleted() && !student.isConfirmed())
                 .collect(Collectors.toList());
     }
 
@@ -206,9 +201,9 @@ public class Course {
      * Gets the lecturers which are not hidden in this course.
      * @return The unhidden lecturers of this course.
      */
-    public List<Lecturer> getUnhiddenLecturers() {
+    public List<Lecturer> getUndeletedLecturers() {
         return lecturers.stream()
-                .filter(lecturer -> !lecturer.isHidden())
+                .filter(lecturer -> !lecturer.isDeleted())
                 .collect(Collectors.toList());
     }
 
@@ -216,9 +211,9 @@ public class Course {
      * Gets the unhidden tutors of this course.
      * @return The unhidden tutors of this course.
      */
-    public List<PrivilegedUser> getUnhiddenTutors() {
+    public List<PrivilegedUser> getUndeletedTutors() {
         return tutors.stream()
-                .filter(tutor -> !tutor.isHidden())
+                .filter(tutor -> !tutor.isDeleted())
                 .collect(Collectors.toList());
     }
 

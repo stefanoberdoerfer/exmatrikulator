@@ -46,7 +46,10 @@ public class PrivilegedUser {
     private Course course;
 
     @Column(nullable = false)
-    private Boolean isHidden;
+    private Boolean isHidden = false;
+
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
     @ManyToMany(mappedBy = "tutors")
     private List<Tutorial> tutorials = new ArrayList<>();
@@ -109,5 +112,13 @@ public class PrivilegedUser {
 
     public void setTutorials(List<Tutorial> tutorials) {
         this.tutorials = tutorials;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.isDeleted = deleted;
     }
 }

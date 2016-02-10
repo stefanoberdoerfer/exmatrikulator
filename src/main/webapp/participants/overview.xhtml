@@ -38,7 +38,7 @@
         <h:form id="lecturerForm">
         <p:dataTable id="lecturerTbl" widgetVar="lecturerWidget"
                      var="lecturer"
-                     value="#{participantsController.course.unhiddenLecturers}"
+                     value="#{participantsController.course.undeletedLecturers}"
                      filteredValue="#{participantsController.filteredLecturers}">
             <p:column filterBy="#{lecturer.user.lastName}" sortBy="#{lecturer.user.lastName}"
                       filterMatchMode="contains"
@@ -74,7 +74,7 @@
         <h3>#{msg['common.tutors']}</h3>
             <p:dataTable id="tutorTbl" widgetVar="tutorsTblWidget"
                      var="tutor"
-                     value="#{participantsController.course.unhiddenTutors}"
+                     value="#{participantsController.course.undeletedTutors}"
                      filteredValue="#{participantsController.filteredPrivUsers}"
                      emptyMessage="#{msg['participants.noPrivilegedUsers']}">
             <p:column headerText="#{msg['common.lastName']}"
@@ -124,7 +124,7 @@
         <h3>#{msg['common.students']}</h3>
             <p:dataTable id="studentTbl" widgetVar="studentsTblWidget"
                      var="student"
-                     value="#{participantsController.course.confirmedUnhiddenStudents}"
+                     value="#{participantsController.course.confirmedUndeletedStudents}"
                      filteredValue="#{participantsController.filteredStudents}"
                      emptyMessage="#{msg['participants.noStudents']}">
             <p:column headerText="#{msg['common.lastName']}"
@@ -193,7 +193,7 @@
             <h3>#{msg['participation.unconfirmedStudents']}</h3>
             <p:dataTable id="unconfirmedStudentsTbl" widgetVar="unconfirmedStudentsTblWidget"
                          var="student"
-                         value="#{participantsController.course.unconfirmedAndUnhiddenStudents}"
+                         value="#{participantsController.course.unconfirmedAndUndeletedStudents}"
                          filteredValue="#{participantsController.filteredUnconfirmedStudents}"
                          emptyMessage="#{msg['participants.noUnconfirmedStudents']}">
                 <p:column headerText="#{msg['common.lastName']}"

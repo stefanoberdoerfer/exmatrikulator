@@ -24,7 +24,10 @@ public class Lecturer {
     private Course course;
 
     @Column(nullable = false)
-    private Boolean isHidden;
+    private Boolean isHidden = false;
+
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "userId", nullable = false)
@@ -60,5 +63,13 @@ public class Lecturer {
 
     public void setHidden(Boolean isHidden) {
         this.isHidden = isHidden;
+    }
+
+    public Boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.isDeleted = deleted;
     }
 }

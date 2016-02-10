@@ -467,19 +467,19 @@ public class ParticipantsController {
      */
     public void deleteSelectedParticipation() {
         if (editedStudent != null) {
-            editedStudent.setHidden(true);
+            editedStudent.setDeleted(true);
             logStudentDeleted(editedStudent);
         } else if (editedLecturer != null) {
-            editedLecturer.setHidden(true);
+            editedLecturer.setDeleted(true);
             PrivilegedUser privilegedUser = course
                     .getPrivilegedUserFromUser(editedLecturer.getUser());
             logLecturerDeleted(editedLecturer);
             if (privilegedUser != null) {
-                privilegedUser.setHidden(true);
+                privilegedUser.setDeleted(true);
                 logPrivilegedUserDeleted(privilegedUser);
             }
         } else if (editedPrivilegedUser != null) {
-            editedPrivilegedUser.setHidden(true);
+            editedPrivilegedUser.setDeleted(true);
             logPrivilegedUserDeleted(editedPrivilegedUser);
         } else {
             throw new IllegalStateException("There is no selected student,"
@@ -695,11 +695,11 @@ public class ParticipantsController {
         Student student = new Student();
         student.setUser(selectedUser);
         student.setCourse(course);
-        student.setAttending(true);
+        student.setDeleted(false);
         student.setAcceptedInvitation(false);
         student.setConfirmed(true);
         student.setTries(0);
-        student.setHidden(false);
+        student.setDeleted(false);
         student.setParticipationType(getParticipationTypeFromId());
         return student;
     }
@@ -714,7 +714,7 @@ public class ParticipantsController {
         privilegedUser.setCourse(course);
         privilegedUser.setPrivileges(getPrivilegedIds());
         privilegedUser.setSecretary(isPrivilegedUserSecretary);
-        privilegedUser.setHidden(false);
+        privilegedUser.setDeleted(false);
         return privilegedUser;
     }
 
@@ -728,7 +728,7 @@ public class ParticipantsController {
         if (editedStudent != null) {
             log.debug("Updating the values of the existing student association");
             editedStudent.setParticipationType(getParticipationTypeFromId());
-            editedStudent.setHidden(false);
+            editedStudent.setDeleted(false);
             logOnEditStudent(editedStudent);
         } else {
             log.debug("Creating a new student from user input");
@@ -740,7 +740,7 @@ public class ParticipantsController {
 
         if (editedPrivilegedUser != null) {
             log.debug("There is an old privileged user association, setting it to hidden");
-            editedPrivilegedUser.setHidden(true);
+            editedPrivilegedUser.setDeleted(true);
             logHidePrivilegedUserForStudent(editedPrivilegedUser);
         }
 
@@ -758,7 +758,7 @@ public class ParticipantsController {
 
         if (editedPrivilegedUser != null) {
             log.debug("Updating the values of the existing privileged user association");
-            editedPrivilegedUser.setHidden(false);
+            editedPrivilegedUser.setDeleted(false);
             editedPrivilegedUser.setSecretary(isPrivilegedUserSecretary);
             editedPrivilegedUser.setPrivileges(getPrivilegedIds());
             logOnEditPrivUser(editedPrivilegedUser);
@@ -772,7 +772,7 @@ public class ParticipantsController {
 
         if (editedStudent != null) {
             log.debug("There is an old student association, setting it to hidden");
-            editedStudent.setHidden(true);
+            editedStudent.setDeleted(true);
             logHideStudentForPrivilegedUser(editedStudent);
         }
 

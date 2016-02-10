@@ -450,10 +450,10 @@ public class ParticipantsControllerTest {
         User user = DataHelper.createBasicUserWithNewId();
         Student student = DataHelper.createStudentWith(course, user);
         assertTrue(course.containsUser(user));
-        assertFalse(student.isHidden());
+        assertFalse(student.isDeleted());
         participantsController.onDeleteStudentDialogCalled(student);
         participantsController.deleteSelectedParticipation();
-        assertTrue(student.isHidden());
+        assertTrue(student.isDeleted());
         verify(courseServiceMock, times(1)).update(course);
         testResetValues();
     }
@@ -467,10 +467,10 @@ public class ParticipantsControllerTest {
         User user = DataHelper.createBasicUserWithNewId();
         Lecturer lecturer = DataHelper.createLecturerWith(course, user);
         assertTrue(course.containsUser(user));
-        assertFalse(lecturer.isHidden());
+        assertFalse(lecturer.isDeleted());
         participantsController.onDeleteLecturerDialogCalled(lecturer);
         participantsController.deleteSelectedParticipation();
-        assertTrue(lecturer.isHidden());
+        assertTrue(lecturer.isDeleted());
         verify(courseServiceMock, times(1)).update(course);
         testResetValues();
     }
@@ -484,10 +484,10 @@ public class ParticipantsControllerTest {
         User user = DataHelper.createBasicUserWithNewId();
         PrivilegedUser privUser = DataHelper.createPrivUserWith(course, user);
         assertTrue(course.containsUser(user));
-        assertFalse(privUser.isHidden());
+        assertFalse(privUser.isDeleted());
         participantsController.onDeletePrivilegedUserDialogCalled(privUser);
         participantsController.deleteSelectedParticipation();
-        assertTrue(privUser.isHidden());
+        assertTrue(privUser.isDeleted());
         verify(courseServiceMock, times(1)).update(course);
         testResetValues();
     }
@@ -514,16 +514,16 @@ public class ParticipantsControllerTest {
         ParticipationType defaultType = course.getDefaultParticipationType();
         User user = DataHelper.createBasicUserWithNewId();
         Student student = DataHelper.createStudentWith(course, user);
-        student.setHidden(true);
+        student.setDeleted(true);
         student.setParticipationType(newType);
         PrivilegedUser privUser = DataHelper.createPrivUserWith(course, user);
-        privUser.setHidden(false);
+        privUser.setDeleted(false);
         participantsController.onEditPrivilegedUserDialogCalled(privUser);
         participantsController.setSelectedRoleId(Role.STUDENT.getId());
         participantsController.setSelectedParticipationTypeId(defaultType.getPartTypeId());
         participantsController.saveEditChanges();
-        assertTrue(privUser.isHidden());
-        assertFalse(student.isHidden());
+        assertTrue(privUser.isDeleted());
+        assertFalse(student.isDeleted());
         assertSame(defaultType, student.getParticipationType());
         verify(courseServiceMock, times(1)).update(course);
     }
@@ -537,9 +537,9 @@ public class ParticipantsControllerTest {
     public void testSaveEditChangesToPrivUser() {
         User user = DataHelper.createBasicUserWithNewId();
         Student student = DataHelper.createStudentWith(course, user);
-        student.setHidden(false);
+        student.setDeleted(false);
         PrivilegedUser privUser = DataHelper.createPrivUserWith(course, user);
-        privUser.setHidden(true);
+        privUser.setDeleted(true);
         privUser.setPrivileges(new ArrayList<>());
         privUser.setSecretary(false);
         participantsController.onEditStudentDialogCalled(student);
@@ -549,8 +549,8 @@ public class ParticipantsControllerTest {
         participantsController.setPrivilegeFormula(true);
         participantsController.saveEditChanges();
         verify(courseServiceMock, times(1)).update(course);
-        assertTrue(student.isHidden());
-        assertFalse(privUser.isHidden());
+        assertTrue(student.isDeleted());
+        assertFalse(privUser.isDeleted());
         assertTrue(privUser.isSecretary());
 
         assertTrue(privUser.hasPrivilege(Privilege.EditExams.name()));
