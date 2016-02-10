@@ -64,39 +64,6 @@ public final class Constants {
      */
     public static final String SESSION_MAP_KEY_USER = "user";
 
-
-    //IMPORTANT: Change here if Privilege.java changes
-
-    /**
-     * String constant for the privilege to edit formulas.
-     */
-    public static final String PRIVILEGE_EDIT_FORMULAS = "EditFormulas";
-
-    /**
-     * String constant for the privilege to EditExams.
-     */
-    public static final String PRIVILEGE_EDIT_EXAMS = "EditExams";
-
-    /**
-     * String constant for the privilege to manage students.
-     */
-    public static final String PRIVILEGE_MANAGE_STUDENTS = "ManageStudents";
-
-    /**
-     * String constant for the privilege to export data.
-     */
-    public static final String PRIVILEGE_EXPORT_DATA = "ExportData";
-
-    /**
-     * String constant for the privilege to manage tutorials.
-     */
-    public static final String PRIVILEGE_MANAGE_TUTORIALS = "ManageTutorials";
-
-    /**
-     * String constant for the privilege to generate credits.
-     */
-    public static final String PRIVILEGE_GENERATE_CREDITS = "GenerateCredits";
-
     /**
      * The timezone of the system in Exmatrikulator.
      */

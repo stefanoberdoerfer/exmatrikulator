@@ -667,7 +667,7 @@ public class ParticipantsController {
         return loggedInUserCanManageTutors
                 || (course.getPrivilegedUserFromUser(loggedInUser) != null
                 && course.getPrivilegedUserFromUser(loggedInUser)
-                .hasPrivilege(Constants.PRIVILEGE_MANAGE_STUDENTS));
+                .hasPrivilege(Privilege.ManageStudents.name()));
     }
 
 
@@ -827,13 +827,12 @@ public class ParticipantsController {
      */
     private void updateSelectedValuesFromPrivUser(PrivilegedUser privilegedUser) {
         log.debug("updateSelectedValuesFromPrivUser() called: " + privilegedUser);
-        privilegeExams = privilegedUser.hasPrivilege(Constants.PRIVILEGE_EDIT_EXAMS);
-        privilegeFormula = privilegedUser.hasPrivilege(Constants.PRIVILEGE_EDIT_FORMULAS);
-        privilegeTutorials = privilegedUser.hasPrivilege(Constants.PRIVILEGE_MANAGE_TUTORIALS);
-        privilegeStudents = privilegedUser.hasPrivilege(Constants.PRIVILEGE_MANAGE_STUDENTS);
-        privilegeExportData = privilegedUser.hasPrivilege(Constants.PRIVILEGE_EXPORT_DATA);
-        privilegeGenerateCredits = privilegedUser
-                .hasPrivilege(Constants.PRIVILEGE_GENERATE_CREDITS);
+        privilegeExams = privilegedUser.hasPrivilege(Privilege.EditExams.name());
+        privilegeFormula = privilegedUser.hasPrivilege(Privilege.EditFormulas.name());
+        privilegeTutorials = privilegedUser.hasPrivilege(Privilege.ManageTutorials.name());
+        privilegeStudents = privilegedUser.hasPrivilege(Privilege.ManageStudents.name());
+        privilegeExportData = privilegedUser.hasPrivilege(Privilege.ExportData.name());
+        privilegeGenerateCredits = privilegedUser.hasPrivilege(Privilege.ExportData.name());
 
         isPrivilegedUserSecretary = privilegedUser.isSecretary();
     }

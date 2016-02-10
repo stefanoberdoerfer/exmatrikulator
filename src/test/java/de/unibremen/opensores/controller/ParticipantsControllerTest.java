@@ -397,16 +397,15 @@ public class ParticipantsControllerTest {
         PrivilegedUser createdPrivUser = course.getPrivilegedUserFromUser(user);
         assertNotNull(createdPrivUser);
         assertTrue(createdPrivUser.isSecretary());
-        assertTrue(createdPrivUser.hasPrivilege(Constants.PRIVILEGE_EDIT_EXAMS));
-        assertTrue(createdPrivUser.hasPrivilege(Constants.PRIVILEGE_EDIT_FORMULAS));
-        assertTrue(createdPrivUser.hasPrivilege(Constants.PRIVILEGE_MANAGE_TUTORIALS));
-        assertTrue(createdPrivUser.hasPrivilege(Constants.PRIVILEGE_MANAGE_STUDENTS));
-        assertTrue(createdPrivUser.hasPrivilege(Constants.PRIVILEGE_EXPORT_DATA));
-        assertTrue(createdPrivUser.hasPrivilege(Constants.PRIVILEGE_GENERATE_CREDITS));
+        assertTrue(createdPrivUser.hasPrivilege(Privilege.EditExams.name()));
+        assertTrue(createdPrivUser.hasPrivilege(Privilege.EditFormulas.name()));
+        assertTrue(createdPrivUser.hasPrivilege(Privilege.ManageTutorials.name()));
+        assertTrue(createdPrivUser.hasPrivilege(Privilege.ManageStudents.name()));
+        assertTrue(createdPrivUser.hasPrivilege(Privilege.ExportData.name()));
+        assertTrue(createdPrivUser.hasPrivilege(Privilege.GenerateCredits.name()));
 
         verify(courseServiceMock, times(1)).update(course);
         verify(userServiceMock, times(1)).initPasswordReset(eq(user), anyInt());
-
     }
 
     /**
@@ -553,12 +552,13 @@ public class ParticipantsControllerTest {
         assertTrue(student.isHidden());
         assertFalse(privUser.isHidden());
         assertTrue(privUser.isSecretary());
-        assertTrue(privUser.hasPrivilege(Constants.PRIVILEGE_EDIT_EXAMS));
-        assertTrue(privUser.hasPrivilege(Constants.PRIVILEGE_EDIT_FORMULAS));
-        assertFalse(privUser.hasPrivilege(Constants.PRIVILEGE_GENERATE_CREDITS));
-        assertFalse(privUser.hasPrivilege(Constants.PRIVILEGE_MANAGE_STUDENTS));
-        assertFalse(privUser.hasPrivilege(Constants.PRIVILEGE_MANAGE_TUTORIALS));
-        assertFalse(privUser.hasPrivilege(Constants.PRIVILEGE_EXPORT_DATA));
+
+        assertTrue(privUser.hasPrivilege(Privilege.EditExams.name()));
+        assertTrue(privUser.hasPrivilege(Privilege.EditFormulas.name()));
+        assertFalse(privUser.hasPrivilege(Privilege.ManageTutorials.name()));
+        assertFalse(privUser.hasPrivilege(Privilege.ManageStudents.name()));
+        assertFalse(privUser.hasPrivilege(Privilege.ExportData.name()));
+        assertFalse(privUser.hasPrivilege(Privilege.GenerateCredits.name()));
     }
 
     /**
