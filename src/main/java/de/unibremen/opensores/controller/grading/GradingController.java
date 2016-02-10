@@ -16,6 +16,8 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,11 @@ public class GradingController {
      * Student gradings. Stored here so it won't be loaded multiple times.
      */
     private Map<Student, Map<Exam, Grading>> studentGradings = new HashMap<>();
+
+    /**
+     * String to search for
+     */
+    private String searchValue;
 
     /**
      * CourseService for database transactions related to courses.
@@ -121,7 +128,13 @@ public class GradingController {
      * @return List of students or null
      */
     public List<Student> getStudents() {
-        return gradingService.getStudents(course);
+        if (searchValue != null && searchValue.trim().length() > 0) {
+            log.debug("Search for " + searchValue);
+            return gradingService.getStudents(course, searchValue.trim());
+        }
+        else {
+            return gradingService.getStudents(course);
+        }
     }
 
     /**
@@ -147,5 +160,13 @@ public class GradingController {
         }
 
         return gradings;
+    }
+
+    public void setSearchValue(String search) {
+        this.searchValue = search;
+    }
+
+    public String getSearchValue() {
+        return this.searchValue;
     }
 }

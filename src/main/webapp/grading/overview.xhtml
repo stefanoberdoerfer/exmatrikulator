@@ -18,8 +18,11 @@
         <div class="headline">
             <div class="btn-group main-buttons pull-right">
                 <h:form styleClass="section-search">
-                    <h:inputText styleClass="form-control" h5:placeholder="#{msg['gradings.search.students']}" />
-                    <h:commandLink styleClass="btn btn-default"><i class="fa fa-search"></i></h:commandLink>
+                    <h:inputText styleClass="form-control" h5:placeholder="#{msg['gradings.search.students']}"
+                            value="#{gradingController.searchValue}"/>
+                    <h:commandLink styleClass="btn btn-default">
+                        <i class="fa fa-search"></i>
+                    </h:commandLink>
                 </h:form>
                 <h:link onclick="return exModal('gradeCalculateFinal');" value="#{msg['gradings.finalGrade.calculate']}"
                         class="btn btn-default" />
@@ -64,18 +67,15 @@
                 <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
                 <strong>#{student.paboGrade}</strong>
             </p:column>
-            <p:column styleClass="table-common-options-two text-right">
-                <f:facet name="header"></f:facet>
-                <h:link onclick="return exModal('gradeEdit');" h5:data-toggle="tooltip"
-                        h5:data-placement="top" class="btn btn-default">
-                    <i class="fa fa-edit"></i>
-                </h:link>
-            </p:column>
 
             <p:rowExpansion>
-                <div class="row">
+                <div class="row student-gradings">
                     <ui:repeat value="#{gradingController.getStudentGradings(student).keySet().toArray()}" var="exam">
                         <div class="col-xs-3">
+                            <h:link onclick="return exModal('gradeEdit');" h5:data-toggle="tooltip"
+                                    h5:data-placement="top" styleClass="btn btn-default pull-left">
+                                <i class="fa fa-edit"></i>
+                            </h:link>
                             <strong>#{exam.getName()}</strong><br />
                             #{gradingController.getStudentGradings(student).get(exam).grade.value}
                         </div>

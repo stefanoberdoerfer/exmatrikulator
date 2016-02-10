@@ -67,10 +67,6 @@ public class GradingService extends GenericService<Grading> {
      * @return List of Students or null
      */
     public List<Student> getStudents(Course course) {
-        if (course.getCourseId() == null) {
-            return null;
-        }
-
         List<Student> s = em.createQuery("SELECT DISTINCT s " +
                     "FROM Student s " +
                     "WHERE s.course.courseId = :courseId " +
@@ -83,16 +79,34 @@ public class GradingService extends GenericService<Grading> {
     }
 
     /**
+     * Searches the students for the given data. Searches the e-mail, name
+     * and student id (TODO!)
+     * @param course Course to load the students
+     * @param search String to search for
+     * @return List of Students or null
+     */
+    public List<Student> getStudents(Course course, String search) {
+        List<Student> ls = em.createQuery("SELECT DISTINCT s " +
+                    "FROM Student s " +
+                    "JOIN s.user AS u " +
+                    "JOIN s.course AS c WITH c.courseId = :cid " +
+                    "WHERE lower(u.email) LIKE :search " +
+                    "OR lower(concat(u.firstName, ' ', u.lastName)) LIKE :search",
+                    Student.class)
+                .setParameter("cid", course.getCourseId())
+                .setParameter("search", "%" + search.toLowerCase() + "%")
+                .getResultList();
+
+        return (ls.isEmpty() ? null : ls);
+    }
+
+    /**
      * Returns all gradings of a student, i.e. also the exams without gradings.
      * @param course Course to load the exams
      * @param student Student to load the gradings
      * @return List of Gradings or null
      */
     public Map<Exam, Grading> getStudentGradings(Course course, Student student) {
-        if (course.getCourseId() == null) {
-            return null;
-        }
-
         Map<Exam, Grading> m = new HashMap<>();
         /*
         Load exams manually and don't use relation in grading because there
@@ -135,11 +149,11 @@ public class GradingService extends GenericService<Grading> {
                         "FROM Student s " +
                         "JOIN s.user AS u " +
                         "JOIN s.course AS c WITH c.courseId = :cid " +
-                        "WHERE u.email = :search " +
-                        "OR concat(u.firstName, ' ', u.lastName) = :search",
+                        "WHERE lower(u.email) = :search " +
+                        "OR lower(concat(u.firstName, ' ', u.lastName)) = :search",
                         Student.class)
                     .setParameter("cid", course.getCourseId())
-                    .setParameter("search", search)
+                    .setParameter("search", search.toLowerCase())
                     .getSingleResult();
         } catch(NoResultException e) {
             return null;
