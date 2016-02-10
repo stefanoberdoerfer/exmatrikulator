@@ -18,21 +18,21 @@ import java.util.List;
 public class CourseService extends GenericService<Course> {
 
     /**
-     * Find tutor of this course using a user object.
+     * Find tutor of this course using an email from the user object.
      *
      * @param course Course to look at.
-     * @param user User associated with this tutor.
+     * @param email Email associated with this tutor.
      * @return Tutor with this email or null.
      */
-    public PrivilegedUser findTutor(Course course, User user) {
+    public PrivilegedUser findTutor(Course course, String email) {
         List<PrivilegedUser> privUsers = em.createQuery(
                 "SELECT DISTINCT u FROM PrivilegedUser u"
                 + " JOIN u.course AS c"
                 + " WITH c.courseId = :courseId"
                 + " WHERE u.isSecretary = false"
-                + " AND u.user.userId = :userId", PrivilegedUser.class)
+                + " AND u.user.email = :email", PrivilegedUser.class)
             .setParameter("courseId", course.getCourseId())
-            .setParameter("userId", user.getUserId())
+            .setParameter("email", email)
             .getResultList();
 
         return (privUsers.isEmpty()) ? null : privUsers.get(0);

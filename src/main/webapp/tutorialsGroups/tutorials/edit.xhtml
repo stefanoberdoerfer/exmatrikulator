@@ -23,9 +23,9 @@
               <div class="form-group">
                   <label for="createTutorialTutors" class="col-xs-3 control-label">#{msg['common.tutors']}</label>
                     <div class="col-xs-8">
-                        <h:inputText type="text" styleClass="form-control" id="editTutorialTutors"
-                            value="#{tutorialController.tutorialTutors}" required="true"
-                            requiredMessage="#{msg['registration.missingEmail']}" />
+                        <p:pickList id="editTutorialTutors" value="#{tutorialController.tutorialTutors}"
+                          var="tutorialTutors" itemLabel="#{tutorialTutors.user}"
+                          itemValue="#{tutorialTutors}" converter="#{privilegedUserConverter}" />
                         <div class="alert alert-info">
                             #{msg['tutorials.create.hint']}
                         </div>

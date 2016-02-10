@@ -2,6 +2,7 @@ package de.unibremen.opensores.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.model.DualListModel;
 
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
@@ -14,7 +15,6 @@ import de.unibremen.opensores.service.TutorialService;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.text.MessageFormat;
 
@@ -25,7 +25,6 @@ import javax.faces.context.FacesContext;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -90,9 +89,9 @@ public class TutorialController implements Serializable {
     private String removalConformation;
 
     /**
-     * Comma seperated string of tutor emails for the current tutorial.
+     * List of tutors for this tutorial.
      */
-    private String tutorialTutors;
+    private DualListModel<PrivilegedUser> tutorialTutors;
 
     /**
      * Method called on bean initialization.
@@ -129,31 +128,24 @@ public class TutorialController implements Serializable {
 
             return;
         }
+
+        // TODO we might want to set this in the filter.
+        facesContext.getExternalContext().getSessionMap()
+            .put("course", course);
+
+        tutorialTutors = new DualListModel<>(course.getTutors(),
+            new ArrayList<>());
     }
 
     /**
      * Creates a new tutorial.
      */
     public void createTutorial() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-            facesContext.getViewRoot().getLocale());
-
         tutorial = new Tutorial();
         tutorial.setCourse(course);
         tutorial.setName(tutorialName);
 
-        try {
-            tutorial = updateTutors(tutorial);
-        } catch (ValidationException e) {
-            String fmt = bundle.getString("courses.studentDoesNotExist");
-            String msg = new MessageFormat(fmt).format(new Object[]{e.getMessage()});
-
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
-            return;
-        }
-
+        tutorial = updateTutors(tutorial);
         course.getTutorials().add(tutorial);
         course = courseService.update(course);
 
@@ -168,33 +160,17 @@ public class TutorialController implements Serializable {
     public void changeCurrentTutorial(@NotNull Tutorial tutorial) {
         this.tutorial = tutorial;
         this.tutorialName = tutorial.getName();
-        this.tutorialTutors = tutorial.getTutors().stream()
-            .map(pu -> pu.getUser().getEmail())
-            .collect(Collectors.joining(","));
+        this.tutorialTutors.setTarget(tutorial.getTutors());
     }
 
     /**
      * Edits an existing tutorial.
      */
     public void editTutorial() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-            facesContext.getViewRoot().getLocale());
-
         tutorial.setName(newTutorialName);
-        newTutorialName = null;
+        this.newTutorialName = null;
 
-        try {
-            tutorial = updateTutors(tutorial);
-        } catch (ValidationException e) {
-            String fmt = bundle.getString("courses.studentDoesNotExist");
-            String msg = new MessageFormat(fmt).format(new Object[]{e.getMessage()});
-
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
-            return;
-        }
-
+        tutorial = updateTutors(tutorial);
         course = courseService.update(course);
     }
 
@@ -214,11 +190,13 @@ public class TutorialController implements Serializable {
             return;
         }
 
+        course.getTutorials().remove(tutorial);
         tutorialService.remove(tutorial);
         tutorial = null;
 
         removalConformation = null;
-        log.debug("Removed tutorial " + name + " from course " + course.getName());
+        log.debug(String.format("Removed tutorial %s from course %s",
+                    name, course.getName()));
     }
 
     /**
@@ -226,32 +204,17 @@ public class TutorialController implements Serializable {
      *
      * @param tutorial Tutorial to update tutors for.
      * @return Updated Tutorial.
-     * @throws ValidationException If a user with the given email didn't exist.
      */
     private Tutorial updateTutors(Tutorial tutorial) {
         List<PrivilegedUser> tutors = new ArrayList<>();
-        String[] emails = tutorialTutors.split(",");
-        for (String email : emails) {
-            email = email.trim();
-            User user = userService.findByEmail(email);
-            if (user == null) {
-                throw new ValidationException(email);
+        for (PrivilegedUser tutor : tutorialTutors.getTarget()) {
+            if (!course.getTutors().contains(tutor)) {
+                course.getTutors().add(tutor);
             }
 
-            PrivilegedUser tutor = courseService.findTutor(course, user);
-            if (tutor == null) {
-                log.debug("Made user with email " + email + " a tutor");
-                tutor = new PrivilegedUser();
-
-                tutor.setSecretary(false);
-                tutor.setCourse(course);
-                tutor.setUser(user);
-                tutor.setHidden(false);
-
-                if (!course.getTutors().contains(tutor)) {
-                    course.getTutors().add(tutor);
-                }
-            }
+            tutor.getTutorials().add(tutorial);
+            log.debug(String.format("Made user %s a tutor in course %s",
+                tutor.getUser().getEmail(), course.getName()));
 
             tutors.add(tutor);
         }
@@ -328,7 +291,7 @@ public class TutorialController implements Serializable {
      *
      * @param tutorialTutors Seperated list of tutor emails.
      */
-    public void setTutorialTutors(String tutorialTutors) {
+    public void setTutorialTutors(DualListModel<PrivilegedUser> tutorialTutors) {
         this.tutorialTutors = tutorialTutors;
     }
 
@@ -337,7 +300,7 @@ public class TutorialController implements Serializable {
      *
      * @return Comma seperated string of emails.
      */
-    public String getTutorialTutors() {
+    public DualListModel<PrivilegedUser> getTutorialTutors() {
         return tutorialTutors;
     }
 
