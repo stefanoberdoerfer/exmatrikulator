@@ -106,6 +106,11 @@ public class TutorialController implements Serializable {
     private String groupName;
 
     /**
+     * New group name, used when the group is being edited.
+     */
+    private String newGroupName = null;
+
+    /**
      * List of members for the current group.
      */
     private DualListModel<Student> groupMembers;
@@ -180,6 +185,18 @@ public class TutorialController implements Serializable {
         this.tutorial = tutorial;
         this.tutorialName = tutorial.getName();
         this.tutorialTutors.setTarget(tutorial.getTutors());
+    }
+
+    /**
+     * Changes the current group context.
+     *
+     * @param group Group to switch to.
+     */
+    public void changeCurrentGroup(@NotNull Group group) {
+        this.group = group;
+        this.groupName = group.getName();
+        this.groupMembers.setTarget(group.getStudents());
+        changeCurrentTutorial(group.getTutorial());
     }
 
     /**
@@ -258,6 +275,17 @@ public class TutorialController implements Serializable {
         tutorial = tutorialService.update(tutorial);
         log.debug(String.format("Created new group %s in tutorial %s",
             group.getName(), tutorial.getName()));
+    }
+
+    /**
+     * Edits an existing group in the current tutorial.
+     */
+    public void editGroup() {
+        group.setName(newGroupName);
+        this.newGroupName = null;
+
+        group = updateMembers(group);
+        tutorial = tutorialService.update(tutorial);
     }
 
     /**
@@ -357,6 +385,24 @@ public class TutorialController implements Serializable {
      */
     public String getNewTutorialName() {
         return (newTutorialName == null) ? tutorialName : newTutorialName;
+    }
+
+    /**
+     * Sets the new name for the current group.
+     *
+     * @param newGroupName New group name.
+     */
+    public void setNewGroupName(String newGroupName) {
+        this.newGroupName = newGroupName;
+    }
+
+    /**
+     * Returns the new name for the current group.
+     *
+     * @param New or current group name.
+     */
+    public String getNewGroupName() {
+        return (newGroupName == null) ? groupName : newGroupName;
     }
 
     /**

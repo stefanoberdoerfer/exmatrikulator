@@ -36,7 +36,7 @@
                   </div>
                   <div class="col-xs-4 text-right">
                       <div class="btn-group">
-                          <h:form id="prepareTutorialDialogForm">
+                          <h:form>
                             <p:commandLink update=":editTutorialForm"
                               oncomplete="return exModal('tutorialEdit');"
                               class="btn btn-default">
@@ -87,12 +87,18 @@
                           <td>
                             <strong>#{group.name}</strong>
                             <div class="btn-group pull-right">
-                                <h:link onclick="return exModal('groupEdit');" class="btn btn-default">
+                              <h:form>
+                                <p:commandLink update=":editGroupForm"
+                                  oncomplete="return exModal('groupEdit');"
+                                  class="btn btn-default">
+                                    <f:actionListener binding="#{tutorialController.changeCurrentGroup(group)}" />
                                     <i class="fa fa-pencil"></i>
-                                </h:link>
+                                </p:commandLink>
+
                                 <h:link onclick="return exModal('groupRemove');" class="btn btn-danger">
                                     <i class="fa fa-remove"></i>
                                 </h:link>
+                              </h:form>
                             </div>
                           </td>
                           <td>
@@ -113,7 +119,7 @@
               </table>
 
               <div class="table-groups-buttons btn-group">
-                <h:form id="prepareGroupDialogForm">
+                <h:form>
                   <p:commandLink value="#{msg['groups.add']}"
                     update=":createGroupForm"
                     oncomplete="return exModal('groupCreate');"
