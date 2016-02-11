@@ -27,12 +27,12 @@
 
   <filter>
     <filter-name>LoginFilter</filter-name>
-    <filter-class>de.unibremen.opensores.webapp.LoginFilter</filter-class>
+    <filter-class>de.unibremen.opensores.webapp.filter.LoginFilter</filter-class>
   </filter>
 
   <filter>
     <filter-name>NoCacheFilter</filter-name>
-    <filter-class>de.unibremen.opensores.webapp.NoCacheFilter</filter-class>
+    <filter-class>de.unibremen.opensores.webapp.filter.NoCacheFilter</filter-class>
   </filter>
 
   <filter-mapping>

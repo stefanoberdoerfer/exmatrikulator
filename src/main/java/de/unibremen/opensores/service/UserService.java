@@ -1,5 +1,6 @@
 package de.unibremen.opensores.service;
 
+import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Course;
@@ -7,18 +8,36 @@ import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.PrivilegedUser;
 
+import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.security.SecureRandom;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Service class for the User model class.
- * @todo JPA User search
  *
  * @author Kevin Scheck
  * @author Sören Tempel
  */
 @Stateless
 public class UserService extends GenericService<User> {
+
+    /**
+     * Number of bits to use for creating the reset token.
+     */
+    private static final int TOKEN_NUMBITS = 130;
+
+    /**
+     * Radix to use for converting the BigInteger to a string.
+     */
+    private static final int TOKEN_RANDIX = 32;
+
 
     /**
      * Finds a user by his unique email credential.
@@ -157,5 +176,97 @@ public class UserService extends GenericService<User> {
             .getResultList();
 
         return (courses.isEmpty()) ? null : courses;
+    }
+
+    /**
+     * Searches for users by their email, firstName, lastName or a combination
+     * of their first and last name. One of these options should be passed as
+     * searchInput parameter string.
+     * @param searchInput The search input, representing only the
+     *                    email, firstName, lastName or a combination of the
+     *                    first and last name of the user.
+     * @return A list of users which match the search input. An empty List if
+     *         the searchInput is null or empty.
+     */
+    public List<User> searchForUsers(String searchInput) {
+        if (searchInput == null || searchInput.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        final String trimSearchInput = searchInput.trim().toLowerCase();
+        if (trimSearchInput.contains(" ") && trimSearchInput.split(" ").length >= 2) {
+            final String[] names = trimSearchInput.split(" ");
+            return em.createQuery(
+                "SELECT DISTINCT u FROM User u WHERE "
+                + "(TRIM(LOWER(u.firstName)) LIKE :firstNameSplit "
+                     + "AND TRIM(LOWER(u.lastName)) LIKE :lastNameSplit) "
+                + "OR TRIM(LOWER(u.firstName)) LIKE :searchInput "
+                + "OR TRIM(LOWER(u.lastName)) LIKE :searchInput "
+                + "OR TRIM(LOWER(u.email)) LIKE :searchInput "
+                + "OR TRIM(LOWER(u.matriculationNumber)) LIKE :searchInput", User.class)
+                .setParameter("firstNameSplit", names[0])
+                .setParameter("lastNameSplit", names[1])
+                .setParameter("searchInput", trimSearchInput)
+                .getResultList();
+        } else {
+            return em.createQuery(
+                "SELECT DISTINCT u FROM User u WHERE "
+                        + "TRIM(LOWER(u.email)) LIKE :searchInput "
+                        + "OR TRIM(LOWER(u.firstName)) LIKE :searchInput "
+                        + "OR TRIM(LOWER(u.lastName)) LIKE :searchInput "
+                        + "OR TRIM(LOWER(u.matriculationNumber)) LIKE :searchInput", User.class)
+                .setParameter("searchInput", trimSearchInput + "%")
+                .getResultList();
+        }
+    }
+
+    /**
+     * Creates a new PasswordReset entity.
+     *
+     * @param user User the password reset token belongs to.
+     *
+     * @param expirationHours The experiation of the token in hours
+     * @return PasswordReset entity.
+     */
+    public PasswordReset initPasswordReset(User user, int expirationHours) {
+        if (expirationHours <= 0) {
+            throw new IllegalArgumentException("the experiationHours must be positive");
+        }
+
+        SecureRandom rand = new SecureRandom();
+        String strTok = new BigInteger(TOKEN_NUMBITS, rand).toString(TOKEN_RANDIX);
+
+        PasswordReset passReset = new PasswordReset();
+        passReset.setToken(strTok);
+        passReset.setUser(user);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.HOUR_OF_DAY, expirationHours);
+        passReset.setExpires(new Time(cal.getTime().getTime()));
+
+        return passReset;
+    }
+
+    /**
+     * Returns an URL to reset the password for the given user.
+     *
+     * @param request Request context to extract URL from.
+     * @param user Owner of this password reset.
+     * @param token Token used for this password reset.
+     *
+     * @return Absolute URL for a password reset.
+     * @throws MalformedURLException If a properly formatted URL couldn't
+     *      be created from the given data.
+     */
+    public String getPasswordResetURL(HttpServletRequest request, User user, PasswordReset token)
+            throws MalformedURLException {
+        // XXX can this be tricked into returning another URL?
+        StringBuffer requestUrl = request.getRequestURL();
+
+        int baseIdx = requestUrl.lastIndexOf("/");
+        String baseUrl = requestUrl.substring(0, baseIdx);
+
+        return String.format("%s/%s?id=%d&token=%s", baseUrl,
+                "recovery/new-password.xhtml", user.getUserId(), token.getToken());
     }
 }

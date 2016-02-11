@@ -32,7 +32,7 @@ public class PrivilegedUser {
     private List<Integer> privileges = new ArrayList<>();
 
     @Column(nullable = false)
-    private Boolean isSecretary;
+    private Boolean isSecretary = false;
 
     @Column
     private Date lastHit;
@@ -46,13 +46,16 @@ public class PrivilegedUser {
     private Course course;
 
     @Column(nullable = false)
-    private Boolean isHidden;
+    private Boolean isHidden = false;
+
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
     @ManyToMany(mappedBy = "tutors")
     private List<Tutorial> tutorials = new ArrayList<>();
 
     public boolean hasPrivilege(String privString) {
-        return privileges.contains(Role.valueOf(privString).getId());
+        return privileges.contains(Privilege.valueOf(privString).getId());
     }
 
     public List<Integer> getPrivileges() {
@@ -109,5 +112,13 @@ public class PrivilegedUser {
 
     public void setTutorials(List<Tutorial> tutorials) {
         this.tutorials = tutorials;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.isDeleted = deleted;
     }
 }

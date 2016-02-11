@@ -65,7 +65,6 @@ public class Log {
      */
     public Log() {}
 
-
     /**
      * Static constructor method to create a log given the user, the given course id.
      * The current date is used as action date.
@@ -76,11 +75,29 @@ public class Log {
             throw new IllegalArgumentException("The user can't be null.");
         }
         if (description == null || description.isEmpty()) {
-            throw new IllegalArgumentException("The must be a non empty string.");
+            throw new IllegalArgumentException("The description must be a non empty string.");
         }
         Log log = new Log();
         log.loggedInUser = user;
         log.courseId = courseId;
+        log.actionDescription = description;
+        log.date = DateUtil.getDateTime();
+        return log;
+    }
+
+    /**
+     * Creates an anonymous log for actions like failed attempts to login in or
+     * actions in which the identiy of the logged in user should be hidden, and
+     * the course is not know.
+     * @param description The description of the action, can't be empty.
+     * @return The log with the description of the action and the current time
+     *         as date.
+     */
+    public static Log anonymous(String description) {
+        if (description == null || description.isEmpty()) {
+            throw new IllegalArgumentException("The must be a non empty string.");
+        }
+        Log log = new Log();
         log.actionDescription = description;
         log.date = DateUtil.getDateTime();
         return log;

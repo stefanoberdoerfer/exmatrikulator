@@ -3,6 +3,8 @@ package de.unibremen.opensores.controller;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -18,6 +20,12 @@ import java.util.Map;
 @ManagedBean(name = "navigation")
 @SessionScoped
 public class NavigationController {
+
+    /**
+     * The log4j logger.
+     */
+    private static Logger log = LogManager.getLogger(NavigationController.class);
+
     /**
      * Current user locale.
      */
@@ -57,9 +65,9 @@ public class NavigationController {
      * Used to redirect to course-specific views.
      */
     public String viewCourse(Course course, String view) {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        facesContext.getExternalContext().getSessionMap().put("course", course);
-        return view + ".xhtml?faces-redirect=true";
+        String viewPath =  view + "?course-id=" + course.getCourseId() ;
+        log.debug("viewCourse() called: " + viewPath);
+        return viewPath;
     }
 
     /**

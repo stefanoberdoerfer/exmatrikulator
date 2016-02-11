@@ -116,8 +116,8 @@ public class ParticipationType {
         this.students = students;
     }
 
-    public void setPartTypeId(long id) {
-        this.partTypeId = id;
+    public void setPartTypeId(Long partTypeId) {
+        this.partTypeId = partTypeId;
     }
 
     public Long getPartTypeId() {
@@ -146,5 +146,19 @@ public class ParticipationType {
 
     public void setIsDefaultParttype(Boolean defaultParttype) {
         isDefaultParttype = defaultParttype;
+    }
+
+    @Override
+    public int hashCode() {
+        return (partTypeId != null)
+                ? partTypeId.hashCode() + ParticipationType.class.hashCode()
+                : super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof ParticipationType) && (partTypeId != null)
+                ? this.partTypeId.equals(((ParticipationType) obj).partTypeId)
+                : obj == this;
     }
 }

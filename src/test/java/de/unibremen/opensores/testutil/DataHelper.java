@@ -98,7 +98,6 @@ public final class DataHelper {
         user.setPassword("testuserpass");
         user.setBlocked(false);
         user.setProfileInfo("Hi, I'm a test user.");
-        //TODO uncomment with kevins merge
         user.setMatriculationNumber("123456");
         user.addRole(GlobalRole.USER);
         user.setUserId(BASIC_USER_ID);
@@ -162,15 +161,13 @@ public final class DataHelper {
         student.setStudentId(idCount++);
         student.setHidden(false);
         student.setUser(user);
-        student.setAttending(true);
+        student.setDeleted(false);
         student.setTries(0);
         student.setHidden(false);
         student.setConfirmed(true);
         student.setCourse(course);
-        //TODO Change in merge with kevins branch
-        student.setParticipationType(
-                course.getParticipationTypes().isEmpty() ? null
-                : course.getParticipationTypes().get(0));
+        student.setParticipationType(course.getDefaultParticipationType());
+
         course.getStudents().add(student);
         return student;
     }

@@ -25,7 +25,7 @@ public class Student {
     private Long studentId;
 
     @Column(nullable = false)
-    private Boolean isAttending;
+    private Boolean isDeleted;
 
     @Column(nullable = false)
     private Boolean isConfirmed;
@@ -34,7 +34,7 @@ public class Student {
     private Boolean acceptedInvitation;
 
     @Column(nullable = false)
-    private Boolean isHidden;
+    private Boolean isHidden = false;
 
     @Column
     private String paboGrade;
@@ -69,10 +69,6 @@ public class Student {
 
     public boolean isHidden() {
         return isHidden;
-    }
-
-    public boolean isAttending() {
-        return isAttending;
     }
 
     public boolean isConfirmed() {
@@ -131,10 +127,6 @@ public class Student {
         this.isHidden = isHidden;
     }
 
-    public void setAttending(Boolean attending) {
-        isAttending = attending;
-    }
-
     public void setUser(final User user) {
         this.user = user;
     }
@@ -146,7 +138,6 @@ public class Student {
     public Long getStudentId() {
         return studentId;
     }
-
 
     public Tutorial getTutorial() {
         return tutorial;
@@ -178,5 +169,13 @@ public class Student {
 
     public void setParticipationType(ParticipationType participationType) {
         this.participationType = participationType;
+    }
+
+    public Boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 }

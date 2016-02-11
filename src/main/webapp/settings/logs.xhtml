@@ -36,8 +36,8 @@
                              filteredValue="#{logController.filteredLogs}"
                              paginator="true"
                              paginatorTemplate="{RowsPerPageDropdown}
-                         {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
-                         {NextPageLink} {LastPageLink}"
+                             {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                             {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="50,100,1000"
                              emptyMessage="#{msg['settings.logs.noLogsMessage']}">
                     <p:column
@@ -75,7 +75,8 @@
                         </f:facet>
                         <h:outputText value="#{log.date}">
                             <div align="center">
-                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"
+                                                   timeZone="#{EXcons.SYSTEM_TIMEZONE}"/>
                             </div>
                         </h:outputText>
                     </p:column>

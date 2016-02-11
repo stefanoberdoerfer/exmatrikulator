@@ -37,7 +37,7 @@ public class User {
     @Column(unique = true, nullable = false, length = 64)
     private String email;
 
-    @Column(columnDefinition = "LONG VARCHAR", nullable = false)
+    @Column(columnDefinition = "LONG VARCHAR", nullable = true)
     private String password;
 
     @Column(nullable = false, length = 32)
@@ -52,11 +52,11 @@ public class User {
     @Column(nullable = true)
     private String language;
 
-    @Column(nullable = true)
-    private String matriculationNumber;
-
     @Column(nullable = false)
     private Boolean isBlocked = false;
+
+    @Column(nullable = true)
+    private String matriculationNumber;
 
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
     @CollectionTable(joinColumns = @JoinColumn(name = "userId"))
@@ -175,8 +175,25 @@ public class User {
     }
 
     @Override
-    public String toString() {
-        return firstName + " " + lastName;
+    public int hashCode() {
+        if (this.userId != null) {
+            return userId.hashCode() + User.class.hashCode();
+
+        } else {
+            return super.hashCode();
+
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this.userId != null
+                && obj instanceof User
+                && ((User) obj).getUserId() != null) {
+            return this.userId.equals(((User)obj).userId);
+        } else {
+            return (obj == this);
+        }
     }
 
     public String getMatriculationNumber() {
@@ -186,4 +203,10 @@ public class User {
     public void setMatriculationNumber(String matriculationNumber) {
         this.matriculationNumber = matriculationNumber;
     }
+
+    @Override
+    public String toString() {
+        return firstName + " " + lastName;
+    }
+
 }

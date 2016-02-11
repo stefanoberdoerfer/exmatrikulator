@@ -2,6 +2,7 @@ package de.unibremen.opensores.util.csv;
 
 import com.opencsv.CSVReader;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.util.Constants;
 
 
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -20,16 +22,17 @@ import java.util.regex.Pattern;
  */
 public final class StudIpParser {
 
+
     /**
-     * Valid Email from libAwesome. Also used in registration
+     * The different content type of a csv file.
+     * text/csv is standard under RCF7111: http://tools.ietf.org/html/rfc7111
+     * but: there is also:
+     *  * http://mimeapplication.net/vnd-ms-excel
+     *  * http://mimeapplication.net/csv
+     * The parser crashes if it's used in Windows when these types are not used.
      */
-    private static final String VALID_MAIL_REGEX
-           = "[\\w\\.-]*[a-zA-Z0-9_]@[\\w\\.-]*[a-zA-Z0-9]\\."
-               + "[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]";
-    /**
-     * The content type of a csv file.
-     */
-    private static final String CSV_CONTENT_TYPE = "text/csv";
+    private static final String[] CSV_CONTENT_TYPES
+            = {"text/csv","application/csv","application/vnd.ms-excel"};
 
     /**
      * The separator used in studIp course csv files.
@@ -63,7 +66,7 @@ public final class StudIpParser {
     private static final int COL_LAST_NAME = 2;
 
     /**
-     * Colum index of the email address of the csv file.
+     * Column index of the email address of the csv file.
      */
     private static final int COL_EMAIL = 7;
 
@@ -93,7 +96,7 @@ public final class StudIpParser {
         String contentType = (studIpCSVFile == null) ? null :
             Files.probeContentType(studIpCSVFile.toPath());
 
-        if (contentType == null || !contentType.equals(CSV_CONTENT_TYPE)) {
+        if (contentType == null || !validContentType(contentType)) {
             throw new IllegalArgumentException(
                     "The parameter studIpCSVFile must be a valid CSV File");
         }
@@ -163,12 +166,26 @@ public final class StudIpParser {
      * the participating colleges of the Exmatrikulator.
      * @param email The string to be checked if it's a valid email address.
      * @return True if the email String is valid, false otherwise.
-     * @TODO Discuss Email Validation with others
      */
     private static boolean validEmail(final String email) {
         if (email == null || email.trim().isEmpty()) {
             return false;
         }
-        return Pattern.matches(VALID_MAIL_REGEX, email);
+        return Pattern.matches(Constants.EMAIL_REGEX, email);
+    }
+
+    /**
+     * Checks if the content type is in the array of given contentt types.
+     * @param type The content type string to be checked
+     * @return Returns true if the content type equals one of the specified
+     *         content types.
+     */
+    private static boolean validContentType(final String type) {
+        for (String validContentType: CSV_CONTENT_TYPES) {
+            if (validContentType.equals(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

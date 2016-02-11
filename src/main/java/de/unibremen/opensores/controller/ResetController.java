@@ -1,6 +1,5 @@
 package de.unibremen.opensores.controller;
 
-import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.service.UserService;
@@ -8,13 +7,7 @@ import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.math.BigInteger;
 import java.util.ResourceBundle;
-import java.util.Calendar;
-import java.util.Date;
-import java.sql.Time;
-import java.security.SecureRandom;
-import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.io.IOException;
 
@@ -34,6 +27,12 @@ import javax.mail.MessagingException;
 @ManagedBean
 @RequestScoped
 public class ResetController {
+
+    /**
+     * Amount of time a token is valid (in hours).
+     */
+    private static final int TOKEN_VALID_TIME = 3;
+
     /**
      * The log4j logger.
      */
@@ -99,7 +98,7 @@ public class ResetController {
             return;
         }
 
-        PasswordReset passReset = initPasswordReset(user);
+        PasswordReset passReset = userService.initPasswordReset(user, TOKEN_VALID_TIME);
         user.setToken(passReset);
         user = userService.update(user);
 
@@ -128,7 +127,7 @@ public class ResetController {
     private void sendEmail(User user) throws MessagingException, IOException {
         HttpServletRequest request = (HttpServletRequest) facesContext
                 .getExternalContext().getRequest();
-        String url = resetURL(request, user, user.getToken());
+        String url = userService.getPasswordResetURL(request, user, user.getToken());
 
         String fmt = bundle.getString("passwordReset.mailBody");
         String text = new MessageFormat(fmt).format(new Object[]{
@@ -138,50 +137,6 @@ public class ResetController {
         user.sendEmail(subject, text);
     }
 
-    /**
-     * Returns an URL to reset the password for the given user.
-     *
-     * @param request Request context to extract URL from.
-     * @param user Owner of this password reset.
-     * @param token Token used for this password reset.
-     *
-     * @return Absolute URL for a password reset.
-     * @throws MalformedURLException If a properly formatted URL couldn't
-     *      be created from the given data.
-     */
-    public String resetURL(HttpServletRequest request, User user, PasswordReset token)
-            throws MalformedURLException {
-        // XXX can this be tricked into returning another URL?
-        StringBuffer requestUrl = request.getRequestURL();
-
-        int baseIdx = requestUrl.lastIndexOf("/");
-        String baseUrl = requestUrl.substring(0, baseIdx);
-
-        return String.format("%s/%s?id=%d&token=%s", baseUrl,
-                "recovery/new-password.xhtml", user.getUserId(), token.getToken());
-    }
-
-    /**
-     * Creates a new PasswordReset entity.
-     *
-     * @param user User the password reset token belongs to.
-     * @return PasswordReset entity.
-     */
-    public PasswordReset initPasswordReset(User user) {
-        SecureRandom rand = new SecureRandom();
-        String strTok = new BigInteger(numBits, rand).toString(radix);
-
-        PasswordReset passReset = new PasswordReset();
-        passReset.setToken(strTok);
-        passReset.setUser(user);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.HOUR_OF_DAY, validTime);
-        passReset.setExpires(new Time(cal.getTime().getTime()));
-
-        return passReset;
-    }
 
     /**
      * Returns the email of the user who requested a password reset.
