@@ -240,7 +240,7 @@ public class ParticipantsController {
         }
 
         if (courseId != -1) {
-            course = courseService.findByIdWithParticipants(courseId);
+            course = courseService.find(Course.class, courseId);
         }
 
         Object userObj = FacesContext.getCurrentInstance()
