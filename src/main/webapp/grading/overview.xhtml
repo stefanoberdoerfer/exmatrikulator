@@ -77,13 +77,12 @@
                 <div class="row student-gradings">
                     <ui:repeat value="#{gradingController.course.exams}" var="exam">
                         <div class="col-xs-3">
-                            <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
-                                           oncomplete="return exModal('gradeEditExam');" update="gradeEditExamForm"
-                                           styleClass="btn btn-default pull-left">
-                                <i class="fa fa-edit"></i>
-                            </p:commandLink>
                             <strong>#{exam.getName()}</strong><br />
                             #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
+                            <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
+                                           oncomplete="return exModal('gradeEditExam');" update="gradeEditExamForm"
+                                    ><i class="fa fa-pencil"></i>
+                            </p:commandLink>
                         </div>
                     </ui:repeat>
                 </div>
