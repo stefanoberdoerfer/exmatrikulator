@@ -1,6 +1,7 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Course;
@@ -18,7 +19,27 @@ import java.util.List;
 public class CourseService extends GenericService<Course> {
 
     /**
-     * Find tutor of this course using an email from the user object.
+     * Find student of this course using an email.
+     *
+     * @param course Course to look at.
+     * @param email Email associated with this student.
+     * @return Student with this email or null.
+     */
+    public Student findStudent(Course course, String email) {
+        List<Student> students = em.createQuery(
+                "SELECT DISTINCT s FROM Student s"
+                + " JOIN s.course AS c"
+                + " WITH c.courseId = :courseId"
+                + " WHERE s.user.email = :email", Student.class)
+            .setParameter("courseId", course.getCourseId())
+            .setParameter("email", email)
+            .getResultList();
+
+        return (students.isEmpty()) ? null : students.get(0);
+    }
+
+    /**
+     * Find tutor of this course using an email.
      *
      * @param course Course to look at.
      * @param email Email associated with this tutor.

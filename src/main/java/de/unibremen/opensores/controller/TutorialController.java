@@ -5,7 +5,9 @@ import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DualListModel;
 
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
@@ -94,6 +96,21 @@ public class TutorialController implements Serializable {
     private DualListModel<PrivilegedUser> tutorialTutors;
 
     /**
+     * Current group context.
+     */
+    private Group group;
+
+    /**
+     * Name of the current group.
+     */
+    private String groupName;
+
+    /**
+     * List of members for the current group.
+     */
+    private DualListModel<Student> groupMembers;
+
+    /**
      * Method called on bean initialization.
      */
     @PostConstruct
@@ -134,6 +151,8 @@ public class TutorialController implements Serializable {
             .put("course", course);
 
         tutorialTutors = new DualListModel<>(course.getTutors(),
+            new ArrayList<>());
+        groupMembers = new DualListModel<>(course.getStudents(),
             new ArrayList<>());
     }
 
@@ -224,6 +243,42 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Creates a new group in the current tutorial.
+     */
+    public void createGroup() {
+        group = new Group();
+        group.setName(groupName);
+        group.setCourse(course);
+        group.setTutorial(tutorial);
+
+        group = updateMembers(group);
+        course.getGroups().add(group);
+        tutorial.getGroups().add(group);
+
+        tutorial = tutorialService.update(tutorial);
+        log.debug(String.format("Created new group %s in tutorial %s",
+            group.getName(), tutorial.getName()));
+    }
+
+    /**
+     * Updates group members for the given group in the current tutorial.
+     *
+     * @param group Group to update members for.
+     * @return Updated group.
+     */
+    private Group updateMembers(Group group) {
+        List<Student> students = new ArrayList<>();
+        for (Student student : groupMembers.getTarget()) {
+            students.add(student);
+            log.debug(String.format("Added student with email %s to group %s",
+                student.getUser().getEmail(), group.getName()));
+        }
+
+        group.setStudents(students);
+        return group;
+    }
+
+    /**
      * Returns a list of all tutorials for this course.
      *
      * @return List of tutorials or null if non exist.
@@ -248,6 +303,24 @@ public class TutorialController implements Serializable {
      */
     public Course getCourse() {
         return this.course;
+    }
+
+    /**
+     * Sets the group name for the current group.
+     *
+     * @param groupName Group name.
+     */
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    /**
+     * Returns the group name for the current group.
+     *
+     * @return Group name.
+     */
+    public String getGroupName() {
+        return groupName;
     }
 
     /**
@@ -287,9 +360,27 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Sets the group members for the current group.
+     *
+     * @param groupMembers List of group members.
+     */
+    public void setGroupMembers(DualListModel<Student> groupMembers) {
+        this.groupMembers = groupMembers;
+    }
+
+    /**
+     * Returns the group members for the current course.
+     *
+     * @return List of group members.
+     */
+    public DualListModel<Student> getGroupMembers() {
+        return groupMembers;
+    }
+
+    /**
      * Sets the tutors for the current tutorial.
      *
-     * @param tutorialTutors Seperated list of tutor emails.
+     * @param tutorialTutors List of tutorial tutors.
      */
     public void setTutorialTutors(DualListModel<PrivilegedUser> tutorialTutors) {
         this.tutorialTutors = tutorialTutors;
@@ -298,7 +389,7 @@ public class TutorialController implements Serializable {
     /**
      * Returns the tutors for the current tutorial.
      *
-     * @return Comma seperated string of emails.
+     * @return List of tutorial tutors.
      */
     public DualListModel<PrivilegedUser> getTutorialTutors() {
         return tutorialTutors;
