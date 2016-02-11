@@ -44,7 +44,7 @@
                         <h:selectOneMenu value="#{gradingInsertController.formPaboGrading}"
                                          styleClass="form-control">
                             <f:selectItems value="#{gradingInsertController.paboGrades}" var="grade"
-                                           itemLabel="#{grade.gradeName}" itemValue="#{grade.name()}" />
+                                           itemLabel="#{grade.gradeName}" itemValue="#{grade.toString()}" />
                         </h:selectOneMenu>
                     </div>
                     <div class="col-xs-9" id="other-grade-selection">

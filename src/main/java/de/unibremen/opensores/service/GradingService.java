@@ -113,37 +113,21 @@ public class GradingService extends GenericService<Grading> {
     }
 
     /**
-     * Returns all gradings of a student, i.e. also the exams without gradings.
-     * @param course Course to load the exams
+     * Returns all gradings of a student.
      * @param student Student to load the gradings
      * @return List of Gradings or null
      */
-    public Map<Exam, Grading> getStudentGradings(Course course, Student student) {
-        Map<Exam, Grading> m = new HashMap<>();
-        /*
-        Load exams manually and don't use relation in grading because there
-        may be no grading for every exam.
-         */
-        List<Exam> exams = em.createQuery("SELECT DISTINCT e " +
-                    "FROM Exam e " +
-                    "WHERE e.course.courseId = :courseId ")
-                .setParameter("courseId", course.getCourseId())
-                .getResultList();
+    public Map<Long, Grading> getStudentGradings(Student student) {
+        Map<Long, Grading> m = new HashMap<>();
 
         List<Grading> gradings = em.createQuery("SELECT DISTINCT g " +
-                    "FROM Grading g " +
-                    "WHERE g.exam.course.courseId = :courseId " +
-                    "AND g.student.studentId = :studentId")
-                .setParameter("courseId", course.getCourseId())
+                "FROM Grading g " +
+                "WHERE g.student.studentId = :studentId")
                 .setParameter("studentId", student.getStudentId())
                 .getResultList();
 
-        for (Exam e : exams) {
-            m.put(e, null);
-        }
-
         for (Grading g : gradings) {
-            m.put(g.getExam(), g);
+            m.put(g.getExam().getExamId(), g);
         }
 
         return m;
@@ -189,12 +173,11 @@ public class GradingService extends GenericService<Grading> {
     }
 
     public void storePaboGrade(final Course course, final User corrector,
-                               final String pStudent, final String pGrading,
+                               final String pStudent, final PaboGrade paboGrade,
                                final String pPrivateComment,
                                final String pPublicComment,
                                final boolean overwrite)
-        throws NoAccessException, StudentNotFoundException,
-            InvalidGradingException, OverwritingGradeException {
+        throws NoAccessException, StudentNotFoundException, OverwritingGradeException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
@@ -228,14 +211,39 @@ public class GradingService extends GenericService<Grading> {
             throw new OverwritingGradeException();
         }
         /*
-        Check the grading
+        Store the final grade
          */
-        PaboGrade paboGrade;
+        this.persistGrade(student, paboGrade, pPublicComment, pPrivateComment);
+    }
 
-        try {
-            paboGrade = PaboGrade.valueOf(pGrading);
-        } catch (Exception e) {
-            throw new InvalidGradingException();
+    public void storePaboGrade(final Course course, final User corrector,
+                               final Student student, final PaboGrade paboGrade,
+                               final String pPrivateComment,
+                               final String pPublicComment,
+                               final boolean overwrite)
+            throws NoAccessException, StudentNotFoundException, OverwritingGradeException {
+        /*
+        Check if the user is a lecturer. Only lecturers may change final
+        grades.
+         */
+        if (!userService.hasCourseRole(corrector, "LECTURER", course)) {
+            throw new NoAccessException();
+        }
+        /*
+        Check if the student exists and if he/she is part of this course.
+         */
+        if (student == null
+                || student.getCourse().getCourseId() != course.getCourseId()) {
+            throw new StudentNotFoundException();
+        }
+        /*
+        Check if there is already a final grade for this student. Throwing
+        an exception so the ajax error function gets called.
+         */
+        log.debug("Overwrite? " + (overwrite ? "yes" : "no"));
+
+        if (student.getPaboGrade() != null && !overwrite) {
+            throw new OverwritingGradeException();
         }
         /*
         Store the final grade
@@ -286,6 +294,70 @@ public class GradingService extends GenericService<Grading> {
         Exam exam = this.getExam(course, pExam);
 
         if (exam == null) {
+            throw new ExamNotFoundException();
+        }
+        /*
+        Check if there is already a grading for this student
+         */
+        Grading grading = this.getGrading(student, exam);
+
+        log.debug("Overwrite? " + (overwrite ? "yes" : "no"));
+
+        if (grading != null && !overwrite) {
+            throw new OverwritingGradeException();
+        }
+        /*
+        Check if the grading is valid
+         */
+        if (!exam.isValidGrading(pGrading)) {
+            throw new InvalidGradingException();
+        }
+        /*
+        Store the grading
+         */
+        if (grading == null) {
+            this.persistGrade(corrector, student, exam, pGrading,
+                    pPublicComment, pPrivateComment);
+        }
+        else {
+            this.persistGrade(corrector, grading, pGrading,
+                    pPublicComment, pPrivateComment);
+        }
+    }
+
+    public void storeGrade(final Course course, final User corrector,
+                           final Exam exam, final Student student,
+                           final String pGrading, final String pPrivateComment,
+                           final String pPublicComment, final boolean overwrite)
+            throws NoAccessException, StudentNotFoundException,
+            NotGradableException, ExamNotFoundException,
+            InvalidGradingException, OverwritingGradeException {
+        /*
+        Check if the user is a lecturer or tutors
+         */
+        if (!userService.hasCourseRole(corrector, "PRIVILEGED_USER", course) &&
+                !userService.hasCourseRole(corrector, "LECTURER", course)) {
+            throw new NoAccessException();
+        }
+        /*
+        Check if the student exists and if he/she is part of this course.
+         */
+        if (student == null
+                || student.getCourse().getCourseId() != course.getCourseId()) {
+            throw new StudentNotFoundException();
+        }
+        /*
+        If the user is a tutor, check if he may grade this student
+         */
+        if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course) &&
+                !this.mayGradeStudent(corrector, student)) {
+            throw new NotGradableException();
+        }
+        /*
+        Check the exam.
+         */
+        if (exam == null
+                || exam.getCourse().getCourseId() != course.getCourseId()) {
             throw new ExamNotFoundException();
         }
         /*

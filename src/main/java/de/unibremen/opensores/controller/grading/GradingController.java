@@ -1,9 +1,6 @@
 package de.unibremen.opensores.controller.grading;
 
-import de.unibremen.opensores.model.Course;
-import de.unibremen.opensores.model.Exam;
-import de.unibremen.opensores.model.Grading;
-import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.*;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +48,7 @@ public class GradingController {
     /**
      * Student gradings. Stored here so it won't be loaded multiple times.
      */
-    private Map<Student, Map<Exam, Grading>> studentGradings = new HashMap<>();
+    private Map<Student, Map<Long, Grading>> studentGradings = new HashMap<>();
 
     /**
      * String to search for
@@ -143,17 +140,17 @@ public class GradingController {
      * @param s Student whose gradings shall be loaded
      * @return Map of exams with gradings
      */
-    public Map<Exam, Grading> getStudentGradings(Student s) {
+    public Map<Long, Grading> getStudentGradings(Student s) {
         log.debug("load student gradings for student "
                 + s.getUser().getFirstName());
 
-        Map<Exam, Grading> gradings = studentGradings.get(s);
+        Map<Long, Grading> gradings = studentGradings.get(s);
 
         log.debug("Gradings is " +
                 (gradings == null ? "not loaded" : "already loaded"));
 
         if (gradings == null) {
-            gradings = gradingService.getStudentGradings(course, s);
+            gradings = gradingService.getStudentGradings(s);
             log.debug("Loaded gradings is " +
                     (gradings == null ? "null" : "not null"));
             studentGradings.put(s, gradings);
@@ -168,5 +165,13 @@ public class GradingController {
 
     public String getSearchValue() {
         return this.searchValue;
+    }
+
+    public String getPaboGradeName(double value) {
+        try {
+            return PaboGrade.valueOf(value).getGradeName();
+        } catch (Exception e) {
+            return "?";
+        }
     }
 }

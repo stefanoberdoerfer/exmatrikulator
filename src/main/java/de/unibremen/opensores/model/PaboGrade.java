@@ -15,8 +15,11 @@ public enum PaboGrade {
     GRADE_3_7(3.0,"3,7"),
     GRADE_4_0(4.0,"4,0"),
     GRADE_5_0(5.0,"5,0"),
-    GRADE_CHEATED(5.0,"Täuschung"),     // Todo: Hatte PABO da nicht genaue Werte?
-    GRADE_NEGLECTED(5.0,"Versäumnis");  // Todo: Hatte PABO da nicht genaue Werte?
+    /*
+    Todo: Hatte PABO da nicht eigene Werte statt 5.0?
+     */
+    GRADE_CHEATED(5.0,"Täuschung"),
+    GRADE_NEGLECTED(5.0,"Versäumnis");
 
     private final double gradeValue;
     private final String gradeName;
@@ -38,5 +41,23 @@ public enum PaboGrade {
 
     public String getGradeName() {
         return gradeName;
+    }
+
+    public static PaboGrade valueOf(double value) {
+        for (PaboGrade p : PaboGrade.values()) {
+            if (p.getGradeValue() == value)
+                return p;
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    public static PaboGrade valueOfName(String value) {
+        for (PaboGrade p : PaboGrade.values()) {
+            if (p.getGradeName().equals(value))
+                return p;
+        }
+
+        throw new IllegalArgumentException();
     }
 }

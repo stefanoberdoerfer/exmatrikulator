@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -135,8 +136,11 @@ public class GradingInsertController {
          */
         try {
             if (formExam == -1) {
+                log.debug("Storing pabo grading: " + formPaboGrading);
+                PaboGrade paboGrade = PaboGrade.valueOfName(formPaboGrading);
+
                 gradingService.storePaboGrade(course, user, formStudent,
-                        formPaboGrading, formPrivateComment, formPublicComment,
+                        paboGrade, formPrivateComment, formPublicComment,
                         overwrite);
             }
             else {
@@ -163,7 +167,8 @@ public class GradingInsertController {
                     .SEVERITY_FATAL, bundle.getString("common.error"),
                     bundle.getString("gradings.unknownExam")));
             return;
-        } catch (InvalidGradingException e) {
+        } catch (InvalidGradingException | IllegalArgumentException e) {
+            log.debug("IllegalArgument: " + e.toString());
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
                     bundle.getString("gradings.invalidGrading")));

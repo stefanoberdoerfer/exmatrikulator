@@ -83,6 +83,8 @@ exmatrikulatorInteractivity = ($) ->
       console.log "Reset form inputs"
       $ '#other-grade-selection input'
         .val ''
+      $ '#pabo-grade-selection input'
+        .val ''
       $ '#gradeInsertForm\\:publicComment'
         .val ''
       $ '#gradeInsertForm\\:privateComment'

@@ -8,12 +8,12 @@ import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-
 import java.util.ResourceBundle;
 
 /**
@@ -31,10 +31,10 @@ public class GradingEditController {
     /**
      * Data set by the formula of the modal to insert grades.
      */
-    private Long formExam;
-    private String formStudent;
-    private String formPaboGrading;
+    private Exam exam;
+    private Student student;
     private String formGrading;
+    private String formPaboGrading;
     private String formPrivateComment;
     private String formPublicComment;
 
@@ -58,30 +58,6 @@ public class GradingEditController {
 
     public PaboGrade[] getPaboGrades() {
         return PaboGrade.values();
-    }
-
-    public void setFormExam(Long formExam) {
-        this.formExam = formExam;
-    }
-
-    public Long getFormExam() {
-        return this.formExam;
-    }
-
-    public void setFormStudent(String formStudent) {
-        this.formStudent = formStudent;
-    }
-
-    public String getFormStudent() {
-        return this.formStudent;
-    }
-
-    public void setFormPaboGrading(String formPaboGrading) {
-        this.formPaboGrading = formPaboGrading;
-    }
-
-    public String getFormPaboGrading() {
-        return this.formPaboGrading;
     }
 
     public String getFormGrading() {
@@ -108,13 +84,28 @@ public class GradingEditController {
         this.formPublicComment = formPublicComment;
     }
 
+    public Student getStudent() {
+        return student;
+    }
+
+    public Exam getExam() {
+        return exam;
+    }
+
+    public String getFormPaboGrading() {
+        return formPaboGrading;
+    }
+
+    public void setFormPaboGrading(String formPaboGrading) {
+        this.formPaboGrading = formPaboGrading;
+    }
+
     /**
      * Stores the grading for the given course.
      * @param course Course that is related to the exam
-     * @param overwrite If true, overwrite an existing grade
      */
-    public void storeUserGrading(Course course, boolean overwrite) throws
-        OverwritingGradeException {
+    public void updateExamGrading(Course course) throws
+            OverwritingGradeException {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
@@ -131,16 +122,9 @@ public class GradingEditController {
         Try to store the grade
          */
         try {
-            if (formExam == -1) {
-                gradingService.storePaboGrade(course, user, formStudent,
-                        formPaboGrading, formPrivateComment, formPublicComment,
-                        overwrite);
-            }
-            else {
-                gradingService.storeGrade(course, user, formExam, formStudent,
-                        formGrading, formPrivateComment, formPublicComment,
-                        overwrite);
-            }
+            gradingService.storeGrade(course, user, exam, student,
+                    formGrading, formPrivateComment, formPublicComment,
+                    true);
         } catch (NoAccessException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
@@ -174,26 +158,86 @@ public class GradingEditController {
                 bundle.getString("gradings.stored")));
     }
 
-    public void useGrading(final Student student, final Exam exam,
-                           Grading grading) {
-        log.debug("Use existing grading for " + student.getUser().
-                getFirstName() + " and exam " + exam.getName());
+    public void updateFinalGrading(Course course) throws
+            OverwritingGradeException {
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                facesContext.getViewRoot().getLocale());
         /*
-        If there isn't a grading, load it
+        Load the user
          */
-        if (grading == null) {
-            grading = gradingService.getGrading(student, exam);
+        User user = (User)FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("user");
+        /*
+        Try to store the grade
+         */
+        try {
+            log.debug("Storing pabo grading: " + formPaboGrading);
+            PaboGrade paboGrade = PaboGrade.valueOfName(formPaboGrading);
+
+            gradingService.storePaboGrade(course, user, this.student,
+                    paboGrade, formPrivateComment, formPublicComment,
+                    true);
+        } catch (NoAccessException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("common.noAccess")));
+            return;
+        } catch (StudentNotFoundException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.unknownStudent")));
+            return;
+        } catch (IllegalArgumentException e) {
+            log.debug("IllegalArgument: " + e.toString());
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.invalidGrading")));
+            return;
         }
+        /*
+        Success
+         */
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_INFO, bundle.getString("common.success"),
+                bundle.getString("gradings.stored")));
+    }
+
+    public void setExamGrading(final Student student, final Exam exam) {
+        log.debug("Use existing grading for " + student.getUser().getFirstName()
+                + " and exam " + exam.getName());
+        /*
+        Load the grading
+        */
+        Grading grading = gradingService.getGrading(student, exam);
         /*
         Set the data
          */
-        this.formExam = exam.getExamId();
-        this.formStudent = student.getUser().getEmail();
+        this.exam = exam;
+        this.student = student;
+
+        log.debug("Already graded? " + (grading != null ? "yes" : "no"));
 
         if (grading != null) {
             this.formGrading = grading.getGrade().getValue().toString();
             this.formPrivateComment = grading.getPrivateComment();
             this.formPublicComment = grading.getPublicComment();
         }
+        else {
+            this.formGrading = "";
+            this.formPrivateComment = "";
+            this.formPublicComment = "";
+        }
+    }
+
+    public void setFinalGrading(final Student student) {
+        this.student = student;
+        this.formPaboGrading = student.getPaboGrade();
+        this.formPrivateComment = student.getPrivateComment();
+        this.formPublicComment = student.getPublicComment();
     }
 }

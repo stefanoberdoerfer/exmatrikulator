@@ -65,29 +65,34 @@
             </p:column>
             <p:column styleClass="table-grades-grade text-center">
                 <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
+                <p:commandLink action="#{gradingEditController.setFinalGrading(student)}"
+                               oncomplete="return exModal('gradeEditFinal');" update="gradeEditFinalForm"
+                               styleClass="pull-right">
+                    <i class="fa fa-pencil"></i>
+                </p:commandLink>
                 <strong>#{student.paboGrade}</strong>
             </p:column>
 
             <p:rowExpansion>
                 <div class="row student-gradings">
-                    <ui:repeat value="#{gradingController.getStudentGradings(student).keySet().toArray()}" var="exam">
+                    <ui:repeat value="#{gradingController.course.exams}" var="exam">
                         <div class="col-xs-3">
-                            <p:commandLink action="#{gradingInsertController.useGrading(student, exam,
-                                                    gradingController.getStudentGradings(student).get(exam))}"
-                                           oncomplete="return exModal('gradeEdit');" update="gradeEditForm"
+                            <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
+                                           oncomplete="return exModal('gradeEditExam');" update="gradeEditExamForm"
                                            styleClass="btn btn-default pull-left">
                                 <i class="fa fa-edit"></i>
                             </p:commandLink>
                             <strong>#{exam.getName()}</strong><br />
-                            #{gradingController.getStudentGradings(student).get(exam).grade.value}
+                            #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
                         </div>
                     </ui:repeat>
                 </div>
             </p:rowExpansion>
         </p:dataTable>
 
-        <ui:include src="/grading/insert.xhtml" />
-        <ui:include src="/grading/edit.xhtml" />
-        <ui:include src="/grading/finalgrades.xhtml" />
+        <ui:include src="/grading/modals/insert.xhtml" />
+        <ui:include src="/grading/modals/editExam.xhtml" />
+        <ui:include src="/grading/modals/editFinal.xhtml" />
+        <ui:include src="/grading/modals/calculateGrades.xhtml" />
     </ui:define>
 </ui:composition>
