@@ -3,10 +3,11 @@ package de.unibremen.opensores.controller.grading;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Group;
-import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
+import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,16 +29,6 @@ import java.util.Map;
 @ManagedBean
 @ViewScoped
 public class GradingController {
-    /**
-     * The path to the course overview site.
-     */
-    private static final String PATH_TO_COURSE_OVERVIEW =
-            "/course/overview.xhtml?faces-redirect=true";
-
-    /**
-     * The http parameter key by which the course id gets passed.
-     */
-    private static final String HTTP_PARAM_COURSE_ID = "course-id";
 
     /**
      * The log4j logger.
@@ -77,12 +68,12 @@ public class GradingController {
     @PostConstruct
     public void init() {
         log.debug("init() called");
-
         HttpServletRequest httpReq
                 = (HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest();
+
         log.debug("Request URI: " + httpReq.getRequestURI());
-        final String courseIdString = httpReq.getParameter(HTTP_PARAM_COURSE_ID);
+        final String courseIdString = httpReq.getParameter(Constants.HTTP_PARAM_COURSE_ID);
 
         log.debug("course-id: " + courseIdString);
         long courseId = -1;
@@ -95,21 +86,26 @@ public class GradingController {
         }
 
         if (courseId != -1) {
-            course = courseService.findById(courseId);
+            course = courseService.find(Course.class, courseId);
         }
+
+        Object userObj = FacesContext.getCurrentInstance()
+                .getExternalContext().getSessionMap().get("user");
 
         log.debug("Loaded course object: " + course);
 
-        if (course == null) {
+        if (course == null || !(userObj instanceof User)) {
             log.debug("trying to redirect to /course/overview");
             try {
                 FacesContext.getCurrentInstance()
                         .getExternalContext().redirect(FacesContext
                         .getCurrentInstance().getExternalContext()
-                        .getApplicationContextPath() + PATH_TO_COURSE_OVERVIEW);
+                        .getApplicationContextPath() + Constants.PATH_TO_COURSE_OVERVIEW);
+                return;
             } catch (IOException e) {
                 e.printStackTrace();
-                log.fatal("Could not redirect to " + PATH_TO_COURSE_OVERVIEW);
+                log.fatal("Could not redirect to " + Constants.PATH_TO_COURSE_OVERVIEW);
+                return;
             }
         }
     }
