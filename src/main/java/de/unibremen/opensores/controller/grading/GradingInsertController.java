@@ -1,7 +1,18 @@
 package de.unibremen.opensores.controller.grading;
 
-import de.unibremen.opensores.exception.*;
-import de.unibremen.opensores.model.*;
+import de.unibremen.opensores.exception.ExamNotFoundException;
+import de.unibremen.opensores.exception.GroupNotFoundException;
+import de.unibremen.opensores.exception.InvalidGradingException;
+import de.unibremen.opensores.exception.NoAccessException;
+import de.unibremen.opensores.exception.NotGradableException;
+import de.unibremen.opensores.exception.OverwritingGradeException;
+import de.unibremen.opensores.exception.StudentNotFoundException;
+import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.Group;
+import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.UserService;
@@ -9,18 +20,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-
-import org.primefaces.context.RequestContext;
 
 import java.util.ResourceBundle;
 
 /**
+ * Controller for the modal dialogs to insert grades for single students and
+ * groups.
  * @author Matthias Reichmann
  */
 @ManagedBean
@@ -127,7 +136,7 @@ public class GradingInsertController {
      * @param overwrite If true, overwrite an existing grade
      */
     public void storeGroupGrading(Course course, boolean overwrite) throws
-        OverwritingGradeException {
+            OverwritingGradeException {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
@@ -153,8 +162,7 @@ public class GradingInsertController {
                 gradingService.storePaboGrade(course, user, group,
                         paboGrade, formPrivateComment, formPublicComment,
                         overwrite);
-            }
-            else {
+            } else {
                 Exam exam = gradingService.getExam(course, formExam);
 
                 gradingService.storeGrade(course, user, exam, group,
@@ -228,8 +236,7 @@ public class GradingInsertController {
                 gradingService.storePaboGrade(course, user, student,
                         paboGrade, formPrivateComment, formPublicComment,
                         overwrite);
-            }
-            else {
+            } else {
                 Exam exam = gradingService.getExam(course, formExam);
 
                 gradingService.storeGrade(course, user, exam, student,

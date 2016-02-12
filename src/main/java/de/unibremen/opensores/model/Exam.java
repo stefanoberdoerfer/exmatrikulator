@@ -166,13 +166,19 @@ public class Exam {
         this.allowedFileEndings = allowedFileEndings;
     }
 
+    /**
+     * Returns if the given grading value is valid.
+     * @param value Value to check
+     * @return true if valid
+     */
     public boolean isValidGrading(String value) {
         value = value.replace(',', '.');
         BigDecimal decimal = new BigDecimal(value);
 
         for (GradeType g : GradeType.values()) {
-            if (g.getId().equals(this.gradeType))
+            if (g.getId().equals(this.gradeType)) {
                 return g.isValidGrading(decimal, maxPoints);
+            }
         }
 
         throw new IllegalArgumentException("Invalid GradeType enum id");

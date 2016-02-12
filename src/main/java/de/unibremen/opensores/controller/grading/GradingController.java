@@ -1,6 +1,10 @@
 package de.unibremen.opensores.controller.grading;
 
-import de.unibremen.opensores.model.*;
+import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Grading;
+import de.unibremen.opensores.model.Group;
+import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import org.apache.logging.log4j.LogManager;
@@ -13,13 +17,12 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * Controller to display the data tables for students and groups.
  * @author Matthias Reichmann
  */
 @ManagedBean
@@ -51,7 +54,7 @@ public class GradingController {
     private Map<Student, Map<Long, Grading>> studentGradings = new HashMap<>();
 
     /**
-     * String to search for
+     * String to search for in the students overview.
      */
     private String searchValue;
 
@@ -66,6 +69,7 @@ public class GradingController {
      */
     @EJB
     private GradingService gradingService;
+
     /**
      * Method called after initialisation.
      * Gets the corresponding course from the http param.
@@ -128,8 +132,7 @@ public class GradingController {
         if (searchValue != null && searchValue.trim().length() > 0) {
             log.debug("Search for " + searchValue);
             return gradingService.getStudents(course, searchValue.trim());
-        }
-        else {
+        } else {
             return gradingService.getStudents(course);
         }
     }
@@ -137,23 +140,23 @@ public class GradingController {
     /**
      * Returns the student gradings for a student. Uses map because gradings
      * are only stored for graded exams. But we want all exams to show up.
-     * @param s Student whose gradings shall be loaded
+     * @param student Student whose gradings shall be loaded
      * @return Map of exams with gradings
      */
-    public Map<Long, Grading> getStudentGradings(Student s) {
+    public Map<Long, Grading> getStudentGradings(Student student) {
         log.debug("load student gradings for student "
-                + s.getUser().getFirstName());
+                + student.getUser().getFirstName());
 
-        Map<Long, Grading> gradings = studentGradings.get(s);
+        Map<Long, Grading> gradings = studentGradings.get(student);
 
-        log.debug("Gradings is " +
-                (gradings == null ? "not loaded" : "already loaded"));
+        log.debug("Gradings is "
+                + (gradings == null ? "not loaded" : "already loaded"));
 
         if (gradings == null) {
-            gradings = gradingService.getStudentGradings(s);
-            log.debug("Loaded gradings is " +
-                    (gradings == null ? "null" : "not null"));
-            studentGradings.put(s, gradings);
+            gradings = gradingService.getStudentGradings(student);
+            log.debug("Loaded gradings is "
+                    + (gradings == null ? "null" : "not null"));
+            studentGradings.put(student, gradings);
         }
 
         return gradings;
@@ -165,14 +168,6 @@ public class GradingController {
 
     public String getSearchValue() {
         return this.searchValue;
-    }
-
-    public String getPaboGradeName(double value) {
-        try {
-            return PaboGrade.valueOf(value).getGradeName();
-        } catch (Exception e) {
-            return "?";
-        }
     }
 
     /**

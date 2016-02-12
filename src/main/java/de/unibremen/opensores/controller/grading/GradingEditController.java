@@ -1,7 +1,17 @@
 package de.unibremen.opensores.controller.grading;
 
-import de.unibremen.opensores.exception.*;
-import de.unibremen.opensores.model.*;
+import de.unibremen.opensores.exception.ExamNotFoundException;
+import de.unibremen.opensores.exception.InvalidGradingException;
+import de.unibremen.opensores.exception.NoAccessException;
+import de.unibremen.opensores.exception.NotGradableException;
+import de.unibremen.opensores.exception.OverwritingGradeException;
+import de.unibremen.opensores.exception.StudentNotFoundException;
+import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.Grading;
+import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.UserService;
@@ -11,12 +21,12 @@ import org.apache.logging.log4j.Logger;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import java.util.ResourceBundle;
 
 /**
+ * Controller for the modal dialog to update a grading for a single student.
  * @author Matthias Reichmann
  */
 @ManagedBean
@@ -158,6 +168,11 @@ public class GradingEditController {
                 bundle.getString("gradings.stored")));
     }
 
+    /**
+     * Updates the final grading of a single student.
+     * @param course Course the student participates
+     * @throws OverwritingGradeException Thrown if grading already exists
+     */
     public void updateFinalGrading(Course course) throws
             OverwritingGradeException {
 
@@ -207,6 +222,13 @@ public class GradingEditController {
                 bundle.getString("gradings.stored")));
     }
 
+    /**
+     * Sets the form values to display the correct student and exam when
+     * opening the modal to edit an existing grading. Grading not used but
+     * loaded again so it will display the most recent value.
+     * @param student Student whose grading shall be updated
+     * @param exam Exam that shall be graded
+     */
     public void setExamGrading(final Student student, final Exam exam) {
         log.debug("Use existing grading for " + student.getUser().getFirstName()
                 + " and exam " + exam.getName());
@@ -226,14 +248,18 @@ public class GradingEditController {
             this.formGrading = grading.getGrade().getValue().toString();
             this.formPrivateComment = grading.getPrivateComment();
             this.formPublicComment = grading.getPublicComment();
-        }
-        else {
+        } else {
             this.formGrading = "";
             this.formPrivateComment = "";
             this.formPublicComment = "";
         }
     }
 
+    /**
+     * Sets the form values to display the correct pabo grading in the modal
+     * to edit an existing final grade.
+     * @param student Student whose final grade shall be edited
+     */
     public void setFinalGrading(final Student student) {
         this.student = student;
         this.formPaboGrading = student.getPaboGrade();

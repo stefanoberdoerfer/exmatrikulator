@@ -1,8 +1,8 @@
 package de.unibremen.opensores.controller.grading;
 
-import de.unibremen.opensores.model.*;
+import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
-import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,16 +15,12 @@ import javax.faces.context.FacesContext;
 import java.util.ResourceBundle;
 
 /**
+ * Controller for the modal to calculate the final grades.
  * @author Matthias Reichmann
  */
 @ManagedBean
 @ViewScoped
 public class GradingCalculateController {
-    /**
-     * The log4j logger.
-     */
-    private static Logger log = LogManager.getLogger(
-            GradingCalculateController.class);
 
     /**
      * CourseService for database transactions related to courses.

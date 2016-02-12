@@ -43,19 +43,31 @@ public enum PaboGrade {
         return gradeName;
     }
 
+    /**
+     * Searches for an enum entry by the value of the pabo grade.
+     * @param value Value to search for
+     * @return Enum entry
+     */
     public static PaboGrade valueOf(double value) {
         for (PaboGrade p : PaboGrade.values()) {
-            if (p.getGradeValue() == value)
+            if (p.getGradeValue() == value) {
                 return p;
+            }
         }
 
         throw new IllegalArgumentException();
     }
 
-    public static PaboGrade valueOfName(String value) {
+    /**
+     * Searches for an enum entry by the name of the pabo grade.
+     * @param name Name to search for
+     * @return Enum entry
+     */
+    public static PaboGrade valueOfName(String name) {
         for (PaboGrade p : PaboGrade.values()) {
-            if (p.getGradeName().equals(value))
+            if (p.getGradeName().equals(name)) {
                 return p;
+            }
         }
 
         throw new IllegalArgumentException();

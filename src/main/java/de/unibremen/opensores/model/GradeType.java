@@ -18,6 +18,13 @@ public enum GradeType {
         return id;
     }
 
+    /**
+     * Returns if the given value is valid. Max value will only be considered
+     * for Point grades.
+     * @param value Value to check
+     * @param max Maximum value for Point grades
+     * @return true if valid
+     */
     public boolean isValidGrading(BigDecimal value, final BigDecimal max) {
         switch (this) {
             case Numeric:

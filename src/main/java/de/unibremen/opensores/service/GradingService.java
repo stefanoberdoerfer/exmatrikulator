@@ -1,9 +1,22 @@
 
 package de.unibremen.opensores.service;
 
-import de.unibremen.opensores.exception.*;
-import de.unibremen.opensores.model.*;
+import de.unibremen.opensores.exception.ExamNotFoundException;
+import de.unibremen.opensores.exception.GroupNotFoundException;
+import de.unibremen.opensores.exception.InvalidGradingException;
+import de.unibremen.opensores.exception.NoAccessException;
+import de.unibremen.opensores.exception.NotGradableException;
+import de.unibremen.opensores.exception.OverwritingGradeException;
+import de.unibremen.opensores.exception.StudentNotFoundException;
+import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.Grade;
+import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Group;
+import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.User;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -72,27 +85,11 @@ public class GradingService extends GenericService<Grading> {
      * @return List of Students or null
      */
     public List<Student> getStudents(Course course) {
-        List<Student> s = em.createQuery("SELECT DISTINCT s " +
-                    "FROM Student s " +
-                    "WHERE s.course.courseId = :courseId " +
-                    "AND s.isConfirmed = true " +
-                    "AND s.acceptedInvitation = true")
-                .setParameter("courseId", course.getCourseId())
-                .getResultList();
-
-        return (s.isEmpty() ? null : s);
-    }
-
-    /**
-     * Returns all groups of a course.
-     * @param course Course to load the students
-     * @return List of Students or null
-     */
-    public List<Group> getGroups(Course course) {
-        List<Group> s = em.createQuery("SELECT DISTINCT g " +
-                "FROM Group g " +
-                "WHERE g.course.courseId = :courseId " +
-                "ORDER BY g.name ASC")
+        List<Student> s = em.createQuery("SELECT DISTINCT s "
+                + "FROM Student s "
+                + "WHERE s.course.courseId = :courseId "
+                + "AND s.isConfirmed = true "
+                + "AND s.acceptedInvitation = true")
                 .setParameter("courseId", course.getCourseId())
                 .getResultList();
 
@@ -107,18 +104,35 @@ public class GradingService extends GenericService<Grading> {
      * @return List of Students or null
      */
     public List<Student> getStudents(Course course, String search) {
-        List<Student> ls = em.createQuery("SELECT DISTINCT s " +
-                    "FROM Student s " +
-                    "JOIN s.user AS u " +
-                    "JOIN s.course AS c WITH c.courseId = :cid " +
-                    "WHERE lower(u.email) LIKE :search " +
-                    "OR lower(concat(u.firstName, ' ', u.lastName)) LIKE :search",
-                    Student.class)
+        List<Student> ls = em.createQuery("SELECT DISTINCT s "
+                        + "FROM Student s "
+                        + "JOIN s.user AS u "
+                        + "JOIN s.course AS c WITH c.courseId = :cid "
+                        + "WHERE lower(u.email) LIKE :search "
+                        + "OR lower(concat(u.firstName, ' ', u.lastName)) "
+                        + "LIKE :search",
+                Student.class)
                 .setParameter("cid", course.getCourseId())
                 .setParameter("search", "%" + search.toLowerCase() + "%")
                 .getResultList();
 
         return (ls.isEmpty() ? null : ls);
+    }
+
+    /**
+     * Returns all groups of a course.
+     * @param course Course to load the students
+     * @return List of Students or null
+     */
+    public List<Group> getGroups(Course course) {
+        List<Group> s = em.createQuery("SELECT DISTINCT g "
+                + "FROM Group g "
+                + "WHERE g.course.courseId = :courseId "
+                + "ORDER BY g.name ASC")
+                .setParameter("courseId", course.getCourseId())
+                .getResultList();
+
+        return (s.isEmpty() ? null : s);
     }
 
     /**
@@ -129,9 +143,9 @@ public class GradingService extends GenericService<Grading> {
     public Map<Long, Grading> getStudentGradings(Student student) {
         Map<Long, Grading> m = new HashMap<>();
 
-        List<Grading> gradings = em.createQuery("SELECT DISTINCT g " +
-                "FROM Grading g " +
-                "WHERE g.student.studentId = :studentId")
+        List<Grading> gradings = em.createQuery("SELECT DISTINCT g "
+                + "FROM Grading g "
+                + "WHERE g.student.studentId = :studentId")
                 .setParameter("studentId", student.getStudentId())
                 .getResultList();
 
@@ -143,49 +157,50 @@ public class GradingService extends GenericService<Grading> {
     }
 
     /**
-     * Searches for a student via the name, email or student id (TODO!)
+     * Searches for a student via the name, email or student id (TODO!).
      * @param course Course to search in
      * @param search Value to search for
      * @return Student
-     * @throws StudentNotFoundException
+     * @throws StudentNotFoundException Thrown if no student found
      */
     public Student findStudent(Course course, String search)
             throws StudentNotFoundException {
         try {
-            return em.createQuery("SELECT DISTINCT s " +
-                        "FROM Student s " +
-                        "JOIN s.user AS u " +
-                        "JOIN s.course AS c WITH c.courseId = :cid " +
-                        "WHERE lower(u.email) = :search " +
-                        "OR lower(concat(u.firstName, ' ', u.lastName)) = :search",
+            return em.createQuery("SELECT DISTINCT s "
+                            + "FROM Student s "
+                            + "JOIN s.user AS u "
+                            + "JOIN s.course AS c WITH c.courseId = :cid "
+                            + "WHERE lower(u.email) = :search "
+                            + "OR lower(concat(u.firstName, ' ', u.lastName)) "
+                            + "= :search",
                         Student.class)
                     .setParameter("cid", course.getCourseId())
                     .setParameter("search", search.toLowerCase())
                     .getSingleResult();
-        } catch(NoResultException e) {
+        } catch (NoResultException e) {
             throw new StudentNotFoundException();
         }
     }
 
     /**
-     * Searches for a group via the id
+     * Searches for a group via the id.
      * @param course Course to search in
      * @param groupId Id of the group
      * @return Group
-     * @throws GroupNotFoundException
+     * @throws GroupNotFoundException Thrown if group not found
      */
     public Group getGroup(Course course, Long groupId)
             throws GroupNotFoundException {
         try {
-            return em.createQuery("SELECT DISTINCT g " +
-                        "FROM Group g " +
-                        "JOIN g.course AS c WITH c.courseId = :cid " +
-                        "WHERE g.groupId = :gid",
+            return em.createQuery("SELECT DISTINCT g "
+                            + "FROM Group g "
+                            + "JOIN g.course AS c WITH c.courseId = :cid "
+                            + "WHERE g.groupId = :gid",
                         Group.class)
                     .setParameter("cid", course.getCourseId())
                     .setParameter("gid", groupId)
                     .getSingleResult();
-        } catch(NoResultException e) {
+        } catch (NoResultException e) {
             throw new GroupNotFoundException();
         }
     }
@@ -194,11 +209,11 @@ public class GradingService extends GenericService<Grading> {
      * Updates the pabo grade of the given student.
      * @param student Student that should be updated
      * @param paboGrade Pabo grade for this student
-     * @param publicComment Public comment of the corrector
      * @param privateComment Private comment of the corrector
+     * @param publicComment Public comment of the corrector
      */
     private void persistGrade(Student student, PaboGrade paboGrade,
-                           String publicComment, String privateComment) {
+                           String privateComment, String publicComment) {
         student.setPaboGrade(paboGrade.getGradeName());
         student.setPublicComment(publicComment);
         student.setPrivateComment(privateComment);
@@ -212,11 +227,11 @@ public class GradingService extends GenericService<Grading> {
      * @param student Student who is graded
      * @param exam Exam which is graded
      * @param value Grading value
-     * @param publicComment Public comment of the corrector
      * @param privateComment Private comment of the corrector
+     * @param publicComment Public comment of the corrector
      */
     private void persistGrade(User corrector, Student student, Exam exam, String value,
-                              String publicComment, String privateComment) {
+                              String privateComment, String publicComment) {
         BigDecimal decimal = new BigDecimal(value.replace(',', '.'));
 
         Grade grade = new Grade();
@@ -240,11 +255,11 @@ public class GradingService extends GenericService<Grading> {
      * @param corrector Corrector who entered the grade
      * @param grading Grading that is updated
      * @param value New grade value
-     * @param publicComment Public comment of the corrector
      * @param privateComment Private comment of the corrector
+     * @param publicComment Public comment of the corrector
      */
     private void persistGrade(User corrector, Grading grading, String value,
-                              String publicComment, String privateComment) {
+                              String privateComment, String publicComment) {
         BigDecimal decimal = new BigDecimal(value.replace(',', '.'));
 
         Grade grade = grading.getGrade();
@@ -266,17 +281,17 @@ public class GradingService extends GenericService<Grading> {
      * @param corrector User who entered the grade
      * @param group Group to update
      * @param paboGrade New pabo grade value
-     * @param pPrivateComment Private comment
-     * @param pPublicComment Public comment
+     * @param privateComment Private comment
+     * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
-     * @throws NoAccessException
-     * @throws GroupNotFoundException
-     * @throws OverwritingGradeException
+     * @throws NoAccessException Thrown if user may not grade the group
+     * @throws GroupNotFoundException Thrown if group not found
+     * @throws OverwritingGradeException Thrown if grade already exists
      */
     public void storePaboGrade(final Course course, final User corrector,
                                final Group group, final PaboGrade paboGrade,
-                               final String pPrivateComment,
-                               final String pPublicComment,
+                               final String privateComment,
+                               final String publicComment,
                                final boolean overwrite)
             throws NoAccessException, GroupNotFoundException, OverwritingGradeException {
         /*
@@ -308,7 +323,7 @@ public class GradingService extends GenericService<Grading> {
         Store the final grades
          */
         for (Student s : students) {
-            this.persistGrade(s, paboGrade, pPublicComment, pPrivateComment);
+            this.persistGrade(s, paboGrade, privateComment, publicComment);
         }
     }
 
@@ -319,17 +334,17 @@ public class GradingService extends GenericService<Grading> {
      * @param corrector User who entered the grade
      * @param student Student to update
      * @param paboGrade New pabo grade value
-     * @param pPrivateComment Private comment
-     * @param pPublicComment Public comment
+     * @param privateComment Private comment
+     * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
-     * @throws NoAccessException
-     * @throws StudentNotFoundException
-     * @throws OverwritingGradeException
+     * @throws NoAccessException Thrown if user may not grade this student
+     * @throws StudentNotFoundException Thrown if student not found
+     * @throws OverwritingGradeException Grade already exists
      */
     public void storePaboGrade(final Course course, final User corrector,
                                final Student student, final PaboGrade paboGrade,
-                               final String pPrivateComment,
-                               final String pPublicComment,
+                               final String privateComment,
+                               final String publicComment,
                                final boolean overwrite)
             throws NoAccessException, StudentNotFoundException, OverwritingGradeException {
         /*
@@ -356,7 +371,7 @@ public class GradingService extends GenericService<Grading> {
         /*
         Store the final grade
          */
-        this.persistGrade(student, paboGrade, pPublicComment, pPrivateComment);
+        this.persistGrade(student, paboGrade, privateComment, publicComment);
     }
 
     /**
@@ -365,29 +380,29 @@ public class GradingService extends GenericService<Grading> {
      * @param corrector User who entered the grade
      * @param exam Exam to upgrade
      * @param student Student to upgrade
-     * @param pGrading New grading value
-     * @param pPrivateComment Private comment
-     * @param pPublicComment Public comment
+     * @param value New grading value
+     * @param privateComment Private comment
+     * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
-     * @throws NoAccessException
-     * @throws StudentNotFoundException
-     * @throws NotGradableException
-     * @throws ExamNotFoundException
-     * @throws InvalidGradingException
-     * @throws OverwritingGradeException
+     * @throws NoAccessException Thrown if user may not grade this student
+     * @throws StudentNotFoundException Thrown if student not found
+     * @throws NotGradableException Thrown if user may not grade this student
+     * @throws ExamNotFoundException Thrown if the exam is invalid
+     * @throws InvalidGradingException Thrown if the grading is invalid
+     * @throws OverwritingGradeException Thrown if there is already a grading
      */
     public void storeGrade(final Course course, final User corrector,
                            final Exam exam, final Student student,
-                           final String pGrading, final String pPrivateComment,
-                           final String pPublicComment, final boolean overwrite)
+                           final String value, final String privateComment,
+                           final String publicComment, final boolean overwrite)
             throws NoAccessException, StudentNotFoundException,
             NotGradableException, ExamNotFoundException,
             InvalidGradingException, OverwritingGradeException {
         /*
         Check if the user is a lecturer or tutors
          */
-        if (!userService.hasCourseRole(corrector, "PRIVILEGED_USER", course) &&
-                !userService.hasCourseRole(corrector, "LECTURER", course)) {
+        if (!userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
+                && !userService.hasCourseRole(corrector, "LECTURER", course)) {
             throw new NoAccessException();
         }
         /*
@@ -400,8 +415,8 @@ public class GradingService extends GenericService<Grading> {
         /*
         If the user is a tutor, check if he may grade this student
          */
-        if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course) &&
-                !this.mayGrade(corrector, student)) {
+        if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
+                && !this.mayGrade(corrector, student)) {
             throw new NotGradableException();
         }
         /*
@@ -422,19 +437,18 @@ public class GradingService extends GenericService<Grading> {
         /*
         Check if the grading is valid
          */
-        if (!exam.isValidGrading(pGrading)) {
+        if (!exam.isValidGrading(value)) {
             throw new InvalidGradingException();
         }
         /*
         Store the grading
          */
         if (grading == null) {
-            this.persistGrade(corrector, student, exam, pGrading,
-                    pPublicComment, pPrivateComment);
-        }
-        else {
-            this.persistGrade(corrector, grading, pGrading,
-                    pPublicComment, pPrivateComment);
+            this.persistGrade(corrector, student, exam, value,
+                    privateComment, publicComment);
+        } else {
+            this.persistGrade(corrector, grading, value,
+                    privateComment, publicComment);
         }
     }
 
@@ -444,29 +458,29 @@ public class GradingService extends GenericService<Grading> {
      * @param corrector User who entered the grade
      * @param exam Exam to upgrade
      * @param group Group to upgrade
-     * @param pGrading New grading value
-     * @param pPrivateComment Private comment
-     * @param pPublicComment Public comment
+     * @param value New grading value
+     * @param privateComment Private comment
+     * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
-     * @throws NoAccessException
-     * @throws StudentNotFoundException
-     * @throws NotGradableException
-     * @throws ExamNotFoundException
-     * @throws InvalidGradingException
-     * @throws OverwritingGradeException
+     * @throws NoAccessException Thrown if user may not grade
+     * @throws StudentNotFoundException Thrown if student not found
+     * @throws NotGradableException Thrown if user may not grade this group
+     * @throws ExamNotFoundException Thrown if exam is not found
+     * @throws InvalidGradingException Thrown if value is invalid
+     * @throws OverwritingGradeException Thrown if grading already exists
      */
     public void storeGrade(final Course course, final User corrector,
                            final Exam exam, final Group group,
-                           final String pGrading, final String pPrivateComment,
-                           final String pPublicComment, final boolean overwrite)
+                           final String value, final String privateComment,
+                           final String publicComment, final boolean overwrite)
             throws NoAccessException, GroupNotFoundException,
             NotGradableException, ExamNotFoundException,
             InvalidGradingException, OverwritingGradeException {
         /*
         Check if the user is a lecturer or tutors
          */
-        if (!userService.hasCourseRole(corrector, "PRIVILEGED_USER", course) &&
-                !userService.hasCourseRole(corrector, "LECTURER", course)) {
+        if (!userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
+                && !userService.hasCourseRole(corrector, "LECTURER", course)) {
             throw new NoAccessException();
         }
         /*
@@ -479,8 +493,8 @@ public class GradingService extends GenericService<Grading> {
         /*
         If the user is a tutor, check if he may grade this group
          */
-        if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course) &&
-                !this.mayGrade(corrector, group)) {
+        if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
+                && !this.mayGrade(corrector, group)) {
             throw new NotGradableException();
         }
         /*
@@ -501,15 +515,14 @@ public class GradingService extends GenericService<Grading> {
 
             if (grading != null && !overwrite) {
                 throw new OverwritingGradeException();
-            }
-            else {
+            } else {
                 gradings.put(s, grading);
             }
         }
         /*
         Check if the grading is valid
          */
-        if (!exam.isValidGrading(pGrading)) {
+        if (!exam.isValidGrading(value)) {
             throw new InvalidGradingException();
         }
         /*
@@ -519,12 +532,11 @@ public class GradingService extends GenericService<Grading> {
             Grading grading = gradings.get(s);
 
             if (grading == null) {
-                this.persistGrade(corrector, s, exam, pGrading,
-                        pPublicComment, pPrivateComment);
-            }
-            else {
-                this.persistGrade(corrector, grading, pGrading,
-                        pPublicComment, pPrivateComment);
+                this.persistGrade(corrector, s, exam, value,
+                        privateComment, publicComment);
+            } else {
+                this.persistGrade(corrector, grading, value,
+                        privateComment, publicComment);
             }
         }
     }
@@ -534,20 +546,20 @@ public class GradingService extends GenericService<Grading> {
      * @param course Course to search in
      * @param exam Id of the exam
      * @return Exam
-     * @throws ExamNotFoundException
+     * @throws ExamNotFoundException Thrown if the exam is not found
      */
     public Exam getExam(Course course, Long exam)
             throws ExamNotFoundException {
         try {
-            return em.createQuery("SELECT DISTINCT e " +
-                        "FROM Exam e " +
-                        "JOIN e.course AS c WITH c.courseId = :cid " +
-                        "WHERE e.examId = :exam",
+            return em.createQuery("SELECT DISTINCT e "
+                            + "FROM Exam e "
+                            + "JOIN e.course AS c WITH c.courseId = :cid "
+                            + "WHERE e.examId = :exam",
                         Exam.class)
                     .setParameter("cid", course.getCourseId())
                     .setParameter("exam", exam)
                     .getSingleResult();
-        } catch(NoResultException e) {
+        } catch (NoResultException e) {
             throw new ExamNotFoundException();
         }
     }
@@ -560,15 +572,15 @@ public class GradingService extends GenericService<Grading> {
      */
     public Grading getGrading(Student student, Exam exam) {
         try {
-            return em.createQuery("SELECT DISTINCT g " +
-                        "FROM Grading g " +
-                        "JOIN g.exam AS e WITH e.examId = :eid " +
-                        "JOIN g.student AS s WITH s.studentId = :sid",
-                    Grading.class)
+            return em.createQuery("SELECT DISTINCT g "
+                            + "FROM Grading g "
+                            + "JOIN g.exam AS e WITH e.examId = :eid "
+                            + "JOIN g.student AS s WITH s.studentId = :sid",
+                        Grading.class)
                     .setParameter("eid", exam.getExamId())
                     .setParameter("sid", student.getStudentId())
                     .getSingleResult();
-        } catch(NoResultException e) {
+        } catch (NoResultException e) {
             return null;
         }
     }
