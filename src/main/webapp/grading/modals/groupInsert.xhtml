@@ -4,7 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['gradings.insert']}" appendTo="@(body)" widgetVar="gradeInsert" modal="true">
+    <p:dialog header="#{msg['gradings.insert']}" appendTo="@(body)" widgetVar="gradeInsertGroup" modal="true">
         <h:form id="gradeInsertForm">
             <ui:include src="/WEB-INF/alerts.xhtml" />
             <h:panelGroup layout="block" styleClass="modal-body">
@@ -26,16 +26,15 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="gradeStudent" class="col-xs-3 control-label">
-                        #{msg['common.student']}
+                    <label for="gradeGroup" class="col-xs-3 control-label">
+                        #{msg['groups.name']}
                     </label>
-                    <div class="col-xs-9" id="gradeStudent">
-                        <h:inputText styleClass="form-control"
-                                     value="#{gradingInsertController.formStudent}"
-                                     h5:autofocus="true" h5:autocomplete="off"/>
-                        <div class="alert alert-info">
-                            #{msg['gradings.insert.student']}
-                        </div>
+                    <div class="col-xs-9" id="gradeGroup">
+                        <h:selectOneMenu value="#{gradingInsertController.formGroup}"
+                                         styleClass="form-control">
+                            <f:selectItems value="#{gradingController.course.groups}" var="group"
+                                           itemLabel="#{group.name}" itemValue="#{group.groupId}" />
+                        </h:selectOneMenu>
                     </div>
                 </div>
                 <div class="form-group">
@@ -75,11 +74,11 @@
             <div class="modal-footer">
                 <div class="btn-group" id="gradeInsertButtons">
                     <p:commandButton value="#{msg['common.cancel']}" type="button"
-                                     onclick="return exModal(':gradeInsert');"
+                                     onclick="return exModal(':gradeInsertGroup');"
                                      styleClass="btn btn-default" />
                     <p:commandButton value="#{msg['gradings.insert']}" type="button"
                                      styleClass="btn btn-primary">
-                        <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course, false)}"
+                        <f:ajax listener="#{gradingInsertController.storeGroupGrading(gradingController.course, false)}"
                                 execute="@form"
                                 render="gradeInsertForm"
                                 onevent="gradingAjaxEvent"
@@ -88,7 +87,7 @@
                     </p:commandButton>
                     <p:commandButton value="#{msg['gradings.overwrite']}" type="button"
                                      styleClass="btn btn-danger">
-                        <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course, true)}"
+                        <f:ajax listener="#{gradingInsertController.storeGroupGrading(gradingController.course, true)}"
                                 execute="@form"
                                 render="gradeInsertForm"
                                 onevent="gradingAjaxEvent"

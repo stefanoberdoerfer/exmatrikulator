@@ -263,8 +263,22 @@ public class ApplicationController {
         exam2.setName("Mündliche Prüfung");
         exam2.setShortcut("MP");
         exam2.setCourse(course);
-        exam2.setGradeType(GradeType.Percent.getId());
+        exam2.setGradeType(GradeType.Boolean.getId());
         course.getExams().add(exam2);
+
+        Exam exam3 = new Exam();
+        exam3.setName("Klausur");
+        exam3.setShortcut("KL");
+        exam3.setCourse(course);
+        exam3.setGradeType(GradeType.Numeric.getId());
+        course.getExams().add(exam3);
+
+        Exam exam4 = new Exam();
+        exam4.setName("Übungsblatt 1");
+        exam4.setShortcut("UEB1");
+        exam4.setCourse(course);
+        exam4.setGradeType(GradeType.Point.getId());
+        course.getExams().add(exam4);
 
         //persist everything
         course = courseService.update(course);

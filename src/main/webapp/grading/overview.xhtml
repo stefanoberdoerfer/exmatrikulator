@@ -9,7 +9,6 @@
     <ui:param name="pageTitle" value="#{msg['courses.grading']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
-        <!-- Todo: Veranstaltungsnamen anzeigen -->
         <li>#{gradingController.course.name}</li>
         <li class="active">#{msg['courses.grading']}</li>
     </ui:define>
@@ -76,7 +75,7 @@
             <p:rowExpansion>
                 <div class="row student-gradings">
                     <ui:repeat value="#{gradingController.course.exams}" var="exam">
-                        <div class="col-xs-3">
+                        <div class="col-xs-2 grading">
                             <strong>#{exam.getName()}</strong><br />
                             #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
                             <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"

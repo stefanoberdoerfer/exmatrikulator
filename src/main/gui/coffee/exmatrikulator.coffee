@@ -34,7 +34,7 @@ exmatrikulatorInteractivity = ($) ->
         PF name
           .show()
 
-        if name == "gradeInsert"
+        if ["gradeInsert", "gradeInsertGroup"].indexOf(name) != -1
           gradingModal true
 
     return false

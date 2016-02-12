@@ -36,6 +36,7 @@ public class GradingInsertController {
      * Data set by the formula of the modal to insert grades.
      */
     private Long formExam;
+    private Long formGroup;
     private String formStudent;
     private String formPaboGrading;
     private String formGrading;
@@ -112,12 +113,20 @@ public class GradingInsertController {
         this.formPublicComment = formPublicComment;
     }
 
+    public Long getFormGroup() {
+        return formGroup;
+    }
+
+    public void setFormGroup(Long formGroup) {
+        this.formGroup = formGroup;
+    }
+
     /**
-     * Stores the grading for the given course.
+     * Stores the group grading for the given course.
      * @param course Course that is related to the exam
      * @param overwrite If true, overwrite an existing grade
      */
-    public void storeUserGrading(Course course, boolean overwrite) throws
+    public void storeGroupGrading(Course course, boolean overwrite) throws
         OverwritingGradeException {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -135,16 +144,95 @@ public class GradingInsertController {
         Try to store the grade
          */
         try {
+            Group group = gradingService.getGroup(course, formGroup);
+
             if (formExam == -1) {
                 log.debug("Storing pabo grading: " + formPaboGrading);
                 PaboGrade paboGrade = PaboGrade.valueOfName(formPaboGrading);
 
-                gradingService.storePaboGrade(course, user, formStudent,
+                gradingService.storePaboGrade(course, user, group,
                         paboGrade, formPrivateComment, formPublicComment,
                         overwrite);
             }
             else {
-                gradingService.storeGrade(course, user, formExam, formStudent,
+                Exam exam = gradingService.getExam(course, formExam);
+
+                gradingService.storeGrade(course, user, exam, group,
+                        formGrading, formPrivateComment, formPublicComment,
+                        overwrite);
+            }
+        } catch (NoAccessException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("common.noAccess")));
+            return;
+        } catch (GroupNotFoundException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.unknownGroup")));
+            return;
+        } catch (NotGradableException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("common.notGradable")));
+        } catch (ExamNotFoundException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.unknownExam")));
+            return;
+        } catch (InvalidGradingException | IllegalArgumentException e) {
+            log.debug("IllegalArgument: " + e.toString());
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.invalidGrading")));
+            return;
+        }
+        /*
+        Success
+         */
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_INFO, bundle.getString("common.success"),
+                bundle.getString("gradings.stored")));
+    }
+
+    /**
+     * Stores the student grading for the given course.
+     * @param course Course that is related to the exam
+     * @param overwrite If true, overwrite an existing grade
+     */
+    public void storeStudentGrading(Course course, boolean overwrite) throws
+            OverwritingGradeException {
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                facesContext.getViewRoot().getLocale());
+        /*
+        Load the user
+         */
+        User user = (User)FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("user");
+        /*
+        Try to store the grade
+         */
+        try {
+            Student student = gradingService.findStudent(course,
+                    formStudent);
+
+            if (formExam == -1) {
+                log.debug("Storing pabo grading: " + formPaboGrading);
+                PaboGrade paboGrade = PaboGrade.valueOfName(formPaboGrading);
+
+                gradingService.storePaboGrade(course, user, student,
+                        paboGrade, formPrivateComment, formPublicComment,
+                        overwrite);
+            }
+            else {
+                Exam exam = gradingService.getExam(course, formExam);
+
+                gradingService.storeGrade(course, user, exam, student,
                         formGrading, formPrivateComment, formPublicComment,
                         overwrite);
             }
