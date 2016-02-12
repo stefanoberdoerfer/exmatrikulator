@@ -230,8 +230,9 @@ public class GradingService extends GenericService<Grading> {
      * @param privateComment Private comment of the corrector
      * @param publicComment Public comment of the corrector
      */
-    private void persistGrade(User corrector, Student student, Exam exam, String value,
-                              String privateComment, String publicComment) {
+    private void persistGrade(User corrector, Student student, Exam exam,
+                              String value, String privateComment,
+                              String publicComment) {
         BigDecimal decimal = new BigDecimal(value.replace(',', '.'));
 
         Grade grade = new Grade();
@@ -293,7 +294,8 @@ public class GradingService extends GenericService<Grading> {
                                final String privateComment,
                                final String publicComment,
                                final boolean overwrite)
-            throws NoAccessException, GroupNotFoundException, OverwritingGradeException {
+            throws NoAccessException, GroupNotFoundException,
+            OverwritingGradeException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
@@ -305,7 +307,8 @@ public class GradingService extends GenericService<Grading> {
         Check if the group exists and if he/she is part of this course.
          */
         if (group == null
-                || group.getCourse().getCourseId() != course.getCourseId()) {
+                || !group.getCourse().getCourseId().equals(
+                        course.getCourseId())) {
             throw new GroupNotFoundException();
         }
         /*
@@ -346,7 +349,8 @@ public class GradingService extends GenericService<Grading> {
                                final String privateComment,
                                final String publicComment,
                                final boolean overwrite)
-            throws NoAccessException, StudentNotFoundException, OverwritingGradeException {
+            throws NoAccessException, StudentNotFoundException,
+            OverwritingGradeException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
@@ -358,7 +362,8 @@ public class GradingService extends GenericService<Grading> {
         Check if the student exists and if he/she is part of this course.
          */
         if (student == null
-                || student.getCourse().getCourseId() != course.getCourseId()) {
+                || !student.getCourse().getCourseId().equals(
+                    course.getCourseId())) {
             throw new StudentNotFoundException();
         }
         /*
@@ -423,7 +428,8 @@ public class GradingService extends GenericService<Grading> {
         Check the exam.
          */
         if (exam == null
-                || exam.getCourse().getCourseId() != course.getCourseId()) {
+                || !exam.getCourse().getCourseId().equals(
+                        course.getCourseId())) {
             throw new ExamNotFoundException();
         }
         /*
@@ -487,7 +493,8 @@ public class GradingService extends GenericService<Grading> {
         Check if the group exists and if it is part of this course.
          */
         if (group == null
-                || group.getCourse().getCourseId() != course.getCourseId()) {
+                || !group.getCourse().getCourseId().equals(
+                        course.getCourseId())) {
             throw new GroupNotFoundException();
         }
         /*
@@ -501,7 +508,8 @@ public class GradingService extends GenericService<Grading> {
         Check the exam.
          */
         if (exam == null
-                || exam.getCourse().getCourseId() != course.getCourseId()) {
+                || !exam.getCourse().getCourseId().equals(
+                        course.getCourseId())) {
             throw new ExamNotFoundException();
         }
         /*
@@ -595,7 +603,7 @@ public class GradingService extends GenericService<Grading> {
         List<PrivilegedUser> privileged = student.getTutorial().getTutors();
 
         for (PrivilegedUser p : privileged) {
-            if (p.getUser().getUserId() == tutor.getUserId()) {
+            if (p.getUser().getUserId().equals(tutor.getUserId())) {
                 return true;
             }
         }
@@ -617,7 +625,7 @@ public class GradingService extends GenericService<Grading> {
         List<PrivilegedUser> privileged = group.getTutorial().getTutors();
 
         for (PrivilegedUser p : privileged) {
-            if (p.getUser().getUserId() == tutor.getUserId()) {
+            if (p.getUser().getUserId().equals(tutor.getUserId())) {
                 return true;
             }
         }

@@ -154,8 +154,7 @@ public class GradingController {
 
         if (gradings == null) {
             gradings = gradingService.getStudentGradings(student);
-            log.debug("Loaded gradings is "
-                    + (gradings == null ? "null" : "not null"));
+            log.debug("Loaded gradings is null");
             studentGradings.put(student, gradings);
         }
 
