@@ -35,7 +35,7 @@ public class Tutorial {
     @OneToMany(mappedBy = "tutorial", cascade = CascadeType.ALL)
     private List<Student> students = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tutorial", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tutorial", cascade = CascadeType.ALL, orphanRemoval=true)
     private List<Group> groups = new ArrayList<>();
 
     @ManyToMany

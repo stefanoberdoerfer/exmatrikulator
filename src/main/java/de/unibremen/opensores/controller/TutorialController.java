@@ -289,6 +289,21 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Remove the current group from the current tutorial.
+     */
+    public void removeGroup() {
+        for (Student student : group.getStudents()) {
+            student.setGroup(null);
+        }
+
+        course.getGroups().remove(group);
+        tutorial.getGroups().remove(group);
+
+        tutorial = tutorialService.update(tutorial);
+        group = null;
+    }
+
+    /**
      * Updates group members for the given group in the current tutorial.
      *
      * @param group Group to update members for.

@@ -4,20 +4,28 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['groups.remove']}" appendTo="@(body)" widgetVar="groupRemove" modal="true">
-        <ui:include src="/WEB-INF/alerts.xhtml" />
-        <div class="modal-body">
-            #{msg['groups.remove.question']}<br />
-            <br />
-            #{msg['groups.remove.hint']}
+  <p:dialog header="#{msg['groups.remove']}" appendTo="@(body)" widgetVar="groupRemove"
+      modal="true" id="removeGroupDialog" visible="#{not empty facesContext.messageList}">
+    <ui:include src="/WEB-INF/alerts.xhtml" />
+
+    <h:form id="removeGroupForm">
+      <div class="modal-body">
+          #{msg['groups.remove.question']}<br />
+          <br />
+          #{msg['groups.remove.hint']}
+      </div>
+      <div class="modal-footer">
+        <div class="btn-group">
+          <p:commandButton value="#{msg['common.cancel']}" type="button" styleClass="btn btn-default"
+            onclick="return exModal(':groupRemove');" />
+
+          <p:commandLink value="#{msg['common.remove']}"
+              update=":removeGroupDialog :tutorialList"
+              class="btn btn-danger">
+            <f:actionListener binding="#{tutorialController.removeGroup()}" />
+          </p:commandLink>
         </div>
-        <div class="modal-footer">
-            <div class="btn-group">
-                <p:commandButton value="#{msg['common.cancel']}" type="button"
-                                 onclick="return exModal(':groupRemove');" styleClass="btn btn-default" />
-                <h:link outcome="/tutorialsGroups/overview" class="btn btn-danger"
-                        value="#{msg['common.remove']}" />
-            </div>
-        </div>
-    </p:dialog>
+      </div>
+    </h:form>
+</p:dialog>
 </ui:composition>
