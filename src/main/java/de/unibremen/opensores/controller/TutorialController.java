@@ -112,6 +112,11 @@ public class TutorialController implements Serializable {
     private String groupName;
 
     /**
+     * Current student context.
+     */
+    private transient Student student;
+
+    /**
      * New group name, used when the group is being edited.
      */
     private String newGroupName = null;
@@ -205,7 +210,7 @@ public class TutorialController implements Serializable {
                 .collect(Collectors.toList()));
 
         List<Student> students = tutorial.getStudents();
-        this.tutorialStudents.setSource(students);
+        this.tutorialStudents.setTarget(students);
         this.tutorialStudents.setSource(students.stream()
                 .filter(s -> !tutorialStudents.getTarget().contains(s))
                 .collect(Collectors.toList()));
@@ -354,10 +359,33 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Changes the current student context.
+     *
+     * @param student Student to switch to.
+     */
+    public void changeCurrentStudent(@NotNull Student student) {
+        this.student = student;
+        changeCurrentTutorial(student.getTutorial());
+    }
+
+    /**
      * Updates the students for the current tutorial.
      */
-    public void updateStudent() {
+    public void updateStudents() {
+        for (Student s : tutorialStudents.getTarget()) {
+            s.setTutorial(tutorial);
+        }
+
         tutorial.setStudents(tutorialStudents.getTarget());
+        tutorial = tutorialService.update(tutorial);
+    }
+
+    /**
+     * Removes the current student from the current tutorial.
+     */
+    public void removeStudent() {
+        student.setTutorial(null);
+        tutorial.getStudents().remove(student);
         tutorial = tutorialService.update(tutorial);
     }
 
