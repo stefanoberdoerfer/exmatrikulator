@@ -17,6 +17,7 @@ import de.unibremen.opensores.service.TutorialService;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.text.MessageFormat;
 
@@ -98,7 +99,7 @@ public class TutorialController implements Serializable {
     /**
      * Current group context.
      */
-    private Group group;
+    private transient Group group;
 
     /**
      * Name of the current group.
@@ -184,7 +185,17 @@ public class TutorialController implements Serializable {
     public void changeCurrentTutorial(@NotNull Tutorial tutorial) {
         this.tutorial = tutorial;
         this.tutorialName = tutorial.getName();
-        this.tutorialTutors.setTarget(tutorial.getTutors());
+
+        this.group = null;
+        this.groupName = null;
+        this.groupMembers.setSource(tutorial.getStudents());
+        this.groupMembers.setTarget(new ArrayList<>());
+
+        List<PrivilegedUser> tutors = tutorial.getTutors();
+        this.tutorialTutors.setTarget(tutors);
+        this.tutorialTutors.setSource(tutors.stream()
+                .filter(t -> !tutorialTutors.getTarget().contains(t))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -195,8 +206,15 @@ public class TutorialController implements Serializable {
     public void changeCurrentGroup(@NotNull Group group) {
         this.group = group;
         this.groupName = group.getName();
-        this.groupMembers.setTarget(group.getStudents());
-        changeCurrentTutorial(group.getTutorial());
+
+        List<Student> students = group.getStudents();
+        this.groupMembers.setTarget(students);
+        this.groupMembers.setSource(students.stream()
+                .filter(s -> !groupMembers.getTarget().contains(s))
+                .collect(Collectors.toList()));
+
+        this.tutorial = group.getTutorial();
+        this.tutorialName = tutorial.getName();
     }
 
     /**
@@ -228,11 +246,12 @@ public class TutorialController implements Serializable {
 
         course.getTutorials().remove(tutorial);
         tutorialService.remove(tutorial);
-        tutorial = null;
-
-        removalConformation = null;
         log.debug(String.format("Removed tutorial %s from course %s",
                     name, course.getName()));
+
+        tutorial = null;
+        tutorialName = null;
+        removalConformation = null;
     }
 
     /**
@@ -292,15 +311,15 @@ public class TutorialController implements Serializable {
      * Remove the current group from the current tutorial.
      */
     public void removeGroup() {
-        for (Student student : group.getStudents()) {
-            student.setGroup(null);
-        }
-
         course.getGroups().remove(group);
         tutorial.getGroups().remove(group);
-
         tutorial = tutorialService.update(tutorial);
+
+        log.debug(String.format("Removed group %s from tutorial %s",
+            group.getName(), tutorial.getName()));
+
         group = null;
+        groupName = null;
     }
 
     /**
