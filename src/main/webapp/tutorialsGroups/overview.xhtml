@@ -129,8 +129,11 @@
                       <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
                   </p:commandLink>
 
-                  <h:link onclick="return exModal('studentAdd');"
-                    class="btn btn-default" value="#{msg['students.add']}" />
+                  <p:commandLink value="#{msg['students.add']}"
+                    oncomplete="return exModal('studentAdd');"
+                    class="btn btn-default">
+                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                  </p:commandLink>
                 </h:form>
               </div>
           </ui:repeat>

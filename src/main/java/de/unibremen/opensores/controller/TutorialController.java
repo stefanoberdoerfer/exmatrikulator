@@ -97,6 +97,11 @@ public class TutorialController implements Serializable {
     private DualListModel<PrivilegedUser> tutorialTutors;
 
     /**
+     * List of students for this tutorial.
+     */
+    private DualListModel<Student> tutorialStudents;
+
+    /**
      * Current group context.
      */
     private transient Group group;
@@ -158,6 +163,8 @@ public class TutorialController implements Serializable {
 
         tutorialTutors = new DualListModel<>(course.getTutors(),
             new ArrayList<>());
+        tutorialStudents = new DualListModel<>(course.getStudents(),
+            new ArrayList<>());
         groupMembers = new DualListModel<>(course.getStudents(),
             new ArrayList<>());
     }
@@ -195,6 +202,12 @@ public class TutorialController implements Serializable {
         this.tutorialTutors.setTarget(tutors);
         this.tutorialTutors.setSource(tutors.stream()
                 .filter(t -> !tutorialTutors.getTarget().contains(t))
+                .collect(Collectors.toList()));
+
+        List<Student> students = tutorial.getStudents();
+        this.tutorialStudents.setSource(students);
+        this.tutorialStudents.setSource(students.stream()
+                .filter(s -> !tutorialStudents.getTarget().contains(s))
                 .collect(Collectors.toList()));
     }
 
@@ -341,6 +354,14 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Updates the students for the current tutorial.
+     */
+    public void updateStudent() {
+        tutorial.setStudents(tutorialStudents.getTarget());
+        tutorial = tutorialService.update(tutorial);
+    }
+
+    /**
      * Returns a list of all tutorials for this course.
      *
      * @return List of tutorials or null if non exist.
@@ -473,6 +494,24 @@ public class TutorialController implements Serializable {
      */
     public DualListModel<PrivilegedUser> getTutorialTutors() {
         return tutorialTutors;
+    }
+
+    /**
+     * Sets the students for the current tutorial.
+     *
+     * @param tutorialStudents List of students.
+     */
+    public void setTutorialStudents(DualListModel<Student> tutorialStudents) {
+        this.tutorialStudents = tutorialStudents;
+    }
+
+    /**
+     * Returns the students for the current tutorial.
+     *
+     * @return List of students.
+     */
+    public DualListModel<Student> getTutorialStudents() {
+        return tutorialStudents;
     }
 
     /**
