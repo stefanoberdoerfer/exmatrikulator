@@ -32,10 +32,10 @@ public class Group {
     @JoinColumn(name = "courseId")
     private Course course;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private List<Student> students = new ArrayList<>();
 
-    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 
