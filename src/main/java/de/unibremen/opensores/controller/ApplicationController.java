@@ -182,12 +182,13 @@ public class ApplicationController {
 
         //Student for course
         Student student = new Student();
-        student.setAcceptedInvitation(false);
-        student.setConfirmed(false);
+        student.setAcceptedInvitation(true);
+        student.setConfirmed(true);
         student.setTries(0);
         student.setDeleted(false);
         student.setUser(newUser);
         student.setHidden(false);
+        student.setPaboGrade("1.3");
 
         course.getStudents().add(student);
         student.setCourse(course);
@@ -257,11 +258,33 @@ public class ApplicationController {
 
         //Exam
         Exam exam = new Exam();
-        exam.setName("TestPrüfung");
+        exam.setName("Testprüfung");
         exam.setShortcut("TP1");
         exam.setCourse(course);
+        exam.setMaxPoints(new BigDecimal(20));
         exam.setGradeType(GradeType.Point.getId());
         course.getExams().add(exam);
+
+        Exam exam2 = new Exam();
+        exam2.setName("Mündliche Prüfung");
+        exam2.setShortcut("MP");
+        exam2.setCourse(course);
+        exam2.setGradeType(GradeType.Boolean.getId());
+        course.getExams().add(exam2);
+
+        Exam exam3 = new Exam();
+        exam3.setName("Klausur");
+        exam3.setShortcut("KL");
+        exam3.setCourse(course);
+        exam3.setGradeType(GradeType.Numeric.getId());
+        course.getExams().add(exam3);
+
+        Exam exam4 = new Exam();
+        exam4.setName("Übungsblatt 1");
+        exam4.setShortcut("UEB1");
+        exam4.setCourse(course);
+        exam4.setGradeType(GradeType.Point.getId());
+        course.getExams().add(exam4);
 
         //persist everything
         course = courseService.update(course);

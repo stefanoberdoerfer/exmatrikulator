@@ -15,6 +15,9 @@ public enum PaboGrade {
     GRADE_3_7(3.0,"3,7"),
     GRADE_4_0(4.0,"4,0"),
     GRADE_5_0(5.0,"5,0"),
+    /*
+    Todo: Hatte PABO da nicht eigene Werte statt 5.0?
+     */
     GRADE_CHEATED(5.0,"Täuschung"),
     GRADE_NEGLECTED(5.0,"Versäumnis");
 
@@ -30,5 +33,43 @@ public enum PaboGrade {
     @Override
     public String toString() {
         return gradeName;
+    }
+
+    public double getGradeValue() {
+        return gradeValue;
+    }
+
+    public String getGradeName() {
+        return gradeName;
+    }
+
+    /**
+     * Searches for an enum entry by the value of the pabo grade.
+     * @param value Value to search for
+     * @return Enum entry
+     */
+    public static PaboGrade valueOf(double value) {
+        for (PaboGrade p : PaboGrade.values()) {
+            if (p.getGradeValue() == value) {
+                return p;
+            }
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    /**
+     * Searches for an enum entry by the name of the pabo grade.
+     * @param name Name to search for
+     * @return Enum entry
+     */
+    public static PaboGrade valueOfName(String name) {
+        for (PaboGrade p : PaboGrade.values()) {
+            if (p.getGradeName().equals(name)) {
+                return p;
+            }
+        }
+
+        throw new IllegalArgumentException();
     }
 }

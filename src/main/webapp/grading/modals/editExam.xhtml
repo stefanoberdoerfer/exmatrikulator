@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['gradings.edit']}" appendTo="@(body)" widgetVar="gradeEditExam" modal="true">
+        <h:form id="gradeEditExamForm">
+            <ui:include src="/WEB-INF/alerts.xhtml" />
+            <h:panelGroup layout="block" styleClass="modal-body">
+                <div class="form-group">
+                    <label for="gradeExamination" class="col-xs-3 control-label">
+                        #{msg['common.course.exam']}
+                    </label>
+                    <div class="col-xs-9" id="gradeExamination">
+                        #{gradingEditController.exam.name}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="gradeStudent" class="col-xs-3 control-label">
+                        #{msg['common.student']}
+                    </label>
+                    <div class="col-xs-9" id="gradeStudent">
+                        #{gradingEditController.student.user.firstName}
+                        #{gradingEditController.student.user.lastName}
+                        <div class="table-common-sub">
+                        #{gradingEditController.student.user.email}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-3 control-label">#{msg['common.result']}</label>
+                    <div class="col-xs-9">
+                        <h:inputText styleClass="form-control"
+                                     value="#{gradingEditController.formGrading}"/>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-group">
+                    <label for="publicComment" class="col-xs-3 control-label">
+                        #{msg['gradings.comments.public']}
+                    </label>
+                    <div class="col-xs-9">
+                        <h:inputTextarea styleClass="form-control" id="publicComment" rows="4"
+                                         value="#{gradingEditController.formPublicComment}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="privateComment" class="col-xs-3 control-label">
+                        #{msg['gradings.comments.private']}
+                    </label>
+                    <div class="col-xs-9">
+                        <h:inputTextarea styleClass="form-control" id="privateComment" rows="4"
+                                         value="#{gradingEditController.formPrivateComment}" />
+                    </div>
+                </div>
+            </h:panelGroup>
+            <div class="modal-footer">
+                <div class="btn-group" id="gradeInsertButtons">
+                    <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                     onclick="return exModal(':gradeEditExam');"
+                                     styleClass="btn btn-default" />
+                    <p:commandButton value="#{msg['common.saveChanges']}" type="button"
+                                     styleClass="btn btn-danger">
+                        <f:ajax listener="#{gradingEditController.updateExamGrading(gradingController.course)}"
+                                execute="@form"
+                                render="gradeEditExamForm"
+                                onevent="gradingAjaxEvent"
+                                onerror="gradingAjaxError"
+                                />
+                    </p:commandButton>
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>

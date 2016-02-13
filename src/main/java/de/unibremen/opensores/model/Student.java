@@ -39,6 +39,12 @@ public class Student {
     @Column
     private String paboGrade;
 
+    @Column
+    private String publicComment;
+
+    @Column
+    private String privateComment;
+
     @OneToMany(mappedBy = "student")
     private List<Grading> gradings = new ArrayList<>();
 
@@ -177,5 +183,21 @@ public class Student {
 
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public String getPublicComment() {
+        return publicComment;
+    }
+
+    public void setPublicComment(String publicComment) {
+        this.publicComment = publicComment;
+    }
+
+    public String getPrivateComment() {
+        return privateComment;
+    }
+
+    public void setPrivateComment(String privateComment) {
+        this.privateComment = privateComment;
     }
 }

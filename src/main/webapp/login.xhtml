@@ -11,19 +11,22 @@
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 
       <link rel="shortcut icon" type="image/x-icon"
-            href="#{request.contextPath}/javax.faces.resource/favicon.ico.xhtml?ln=images" />
+            href="#{request.contextPath}/resources/images/favicon.ico" />
       <!-- other browsers -->
       <link rel="icon" type="image/x-icon"
-            href="#{request.contextPath}/javax.faces.resource/favicon.ico.xhtml?ln=images" />
+            href="#{request.contextPath}/resources/images/favicon.ico" />
 
       <title>#{msg['common.login']} · Exmatrikulator</title>
 
       <!-- Styles -->
-      <h:outputStylesheet library="css" name="vendors.min.css"  />
-      <h:outputStylesheet library="css" name="exmatrikulator.min.css"  />
+
+      <!-- Styles -->
+      <h:outputStylesheet name="css/vendors.min.css"  />
+      <h:outputStylesheet name="css/exmatrikulator.min.css"  />
 
       <!-- Interactivity -->
-      <h:outputScript library="js" name="exmatrikulator.min.js" />
+      <h:outputScript library="primefaces" name="jquery/jquery.js" />
+      <h:outputScript name="js/exmatrikulator.min.js" />
   </h:head>
 
   <h:body id="login">
