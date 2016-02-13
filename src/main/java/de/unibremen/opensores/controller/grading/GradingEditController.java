@@ -1,11 +1,5 @@
 package de.unibremen.opensores.controller.grading;
 
-import de.unibremen.opensores.exception.ExamNotFoundException;
-import de.unibremen.opensores.exception.InvalidGradingException;
-import de.unibremen.opensores.exception.NoAccessException;
-import de.unibremen.opensores.exception.NotGradableException;
-import de.unibremen.opensores.exception.OverwritingGradeException;
-import de.unibremen.opensores.exception.StudentNotFoundException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Grading;
@@ -114,8 +108,7 @@ public class GradingEditController {
      * Stores the grading for the given course.
      * @param course Course that is related to the exam
      */
-    public void updateExamGrading(Course course) throws
-            OverwritingGradeException {
+    public void updateExamGrading(Course course) {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
@@ -129,32 +122,43 @@ public class GradingEditController {
                 .getSessionMap()
                 .get("user");
         /*
+        Check student
+         */
+        if (student == null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.unknownStudent")));
+            return;
+        }
+        /*
+        Check exam
+         */
+        if (exam == null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.unknownExam")));
+            return;
+        }
+        /*
         Try to store the grade
          */
         try {
             gradingService.storeGrade(course, user, exam, student,
                     formGrading, formPrivateComment, formPublicComment,
                     true);
-        } catch (NoAccessException e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("common.noAccess")));
+        } catch (IllegalAccessException e) {
+            if (e.getMessage().equals("NOT_GRADABLE")) {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
+                        bundle.getString("common.notGradable")));
+            } else {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
+                        bundle.getString("common.noAccess")));
+            }
+
             return;
-        } catch (StudentNotFoundException e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("gradings.unknownStudent")));
-            return;
-        } catch (NotGradableException e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("common.notGradable")));
-        } catch (ExamNotFoundException e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("gradings.unknownExam")));
-            return;
-        } catch (InvalidGradingException e) {
+        } catch (IllegalArgumentException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
                     bundle.getString("gradings.invalidGrading")));
@@ -171,10 +175,8 @@ public class GradingEditController {
     /**
      * Updates the final grading of a single student.
      * @param course Course the student participates
-     * @throws OverwritingGradeException Thrown if grading already exists
      */
-    public void updateFinalGrading(Course course) throws
-            OverwritingGradeException {
+    public void updateFinalGrading(Course course) {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
@@ -188,6 +190,15 @@ public class GradingEditController {
                 .getSessionMap()
                 .get("user");
         /*
+        Check student
+         */
+        if (student == null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    bundle.getString("gradings.unknownStudent")));
+            return;
+        }
+        /*
         Try to store the grade
          */
         try {
@@ -197,15 +208,17 @@ public class GradingEditController {
             gradingService.storePaboGrade(course, user, this.student,
                     paboGrade, formPrivateComment, formPublicComment,
                     true);
-        } catch (NoAccessException e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("common.noAccess")));
-            return;
-        } catch (StudentNotFoundException e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("gradings.unknownStudent")));
+        } catch (IllegalAccessException e) {
+            if (e.getMessage().equals("NOT_GRADABLE")) {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
+                        bundle.getString("common.notGradable")));
+            } else {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
+                        bundle.getString("common.noAccess")));
+            }
+
             return;
         } catch (IllegalArgumentException e) {
             log.debug("IllegalArgument: " + e.toString());

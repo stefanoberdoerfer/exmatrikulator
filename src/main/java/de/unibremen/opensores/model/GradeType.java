@@ -28,17 +28,8 @@ public enum GradeType {
     public boolean isValidGrading(BigDecimal value, final BigDecimal max) {
         switch (this) {
             case Numeric:
-                return value.compareTo(new BigDecimal("1.0")) == 0
-                        || value.compareTo(new BigDecimal("1.3")) == 0
-                        || value.compareTo(new BigDecimal("1.7")) == 0
-                        || value.compareTo(new BigDecimal("2.0")) == 0
-                        || value.compareTo(new BigDecimal("2.3")) == 0
-                        || value.compareTo(new BigDecimal("2.7")) == 0
-                        || value.compareTo(new BigDecimal("3.0")) == 0
-                        || value.compareTo(new BigDecimal("3.3")) == 0
-                        || value.compareTo(new BigDecimal("3.7")) == 0
-                        || value.compareTo(new BigDecimal("4.0")) == 0
-                        || value.compareTo(new BigDecimal("5.0")) == 0;
+                return value.compareTo(new BigDecimal("1.0")) >= 0
+                        && value.compareTo(new BigDecimal("5.0")) <= 0;
 
             case Boolean:
                 return value.compareTo(new BigDecimal("0")) == 0

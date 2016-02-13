@@ -1,13 +1,6 @@
 
 package de.unibremen.opensores.service;
 
-import de.unibremen.opensores.exception.ExamNotFoundException;
-import de.unibremen.opensores.exception.GroupNotFoundException;
-import de.unibremen.opensores.exception.InvalidGradingException;
-import de.unibremen.opensores.exception.NoAccessException;
-import de.unibremen.opensores.exception.NotGradableException;
-import de.unibremen.opensores.exception.OverwritingGradeException;
-import de.unibremen.opensores.exception.StudentNotFoundException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Grade;
@@ -161,10 +154,8 @@ public class GradingService extends GenericService<Grading> {
      * @param course Course to search in
      * @param search Value to search for
      * @return Student
-     * @throws StudentNotFoundException Thrown if no student found
      */
-    public Student findStudent(Course course, String search)
-            throws StudentNotFoundException {
+    public Student findStudent(Course course, String search) {
         try {
             return em.createQuery("SELECT DISTINCT s "
                             + "FROM Student s "
@@ -178,7 +169,7 @@ public class GradingService extends GenericService<Grading> {
                     .setParameter("search", search.toLowerCase())
                     .getSingleResult();
         } catch (NoResultException e) {
-            throw new StudentNotFoundException();
+            return null;
         }
     }
 
@@ -187,10 +178,8 @@ public class GradingService extends GenericService<Grading> {
      * @param course Course to search in
      * @param groupId Id of the group
      * @return Group
-     * @throws GroupNotFoundException Thrown if group not found
      */
-    public Group getGroup(Course course, Long groupId)
-            throws GroupNotFoundException {
+    public Group getGroup(Course course, Long groupId) {
         try {
             return em.createQuery("SELECT DISTINCT g "
                             + "FROM Group g "
@@ -201,7 +190,7 @@ public class GradingService extends GenericService<Grading> {
                     .setParameter("gid", groupId)
                     .getSingleResult();
         } catch (NoResultException e) {
-            throw new GroupNotFoundException();
+            return null;
         }
     }
 
@@ -285,31 +274,20 @@ public class GradingService extends GenericService<Grading> {
      * @param privateComment Private comment
      * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
-     * @throws NoAccessException Thrown if user may not grade the group
-     * @throws GroupNotFoundException Thrown if group not found
-     * @throws OverwritingGradeException Thrown if grade already exists
+     * @throws IllegalAccessException Thrown if user may not grade the group
      */
     public void storePaboGrade(final Course course, final User corrector,
                                final Group group, final PaboGrade paboGrade,
                                final String privateComment,
                                final String publicComment,
                                final boolean overwrite)
-            throws NoAccessException, GroupNotFoundException,
-            OverwritingGradeException {
+            throws IllegalAccessException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
          */
         if (!userService.hasCourseRole(corrector, "LECTURER", course)) {
-            throw new NoAccessException();
-        }
-        /*
-        Check if the group exists and if he/she is part of this course.
-         */
-        if (group == null
-                || !group.getCourse().getCourseId().equals(
-                        course.getCourseId())) {
-            throw new GroupNotFoundException();
+            throw new IllegalAccessException("NO_ACCESS");
         }
         /*
         Check if there is already a final grade for one student. Throwing
@@ -319,7 +297,7 @@ public class GradingService extends GenericService<Grading> {
 
         for (Student s : students) {
             if (s.getPaboGrade() != null && !overwrite) {
-                throw new OverwritingGradeException();
+                throw new IllegalStateException("GRADE_ALREADY_EXISTS");
             }
         }
         /*
@@ -340,38 +318,27 @@ public class GradingService extends GenericService<Grading> {
      * @param privateComment Private comment
      * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
-     * @throws NoAccessException Thrown if user may not grade this student
-     * @throws StudentNotFoundException Thrown if student not found
-     * @throws OverwritingGradeException Grade already exists
+     * @throws IllegalAccessException Thrown if user may not grade this student
      */
     public void storePaboGrade(final Course course, final User corrector,
                                final Student student, final PaboGrade paboGrade,
                                final String privateComment,
                                final String publicComment,
                                final boolean overwrite)
-            throws NoAccessException, StudentNotFoundException,
-            OverwritingGradeException {
+            throws IllegalAccessException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
          */
         if (!userService.hasCourseRole(corrector, "LECTURER", course)) {
-            throw new NoAccessException();
-        }
-        /*
-        Check if the student exists and if he/she is part of this course.
-         */
-        if (student == null
-                || !student.getCourse().getCourseId().equals(
-                    course.getCourseId())) {
-            throw new StudentNotFoundException();
+            throw new IllegalAccessException("NO_ACCESS");
         }
         /*
         Check if there is already a final grade for this student. Throwing
         an exception so the ajax error function gets called.
          */
         if (student.getPaboGrade() != null && !overwrite) {
-            throw new OverwritingGradeException();
+            throw new IllegalStateException("GRADE_ALREADY_EXISTS");
         }
         /*
         Store the final grade
@@ -389,48 +356,27 @@ public class GradingService extends GenericService<Grading> {
      * @param privateComment Private comment
      * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
-     * @throws NoAccessException Thrown if user may not grade this student
-     * @throws StudentNotFoundException Thrown if student not found
-     * @throws NotGradableException Thrown if user may not grade this student
-     * @throws ExamNotFoundException Thrown if the exam is invalid
-     * @throws InvalidGradingException Thrown if the grading is invalid
-     * @throws OverwritingGradeException Thrown if there is already a grading
+     * @throws IllegalAccessException Thrown if user may not grade this student
+     * @throws IllegalArgumentException Thrown if the grading is invalid
      */
     public void storeGrade(final Course course, final User corrector,
                            final Exam exam, final Student student,
                            final String value, final String privateComment,
                            final String publicComment, final boolean overwrite)
-            throws NoAccessException, StudentNotFoundException,
-            NotGradableException, ExamNotFoundException,
-            InvalidGradingException, OverwritingGradeException {
+            throws IllegalAccessException {
         /*
         Check if the user is a lecturer or tutors
          */
         if (!userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
                 && !userService.hasCourseRole(corrector, "LECTURER", course)) {
-            throw new NoAccessException();
-        }
-        /*
-        Check if the student exists and if he/she is part of this course.
-         */
-        if (student == null
-                || student.getCourse().getCourseId() != course.getCourseId()) {
-            throw new StudentNotFoundException();
+            throw new IllegalAccessException("NO_ACCESS");
         }
         /*
         If the user is a tutor, check if he may grade this student
          */
         if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
                 && !this.mayGrade(corrector, student)) {
-            throw new NotGradableException();
-        }
-        /*
-        Check the exam.
-         */
-        if (exam == null
-                || !exam.getCourse().getCourseId().equals(
-                        course.getCourseId())) {
-            throw new ExamNotFoundException();
+            throw new IllegalAccessException("NOT_GRADABLE");
         }
         /*
         Check if there is already a grading for this student
@@ -438,13 +384,13 @@ public class GradingService extends GenericService<Grading> {
         Grading grading = this.getGrading(student, exam);
 
         if (grading != null && !overwrite) {
-            throw new OverwritingGradeException();
+            throw new IllegalStateException("GRADE_ALREADY_EXISTS");
         }
         /*
         Check if the grading is valid
          */
         if (!exam.isValidGrading(value)) {
-            throw new InvalidGradingException();
+            throw new IllegalArgumentException();
         }
         /*
         Store the grading
@@ -468,49 +414,27 @@ public class GradingService extends GenericService<Grading> {
      * @param privateComment Private comment
      * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
-     * @throws NoAccessException Thrown if user may not grade
-     * @throws StudentNotFoundException Thrown if student not found
-     * @throws NotGradableException Thrown if user may not grade this group
-     * @throws ExamNotFoundException Thrown if exam is not found
-     * @throws InvalidGradingException Thrown if value is invalid
-     * @throws OverwritingGradeException Thrown if grading already exists
+     * @throws IllegalAccessException Thrown if user may not grade
+     * @throws IllegalArgumentException Thrown if value is invalid
      */
     public void storeGrade(final Course course, final User corrector,
                            final Exam exam, final Group group,
                            final String value, final String privateComment,
                            final String publicComment, final boolean overwrite)
-            throws NoAccessException, GroupNotFoundException,
-            NotGradableException, ExamNotFoundException,
-            InvalidGradingException, OverwritingGradeException {
+            throws IllegalAccessException {
         /*
         Check if the user is a lecturer or tutors
          */
         if (!userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
                 && !userService.hasCourseRole(corrector, "LECTURER", course)) {
-            throw new NoAccessException();
-        }
-        /*
-        Check if the group exists and if it is part of this course.
-         */
-        if (group == null
-                || !group.getCourse().getCourseId().equals(
-                        course.getCourseId())) {
-            throw new GroupNotFoundException();
+            throw new IllegalAccessException("NO_ACCESS");
         }
         /*
         If the user is a tutor, check if he may grade this group
          */
         if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
                 && !this.mayGrade(corrector, group)) {
-            throw new NotGradableException();
-        }
-        /*
-        Check the exam.
-         */
-        if (exam == null
-                || !exam.getCourse().getCourseId().equals(
-                        course.getCourseId())) {
-            throw new ExamNotFoundException();
+            throw new IllegalAccessException("NOT_GRADABLE");
         }
         /*
         Check if there is already a grading for any of the students
@@ -522,7 +446,7 @@ public class GradingService extends GenericService<Grading> {
             Grading grading = this.getGrading(s, exam);
 
             if (grading != null && !overwrite) {
-                throw new OverwritingGradeException();
+                throw new IllegalStateException("GRADE_ALREADY_EXISTS");
             } else {
                 gradings.put(s, grading);
             }
@@ -531,7 +455,7 @@ public class GradingService extends GenericService<Grading> {
         Check if the grading is valid
          */
         if (!exam.isValidGrading(value)) {
-            throw new InvalidGradingException();
+            throw new IllegalArgumentException();
         }
         /*
         Store the grading
@@ -554,10 +478,8 @@ public class GradingService extends GenericService<Grading> {
      * @param course Course to search in
      * @param exam Id of the exam
      * @return Exam
-     * @throws ExamNotFoundException Thrown if the exam is not found
      */
-    public Exam getExam(Course course, Long exam)
-            throws ExamNotFoundException {
+    public Exam getExam(Course course, Long exam) {
         try {
             return em.createQuery("SELECT DISTINCT e "
                             + "FROM Exam e "
@@ -568,7 +490,7 @@ public class GradingService extends GenericService<Grading> {
                     .setParameter("exam", exam)
                     .getSingleResult();
         } catch (NoResultException e) {
-            throw new ExamNotFoundException();
+            return null;
         }
     }
 
