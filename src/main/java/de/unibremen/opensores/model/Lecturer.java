@@ -29,6 +29,9 @@ public class Lecturer {
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
+    @Column(nullable = false)
+    private Boolean isCourseCreator;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
@@ -71,5 +74,13 @@ public class Lecturer {
 
     public void setDeleted(Boolean deleted) {
         this.isDeleted = deleted;
+    }
+
+    public Boolean isCourseCreator() {
+        return isCourseCreator;
+    }
+
+    public void setIsCourseCreator(Boolean courseCreator) {
+        isCourseCreator = courseCreator;
     }
 }

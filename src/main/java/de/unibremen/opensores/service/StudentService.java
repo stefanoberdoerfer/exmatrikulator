@@ -26,7 +26,7 @@ public class StudentService extends GenericService<Student> {
         List<Student> students = em.createQuery(
                 "SELECT DISTINCT s FROM Student s"
                 + " WHERE s.user.userId = :userId"
-                + " AND s.course.courseId = :courseId")
+                + " AND s.course.courseId = :courseId", Student.class)
                 .setParameter("userId", user.getUserId())
                 .setParameter("courseId", course.getCourseId())
                 .getResultList();

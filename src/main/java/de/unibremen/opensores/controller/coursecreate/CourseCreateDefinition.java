@@ -39,7 +39,7 @@ public class CourseCreateDefinition implements Serializable {
         // add a return node. The flow is exited with the outcome "course/overview"
         // once this node is reached.
         flowBuilder.returnNode("return-node")
-                .fromOutcome("#{courseCreateFlowController.getReturnValue()}");
+                .fromOutcome("/course/overview.xhtml");
 
         // call this when the flow is entered
         flowBuilder.initializer("#{courseCreateFlowController.initialize()}");

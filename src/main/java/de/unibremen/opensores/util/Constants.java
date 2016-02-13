@@ -37,6 +37,11 @@ public final class Constants {
     public static final int MAX_NAME_LENGTH = 100;
 
     /**
+     * Maximum filesize per uploaded file in bytes.
+     */
+    public static final int MAX_UPLOADFILE_SIZE = 100000000; //100Mb
+
+    /**
      * Email regex used for mail verification.
      *
      * <p>

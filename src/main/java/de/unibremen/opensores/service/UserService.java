@@ -1,6 +1,7 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.PasswordReset;
+import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Course;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Kevin Scheck
  * @author Sören Tempel
+ * @author Stefan Oberdörfer
  */
 @Stateless
 public class UserService extends GenericService<User> {
@@ -73,8 +75,8 @@ public class UserService extends GenericService<User> {
     /**
      * Returns true if the given user is a lecturer in the given course.
      *
-     * @param User User to check.
-     * @param Course Course to check.
+     * @param user User to check.
+     * @param course Course to check.
      * @return True if he is, false otherwise.
      */
     private boolean isLecturer(User user, Course course) {
@@ -92,8 +94,8 @@ public class UserService extends GenericService<User> {
     /**
      * Returns true if the given user is a privileged user in the given course.
      *
-     * @param User User to check.
-     * @param Course Course to check.
+     * @param user User to check.
+     * @param course Course to check.
      * @return True if he is, false otherwise.
      */
     private boolean isPrivileged(User user, Course course) {
@@ -111,8 +113,8 @@ public class UserService extends GenericService<User> {
     /**
      * Returns true if the given user is a student in the given course.
      *
-     * @param User User to check.
-     * @param Course Course to check.
+     * @param user User to check.
+     * @param course Course to check.
      * @return True if he is, false otherwise.
      */
     private boolean isStudent(User user, Course course) {
@@ -158,7 +160,7 @@ public class UserService extends GenericService<User> {
      */
     public List<Course> getCourses(final User user, boolean hidden) {
         // We need to use the userId here instead of the user object
-        // Kown Bug: https://hibernate.atlassian.net/browse/HHH-2772
+        // Known Bug: https://hibernate.atlassian.net/browse/HHH-2772
 
         List<Course> courses = em.createQuery(
                 "SELECT DISTINCT c FROM Course c"
@@ -174,6 +176,25 @@ public class UserService extends GenericService<User> {
             .setParameter("id", user.getUserId())
             .setParameter("hidden", hidden)
             .getResultList();
+
+        return (courses.isEmpty()) ? null : courses;
+    }
+
+    /**
+     * Returns a list of courses this user is a lecturer of.
+     *
+     * @param user User to lookup courses for.
+     * @return List of courses with the user as lecturer or null
+     *         if none where found.
+     */
+    public List<Course> getLecturerCourses(final User user) {
+
+        List<Course> courses = em.createQuery(
+                "SELECT DISTINCT c FROM Course c"
+                        + " LEFT JOIN c.lecturers AS l"
+                        + " WITH l.user.userId = :id", Course.class)
+                .setParameter("id", user.getUserId())
+                .getResultList();
 
         return (courses.isEmpty()) ? null : courses;
     }
@@ -217,6 +238,49 @@ public class UserService extends GenericService<User> {
                 .setParameter("searchInput", trimSearchInput + "%")
                 .getResultList();
         }
+    }
+
+
+    /**
+     * Searches for lecturers by their email, firstName, lastName or a combination
+     * of their first and last name. One of these options should be passed as
+     * searchInput parameter string.
+     * @param searchInput The search input, representing only the
+     *                    email, firstName, lastName or a combination of the
+     *                    first and last name of the user.
+     * @return A list of users which match the search input. An empty List if
+     *         the searchInput is null or empty.
+     */
+    public List<User> searchForLecturers(String searchInput) {
+        if (searchInput == null || searchInput.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        final String trimSearchInput = searchInput.trim().toLowerCase();
+        if (trimSearchInput.contains(" ") && trimSearchInput.split(" ").length >= 2) {
+            final String[] names = trimSearchInput.split(" ");
+            return em.createQuery(
+                    "SELECT DISTINCT u FROM User u WHERE "
+                            + GlobalRole.LECTURER + " IN elements(u.roles) AND"
+                            + "((TRIM(LOWER(u.firstName)) LIKE :firstNameSplit "
+                            + "AND TRIM(LOWER(u.lastName)) LIKE :lastNameSplit) "
+                            + "OR TRIM(LOWER(u.firstName)) LIKE :searchInput "
+                            + "OR TRIM(LOWER(u.lastName)) LIKE :searchInput "
+                            + "OR TRIM(LOWER(u.email)) LIKE : searchInput)", User.class)
+                    .setParameter("firstNameSplit", names[0])
+                    .setParameter("lastNameSplit", names[1])
+                    .setParameter("searchInput", trimSearchInput)
+                    .getResultList();
+        } else {
+            return em.createQuery(
+                    "SELECT DISTINCT u FROM User u WHERE "
+                            + "TRIM(LOWER(u.email)) LIKE :searchInput "
+                            + "OR TRIM(LOWER(u.firstName)) LIKE :searchInput "
+                            + "OR TRIM(LOWER(u.lastName)) LIKE :searchInput "
+                            + "OR TRIM(LOWER(u.email)) LIKE :searchInput ", User.class)
+                    .setParameter("searchInput", trimSearchInput + "%")
+                    .getResultList();
+        }
+
     }
 
     /**

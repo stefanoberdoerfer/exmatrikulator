@@ -3,8 +3,8 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough" xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
     <!-- Define Params -->
     <ui:param name="pageTitle" value="#{msg['courses.create']}" />
     <!-- Breadcrumbs -->
@@ -34,7 +34,7 @@
 
         <h3>#{msg['common.course.participants']}</h3>
 
-        <h:form layout="block" enctype="multipart/form-data">
+        <h:form layout="block" id="uploadform" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-xs-6">
                     <p>#{msg['import.hint']}</p>
@@ -49,37 +49,70 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <ui:repeat value="#{studentImportController.files}" var="file">
                         <tr class="vert-align-middle">
-                            <td>2015-09-12-StudIP.csv</td>
-                            <td>5.4 MB</td>
+                            <td>#{file.fileName}</td>
+                            <td>#{studentImportController.getHumanReadableFileSize(file.getSize())}</td>
                             <td>
                                 <h:commandLink class="btn btn-danger">
+                                    <f:ajax listener="#{studentImportController.removeFile(file)}"
+                                            execute="@this"
+                                            render="@form"/>
                                     <i class="fa fa-remove"></i>
                                 </h:commandLink>
                             </td>
                         </tr>
+                        </ui:repeat>
                         </tbody>
                     </table>
+                    <p:fileUpload fileUploadListener="#{studentImportController.handleFileUpload}"
+                                  mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true"
+                                  update="@form" uploadLabel="#{msg['import.upload']}"
+                                  invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
+                                  sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
+                    <h:commandButton class="btn btn-primary" action="#{studentImportController.executeImport()}"
+                                     value="#{msg['import.startUserImport']}">
+                    </h:commandButton>
+                </div>
 
-                    <h:inputFile id="file" />
-                    <h:commandButton value="#{msg['import.upload']}" class="btn btn-primary"/>
+                <div class="col-xs-6">
+                    <h3>#{msg['import.importedParticipants']}</h3>
+                    <table class="table table-condensed">
+                        <thead>
+                        <tr>
+                            <th>#{msg['common.name']}</th>
+                            <th class="table-examination-identifier">#{msg['common.email']}</th>
+                            <th class="table-examination-grade">#{msg['import.alreadyUser']}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <ui:repeat value="#{studentImportController.course.students}" var="student">
+                        <tr>
+                            <td>#{student.user}</td>
+                            <td>#{student.user.email}</td>
+                            <td>#{studentImportController.isStudentWithExistingAccount(student)}</td>
+                        </tr>
+                        </ui:repeat>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <hr />
             <div class="row form-buttons">
                 <div class="col-xs-6">
-                    <h:commandButton class="btn btn-default" action="return-node"
-                                     value="#{msg['common.cancel']}" />
+                    <h:commandButton class="btn btn-default" action="#{courseCreateFlowController.getReturnValue()}"
+                                     value="#{msg['common.cancel']}" immediate="true" />
                 </div>
                 <div class="col-xs-6 text-right">
                     <div class="btn-group">
                         <h:commandButton class="btn btn-default" action="step4"
                                          value="#{msg['common.back']}" />
-                        <h:form>
-                        <h:commandButton class="btn btn-primary" action="return-node"
-                                         value="#{msg['courses.create.finish']}" />
-                        </h:form>
+                        <p:commandButton class="btn btn-primary" action="#{courseCreateFlowController.saveCourse()}"
+                                         value="#{msg['courses.create.finish']}"
+                                         oncomplete="#{userController.updateUserCourses()}">
+                            <f:actionListener binding="#{courseCreateFlowController.setStepFinished(5)}"/>
+                        </p:commandButton>
                     </div>
                 </div>
             </div>
