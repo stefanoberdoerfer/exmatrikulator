@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GlobalRole;
@@ -19,6 +20,7 @@ import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Upload;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.LogService;
@@ -30,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.io.File;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ApplicationScoped;
@@ -45,6 +48,9 @@ import java.util.Date;
 @ManagedBean(eager = true)
 @ApplicationScoped
 public class ApplicationController {
+
+    @EJB
+    private BackupService backup;
 
     @EJB
     private GradingService gradingService;
@@ -332,5 +338,4 @@ public class ApplicationController {
         log.debug("Upload with id " + upload.getUploadId() + " uploaded by "
                 + upload.getUploaders().get(0).getUser().getFirstName());
     }
-
 }

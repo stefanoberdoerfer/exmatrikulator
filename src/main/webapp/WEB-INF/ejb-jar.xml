@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ejb-jar xmlns = "http://java.sun.com/xml/ns/javaee"
+  version = "3.1"
+  xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee
+     http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+  <enterprise-beans>
+    <session>
+      <ejb-name>BackupService</ejb-name>
+      <ejb-class>de.unibremen.opensores.service.BackupService</ejb-class>
+      <session-type>Stateless</session-type>
+      <timer>
+        <schedule>
+	  <minute>*/1</minute>
+          <hour>*</hour>
+          <month>*</month>
+          <year>*</year>
+        </schedule>
+        <timeout-method>
+          <method-name>scheduledBackup</method-name>
+          <method-params>
+            <method-param>javax.ejb.Timer</method-param>
+          </method-params>
+       </timeout-method>
+     </timer>
+   </session>
+ </enterprise-beans>
+</ejb-jar>
