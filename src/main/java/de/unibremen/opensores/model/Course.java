@@ -60,7 +60,7 @@ public class Course {
     @Column
     private Integer maxGroupSize;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Student> students = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -97,6 +97,11 @@ public class TutorialController implements Serializable {
     private DualListModel<PrivilegedUser> tutorialTutors;
 
     /**
+     * List of students for this tutorial.
+     */
+    private DualListModel<Student> tutorialStudents;
+
+    /**
      * Current group context.
      */
     private transient Group group;
@@ -105,6 +110,11 @@ public class TutorialController implements Serializable {
      * Name of the current group.
      */
     private String groupName;
+
+    /**
+     * Current student context.
+     */
+    private transient Student student;
 
     /**
      * New group name, used when the group is being edited.
@@ -158,6 +168,8 @@ public class TutorialController implements Serializable {
 
         tutorialTutors = new DualListModel<>(course.getTutors(),
             new ArrayList<>());
+        tutorialStudents = new DualListModel<>(course.getStudents(),
+            new ArrayList<>());
         groupMembers = new DualListModel<>(course.getStudents(),
             new ArrayList<>());
     }
@@ -195,6 +207,12 @@ public class TutorialController implements Serializable {
         this.tutorialTutors.setTarget(tutors);
         this.tutorialTutors.setSource(tutors.stream()
                 .filter(t -> !tutorialTutors.getTarget().contains(t))
+                .collect(Collectors.toList()));
+
+        List<Student> students = tutorial.getStudents();
+        this.tutorialStudents.setTarget(students);
+        this.tutorialStudents.setSource(students.stream()
+                .filter(s -> !tutorialStudents.getTarget().contains(s))
                 .collect(Collectors.toList()));
     }
 
@@ -341,6 +359,37 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Changes the current student context.
+     *
+     * @param student Student to switch to.
+     */
+    public void changeCurrentStudent(@NotNull Student student) {
+        this.student = student;
+        changeCurrentTutorial(student.getTutorial());
+    }
+
+    /**
+     * Updates the students for the current tutorial.
+     */
+    public void updateStudents() {
+        for (Student s : tutorialStudents.getTarget()) {
+            s.setTutorial(tutorial);
+        }
+
+        tutorial.setStudents(tutorialStudents.getTarget());
+        tutorial = tutorialService.update(tutorial);
+    }
+
+    /**
+     * Removes the current student from the current tutorial.
+     */
+    public void removeStudent() {
+        student.setTutorial(null);
+        tutorial.getStudents().remove(student);
+        tutorial = tutorialService.update(tutorial);
+    }
+
+    /**
      * Returns a list of all tutorials for this course.
      *
      * @return List of tutorials or null if non exist.
@@ -473,6 +522,24 @@ public class TutorialController implements Serializable {
      */
     public DualListModel<PrivilegedUser> getTutorialTutors() {
         return tutorialTutors;
+    }
+
+    /**
+     * Sets the students for the current tutorial.
+     *
+     * @param tutorialStudents List of students.
+     */
+    public void setTutorialStudents(DualListModel<Student> tutorialStudents) {
+        this.tutorialStudents = tutorialStudents;
+    }
+
+    /**
+     * Returns the students for the current tutorial.
+     *
+     * @return List of students.
+     */
+    public DualListModel<Student> getTutorialStudents() {
+        return tutorialStudents;
     }
 
     /**
