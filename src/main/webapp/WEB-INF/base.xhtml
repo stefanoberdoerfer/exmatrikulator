@@ -80,7 +80,24 @@
                 <ul class="nav nav-pills nav-stacked semester-links">
                     <ui:repeat value="#{semester.value}" var="course">
                         <li>
-                            <h:link value="#{course.name}" />
+                            <h:link>
+                                #{course.name}
+                                <h:panelGroup styleClass="course-icons pull-right">
+                                    <h:panelGroup rendered="#{navigation.isLecturer(course)}">
+                                        <i class="fa fa-user-md fa-lecturer"></i>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{navigation.isPrivilegedUser(course)}">
+                                        <i class="fa fa-user-md"></i>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{course.lastFinalization == null}">
+                                        <i class="fa fa-square-o"></i>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{course.lastFinalization != null}">
+                                        <i class="fa fa-check-square-o"></i>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </h:link>
                             <ul class="nav nav-pills nav-stacked sub-pills">
                                 <li><h:link outcome="/participants/overview" value="#{msg['common.course.participants']}">
                                     <f:param name="course-id" value="#{course.courseId}"/>

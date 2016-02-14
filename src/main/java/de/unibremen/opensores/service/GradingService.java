@@ -25,7 +25,9 @@ import java.util.Map;
 /**
  * Service class for the Grading model class.
  *
- * @author Lorenz Huether, Kevin Scheck, Matthias Reichmann
+ * @author Lorenz Huether
+ * @author Kevin Scheck
+ * @author Matthias Reichmann
  */
 @Stateless
 public class GradingService extends GenericService<Grading> {

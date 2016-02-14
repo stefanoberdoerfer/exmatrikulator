@@ -1,5 +1,7 @@
 package de.unibremen.opensores.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -13,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
  * @author Stefan Oberdoerfer
  * @author Sören Tempel
  * @author Lorenz Hüther
+ * @author Matthias Reichmann
  */
 @Entity
 @Table(name = "COURSES")
@@ -50,6 +54,10 @@ public class Course {
 
     @Column(nullable = false)
     private Boolean studentsCanSeeFormula;
+
+    @Column(nullable = true)
+    @Type(type = "date")
+    private Date lastFinalization;
 
     @OneToOne(mappedBy = "course", cascade = CascadeType.MERGE)
     private MailTemplate emailTemplate;
@@ -375,5 +383,31 @@ public class Course {
 
     public void setMaxGroupSize(Integer maxGroupSize) {
         this.maxGroupSize = maxGroupSize;
+    }
+
+    /**
+     * Returns the date of the last finalization of the grades. Custom getter
+     * necessary to not expose internal representation.
+     * @return Date of the last finalization
+     */
+    public Date getLastFinalization() {
+        if (lastFinalization == null) {
+            return null;
+        } else {
+            return new Date(lastFinalization.getTime());
+        }
+    }
+
+    /**
+     * Sets the date of the last finalization of the grades. Custom setter
+     * necessary to not expose internal representation.
+     * @param lastFinalization New date of last finalization
+     */
+    public void setLastFinalization(final Date lastFinalization) {
+        if (lastFinalization == null) {
+            this.lastFinalization = null;
+        } else {
+            this.lastFinalization = new Date(lastFinalization.getTime());
+        }
     }
 }
