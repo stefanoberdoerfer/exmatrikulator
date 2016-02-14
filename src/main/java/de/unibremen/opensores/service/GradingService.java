@@ -1,11 +1,13 @@
 
 package de.unibremen.opensores.service;
 
+import de.unibremen.opensores.exception.InvalidGradeException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Grade;
 import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Group;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
@@ -44,6 +46,12 @@ public class GradingService extends GenericService<Grading> {
      */
     @EJB
     private UserService userService;
+
+    /**
+     * The LogService for creating Exmatrikulator business domain logs.
+     */
+    @EJB
+    private LogService logService;
 
     /**
      * Lists all gradings of the GRADINGS table.
@@ -91,7 +99,7 @@ public class GradingService extends GenericService<Grading> {
 
     /**
      * Searches the students for the given data. Searches the e-mail, name
-     * and student id (TODO!)
+     * and matriculation number.
      * @param course Course to load the students
      * @param search String to search for
      * @return List of Students or null
@@ -103,8 +111,9 @@ public class GradingService extends GenericService<Grading> {
                         + "JOIN s.course AS c WITH c.courseId = :cid "
                         + "WHERE lower(u.email) LIKE :search "
                         + "OR lower(concat(u.firstName, ' ', u.lastName)) "
-                        + "LIKE :search",
-                Student.class)
+                        + "LIKE :search "
+                        + "OR u.matriculationNumber LIKE :search",
+                    Student.class)
                 .setParameter("cid", course.getCourseId())
                 .setParameter("search", "%" + search.toLowerCase() + "%")
                 .getResultList();
@@ -150,7 +159,7 @@ public class GradingService extends GenericService<Grading> {
     }
 
     /**
-     * Searches for a student via the name, email or student id (TODO!).
+     * Searches for a student via the name, email or matriculation number.
      * @param course Course to search in
      * @param search Value to search for
      * @return Student
@@ -163,7 +172,8 @@ public class GradingService extends GenericService<Grading> {
                             + "JOIN s.course AS c WITH c.courseId = :cid "
                             + "WHERE lower(u.email) = :search "
                             + "OR lower(concat(u.firstName, ' ', u.lastName)) "
-                            + "= :search",
+                            + "= :search "
+                            + "OR u.matriculationNumber = :search",
                         Student.class)
                     .setParameter("cid", course.getCourseId())
                     .setParameter("search", search.toLowerCase())
@@ -196,18 +206,42 @@ public class GradingService extends GenericService<Grading> {
 
     /**
      * Updates the pabo grade of the given student.
+     * @param corrector Lecturer who changed the grade
      * @param student Student that should be updated
      * @param paboGrade Pabo grade for this student
      * @param privateComment Private comment of the corrector
      * @param publicComment Public comment of the corrector
      */
-    private void persistGrade(Student student, PaboGrade paboGrade,
+    private void persistGrade(User corrector, Student student, PaboGrade paboGrade,
                            String privateComment, String publicComment) {
+        final String oldGrade = student.getPaboGrade();
         student.setPaboGrade(paboGrade.getGradeName());
         student.setPublicComment(publicComment);
         student.setPrivateComment(privateComment);
 
         studentService.update(student);
+        /*
+        Log the change
+         */
+        String description;
+
+        if (oldGrade == null) {
+            description = "added final grade of "
+                    + student.getUser().getFirstName() + " "
+                    + student.getUser().getLastName() + " ("
+                    + student.getUser().getMatriculationNumber() + "): "
+                    + paboGrade.getGradeValue();
+        } else {
+            description = "changed final grade of "
+                    + student.getUser().getFirstName() + " "
+                    + student.getUser().getLastName() + " ("
+                    + student.getUser().getMatriculationNumber() + ") from "
+                    + oldGrade + " to "
+                    + paboGrade.getGradeValue();
+        }
+
+        logService.persist(Log.from(corrector,
+                student.getCourse().getCourseId(), description));
     }
 
     /**
@@ -238,6 +272,17 @@ public class GradingService extends GenericService<Grading> {
         grading.setPrivateComment(privateComment);
         grading.setGrade(grade);
         this.persist(grading);
+        /*
+        Log the change
+         */
+        String description = "added grading of "
+                + student.getUser().getFirstName() + " "
+                + student.getUser().getLastName() + " ("
+                + student.getUser().getMatriculationNumber() + ") for "
+                + exam.getName() + ": " + value;
+
+        logService.persist(Log.from(corrector,
+                student.getCourse().getCourseId(), description));
     }
 
     /**
@@ -252,6 +297,7 @@ public class GradingService extends GenericService<Grading> {
                               String privateComment, String publicComment) {
         BigDecimal decimal = new BigDecimal(value.replace(',', '.'));
 
+        final BigDecimal oldGrade = grading.getGrade().getValue();
         Grade grade = grading.getGrade();
         grade.setGradeType(grading.getExam().getGradeType());
         grade.setValue(decimal);
@@ -262,6 +308,21 @@ public class GradingService extends GenericService<Grading> {
         grading.setPublicComment(publicComment);
         grading.setPrivateComment(privateComment);
         this.update(grading);
+        /*
+        Log the change
+         */
+        Student student = grading.getStudent();
+        Exam exam = grading.getExam();
+
+        String description = "changed grading of "
+                + student.getUser().getFirstName() + " "
+                + student.getUser().getLastName() + " ("
+                + student.getUser().getMatriculationNumber() + ") for "
+                + exam.getName() + " from " + oldGrade
+                + " to " + value;
+
+        logService.persist(Log.from(corrector,
+                student.getCourse().getCourseId(), description));
     }
 
     /**
@@ -304,7 +365,8 @@ public class GradingService extends GenericService<Grading> {
         Store the final grades
          */
         for (Student s : students) {
-            this.persistGrade(s, paboGrade, privateComment, publicComment);
+            this.persistGrade(corrector, s, paboGrade, privateComment,
+                    publicComment);
         }
     }
 
@@ -343,7 +405,8 @@ public class GradingService extends GenericService<Grading> {
         /*
         Store the final grade
          */
-        this.persistGrade(student, paboGrade, privateComment, publicComment);
+        this.persistGrade(corrector, student, paboGrade, privateComment,
+                publicComment);
     }
 
     /**
@@ -357,13 +420,13 @@ public class GradingService extends GenericService<Grading> {
      * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
      * @throws IllegalAccessException Thrown if user may not grade this student
-     * @throws IllegalArgumentException Thrown if the grading is invalid
+     * @throws InvalidGradeException Thrown if the grading is invalid
      */
     public void storeGrade(final Course course, final User corrector,
                            final Exam exam, final Student student,
                            final String value, final String privateComment,
                            final String publicComment, final boolean overwrite)
-            throws IllegalAccessException {
+            throws IllegalAccessException, InvalidGradeException {
         /*
         Check if the user is a lecturer or tutors
          */
@@ -390,7 +453,7 @@ public class GradingService extends GenericService<Grading> {
         Check if the grading is valid
          */
         if (!exam.isValidGrading(value)) {
-            throw new IllegalArgumentException();
+            throw new InvalidGradeException("INVALID_GRADE");
         }
         /*
         Store the grading
@@ -415,13 +478,13 @@ public class GradingService extends GenericService<Grading> {
      * @param publicComment Public comment
      * @param overwrite Flag if an existing grade shall be overwritten
      * @throws IllegalAccessException Thrown if user may not grade
-     * @throws IllegalArgumentException Thrown if value is invalid
+     * @throws InvalidGradeException Thrown if value is invalid
      */
     public void storeGrade(final Course course, final User corrector,
                            final Exam exam, final Group group,
                            final String value, final String privateComment,
                            final String publicComment, final boolean overwrite)
-            throws IllegalAccessException {
+            throws IllegalAccessException, InvalidGradeException {
         /*
         Check if the user is a lecturer or tutors
          */
@@ -455,7 +518,7 @@ public class GradingService extends GenericService<Grading> {
         Check if the grading is valid
          */
         if (!exam.isValidGrading(value)) {
-            throw new IllegalArgumentException();
+            throw new InvalidGradeException("INVALID_GRADE");
         }
         /*
         Store the grading
