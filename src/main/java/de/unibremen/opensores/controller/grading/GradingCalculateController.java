@@ -1,8 +1,10 @@
 package de.unibremen.opensores.controller.grading;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +37,12 @@ public class GradingCalculateController {
     private UserService userService;
 
     /**
+     * The LogService for creating Exmatrikulator business domain logs.
+     */
+    @EJB
+    private LogService logService;
+
+    /**
      * Calculates the final grades for the given course.
      * @param course Course which final grades shall be calculated
      */
@@ -62,6 +70,13 @@ public class GradingCalculateController {
         /*
         Todo: Calculate the final grades
          */
+        /*
+        Log the change
+         */
+        String description = "initiated the calculation of the final "
+                + "grades";
+
+        logService.persist(Log.from(user, course.getCourseId(), description));
         /*
         Success
          */

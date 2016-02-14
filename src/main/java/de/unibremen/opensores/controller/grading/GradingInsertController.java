@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller.grading;
 
+import de.unibremen.opensores.exception.InvalidGradeException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Group;
@@ -187,8 +188,7 @@ public class GradingInsertController {
             }
 
             return;
-        } catch (IllegalArgumentException e) {
-            log.debug("IllegalArgument: " + e.toString());
+        } catch (InvalidGradeException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
                     bundle.getString("gradings.invalidGrading")));
@@ -267,8 +267,7 @@ public class GradingInsertController {
             }
 
             return;
-        } catch (IllegalArgumentException e) {
-            log.debug("IllegalArgument: " + e.toString());
+        } catch (InvalidGradeException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
                     bundle.getString("gradings.invalidGrading")));

@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller.grading;
 
+import de.unibremen.opensores.exception.InvalidGradeException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.Grading;
@@ -109,6 +110,7 @@ public class GradingEditController {
      * @param course Course that is related to the exam
      */
     public void updateExamGrading(Course course) {
+        log.debug("Updating exam grading");
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
@@ -124,6 +126,8 @@ public class GradingEditController {
         /*
         Check student
          */
+        log.debug("Checking student");
+
         if (student == null) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
@@ -133,6 +137,8 @@ public class GradingEditController {
         /*
         Check exam
          */
+        log.debug("Checking exam");
+
         if (exam == null) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
@@ -143,6 +149,8 @@ public class GradingEditController {
         Try to store the grade
          */
         try {
+            log.debug("Using gradingService to store the grade");
+
             gradingService.storeGrade(course, user, exam, student,
                     formGrading, formPrivateComment, formPublicComment,
                     true);
@@ -158,11 +166,13 @@ public class GradingEditController {
             }
 
             return;
-        } catch (IllegalArgumentException e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("gradings.invalidGrading")));
-            return;
+        } catch (InvalidGradeException e) {
+            if (e.getMessage().equals("INVALID_GRADE")) {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
+                        bundle.getString("gradings.invalidGrading")));
+                return;
+            }
         }
         /*
         Success
