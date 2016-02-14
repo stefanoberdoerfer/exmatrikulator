@@ -24,7 +24,6 @@
             <li><h:link outcome="/course/create/step2">
                 <i class="fa fa-check-square-o"></i> #{msg['common.course.exams']}</h:link></li>
             <li class="active"><a><i class="fa fa-square-o"></i> #{msg['common.course.participationTypes']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['common.course.gradingFormula']}</a></li>
             <li><a><i class="fa fa-square-o"></i> #{msg['common.course.participants']}</a></li>
         </ul>
 
@@ -38,7 +37,7 @@
                     <p>#{msg['participationType.explanation']}</p>
                     <table class="table table-invisible">
                         <tbody>
-                        <ui:repeat value="#{parttypeController.course.participationTypes}" var="value" id="parttype">
+                        <ui:repeat value="#{step3.partTypeController.course.participationTypes}" var="value" id="parttype">
                         <tr class="table-row-blank">
                             <td class="col-xs-9 form-control-static">
                                 <strong>#{value.name}</strong>
@@ -48,14 +47,14 @@
                             <td class="table-common-options-two">
                                 <h:commandLink class="btn btn-default">
                                     <i class="fa fa-edit"></i>
-                                    <f:ajax listener="#{parttypeController.editPartType(value)}"
+                                    <f:ajax listener="#{step3.partTypeController.editPartType(value)}"
                                             execute="@form"
                                             render="@form"
                                     />
                                 </h:commandLink>
                                 <h:commandLink class="btn btn-danger" rendered="#{!value.isDefaultParttype()}">
                                     <i class="fa fa-remove"></i>
-                                    <f:ajax listener="#{parttypeController.removePartType(value)}"
+                                    <f:ajax listener="#{step3.partTypeController.removePartType(value)}"
                                             execute="@form"
                                             render="@form"
                                     />
@@ -73,7 +72,7 @@
                                 <h:outputLabel for="partTypeName" class="col-xs-3 control-label text-left"
                                                value="#{msg['common.name']}"/>
                                 <div class="col-xs-9" >
-                                    <h:inputText value="#{parttypeController.currentPartType.name}" class="form-control"
+                                    <h:inputText value="#{step3.partTypeController.currentPartType.name}" class="form-control"
                                                  id="partTypeName"/>
                                 </div>
                             </td>
@@ -82,7 +81,7 @@
                             <td>
                                 <h:selectBooleanCheckbox styleClass="col-xs-3"
                                         id="isGroupPerformance"
-                                        value="#{parttypeController.currentPartType.groupPerformance}"/>
+                                        value="#{step3.partTypeController.currentPartType.groupPerformance}"/>
                                 <h:outputLabel value="#{msg['participationType.groupPerformance']}"
                                                for="isGroupPerformance" styleClass="col-xs-offset-1"/>
                             </td>
@@ -92,7 +91,7 @@
                                 <h:outputLabel for="partTypeContent" class="col-xs-3 control-label text-left"
                                                value="#{msg['participationType.performanceContent']}"/>
                                 <div class="col-xs-9" >
-                                    <p:inputTextarea value="#{parttypeController.currentPartType.performanceContent}"
+                                    <p:inputTextarea value="#{step3.partTypeController.currentPartType.performanceContent}"
                                                  class="form-control" id="partTypeContent" rows="2" />
                                 </div>
                             </td>
@@ -102,7 +101,7 @@
                                 <h:outputLabel for="partTypeArea" class="col-xs-3 control-label text-left"
                                                value="#{msg['participationType.performanceArea']}"/>
                                 <div class="col-xs-9" >
-                                    <p:inputTextarea value="#{parttypeController.currentPartType.performanceArea}"
+                                    <p:inputTextarea value="#{step3.partTypeController.currentPartType.performanceArea}"
                                                      class="form-control" id="partTypeArea" rows="2" cols="100" />
                                 </div>
                             </td>
@@ -111,7 +110,7 @@
                             <td>
                                 <h:selectBooleanCheckbox styleClass="col-xs-3"
                                                          id="isRestricted"
-                                                         value="#{parttypeController.currentPartType.restricted}"/>
+                                                         value="#{step3.partTypeController.currentPartType.restricted}"/>
                                 <h:outputLabel value="#{msg['participationType.restricted']}"
                                                for="isRestricted" styleClass="col-xs-offset-1"/>
                             </td>
@@ -119,15 +118,15 @@
                         <tr class="table-row-blank">
                             <td colspan="2">
                                 <h:commandButton value="#{msg['participationType.add']}" class="btn btn-default"
-                                                 rendered="#{!parttypeController.editmode}">
-                                    <f:ajax listener="#{parttypeController.addPartType()}"
+                                                 rendered="#{!step3.partTypeController.editmode}">
+                                    <f:ajax listener="#{step3.partTypeController.addPartType()}"
                                             execute="@form"
                                             render="@form"
                                     />
                                 </h:commandButton>
                                 <h:commandButton value="#{msg['common.saveChanges']}" class="btn btn-default"
-                                                 rendered="#{parttypeController.editmode}">
-                                    <f:ajax listener="#{parttypeController.addPartType()}"
+                                                 rendered="#{step3.partTypeController.editmode}">
+                                    <f:ajax listener="#{step3.partTypeController.addPartType()}"
                                             execute="@form"
                                             render="@form"
                                     />

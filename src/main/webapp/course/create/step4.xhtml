@@ -26,62 +26,72 @@
                 <i class="fa fa-check-square-o"></i> #{msg['common.course.exams']}</h:link></li>
             <li><h:link outcome="/course/create/step3">
                 <i class="fa fa-check-square-o"></i> #{msg['common.course.participationTypes']}</h:link></li>
-            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['common.course.gradingFormula']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['common.course.participants']}</a></li>
+            <li class="active"><a><i class="fa fa-square-o"></i> #{msg['common.course.participants']}</a></li>
         </ul>
 
         <ui:include src="/WEB-INF/alerts.xhtml" />
 
-        <h3>#{msg['common.course.gradingFormula']}</h3>
+        <h3>#{msg['common.course.participants']}</h3>
 
-        <h:form layout="block">
+        <h:form layout="block" id="uploadform" enctype="multipart/form-data">
             <div class="row">
-                <div class="col-xs-8">
-                    <p:tabView>
-                        <p:tab title="#{msg['gradingformula.standard']}">
-                            <p>#{msg['gradingformula.explanation']}</p>
-                            <h:inputTextarea rows="20" class="form-control calculation-formula" />
+                <div class="col-xs-6">
+                    <p>#{msg['import.hint']}</p>
+                    <br />
 
-                            <h:link onclick="return exModal('formulaTest');"
-                                    class="btn btn-default" value="#{msg['gradingformula.test']}" />
-                        </p:tab>
-                    </p:tabView>
-                </div>
-                <div class="col-xs-4">
-                    <h3>#{msg['common.course.exams']}</h3>
-                    <table class="table table-condensed">
+                    <table class="table">
                         <thead>
                         <tr>
-                            <th>#{msg['examination.name']}</th>
-                            <th class="table-examination-identifier">#{msg['examination.shortcut']}</th>
-                            <th class="table-examination-grade">#{msg['examination.gradeType']}</th>
+                            <th>#{msg['import.filename']}</th>
+                            <th class="table-common-filesize">#{msg['import.filesize']}</th>
+                            <th class="table-common-options-one"></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>Übungsblatt 1</td>
-                            <td>ÜB1</td>
-                            <td>Prozentzahl</td>
-                        </tr>
+                        <ui:repeat value="#{studentImportController.files}" var="file">
+                            <tr class="vert-align-middle">
+                                <td>#{file.fileName}</td>
+                                <td>#{studentImportController.getHumanReadableFileSize(file.getSize())}</td>
+                                <td>
+                                    <h:commandLink class="btn btn-danger">
+                                        <f:ajax listener="#{studentImportController.removeFile(file)}"
+                                                execute="@this"
+                                                render="@form"/>
+                                        <i class="fa fa-remove"></i>
+                                    </h:commandLink>
+                                </td>
+                            </tr>
+                        </ui:repeat>
                         </tbody>
                     </table>
-                    <div class="alert alert-info">#{msg['gradingformula.shortcutHint']}</div>
-                    <p/><br />
-                    <h3>#{msg['gradingformula.helpers']}</h3>
+                    <p:fileUpload fileUploadListener="#{studentImportController.handleFileUpload}"
+                                  mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true"
+                                  update="@form" uploadLabel="#{msg['import.upload']}"
+                                  invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
+                                  sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
+                    <h:commandButton class="btn btn-primary" action="#{studentImportController.executeImport()}"
+                                     value="#{msg['import.startUserImport']}">
+                    </h:commandButton>
+                </div>
+
+                <div class="col-xs-6">
+                    <h3>#{msg['import.importedParticipants']}</h3>
                     <table class="table table-condensed">
                         <thead>
                         <tr>
-                            <th>#{msg['gradingformula.syntax']}</th>
+                            <th>#{msg['common.name']}</th>
+                            <th class="table-examination-identifier">#{msg['common.email']}</th>
+                            <th class="table-examination-grade">#{msg['import.alreadyUser']}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>
-                                <strong>replace(x1, x2)</strong><br />
-                                Teilprüfung x1 wird dabei von Teilprüfung x2 ersetzt, falls für
-                                den Studenten bei x2 ein Ergebnis eingetragen wurde.
-                            </td>
-                        </tr>
+                        <ui:repeat value="#{studentImportController.course.students}" var="student">
+                            <tr>
+                                <td>#{student.user}</td>
+                                <td>#{student.user.email}</td>
+                                <td>#{studentImportController.isStudentWithExistingAccount(student)}</td>
+                            </tr>
+                        </ui:repeat>
                         </tbody>
                     </table>
                 </div>
@@ -97,19 +107,15 @@
                     <div class="btn-group">
                         <h:commandButton class="btn btn-default" action="step3"
                                          value="#{msg['common.back']}" />
-                        <h:commandButton class="btn btn-default" action="step5"
-                                         value="#{msg['common.skip']}">
+                        <p:commandButton class="btn btn-primary" action="#{courseCreateFlowController.saveCourse()}"
+                                         value="#{msg['courses.create.finish']}"
+                                         onsuccess="return exModal('courseCreateSuccess');">
                             <f:actionListener binding="#{courseCreateFlowController.setStepFinished(4)}"/>
-                        </h:commandButton>
-                        <h:commandButton class="btn btn-primary" action="step5"
-                                         value="#{msg['common.continue']}" type="submit">
-                            <f:actionListener binding="#{courseCreateFlowController.setStepFinished(4)}"/>
-                        </h:commandButton>
+                        </p:commandButton>
                     </div>
                 </div>
             </div>
         </h:form>
-
-        <ui:include src="/WEB-INF/modals/course/create/formula/test.xhtml" />
+        <ui:include src="/WEB-INF/modals/course/create/success.xhtml" />
     </ui:define>
 </ui:composition>

@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['common.success']}" appendTo="@(body)" widgetVar="courseCreateSuccess" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            #{msg['courses.create.success']}
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.close']}"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':courseCreateSuccess');"
+                                 styleClass="btn btn-default"
+                                 action="#{courseCreateFlowController.getReturnValue()}"/>
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>

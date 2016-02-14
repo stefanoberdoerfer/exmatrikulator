@@ -34,7 +34,6 @@ public class CourseCreateDefinition implements Serializable {
         flowBuilder.viewNode("step2", "/course/create/step2.xhtml");
         flowBuilder.viewNode("step3", "/course/create/step3.xhtml");
         flowBuilder.viewNode("step4", "/course/create/step4.xhtml");
-        flowBuilder.viewNode("step5", "/course/create/step5.xhtml");
 
         // add a return node. The flow is exited with the outcome "course/overview"
         // once this node is reached.

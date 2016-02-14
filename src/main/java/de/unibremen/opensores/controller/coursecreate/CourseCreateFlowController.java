@@ -2,11 +2,13 @@ package de.unibremen.opensores.controller.coursecreate;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,9 +39,14 @@ public class CourseCreateFlowController implements Serializable {
     private static transient Logger log = LogManager.getLogger(CourseCreateFlowController.class);
 
     /**
-     * Boolean flags for completion status of the 5 different wizard steps.
+     * Boolean flags for completion status of the 4 different wizard steps.
      */
-    private boolean[] stepFinished = new boolean[5];
+    private boolean[] stepFinished = new boolean[4];
+
+    /**
+     * Boolean to store if course was already saved.
+     */
+    private boolean courseWasSaved;
 
     /**
      * The course created by the user.
@@ -55,6 +62,9 @@ public class CourseCreateFlowController implements Serializable {
      * List of Users who will be created if this course-creation succeeds.
      */
     private transient List<User> usersToBeCreated;
+
+    @EJB
+    private transient LogService logService;
 
     @EJB
     private transient CourseService courseService;
@@ -109,24 +119,33 @@ public class CourseCreateFlowController implements Serializable {
     public String saveCourse() {
         log.debug("saveCourse() called");
 
-        logDebugData();
+        if (!courseWasSaved) {
+            logDebugData();
 
-        //persist new users
-        usersToBeCreated.stream().forEach(userService::persist);
+            //persist new users
+            usersToBeCreated.stream().forEach(userService::persist);
 
-        //set default ParticipationType for all students
-        ParticipationType defaultParttype = course.getDefaultParticipationType();
-        for (Student s : course.getStudents()) {
-            s.setParticipationType(defaultParttype);
-            defaultParttype.getStudents().add(s);
+            //set default ParticipationType for all students
+            ParticipationType defaultParttype = course.getDefaultParticipationType();
+            for (Student s : course.getStudents()) {
+                s.setParticipationType(defaultParttype);
+                defaultParttype.getStudents().add(s);
+            }
+
+            //persist whole course
+            courseService.persist(course);
+
+            log.debug("Created new Course: " + course.getName() + " with id: "
+                    + course.getCourseId());
+
+            logService.persist(Log.from(user,course.getCourseId(),
+                    "Course has been created."));
+
+            courseWasSaved = true;
+            return null;
+        } else {
+            return getReturnValue();
         }
-
-        //persist whole course
-        courseService.persist(course);
-
-        log.debug("Created new Course: " + course.getName() + " with id: " + course.getCourseId());
-
-        return getReturnValue();
     }
 
     /**
@@ -141,10 +160,6 @@ public class CourseCreateFlowController implements Serializable {
         log.debug("Created Course: " + course.getName());
         log.debug("#Numbers: " + course.getNumbers().size());
         log.debug("#Lecturers: " + course.getLecturers().size());
-        if (course.getLecturers().size() > 0) {
-            log.debug(course.getLecturers().get(0).getUser() + " is Lecturer of this course. "
-                    + course.getLecturers().get(0).getCourse().getName());
-        }
         log.debug("#PartTypes: " + course.getParticipationTypes().size());
         log.debug("#Tutors: " + course.getTutors().size());
         log.debug("#Tutorials: " + course.getTutorials().size());
