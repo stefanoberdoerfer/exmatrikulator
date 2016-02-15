@@ -14,17 +14,14 @@
     <!-- Page Content -->
     <ui:define name="content">
         <div class="headline">
-            <div class="btn-group main-buttons pull-right">
+            <h:form styleClass="btn-group main-buttons pull-right">
                 <h:commandButton value="#{msg['courses.join']}" rendered="#{userController.user.hasGlobalRole('LECTURER')}"
                                  type="button" onclick="return exModal('courseJoinSearch');"
                                  styleClass="btn btn-default create-course-button" />
-                <h:form>
-                <h:commandButton value="#{msg['courses.create']}" rendered="#{userController.user.hasGlobalRole('LECTURER')}"
-                                 type="button" action="coursecreate"
-                                 styleClass="btn btn-primary create-course-button" />
-                <h:commandButton action="coursecreate" value="TEST WIZARD" />
-                </h:form>
-            </div>
+                <h:commandButton action="coursecreate" value="#{msg['courses.create']}"
+                                 styleClass="btn btn-primary create-course-button"
+                                 rendered="#{userController.user.hasGlobalRole('LECTURER')}" />
+            </h:form>
             <h1>#{msg['courses.overview']}</h1>
         </div>
 
