@@ -4,6 +4,7 @@ import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +13,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -205,5 +207,34 @@ public class NavigationController {
 
         courseRoles.put(course, role);
         return role;
+    }
+
+    /**
+     * Returns if the given course is currently open. Is determined via the id
+     * in the url.
+     * @param course Course to check
+     * @return true if it's open
+     */
+    public boolean isOpen(Course course) {
+        HttpServletRequest httpReq
+                = (HttpServletRequest) FacesContext.getCurrentInstance()
+                .getExternalContext().getRequest();
+
+        final String courseIdString = httpReq.getParameter(
+                Constants.HTTP_PARAM_COURSE_ID);
+
+        if (courseIdString == null) {
+            return false;
+        }
+
+        Long courseId;
+
+        try {
+            courseId = Long.parseLong(courseIdString.trim());
+
+            return course.getCourseId().equals(courseId);
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

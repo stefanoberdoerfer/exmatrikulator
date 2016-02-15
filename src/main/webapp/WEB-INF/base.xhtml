@@ -108,7 +108,7 @@
                 <label>#{semester.key}</label>
                 <ul class="nav nav-pills nav-stacked semester-links">
                     <ui:repeat value="#{semester.value}" var="course">
-                        <li>
+                        <li class='#{navigation.isOpen(course) ? "active" : ""}'>
                             <h:link>
                                 #{course.name}
                                 <h:panelGroup styleClass="course-icons pull-right">
