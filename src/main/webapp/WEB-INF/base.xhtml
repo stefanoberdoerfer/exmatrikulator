@@ -74,6 +74,35 @@
             <h:graphicImage library="images" name="stallion_light.svg" class="logo-stallion" />
         </div>
 
+        <ul class="nav nav-pills nav-stacked system-links">
+            <ui:fragment rendered='#{navigation.user.hasGlobalRole("LECTURER")
+                || navigation.user.hasGlobalRole("STUDENT")}'>
+                <li>
+                    <h:link outcome="/course/overview">
+                        <i class="fa fa-stack-overflow"></i>
+                        #{msg['courses.overview']}
+                    </h:link>
+                </li>
+            </ui:fragment>
+            <ui:fragment rendered='#{navigation.user.hasGlobalRole("ADMIN")}'>
+                <li>
+                    <h:link outcome="/users/overview">
+                        <i class="fa fa-user"></i>#{msg['common.user']}
+                    </h:link>
+                </li>
+                <li>
+                    <h:link outcome="/users/overview">
+                        <i class="fa fa-hdd-o"></i>#{msg['common.backups']}
+                    </h:link>
+                </li>
+                <li>
+                    <h:link outcome="/languages/overview">
+                        <i class="fa fa-language"></i>#{msg['common.languages']}
+                    </h:link>
+                </li>
+            </ui:fragment>
+        </ul>
+
         <h:form>
             <ui:repeat value="#{userController.coursesBySemester.entrySet().toArray()}" var="semester">
                 <label>#{semester.key}</label>
