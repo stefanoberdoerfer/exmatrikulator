@@ -27,7 +27,7 @@
 
         <h3>#{msg['courses.overview.normal']}</h3>
         <h:dataTable value="#{userController.activeCourses}" var="course"
-                     columnClasses="responsive,table-course-semester,table-common-number,table-common-number,table-common-options-two"
+                     columnClasses="responsive,table-course-semester,table-common-number,table-common-number,table-common-options-three text-right"
                      styleClass="table table-hover table-courses-overview">
             <h:column>
                 <f:facet name="header">#{msg['common.name']}</f:facet>
@@ -46,15 +46,14 @@
                 #{course.sws}
             </h:column>
             <h:column>
-                <f:facet name="header"></f:facet>
-                <!-- Todo: Entfernen und verlassen korrekt anzeigen -->
+                <h:link onclick="return exModal('courseRemove');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="#{msg['courses.remove']}" class="btn btn-danger"
+                        rendered="#{navigation.isLecturer(course)}">
+                    <i class="fa fa-remove"></i>
+                </h:link>
                 <h:link onclick="return exModal('courseLeave');" h5:data-toggle="tooltip"
                         h5:data-placement="top" title="#{msg['courses.leave']}" class="btn btn-default">
                     <i class="fa fa-sign-out"></i>
-                </h:link>
-                <h:link onclick="return exModal('courseRemove');" h5:data-toggle="tooltip"
-                        h5:data-placement="top" title="#{msg['courses.remove']}" class="btn btn-danger">
-                    <i class="fa fa-remove"></i>
                 </h:link>
                 <h:link styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
                         title="#{msg['courses.hide']}"><i class="fa fa-eye-slash"></i></h:link>
