@@ -89,10 +89,11 @@ public class GradingService extends GenericService<Grading> {
      */
     public List<Student> getStudents(Course course) {
         List<Student> s = em.createQuery("SELECT DISTINCT s "
-                + "FROM Student s "
-                + "WHERE s.course.courseId = :courseId "
-                + "AND s.isConfirmed = true "
-                + "AND s.acceptedInvitation = true")
+                        + "FROM Student s "
+                        + "WHERE s.course.courseId = :courseId "
+                        + "AND s.isConfirmed = true "
+                        + "AND s.acceptedInvitation = true",
+                    Student.class)
                 .setParameter("courseId", course.getCourseId())
                 .getResultList();
 
@@ -130,9 +131,10 @@ public class GradingService extends GenericService<Grading> {
      */
     public List<Group> getGroups(Course course) {
         List<Group> s = em.createQuery("SELECT DISTINCT g "
-                + "FROM Group g "
-                + "WHERE g.course.courseId = :courseId "
-                + "ORDER BY g.name ASC")
+                        + "FROM Group g "
+                        + "WHERE g.course.courseId = :courseId "
+                        + "ORDER BY g.name ASC",
+                    Group.class)
                 .setParameter("courseId", course.getCourseId())
                 .getResultList();
 
@@ -148,8 +150,9 @@ public class GradingService extends GenericService<Grading> {
         Map<Long, Grading> m = new HashMap<>();
 
         List<Grading> gradings = em.createQuery("SELECT DISTINCT g "
-                + "FROM Grading g "
-                + "WHERE g.student.studentId = :studentId")
+                        + "FROM Grading g "
+                        + "WHERE g.student.studentId = :studentId",
+                    Grading.class)
                 .setParameter("studentId", student.getStudentId())
                 .getResultList();
 
