@@ -117,15 +117,18 @@ public class UserController {
         Map<Semester, List<Course>> map = new HashMap<>();
 
         List<Course> courses = userService.getCourses(getUser(), false);
-        for (Course course : courses) {
-            Semester se = course.getSemester();
-            List<Course> cs = map.get(se);
-            if (cs == null) {
-                cs = new ArrayList<>();
-            }
 
-            cs.add(course);
-            map.put(se, cs);
+        if (courses != null) {
+            for (Course course : courses) {
+                Semester se = course.getSemester();
+                List<Course> cs = map.get(se);
+                if (cs == null) {
+                    cs = new ArrayList<>();
+                }
+
+                cs.add(course);
+                map.put(se, cs);
+            }
         }
 
         log.debug("Updated Active User Couses");

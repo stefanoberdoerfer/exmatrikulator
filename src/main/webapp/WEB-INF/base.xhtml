@@ -76,7 +76,7 @@
 
         <ul class="nav nav-pills nav-stacked system-links">
             <ui:fragment rendered='#{navigation.user.hasGlobalRole("LECTURER")
-                || navigation.user.hasGlobalRole("STUDENT")}'>
+                || navigation.user.hasGlobalRole("USER")}'>
                 <li>
                     <h:link outcome="/course/overview">
                         <i class="fa fa-stack-overflow"></i>
