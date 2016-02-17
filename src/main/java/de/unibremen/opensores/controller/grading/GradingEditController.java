@@ -213,7 +213,7 @@ public class GradingEditController {
          */
         try {
             log.debug("Storing pabo grading: " + formPaboGrading);
-            PaboGrade paboGrade = PaboGrade.valueOfName(formPaboGrading);
+            PaboGrade paboGrade = PaboGrade.valueOf(formPaboGrading);
 
             gradingService.storePaboGrade(course, user, this.student,
                     paboGrade, formPrivateComment, formPublicComment,

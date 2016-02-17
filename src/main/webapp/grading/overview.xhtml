@@ -69,7 +69,7 @@
                                styleClass="pull-right">
                     <i class="fa fa-pencil"></i>
                 </p:commandLink>
-                <strong>#{student.paboGrade}</strong>
+                <strong>#{gradingController.getPaboGradeName(student.paboGrade)}</strong>
             </p:column>
 
             <p:rowExpansion>

@@ -4,28 +4,28 @@ package de.unibremen.opensores.model;
  * Enumeration of different Pabo Grades.
  */
 public enum PaboGrade {
-    GRADE_1_0(1.0,"1,0"),
-    GRADE_1_3(1.3,"1,3"),
-    GRADE_1_7(1.7,"1,7"),
-    GRADE_2_0(2.0,"2,0"),
-    GRADE_2_3(2.3,"2,3"),
-    GRADE_2_7(2.7,"2,7"),
-    GRADE_3_0(3.0,"3,0"),
-    GRADE_3_3(3.0,"3,3"),
-    GRADE_3_7(3.0,"3,7"),
-    GRADE_4_0(4.0,"4,0"),
-    GRADE_5_0(5.0,"5,0"),
-    /*
-    Todo: Hatte PABO da nicht eigene Werte statt 5.0?
-     */
-    GRADE_CHEATED(5.0,"Täuschung"),
-    GRADE_NEGLECTED(5.0,"Versäumnis");
+    GRADE_1_0(1.0,7,"1,0"),
+    GRADE_1_3(1.3,7,"1,3"),
+    GRADE_1_7(1.7,7,"1,7"),
+    GRADE_2_0(2.0,7,"2,0"),
+    GRADE_2_3(2.3,7,"2,3"),
+    GRADE_2_7(2.7,7,"2,7"),
+    GRADE_3_0(3.0,7,"3,0"),
+    GRADE_3_3(3.0,7,"3,3"),
+    GRADE_3_7(3.0,7,"3,7"),
+    GRADE_4_0(4.0,7,"4,0"),
+    GRADE_5_0(5.0,8,"5,0"),
+    GRADE_CHEATED(null,3,"Täuschung"),
+    GRADE_NEGLECTED(null,2,"Versäumnis");
 
-    private final double gradeValue;
+    private final Double gradeValue;
     private final String gradeName;
+    private final int gradeRemark;
 
-    PaboGrade(final double gradeValue, final String gradeName) {
+    PaboGrade(final Double gradeValue, final int gradeRemark,
+              final String gradeName) {
         this.gradeValue = gradeValue;
+        this.gradeRemark = gradeRemark;
         this.gradeName = gradeName;
     }
 
@@ -41,6 +41,10 @@ public enum PaboGrade {
 
     public String getGradeName() {
         return gradeName;
+    }
+
+    public int getGradeRemark() {
+        return gradeRemark;
     }
 
     /**

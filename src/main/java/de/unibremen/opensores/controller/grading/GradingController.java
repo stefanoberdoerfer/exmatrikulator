@@ -3,6 +3,7 @@ package de.unibremen.opensores.controller.grading;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Group;
+import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
@@ -172,5 +173,24 @@ public class GradingController {
      */
     public List<Group> getGroups() {
         return gradingService.getGroups(course);
+    }
+
+    /**
+     * Returns the grade name of the PaboGrade enum instance identified by the
+     * given name. Returns a question mark if unknown.
+     * @param name Name of the instance
+     * @return Grade name or Question mark
+     */
+    public String getPaboGradeName(final String name) {
+        try {
+            PaboGrade paboGrade = PaboGrade.valueOf(name);
+            log.debug("Found pabo grade instance: " + name);
+
+            return paboGrade.getGradeName();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            log.debug("Pabo grade instance not found: " + name);
+
+            return "?";
+        }
     }
 }
