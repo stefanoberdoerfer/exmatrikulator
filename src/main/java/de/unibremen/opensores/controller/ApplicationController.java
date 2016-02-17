@@ -198,7 +198,7 @@ public class ApplicationController {
         student.setDeleted(false);
         student.setUser(newUser);
         student.setHidden(false);
-        student.setPaboGrade("1.3");
+        student.setPaboGrade("GRADE_1_3");
 
         course.getStudents().add(student);
         student.setCourse(course);

@@ -217,7 +217,7 @@ public class GradingService extends GenericService<Grading> {
     private void persistGrade(User corrector, Student student, PaboGrade paboGrade,
                            String privateComment, String publicComment) {
         final String oldGrade = student.getPaboGrade();
-        student.setPaboGrade(paboGrade.getGradeName());
+        student.setPaboGrade(paboGrade.name());
         student.setPublicComment(publicComment);
         student.setPrivateComment(privateComment);
 
@@ -232,14 +232,14 @@ public class GradingService extends GenericService<Grading> {
                     + student.getUser().getFirstName() + " "
                     + student.getUser().getLastName() + " ("
                     + student.getUser().getMatriculationNumber() + "): "
-                    + paboGrade.getGradeValue();
+                    + paboGrade.name();
         } else {
             description = "changed final grade of "
                     + student.getUser().getFirstName() + " "
                     + student.getUser().getLastName() + " ("
                     + student.getUser().getMatriculationNumber() + ") from "
                     + oldGrade + " to "
-                    + paboGrade.getGradeValue();
+                    + paboGrade.name();
         }
 
         logService.persist(Log.from(corrector,

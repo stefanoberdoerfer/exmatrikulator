@@ -236,7 +236,7 @@ public class GradingInsertController {
 
             if (formExam == -1) {
                 log.debug("Storing pabo grading: " + formPaboGrading);
-                PaboGrade paboGrade = PaboGrade.valueOfName(formPaboGrading);
+                PaboGrade paboGrade = PaboGrade.valueOf(formPaboGrading);
 
                 gradingService.storePaboGrade(course, user, student,
                         paboGrade, formPrivateComment, formPublicComment,
