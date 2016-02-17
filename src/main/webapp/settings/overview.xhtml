@@ -9,7 +9,6 @@
     <ui:param name="pageTitle" value="#{msg['common.settings']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
-        <!-- Todo: Veranstaltungsnamen anzeigen -->
         <li>#{courseSettings.course.name}</li>
         <li class="active">#{msg['common.settings']}</li>
     </ui:define>
@@ -81,7 +80,13 @@
                     <p>
                         #{msg['settings.explanations.finalize']}<br />
                         <br />
-                        #{msg['settings.finalize.last']}: #{msg['settings.finalize.never']}
+                        #{msg['settings.finalize.last']}:
+                        <h:outputText rendered="#{courseSettings.course.lastFinalization == null}"
+                                value="#{msg['settings.finalize.never']}" />
+                        <h:outputText value="#{courseSettings.course.lastFinalization}"
+                                      rendered="#{courseSettings.course.lastFinalization != null}">
+                            <f:convertDateTime type="both" pattern="YYYY-MM-dd HH:mm:ss"/>
+                        </h:outputText>
                     </p><br />
 
                     <div>
