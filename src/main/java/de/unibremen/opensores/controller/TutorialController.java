@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DualListModel;
 
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Course;
@@ -15,6 +16,7 @@ import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.TutorialService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -26,6 +28,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.context.ExternalContext;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +52,11 @@ public class TutorialController implements Serializable {
      * The log4j logger.
      */
     private Logger log = LogManager.getLogger(TutorialController.class);
+
+    /**
+     * The currently logged in user.
+     */
+    private transient User user;
 
     /**
      * The user service for connection to the database.
@@ -134,13 +142,14 @@ public class TutorialController implements Serializable {
     @PostConstruct
     public void init() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        HttpServletRequest req = (HttpServletRequest)
-            facesContext.getExternalContext().getRequest();
-        HttpServletResponse res = (HttpServletResponse)
-            facesContext.getExternalContext().getResponse();
+        ExternalContext exContext = facesContext.getExternalContext();
 
+        HttpServletRequest req = (HttpServletRequest) exContext.getRequest();
+        HttpServletResponse res = (HttpServletResponse) exContext.getResponse();
+
+        user = (User) exContext.getSessionMap().get("user");
         course = courseService.findCourseById(req.getParameter("course-id"));
-        if (course == null) {
+        if (course == null || user == null) {
             try {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             } catch (IOException e) {
@@ -390,7 +399,30 @@ public class TutorialController implements Serializable {
      * @return List of tutorials or null if non exist.
      */
     public List<Tutorial> getTutorials() {
-        return (course == null) ? null : course.getTutorials();
+        List<Integer> roles = user.getRoles();
+        if (roles.contains(Role.LECTURER.getId())) {
+            return course.getTutorials();
+        } else if (roles.contains(Role.PRIVILEGED_USER.getId())) {
+            PrivilegedUser pu = courseService.findTutor(course, user.getEmail());
+            if (pu == null) {
+                return null; // Should never be the case
+            }
+
+            return pu.getTutorials();
+        } else if (roles.contains(Role.STUDENT.getId())) {
+            Student st = courseService.findStudent(course, user.getEmail());
+            if (st == null) {
+                return null; // Should never be the case
+            }
+
+            List<Tutorial> list = new ArrayList<>();
+            list.add(st.getTutorial());
+
+            return list;
+        }
+
+        // Unless new roles are added this should never be reached.
+        return null;
     }
 
     /**
