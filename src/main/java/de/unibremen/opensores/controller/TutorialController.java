@@ -390,6 +390,18 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Returns a list of all students without out a group.
+     *
+     * @param tutorial Tutorial to apply this function to.
+     * @return List of students who are not a part of a group.
+     */
+    public List<Student> studentsWithoutGroup(@NotNull Tutorial tutorial) {
+        return tutorial.getStudents().stream()
+            .filter(s -> s.getGroup() == null)
+            .collect(Collectors.toList());
+    }
+
+    /**
      * Returns a list of all tutorials for this course.
      *
      * @return List of tutorials or null if non exist.

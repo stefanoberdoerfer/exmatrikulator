@@ -65,7 +65,7 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <ui:repeat var="student" value="#{tutorial.students}">
+                  <ui:repeat var="student" value="#{tutorialController.studentsWithoutGroup(tutorial)}">
                     <tr class="vert-align-middle">
                         <td></td>
                         <td>
