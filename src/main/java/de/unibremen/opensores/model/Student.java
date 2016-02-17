@@ -73,6 +73,24 @@ public class Student {
     @ManyToMany(mappedBy = "uploaders")
     private List<Upload> uploads;
 
+    /**
+     * Gets the grading of the student given the exam.
+     * @param exam The exam of which the grading of the student should be returned.
+     * @return The grading object of the student and the exam, or null if it doesn't
+     *         exist.
+     */
+    public Grading getGradingFromExam(Exam exam) {
+        if (exam == null) {
+            throw new IllegalArgumentException("The exam can't be null");
+        }
+        for (Grading grading: gradings) {
+            if (grading.getExam() != null && grading.getExam().equals(exam)) {
+                return grading;
+            }
+        }
+        return null;
+    }
+
     public boolean isHidden() {
         return isHidden;
     }

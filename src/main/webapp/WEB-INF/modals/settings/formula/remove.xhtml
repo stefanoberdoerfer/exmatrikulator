@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['gradingFormula.deleteFormula']}"
+              id="formulaRemoveDialog" appendTo="@(body)" widgetVar="formulaRemove" modal="true">
+        <h:form>
+            <p:panel id="removeFormulaDlgPnl">
+                <ui:include src="/WEB-INF/alerts.xhtml" />
+                <div class="modal-body">
+                    <h:panelGroup styleClass="form-group" layout="block" >
+                        #{msg['gradingFormula.remove.question']}
+                        <br/>
+                        <br/>
+                        <p:outputLabel for="participationType" value="#{msg['common.partType']}"
+                                       class="col-xs-3 control-label"/>
+                        <h:outputText id="participationType" styleClass="col-xs-8"
+                                      layout="block"
+                                      value="#{scriptController.deletedFormula.participationType.name}"/>
+                    </h:panelGroup>
+                    <h:panelGroup styleClass="form-group" layout="block" >
+                        <p:outputLabel for="changeDate" value="#{msg['gradingFormula.saveDate']}"
+                                       class="col-xs-3 control-label"/>
+                        <h:outputText id="changeDate" styleClass="col-xs-8"
+                                      layout="block"
+                                      value="#{scriptController.deletedFormula.saveDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"
+                                               timeZone="#{EXcons.SYSTEM_TIMEZONE}"/>
+                        </h:outputText>
+                    </h:panelGroup>
+                    <h:panelGroup styleClass="form-group" layout="block" >
+                        <p:outputLabel for="editDescription" value="#{msg['gradingFormula.editDescription']}"
+                                       class="control-label"/>
+                        <br/>
+                        <h:outputText id="editDescription"
+                                      layout="block" value="#{scriptController.deletedFormula.editDescription}"/>
+                    </h:panelGroup>
+                    <br/>
+                    <p>#{msg['gradingFormula.remove.confirm']}</p>
+                    <br/>
+                    <h:inputText type="text" class="form-control" id="deletionConfirmation"
+                                 validator="#{scriptController.validateDeletionNameInput}"
+                                 value="#{scriptController.deleteConfirmation}"/>
+                    <br/>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <p:commandLink class="btn btn-default" type="button"
+                                onclick="PF('formulaRemove').hide();"
+                                immediate="true" process="@this"
+                                value="#{msg['common.cancel']}" />
+                        <p:commandLink id="removeFormulaBtn"
+                                       value="#{msg['common.remove']}"
+                                       update="formulaHistoryDlg"
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':formulaRemove');"
+                                       styleClass="btn btn-danger">
+                            <f:actionListener binding="#{scriptController.deleteFormula(scriptController.deletedFormula)}"/>
+                        </p:commandLink>
+                    </div>
+                </div>
+            </p:panel>
+            <p:blockUI block="removeFormulaDlgPnl" trigger="removeFormulaBtn"/>
+        </h:form>
+    </p:dialog>
+</ui:composition>

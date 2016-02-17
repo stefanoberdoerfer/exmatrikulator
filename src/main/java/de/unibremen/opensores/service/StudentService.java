@@ -1,11 +1,15 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 
 import javax.ejb.Stateless;
+import javax.mail.Part;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service class for the Student model class.
@@ -31,5 +35,30 @@ public class StudentService extends GenericService<Student> {
                 .setParameter("courseId", course.getCourseId())
                 .getResultList();
         return students.isEmpty() ? null : students.get(0);
+    }
+
+    /**
+     * Gets a map of prticipationt types off all undeleted and conformed students.
+     * @param participationTypes The list of particiption typs which
+     *                           undeleted and confirmed students should be got.
+     *
+     * @return A map from the participation types to a list of the students.
+     */
+    public Map<ParticipationType, List<Student>> getUndeletedAndConfirmedStudentsOf(
+            List<ParticipationType> participationTypes) {
+        if (participationTypes == null) {
+            throw new IllegalArgumentException("The List of ParticipatioNTypes cant be null");
+        }
+        Map<ParticipationType, List<Student>> partTypeStudents = new HashMap<>();
+        for (ParticipationType type: participationTypes) {
+            partTypeStudents.put(type, em.createQuery(
+                    "SELECT DISTINCT s FROM Student s"
+                    + " WHERE s.participationType.partTypeId = :typeId"
+                    + " AND s.isConfirmed = true"
+                    + " AND s.isDeleted = false", Student.class)
+                    .setParameter("typeId", type.getPartTypeId())
+                    .getResultList());
+        }
+        return partTypeStudents;
     }
 }

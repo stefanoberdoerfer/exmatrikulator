@@ -1,84 +1,183 @@
-<!-- Todo: Seite darf nur von Dozenten aufgerufen werden -->
 <ui:composition template="/WEB-INF/base.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
     <!-- Define Params -->
     <ui:param name="pageTitle" value="#{msg['common.course.gradingFormula']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
-        <!-- Todo: Veranstaltungsnamen anzeigen -->
-        <li>Veranstaltung trololol</li>
-        <li><h:link value="#{msg['common.settings']}" outcome="/settings/overview" /></li>
+        <li>#{scriptController.course.name}</li>
+        <li><h:link value="#{msg['common.settings']}" outcome="/settings/overview">
+            <f:param name="#{EXcons.HTTP_PARAM_COURSE_ID}" value="#{scriptController.course.courseId}"/>
+        </h:link></li>
         <li class="active">#{msg['common.course.gradingFormula']}</li>
     </ui:define>
     <!-- Page Content -->
     <ui:define name="content">
         <div class="headline">
-            <div class="btn-group main-buttons pull-right">
-                <h:link class="btn btn-primary" value="#{msg['common.saveChanges']}"
-                        outcome="/settings/overview"/>
-            </div>
             <h1>#{msg['common.course.gradingFormula']}</h1>
         </div>
 
         <ui:include src="/WEB-INF/alerts.xhtml" />
-
-        <div class="row">
+        <div class="row" style="height: 75%">
             <div class="col-xs-8">
-                <p:tabView>
-                    <p:tab title="#{msg['gradingformula.standard']}">
-                        <p>#{msg['gradingformula.explanation']}</p>
-                        <h:inputTextarea rows="20" class="form-control calculation-formula" />
-
-                        <h:link onclick="return exModal('formulaTest');"
-                                class="btn btn-default" value="#{msg['gradingformula.test']}" />
-                    </p:tab>
-                </p:tabView>
+                <h:form id="scriptForm">
+                    <p:tabView scrollable="true" dynamic="true"
+                               value="#{scriptController.course.participationTypes}"
+                               var="partType" activeIndex="#{scriptController.activeTabIndex}">
+                        <p:ajax event="tabChange" listener="#{scriptController.onTabChange}" update=":studentsForm:studentGradesTbl" />
+                        <p:tab title="#{partType.name}">
+                            <p:panel id="scriptPnl">
+                                <p>#{msg['gradingformula.explanation']}</p>
+                                <!-- TODO Fix CSS Layout -->
+                                <p:outputLabel styleClass="control-label" for="scriptSaveCommitMessage"
+                                               value="#{msg['gradingFormula.editDescription']}"/>
+                                <p:inputText id="scriptSaveCommitMessage" styleClass="form-control"
+                                             value="#{scriptController.getEditedGradeFormulaFrom(
+                                                          scriptController.activeParticipationType).editDescription}"
+                                             validatorMessage="#{msg['gradingFormula.validatorMessageDescr']}">
+                                    <f:validateLength minimum="1"/>
+                                </p:inputText>
+                                <p:commandLink id="saveScriptBtn"
+                                               styleClass="btn btn-primary"
+                                               value="#{msg['common.saveChanges']}"
+                                               update="@form">
+                                    <f:actionListener binding="#{scriptController.saveEditedFormula()}"/>
+                                </p:commandLink>
+                                <p:commandLink id="execScriptBtn" styleClass="btn btn-primary"
+                                               update="@form :studentsForm:studentGradesTbl"
+                                               process="@this pyCodeMirror"
+                                               rendered="#{scriptController.userIsLecturer}"
+                                               value="#{msg['gradingformula.exec']}">
+                                    <f:actionListener binding="#{scriptController.execScript(partType)}"/>
+                                </p:commandLink>
+                                <div class="btn-group pull-right">
+                                    <p:commandLink styleClass="btn btn-default"
+                                                   value="#{msg['gradingFormula.oldFormulas']}"
+                                                   update="formulaHistoryDlg"
+                                                   process="@this"
+                                                   oncomplete="return exModal('formulaHistory')"/>
+                                    <p:commandLink styleClass="btn btn-default"
+                                                   h5:data-toggle="tooltip" h5:data-placement="top"
+                                                   process="@this"
+                                                   title="#{msg['gradingFormula.sendEmail']}">
+                                        <i class="fa fa-envelope"></i>
+                                        <f:actionListener binding="#{scriptController.redirectEmailToWithFormula()}"/>
+                                    </p:commandLink>
+                                </div>
+                                <pe:codeMirror id="pyCodeMirror"
+                                               mode="python"
+                                               widgetVar="pyCodeMirror"
+                                               indentUnit="4"
+                                               matchBrackets="true"
+                                               theme="lesser-dark"
+                                               value="#{scriptController.getEditedGradeFormulaFrom(partType).formula}"
+                                               lineNumbers="true"
+                                               style="margin-top:20px;"/>
+                                <h3>#{msg['gradingformula.output']}</h3>
+                                <pe:codeMirror id="scriptOutput"
+                                               mode=""
+                                               widgetVar="outputCodeMirror"
+                                               matchBrackets="true"
+                                               readonly="true"
+                                               theme="lesser-dark"
+                                               value="#{scriptController.scriptOutput}"
+                                               lineNumbers="true"
+                                               style="margin-top:20px;"/>
+                            </p:panel>
+                            <p:blockUI trigger="execScriptBtn" block="scriptPnl">
+                                #{msg['gradingformula.isExecuting']}
+                            </p:blockUI>
+                            <p:blockUI trigger="saveScriptBtn" block="scriptPnl">
+                                #{msg['gradingFormula.blockMsgGettingSaved']}
+                            </p:blockUI>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
             </div>
             <div class="col-xs-4">
                 <h3>#{msg['common.course.exams']}</h3>
-                <table class="table table-condensed">
-                    <thead>
-                    <tr>
-                        <th>#{msg['examination.name']}</th>
-                        <th class="table-examination-identifier">#{msg['examination.shortcut']}</th>
-                        <th class="table-examination-grade">#{msg['examination.gradeType']}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>Übungsblatt 1</td>
-                        <td>ÜB1</td>
-                        <td>Prozentzahl</td>
-                    </tr>
-                    </tbody>
-                </table>
-                <div class="alert alert-info">#{msg['gradingformula.shortcutHint']}</div>
-                <p/><br />
-                <h3>#{msg['gradingformula.helpers']}</h3>
-                <table class="table table-condensed">
-                    <thead>
-                    <tr>
-                        <th>#{msg['gradingformula.syntax']}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <strong>replace(x1, x2)</strong><br />
-                            Teilprüfung x1 wird dabei von Teilprüfung x2 ersetzt, falls für
-                            den Studenten bei x2 ein Ergebnis eingetragen wurde.
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <p:dataTable id="examTbl"
+                             value="#{scriptController.course.exams}"
+                             var="exam"
+                             filteredValue="#{scriptController.filteredExams}"
+                             emptyMessage="#{msg['examination.messageNoExams']}">
+                    <p:column headerText="#{msg['examination.name']}"
+                              filterMatchMode="contains"
+                              filterBy="#{exam.name}"
+                              sortBy="#{exam.name}">
+                        <h:outputText value="#{exam.name}"/>
+                    </p:column>
+                    <p:column headerText="#{msg['examination.shortcut']}"
+                              filterBy="#{exam.shortcut}"
+                              filterMatchMode="contains"
+                              sortBy="#{exam.shortcut}">
+                        <h:outputText style="font-family: monospace"
+                                      value="#{exam.shortcut}"/>
+                    </p:column>
+                    <p:column headerText="#{msg['examination.gradeType']}"
+                              filterMatchMode="contains"
+                              filterBy="#{scriptController.gradeLabelFromId(exam.gradeType)}"
+                              sortBy="#{scriptController.gradeLabelFromId(exam.gradeType)}">
+                        <h:outputText value="#{scriptController.gradeLabelFromId(exam.gradeType)}"/>
+                    </p:column>
+                </p:dataTable>
             </div>
         </div>
+        <div class="form-group">
+            <h:form id="studentsForm" rendered="#{scriptController.userIsLecturer}">
+                <h2>#{msg['gradingFormula.studentsOfParticipationType']}
+                    <p:commandLink styleClass="btn btn-primary"
+                                   value="#{msg['gradingFormula.saveFinalGrades']}">
+                        <f:actionListener binding="#{scriptController.updateStudentsFrom
+                                                    (scriptController.activeParticipationType)}"/>
+                    </p:commandLink>
+                </h2>
+                <h4>#{msg['gradingFormula.saveFinalGradesExplanation']}</h4>
+                <p:dataTable id="studentGradesTbl"
+                             rendered="#{scriptController.userIsLecturer}"
+                             value="#{scriptController.getGradedStudentsFrom(scriptController.activeParticipationType)}"
+                             var="student" scrollable="true"
+                             paginator="true"
+                             paginatorTemplate="{RowsPerPageDropdown}
+                             {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                             {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="20,50,100"
+                             emptyMessage="#{msg['gradingFormula.noStudentsOfPartType']}">
+                    <p:column headerText="#{msg['common.name']}">
+                        <div align="center">
+                            <h:outputText value="#{student.user.toString()}"/>
+                        </div>
+                    </p:column>
+                    <p:column headerText="#{msg['gradingFormula.finalGrade']}">
+                        <h:outputText value="#{student.paboGrade == null ? '' : student.paboGrade}"/>
+                    </p:column>
+                    <c:forEach items="#{scriptController.activeParticipationType.course.exams}"
+                               var="exam">
+                        <p:column headerText="#{exam.name
+                                            .concat(' &#10; '
+                                            .concat(scriptController
+                                            .gradeLabelFromId(exam.gradeType)))}"
+                                  escape="false" style="white-space:pre-line;">
+                            <div align="center">
+                                <h:outputText value="#{(student.getGradingFromExam(exam) eq null )
+                                            ? ''
+                                            : student.getGradingFromExam(exam).grade.value}">
+                                    <f:converter converterId="javax.faces.BigDecimal"/>
+                                </h:outputText>
+                            </div>
+                        </p:column>
+                    </c:forEach>
+                </p:dataTable>
+            </h:form>
+        </div>
+        <ui:include src="/WEB-INF/modals/settings/formula/history.xhtml" />
 
-        <ui:include src="/WEB-INF/modals/settings/formula/test.xhtml" />
+        <ui:include src="/WEB-INF/modals/settings/formula/remove.xhtml" />
     </ui:define>
 </ui:composition>

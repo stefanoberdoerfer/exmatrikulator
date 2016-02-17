@@ -237,7 +237,7 @@ public class CourseCopyController implements Serializable {
             px.setPerformanceArea(p.getPerformanceArea());
             px.setPerformanceContent(p.getPerformanceContent());
             px.setRestricted(p.getRestricted());
-            px.setGradeFormula(p.getGradeFormula());
+            px.addNewFormula(p.getLatestFormula());
 
             if (copyExams) {
                 List<Exam> examList = new ArrayList<>();

@@ -63,6 +63,21 @@ public class Exam {
     @Column
     private List<String> allowedFileEndings = new ArrayList<>();
 
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Exam && (examId != null)
+                ? examId.equals(((Exam) object).examId)
+                : (object == this);
+    }
+
+    @Override
+    public int hashCode() {
+        return examId != null
+                ? this.getClass().hashCode() + examId.hashCode()
+                : super.hashCode();
+    }
+
     /**
      * The maximal file size in MegaByte.
      */

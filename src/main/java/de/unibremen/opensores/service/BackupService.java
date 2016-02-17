@@ -57,7 +57,7 @@ public class BackupService extends GenericService {
 
         StoredProcedureQuery query = em.createStoredProcedureQuery(
                 "SYSCS_UTIL.SYSCS_BACKUP_DATABASE");
-        query.registerStoredProcedureParameter(1, java.lang.String.class,
+        query.registerStoredProcedureParameter(1, String.class,
                 ParameterMode.IN);
         query.setParameter(1, path);
         query.execute();
