@@ -132,16 +132,39 @@ public class TutorialController implements Serializable {
     @PostConstruct
     public void init() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        course = (Course) facesContext.getExternalContext()
-            .getSessionMap().get("course");
-        if (course == null) {
-            // TODO
-            return;
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        HttpServletRequest req = (HttpServletRequest)
+            facesContext.getExternalContext().getRequest();
+        String idStr = req.getParameter("course-id");
+
+        try {
+            course = (idStr == null || idStr.trim().isEmpty()) ? null : courseService
+                .find(Course.class, Integer.valueOf(idStr).longValue());
+        } catch (NumberFormatException e) {
+            course = null;
         }
 
         /*
          * TODO verify that the user is allowed to access this course
          */
+
+        if (course == null) {
+            String msg = bundle.getString("courses.fail");
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+
+            /*
+             * TODO decide where the user should be redirected to.
+             */
+
+            return;
+        }
+
+        // TODO we might want to set this in the filter.
+        facesContext.getExternalContext().getSessionMap()
+            .put("course", course);
 
         tutorialTutors = new DualListModel<>(course.getTutors(),
             new ArrayList<>());
