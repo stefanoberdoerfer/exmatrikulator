@@ -18,7 +18,7 @@
                 <ui:repeat value="#{gradingController.course.participationTypes}"
                            var="type">
                     <h:panelGroup layout="block" styleClass="alert alert-warning"
-                                  rendered="#{type.gradeFormula.formula.length() == 0}">
+                                  rendered="#{type.latestFormula.formula.length() == 0}">
                         #{msg['gradings.finalGrade.missingFormula']}
                     </h:panelGroup>
                 </ui:repeat>

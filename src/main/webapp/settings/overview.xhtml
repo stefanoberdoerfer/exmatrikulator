@@ -45,6 +45,7 @@
                 </h:link>
 
                 <h:link outcome="/settings/formula/overview" class="col-xs-12 settings-group">
+                    <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <i class="fa fa-calculator"></i>
                     <h3 class="settings-group-name">#{msg['common.course.gradingFormula']}</h3>
                     <div class="settings-group-desc">

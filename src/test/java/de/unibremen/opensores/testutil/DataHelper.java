@@ -2,6 +2,7 @@ package de.unibremen.opensores.testutil;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.GlobalRole;
+import de.unibremen.opensores.model.GradeFormula;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.PrivilegedUser;
@@ -79,6 +80,8 @@ public final class DataHelper {
         participationType.setPartTypeId(DEFAULT_PART_TYPE_ID);
         participationType.setName("Default participation type");
         participationType.setCourse(course);
+        GradeFormula formula = createGradeFormulaIn(participationType);
+
         course.getParticipationTypes().add(participationType);
         return course;
     }
@@ -200,8 +203,25 @@ public final class DataHelper {
         type.setName("Participation Type" + type.getPartTypeId());
         type.setIsDefaultParttype(false);
         type.setCourse(course);
+        GradeFormula formula = createGradeFormulaIn(type);
         course.getParticipationTypes().add(type);
         return type;
+    }
+
+    /**
+     * Creates a basic grade formula in the participation type.
+     * @param type The type in which the formula should be created in.
+     * @return The created formula.
+     */
+    public static GradeFormula createGradeFormulaIn(ParticipationType type) {
+        GradeFormula formula = new GradeFormula();
+        formula.setValid(false);
+        formula.setEditDescription("Basic Test Formula");
+        formula.setFormula("def set_final_grade(grades):\n"
+                + "    return PaboGrade.GRADE_5_0");
+        formula.setParticipationType(type);
+        type.addNewFormula(formula);
+        return formula;
     }
 
 }

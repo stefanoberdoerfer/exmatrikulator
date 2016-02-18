@@ -24,6 +24,7 @@ import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.LogService;
+import de.unibremen.opensores.service.ParticipationTypeService;
 import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UploadService;
@@ -72,6 +73,9 @@ public class ApplicationController {
 
     @EJB
     private LogService logService;
+
+    @EJB
+    private ParticipationTypeService participationTypeService;
 
     /**
      * The log4j logger.
@@ -248,23 +252,37 @@ public class ApplicationController {
         partType.setRestricted(false);
         partType.setCourse(course);
         partType.setIsDefaultParttype(true);
+        partType = participationTypeService.persist(partType);
+
         course.getParticipationTypes().add(partType);
         student.setParticipationType(partType);
-        //ParticipationType winf = new ParticipationType();
-        //winf.setName("Wirtschaftsinformatik");
-        //winf.setGroupPerformance(false);
-        //winf.setRestricted(false);
-        //winf.setCourse(course);
-        //winf.setIsDefaultParttype(false);
-        //course.getParticipationTypes().add(winf);
+
+        ParticipationType winf = new ParticipationType();
+        winf.setName("Wirtschaftsinformatik");
+        winf.setGroupPerformance(false);
+        winf.setRestricted(false);
+        winf.setCourse(course);
+        winf.setIsDefaultParttype(false);
+        winf = participationTypeService.persist(winf);
 
         //GradeFormula
         GradeFormula formula = new GradeFormula();
-        formula.setTime(new Date(100L));
+        formula.setSaveDate(new Date(100L));
         formula.setEditor(newLecturer);
-        formula.setFormula("(1336 + 1)*27");
-        partType.setGradeFormula(formula);
-        //winf.setGradeFormula(formula);
+        formula.setFormula("def set_final_grade(grades):\n"
+                + "    return PaboGrade.GRADE_5_0");
+        formula.setEditDescription("Initialized GradeFormula");
+        partType.addNewFormula(formula);
+
+        GradeFormula winfFormula = new GradeFormula();
+        winfFormula.setSaveDate(new Date(100L));
+        winfFormula.setEditor(newLecturer);
+        winfFormula.setFormula("def set_final_grade(grades):\n"
+                + "    return PaboGrade.GRADE_1_0");
+        winfFormula.setEditDescription("Initialized WINF GradeFormula");
+        course.getParticipationTypes().add(winf);
+        winf.addNewFormula(winfFormula);
+
 
         //ParticipationType 2
         ParticipationType partType2 = new ParticipationType();
@@ -277,10 +295,11 @@ public class ApplicationController {
 
         //GradeFormula
         GradeFormula formula2 = new GradeFormula();
-        formula2.setTime(new Date(100L));
+        formula2.setSaveDate(new Date(100L));
         formula2.setEditor(newLecturer);
         formula2.setFormula("(1336 + 1)*27");
-        partType2.setGradeFormula(formula2);
+        formula2.setEditDescription("Sys 1337 m8");
+        partType2.addNewFormula(formula2);
 
         //Exam
         Exam exam = new Exam();
@@ -334,7 +353,7 @@ public class ApplicationController {
         if (exam.getGradeType().equals(GradeType.Point.getId())) {
             grade.setMaxPoints(exam.getMaxPoints());
         }
-        grade.setValue(new BigDecimal("1.0"));
+        grade.setValue(new BigDecimal("0.8"));
 
         grading.setGrade(grade);
         gradingService.persist(grading);
@@ -379,7 +398,7 @@ public class ApplicationController {
         log.debug("ParticipationType: " + course.getParticipationTypes().get(0).getName()
                 + "; Semester: " + course.getSemester().getName() + " with id: "
                 + course.getSemester().getSemesterId() + " and GradeFormula: "
-                + course.getParticipationTypes().get(0).getGradeFormula().getFormula());
+                + course.getParticipationTypes().get(0).getLatestFormula().getFormula());
         log.debug("Exam: " + course.getExams().get(0).getName());
         log.debug("Student: " + student.getUser().getFirstName() + " has GradingValue: "
                 + student.getGradings().get(0).getGrade().getValue()

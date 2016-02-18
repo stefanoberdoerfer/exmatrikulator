@@ -3,6 +3,9 @@ package de.unibremen.opensores.service;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Abstract class for services.
@@ -38,6 +41,25 @@ public abstract class GenericService<T> {
         return em.merge(entity);
     }
 
+
+    /**
+     * Updates a collection of entities.
+     * @param collection The collection of entities.
+     * @return The updated collection, or null if the collection is null.
+     */
+    @SuppressWarnings(value = "") //Suppress warnings because of the obj assignment
+    public Collection<T> update(Collection<T> collection) {
+        if (collection == null || collection.isEmpty()) {
+            return new ArrayList<>(); //Returning an empty collection.
+        }
+        Iterator<T> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            T obj = iterator.next();
+            obj = em.merge(obj);
+        }
+        return collection;
+    }
+
     /**
      * Removes an entity from the database.
      * @param entity The entity to be removed, can't be null and
@@ -60,4 +82,5 @@ public abstract class GenericService<T> {
     public T find(Class<T> entityClass, Object primaryKey) {
         return em.find(entityClass, primaryKey);
     }
+
 }

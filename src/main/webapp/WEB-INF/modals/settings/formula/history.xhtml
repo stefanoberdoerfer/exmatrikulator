@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['gradingFormula.oldFormulas']}" id="formulaHistoryDlg"
+              appendTo="@(body)" widgetVar="formulaHistory" modal="true"
+              style="width:50% !important">
+        <h:form id="formulaHistoryForm">
+            <p:panel id="formulaHistoryPnl" >
+                <p:dataTable id="formulaHistoryTbl"
+                             value="#{scriptController.activeParticipationType.gradeFormulas}"
+                             var="formula"
+                             sortBy="#{formula.saveDate}"
+                             sortOrder="descending">
+                    <p:column headerText="#{msg['gradingFormula.saveDate']}">
+                        <h:outputText value="#{formula.saveDate}">
+                            <div align="center">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"
+                                                   timeZone="#{EXcons.SYSTEM_TIMEZONE}"/>
+                            </div>
+                        </h:outputText>
+                    </p:column><i class="fa fa-repeat"></i>
+                    <p:column headerText="#{msg['gradingFormula.editor']}">
+                        <h:outputText value="#{formula.editor.toString()}" />
+                    </p:column>
+                    <p:column headerText="#{msg['common.valid']}">
+                        <p:panel styleClass="btn btn-danger"
+                                 rendered="#{not formula.valid}">
+                            <i class="fa fa-remove"></i>
+                        </p:panel>
+                        <p:panel styleClass="btn btn-primary"
+                                 rendered="#{formula.valid}">
+                            <i class="fa fa-check"></i>
+                        </p:panel>
+                    </p:column>
+                    <p:column headerText="#{msg['gradingFormula.editDescription']}">
+                        <h:outputText value="#{formula.editDescription}"/>
+                    </p:column>
+                    <p:column headerText="#{msg['common.actions']}">
+                        <div align="center">
+                            <p:commandLink id="restoreBtn" h5:data-toggle="tooltip"
+                                           update=":scriptForm"
+                                           h5:data-placement="top" title="#{msg['gradingFormula.restore']}"
+                                           oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':formulaHistory');"
+                                           styleClass="btn btn-success">
+                                <i class="fa fa-plus"/>
+                                <f:actionListener binding="#{scriptController.restoreToFormula(formula)}"/>
+                            </p:commandLink>
+                            <p:commandLink id="deleteBtn" h5:data-toggle="tooltip"
+                                           h5:data-placement="top" title="#{msg['gradingFormula.deleteFormula']}"
+                                           oncomplete="PF('formulaHistory').hide();PF('formulaRemove').show();"
+                                           update="formulaRemoveDialog"
+                                           styleClass="btn btn-danger"
+                                           rendered="#{scriptController.userIsLecturer and
+                                                   scriptController.activeParticipationType.gradeFormulas.size() > 1}">
+                                <i class="fa fa-remove"/>
+                                <f:actionListener binding="#{scriptController.onDeleteDialogCalled(formula)}"/>
+                            </p:commandLink>
+                        </div>
+                    </p:column>
+                </p:dataTable>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <h:link class="btn btn-default" onclick="return exModal(':formulaHistory');"
+                                value="#{msg['common.cancel']}" />
+                    </div>
+                </div>
+            </p:panel>
+            <p:blockUI block="formulaHistoryPnl" trigger="formulaHistoryTbl:restoreBtn"/>
+        </h:form>
+    </p:dialog>
+</ui:composition>

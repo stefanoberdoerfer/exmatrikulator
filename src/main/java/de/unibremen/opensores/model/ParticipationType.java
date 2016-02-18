@@ -3,6 +3,7 @@ package de.unibremen.opensores.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -54,11 +55,36 @@ public class ParticipationType {
     @OneToMany(mappedBy = "participationType")
     private List<Student> students = new ArrayList<>();
 
-    @OneToOne(optional = false, cascade = CascadeType.MERGE)
-    private GradeFormula gradeFormula;
+    @OneToMany(mappedBy = "participationType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    //@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<GradeFormula> gradeFormulas = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean isDefaultParttype;
+
+    @Override
+    public int hashCode() {
+        return (partTypeId != null)
+                ? partTypeId.hashCode() + ParticipationType.class.hashCode()
+                : super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof ParticipationType) && (partTypeId != null)
+                ? this.partTypeId.equals(((ParticipationType) obj).partTypeId)
+                : obj == this;
+    }
+
+    public GradeFormula getLatestFormula() {
+        return (gradeFormulas.isEmpty())
+                ? null : gradeFormulas.get(gradeFormulas.size() - 1);
+    }
+
+    public void addNewFormula(GradeFormula formula) {
+        formula.setParticipationType(this);
+        gradeFormulas.add(formula);
+    }
 
     public String getName() {
         return name;
@@ -132,14 +158,6 @@ public class ParticipationType {
         this.exams = exams;
     }
 
-    public GradeFormula getGradeFormula() {
-        return gradeFormula;
-    }
-
-    public void setGradeFormula(GradeFormula gradeFormula) {
-        this.gradeFormula = gradeFormula;
-    }
-
     public Boolean isDefaultParttype() {
         return isDefaultParttype;
     }
@@ -148,17 +166,11 @@ public class ParticipationType {
         isDefaultParttype = defaultParttype;
     }
 
-    @Override
-    public int hashCode() {
-        return (partTypeId != null)
-                ? partTypeId.hashCode() + ParticipationType.class.hashCode()
-                : super.hashCode();
+    public List<GradeFormula> getGradeFormulas() {
+        return gradeFormulas;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return (obj instanceof ParticipationType) && (partTypeId != null)
-                ? this.partTypeId.equals(((ParticipationType) obj).partTypeId)
-                : obj == this;
+    public void setGradeFormulas(List<GradeFormula> gradeFormulas) {
+        this.gradeFormulas = gradeFormulas;
     }
 }
