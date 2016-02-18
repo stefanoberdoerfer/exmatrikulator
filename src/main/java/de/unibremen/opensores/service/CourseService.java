@@ -57,6 +57,26 @@ public class CourseService extends GenericService<Course> {
     }
 
     /**
+     * Find privileged user for this course using an email.
+     *
+     * @param course Course to look at.
+     * @param email Email associated with this privileged user.
+     * @return Privileged user with this email.
+     */
+    public PrivilegedUser findPrivileged(Course course, String email) {
+        List<PrivilegedUser> privUsers = em.createQuery(
+                "SELECT DISTINCT u FROM PrivilegedUser u"
+                + " JOIN u.course AS c"
+                + " WITH c.courseId = :courseId"
+                + " AND u.user.email = :email", PrivilegedUser.class)
+            .setParameter("courseId", course.getCourseId())
+            .setParameter("email", email)
+            .getResultList();
+
+        return (privUsers.isEmpty()) ? null : privUsers.get(0);
+    }
+
+    /**
      * Find tutor of this course using an email.
      *
      * @param course Course to look at.

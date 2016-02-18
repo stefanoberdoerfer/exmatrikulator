@@ -133,12 +133,11 @@ public class UserService extends GenericService<User> {
      * Returns true if the user has the given role in the given course.
      *
      * @param user User whos roles should be checked.
-     * @param roleStr Role (as a string) the user should have.
+     * @param role Role the user should have.
      * @param course Course context for the role.
      * @return True if the user has the given role, false otherwise.
      */
-    public boolean hasCourseRole(User user, String roleStr, Course course) {
-        Role role = Role.valueOf(roleStr);
+    public boolean hasCourseRole(User user, Role role, Course course) {
         switch (role) {
             case LECTURER:
                 return isLecturer(user, course);
@@ -149,6 +148,18 @@ public class UserService extends GenericService<User> {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Returns true if the user has the given role in the given course.
+     *
+     * @param user User whos roles should be checked.
+     * @param roleStr Role (as a string) the user should have.
+     * @param course Course context for the role.
+     * @return True if the user has the given role, false otherwise.
+     */
+    public boolean hasCourseRole(User user, String roleStr, Course course) {
+        return hasCourseRole(user, Role.valueOf(roleStr), course);
     }
 
     /**

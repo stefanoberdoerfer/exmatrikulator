@@ -10,6 +10,7 @@ import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
+import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.CourseService;
@@ -399,30 +400,34 @@ public class TutorialController implements Serializable {
      * @return List of tutorials or null if non exist.
      */
     public List<Tutorial> getTutorials() {
-        List<Integer> roles = user.getRoles();
-        if (roles.contains(Role.LECTURER.getId())) {
+        if (userService.hasCourseRole(user, Role.LECTURER, course)) {
             return course.getTutorials();
-        } else if (roles.contains(Role.PRIVILEGED_USER.getId())) {
-            PrivilegedUser pu = courseService.findTutor(course, user.getEmail());
+        }
+
+        List<Tutorial> list = new ArrayList<>();
+        if (userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
+            PrivilegedUser pu = courseService.findPrivileged(course, user.getEmail());
             if (pu == null) {
                 return null; // Should never be the case
             }
 
-            return pu.getTutorials();
-        } else if (roles.contains(Role.STUDENT.getId())) {
+            if (pu.hasPrivilege(Privilege.ManageTutorials)) {
+                return course.getTutorials();
+            } else {
+                list.addAll(pu.getTutorials());
+            }
+        }
+
+        if (userService.hasCourseRole(user, Role.STUDENT, course)) {
             Student st = courseService.findStudent(course, user.getEmail());
             if (st == null) {
                 return null; // Should never be the case
             }
 
-            List<Tutorial> list = new ArrayList<>();
             list.add(st.getTutorial());
-
-            return list;
         }
 
-        // Unless new roles are added this should never be reached.
-        return null;
+        return list;
     }
 
     /**
