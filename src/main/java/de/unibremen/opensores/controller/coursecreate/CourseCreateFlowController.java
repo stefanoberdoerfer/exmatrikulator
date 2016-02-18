@@ -2,7 +2,9 @@ package de.unibremen.opensores.controller.coursecreate;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.UserService;
@@ -10,14 +12,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.flow.FlowScoped;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * The Controller for the course creation wizard.
@@ -114,6 +114,13 @@ public class CourseCreateFlowController implements Serializable {
         //persist new users
         usersToBeCreated.stream().forEach(userService::persist);
 
+        //set default ParticipationType for all students
+        ParticipationType defaultParttype = course.getDefaultParticipationType();
+        for (Student s : course.getStudents()) {
+            s.setParticipationType(defaultParttype);
+            defaultParttype.getStudents().add(s);
+        }
+
         //persist whole course
         courseService.persist(course);
 
@@ -134,6 +141,10 @@ public class CourseCreateFlowController implements Serializable {
         log.debug("Created Course: " + course.getName());
         log.debug("#Numbers: " + course.getNumbers().size());
         log.debug("#Lecturers: " + course.getLecturers().size());
+        if (course.getLecturers().size() > 0) {
+            log.debug(course.getLecturers().get(0).getUser() + " is Lecturer of this course. "
+                    + course.getLecturers().get(0).getCourse().getName());
+        }
         log.debug("#PartTypes: " + course.getParticipationTypes().size());
         log.debug("#Tutors: " + course.getTutors().size());
         log.debug("#Tutorials: " + course.getTutorials().size());

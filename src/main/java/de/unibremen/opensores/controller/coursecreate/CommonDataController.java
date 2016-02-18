@@ -177,6 +177,7 @@ public class CommonDataController implements Serializable {
         lec.setUser(user);
         lec.setHidden(false);
         lec.setCourse(course);
+        lec.setIsCourseCreator(false);
         course.getLecturers().add(lec);
 
         PrivilegedUser privUser = new PrivilegedUser();
