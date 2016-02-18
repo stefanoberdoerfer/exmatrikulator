@@ -15,7 +15,9 @@
                 <div class="col-xs-8">
                   <p:pickList id="addStudent" value="#{tutorialController.tutorialStudents}"
                       var="tutorialStudents" itemLabel="#{tutorialStudents.user}"
-                      itemValue="#{tutorialStudents}" converter="#{studentConverter}" />
+                      itemValue="#{tutorialStudents}" converter="#{studentConverter}">
+                    <f:attribute name="course" value="#{tutorialController.course}" />
+                  </p:pickList>
                 </div>
             </div>
         </div>

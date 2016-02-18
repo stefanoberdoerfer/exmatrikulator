@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 
@@ -28,6 +29,7 @@ import javax.faces.context.FacesContext;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -132,39 +134,20 @@ public class TutorialController implements Serializable {
     @PostConstruct
     public void init() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-            facesContext.getViewRoot().getLocale());
-
         HttpServletRequest req = (HttpServletRequest)
             facesContext.getExternalContext().getRequest();
-        String idStr = req.getParameter("course-id");
+        HttpServletResponse res = (HttpServletResponse)
+            facesContext.getExternalContext().getResponse();
 
-        try {
-            course = (idStr == null || idStr.trim().isEmpty()) ? null : courseService
-                .find(Course.class, Integer.valueOf(idStr).longValue());
-        } catch (NumberFormatException e) {
-            course = null;
-        }
-
-        /*
-         * TODO verify that the user is allowed to access this course
-         */
-
+        course = courseService.findCourseById(req.getParameter("course-id"));
         if (course == null) {
-            String msg = bundle.getString("courses.fail");
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
-
-            /*
-             * TODO decide where the user should be redirected to.
-             */
-
+            try {
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            } catch (IOException e) {
+                log.fatal(e);
+            }
             return;
         }
-
-        // TODO we might want to set this in the filter.
-        facesContext.getExternalContext().getSessionMap()
-            .put("course", course);
 
         tutorialTutors = new DualListModel<>(course.getTutors(),
             new ArrayList<>());

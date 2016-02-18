@@ -19,6 +19,24 @@ import java.util.List;
 public class CourseService extends GenericService<Course> {
 
     /**
+     * Find course using a string id.
+     *
+     * @param idStr Course id to use for lookup.
+     * @return Associated course or null.
+     */
+    public Course findCourseById(String idStr) {
+        Course course;
+        try {
+            course = (idStr == null || idStr.trim().isEmpty()) ? null :
+                find(Course.class, Integer.valueOf(idStr).longValue());
+        } catch (NumberFormatException e) {
+            course = null;
+        }
+
+        return course;
+    }
+
+    /**
      * Find student of this course using an email.
      *
      * @param course Course to look at.

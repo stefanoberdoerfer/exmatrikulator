@@ -23,7 +23,9 @@
               <div class="col-xs-8">
                 <p:pickList id="createGroupMember" value="#{tutorialController.groupMembers}"
                     var="groupMembers" itemLabel="#{groupMembers.user}"
-                    itemValue="#{groupMembers}" converter="#{studentConverter}" />
+                    itemValue="#{groupMembers}" converter="#{studentConverter}">
+                  <f:attribute name="course" value="#{tutorialController.course}" />
+                </p:pickList>
               </div>
           </div>
         </div>

@@ -24,8 +24,10 @@
                   <label for="createTutorialTutors" class="col-xs-3 control-label">#{msg['common.tutors']}</label>
                     <div class="col-xs-8">
                         <p:pickList id="editTutorialTutors" value="#{tutorialController.tutorialTutors}"
-                          var="tutorialTutors" itemLabel="#{tutorialTutors.user}"
-                          itemValue="#{tutorialTutors}" converter="#{privilegedUserConverter}" />
+                            var="tutorialTutors" itemLabel="#{tutorialTutors.user}"
+                            itemValue="#{tutorialTutors}" converter="#{privilegedUserConverter}">
+                          <f:attribute name="course" value="#{tutorialController.course}" />
+                        </p:pickList>
                         <div class="alert alert-info">
                             #{msg['tutorials.create.hint']}
                         </div>
