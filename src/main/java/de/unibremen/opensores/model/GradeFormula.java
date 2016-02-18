@@ -1,5 +1,6 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,7 +25,8 @@ public class GradeFormula {
     private Long formulaId;
 
     @Lob
-    @Column(length = 100000)
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "CLOB")
     private String formula;
 
     @ManyToOne(optional = false)

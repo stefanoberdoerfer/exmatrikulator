@@ -38,8 +38,8 @@ public class StudentService extends GenericService<Student> {
     }
 
     /**
-     * Gets a map of prticipationt types off all undeleted and conformed students.
-     * @param participationTypes The list of particiption typs which
+     * Gets a map of participation types types off all undeleted and confirmed students.
+     * @param participationTypes The list of participation types from which the
      *                           undeleted and confirmed students should be got.
      *
      * @return A map from the participation types to a list of the students.

@@ -553,7 +553,7 @@ public class GradeScriptController {
      * @param formula The formula which should be deleted.
      */
     public void deleteFormula(GradeFormula formula) {
-        if ( formula == null) {
+        if (formula == null) {
             throw new IllegalArgumentException("The type and formula cant be null."
                 + " The formula has to be in the grade formula history of the type");
         }
@@ -604,9 +604,9 @@ public class GradeScriptController {
     }
 
     /**
-     * Gets the graded and edited students from a particiption type.
-     * @param type the particiption type which graded students should be got.
-     * @return A list of the currently edited students of the particiption type.
+     * Gets the graded and edited students from a participation type.
+     * @param type the participation type which graded students should be got.
+     * @return A list of the currently edited students of the participation type.
      * @throw IllegalArgumentException if the type is null.
      */
     public List<Student> getGradedStudentsFrom(ParticipationType type) {
@@ -754,7 +754,7 @@ public class GradeScriptController {
     }
 
     /**
-     * Checks if a grade formula is valid while not chaning the exposing state
+     * Checks if a grade formula is valid while not changing the exposing state
      * of the controller (e.g. script output, student grades etc.).
      * @return True if the current grade script sets valid PaboGrades by executing
      *         the formula, false otherwise.
