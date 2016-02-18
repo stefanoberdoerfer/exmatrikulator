@@ -59,7 +59,7 @@ public class Student {
     @JoinColumn(name = "courseId")
     private Course course;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 

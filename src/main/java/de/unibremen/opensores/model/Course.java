@@ -77,7 +77,7 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Lecturer> lecturers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tutorial> tutorials = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)

@@ -71,7 +71,7 @@
                         <td>
                           #{student.user}
                         </td>
-                        <td>111111</td>
+                        <td>#{student.user.matriculationNumber}</td>
                         <td class="text-right">
                             <div class="btn-group">
                                 <h:form>
@@ -112,7 +112,7 @@
                           <td>
                             <strong>#{student.user}</strong>
                           </td>
-                          <td>111111</td>
+                          <td>#{student.user.matriculationNumber}</td>
                           <td class="text-right">
                               <div class="btn-group">
                                 <h:form>
@@ -135,12 +135,14 @@
                 <h:form>
                   <p:commandLink value="#{msg['groups.add']}"
                     oncomplete="return exModal('groupCreate');"
+                    update=":createGroupForm"
                     class="btn btn-default">
                       <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
                   </p:commandLink>
 
                   <p:commandLink value="#{msg['students.add']}"
                     oncomplete="return exModal('studentAdd');"
+                    update=":addStudentForm"
                     class="btn btn-default">
                       <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
                   </p:commandLink>

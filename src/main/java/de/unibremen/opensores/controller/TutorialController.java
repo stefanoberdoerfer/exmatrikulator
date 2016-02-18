@@ -17,7 +17,6 @@ import de.unibremen.opensores.service.TutorialService;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -178,25 +177,23 @@ public class TutorialController implements Serializable {
      * @param tutorial Tutorial to switch to.
      */
     public void changeCurrentTutorial(@NotNull Tutorial tutorial) {
+        this.newTutorialName = null;
+        this.removalConformation = null;
+
         this.tutorial = tutorial;
         this.tutorialName = tutorial.getName();
 
         this.group = null;
         this.groupName = null;
-        this.groupMembers.setSource(tutorial.getStudents());
+        this.groupMembers.setSource(studentsWithoutGroup(tutorial));
         this.groupMembers.setTarget(new ArrayList<>());
 
-        List<PrivilegedUser> tutors = tutorial.getTutors();
-        this.tutorialTutors.setTarget(tutors);
-        this.tutorialTutors.setSource(tutors.stream()
-                .filter(t -> !tutorialTutors.getTarget().contains(t))
-                .collect(Collectors.toList()));
+        this.tutorialTutors.setSource(course.getTutors());
+        this.tutorialTutors.setTarget(new ArrayList<>());
 
-        List<Student> students = tutorial.getStudents();
-        this.tutorialStudents.setTarget(students);
-        this.tutorialStudents.setSource(students.stream()
-                .filter(s -> !tutorialStudents.getTarget().contains(s))
-                .collect(Collectors.toList()));
+        this.tutorialStudents.setSource(courseService
+            .studentsWithoutTutorial(course));
+        this.tutorialStudents.setTarget(new ArrayList<>());
     }
 
     /**
@@ -205,17 +202,12 @@ public class TutorialController implements Serializable {
      * @param group Group to switch to.
      */
     public void changeCurrentGroup(@NotNull Group group) {
+        changeCurrentTutorial(group.getTutorial());
+
         this.group = group;
         this.groupName = group.getName();
 
-        List<Student> students = group.getStudents();
-        this.groupMembers.setTarget(students);
-        this.groupMembers.setSource(students.stream()
-                .filter(s -> !groupMembers.getTarget().contains(s))
-                .collect(Collectors.toList()));
-
-        this.tutorial = group.getTutorial();
-        this.tutorialName = tutorial.getName();
+        this.groupMembers.setTarget(group.getStudents());
     }
 
     /**
@@ -246,6 +238,11 @@ public class TutorialController implements Serializable {
         }
 
         course.getTutorials().remove(tutorial);
+        for (Student s : tutorial.getStudents()) {
+            s.setTutorial(null);
+            s.setGroup(null);
+        }
+
         tutorialService.remove(tutorial);
         log.debug(String.format("Removed tutorial %s from course %s",
                     name, course.getName()));
@@ -332,9 +329,11 @@ public class TutorialController implements Serializable {
     private Group updateMembers(Group group) {
         List<Student> students = new ArrayList<>();
         for (Student student : groupMembers.getTarget()) {
-            students.add(student);
+            student.setGroup(group);
             log.debug(String.format("Added student with email %s to group %s",
                 student.getUser().getEmail(), group.getName()));
+
+            students.add(student);
         }
 
         group.setStudents(students);
@@ -368,6 +367,8 @@ public class TutorialController implements Serializable {
      */
     public void removeStudent() {
         student.setTutorial(null);
+        student.setGroup(null);
+
         tutorial.getStudents().remove(student);
         tutorial = tutorialService.update(tutorial);
     }
@@ -379,9 +380,7 @@ public class TutorialController implements Serializable {
      * @return List of students who are not a part of a group.
      */
     public List<Student> studentsWithoutGroup(@NotNull Tutorial tutorial) {
-        return tutorial.getStudents().stream()
-            .filter(s -> s.getGroup() == null)
-            .collect(Collectors.toList());
+        return tutorialService.studentsWithoutGroup(tutorial);
     }
 
     /**
