@@ -22,8 +22,10 @@
                 <label for="editGroupMember" class="col-xs-3 control-label">#{msg['common.students']}</label>
                 <div class="col-xs-8">
                   <p:pickList id="editGroupMember" value="#{tutorialController.groupMembers}"
-                    var="groupMembers" itemLabel="#{groupMembers.user}"
-                    itemValue="#{groupMembers}" converter="#{studentConverter}" />
+                      var="groupMembers" itemLabel="#{groupMembers.user}"
+                      itemValue="#{groupMembers}" converter="#{studentConverter}">
+                    <f:attribute name="course" value="#{tutorialController.course}" />
+                  </p:pickList>
                 </div>
             </div>
         </div>

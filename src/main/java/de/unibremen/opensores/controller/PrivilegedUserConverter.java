@@ -6,7 +6,6 @@ import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.CourseService;
 
 import java.util.ResourceBundle;
-import java.util.Map;
 import java.text.MessageFormat;
 
 import javax.ejb.EJB;
@@ -42,10 +41,8 @@ public class PrivilegedUserConverter implements Converter {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
-        Map<String, Object> smap = facesContext.getExternalContext()
-            .getSessionMap();
 
-        Course course = (Course) smap.get("course");
+        Course course = (Course) component.getAttributes().get("course");
         if (course == null) {
             String msg = bundle.getString("courses.fail");
             throw new ConverterException(new FacesMessage(FacesMessage
