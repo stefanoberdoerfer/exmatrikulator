@@ -74,19 +74,19 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Group> groups = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Lecturer> lecturers = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Tutorial> tutorials = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<PrivilegedUser> tutors = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<ParticipationType> participationTypes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Exam> exams = new ArrayList<>();
 
     @ManyToOne(optional = false)

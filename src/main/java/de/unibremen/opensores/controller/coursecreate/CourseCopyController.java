@@ -2,6 +2,7 @@ package de.unibremen.opensores.controller.coursecreate;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.GradeFormula;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.PrivilegedUser;
@@ -19,6 +20,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -215,6 +217,7 @@ public class CourseCopyController implements Serializable {
                 pUser.setTutorials(tutorialList);
             }
 
+            pUser.setCourse(course);
             targetList.add(pUser);
         }
     }
@@ -237,7 +240,16 @@ public class CourseCopyController implements Serializable {
             px.setPerformanceArea(p.getPerformanceArea());
             px.setPerformanceContent(p.getPerformanceContent());
             px.setRestricted(p.getRestricted());
-            px.addNewFormula(p.getLatestFormula());
+
+            GradeFormula newFormula = new GradeFormula();
+            GradeFormula otherFormula = p.getLatestFormula();
+            newFormula.setFormula(otherFormula.getFormula());
+            newFormula.setValid(otherFormula.isValid());
+            newFormula.setParticipationType(px);
+            newFormula.setEditDescription("-> " + courseToCopy.getName());
+            newFormula.setEditor(user);
+            newFormula.setSaveDate(new Date());
+            px.addNewFormula(newFormula);
 
             if (copyExams) {
                 List<Exam> examList = new ArrayList<>();
@@ -251,6 +263,7 @@ public class CourseCopyController implements Serializable {
                 px.setExams(examList);
             }
 
+            px.setCourse(course);
             course.getParticipationTypes().add(px);
         }
     }
