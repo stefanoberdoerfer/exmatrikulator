@@ -54,8 +54,12 @@ public class PrivilegedUser {
     @ManyToMany(mappedBy = "tutors")
     private List<Tutorial> tutorials = new ArrayList<>();
 
+    public boolean hasPrivilege(Privilege priv) {
+        return privileges.contains(priv.getId());
+    }
+
     public boolean hasPrivilege(String privString) {
-        return privileges.contains(Privilege.valueOf(privString).getId());
+        return hasPrivilege(Privilege.valueOf(privString));
     }
 
     public List<Integer> getPrivileges() {
