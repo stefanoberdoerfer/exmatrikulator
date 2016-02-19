@@ -40,6 +40,8 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.Calendar;
 
 /**
  * Startup controller, creates dummy data.
@@ -77,6 +79,9 @@ public class ApplicationController {
     @EJB
     private ParticipationTypeService participationTypeService;
 
+    @EJB
+    private SemesterService semester;
+
     /**
      * The log4j logger.
      */
@@ -85,6 +90,50 @@ public class ApplicationController {
     @PostConstruct
     public void init() {
         initDummyData();
+        initSemesters();
+    }
+
+    /**
+     * Initilializes the next 10 semesters in advance.
+     */
+    public void initSemesters() {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+
+        List<Semester> semesters = semester.listSemesters();
+        int toCreate = 0;
+
+        if (semesters.isEmpty()) {
+            toCreate = 10;
+        } else {
+            int highest = highestYear(semesters);
+            toCreate = 10 - (highest - year);
+        }
+
+        if (toCreate > 0) {
+            semester.createNextSemesters(toCreate);
+            log.debug("Created " + toCreate + " semesters.");
+        } else {
+            log.debug("Nothing to create.");
+        }
+    }
+
+    /**
+     * Gets the highest year of all Semesters.
+     *
+     * @param semesters list of semesters.
+     */
+    private int highestYear(List<Semester> semesters) {
+        int highest = 0;
+
+        for (Semester s : semesters) {
+            int year = s.getSemesterYear();
+            if (year > highest) {
+                highest = year;
+            }
+        }
+
+        return highest;
     }
 
     /**
@@ -161,13 +210,13 @@ public class ApplicationController {
         //Current semester
         Semester semester = new Semester();
         semester.setIsWinter(true);
-        semester.setName("15/16");
+        semester.setSemesterYear(2016);
         semesterService.persist(semester);
 
         //next semester
         Semester semester2 = new Semester();
         semester2.setIsWinter(false);
-        semester2.setName("16");
+        semester2.setSemesterYear(2016);
         semesterService.persist(semester2);
 
         //Course with all relations filled
@@ -396,7 +445,7 @@ public class ApplicationController {
         log.debug("Got Group out of Course with id: " + group.getGroupId()
                 + " and groupmember: " + group.getStudents().get(0).getUser().getFirstName());
         log.debug("ParticipationType: " + course.getParticipationTypes().get(0).getName()
-                + "; Semester: " + course.getSemester().getName() + " with id: "
+                + "; Semester: " + course.getSemester().toString() + " with id: "
                 + course.getSemester().getSemesterId() + " and GradeFormula: "
                 + course.getParticipationTypes().get(0).getLatestFormula().getFormula());
         log.debug("Exam: " + course.getExams().get(0).getName());
