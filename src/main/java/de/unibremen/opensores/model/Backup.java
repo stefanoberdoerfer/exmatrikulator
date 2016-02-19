@@ -24,32 +24,47 @@ public class Backup {
     private String name;
 
     @Column(nullable = false)
+    private String path;
+
+    @Column(nullable = false)
     private Date date;
 
     @Column(nullable = false)
     private Long fileSize;
 
-    private String getName() {
+    public long getBackupId() {
+        return backupId;
+    }
+
+    public String getName() {
         return name;
     }
 
-    private Date getDate() {
-        return date;
+    public String getPath() {
+        return path;
     }
 
-    private Long getFileSize() {
+    public Date getDate() {
+        return new Date(date.getTime());
+    }
+
+    public Long getFileSize() {
         return fileSize;
     }
 
-    private void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    private void set(Date date) {
-        this.date = date;
+    public void setPath(String path) {
+        this.path = path;
     }
 
-    private void set(Long fileSize) {
+    public void setDate(Date date) {
+        this.date = new Date(date.getTime());
+    }
+
+    public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
     }
 }
