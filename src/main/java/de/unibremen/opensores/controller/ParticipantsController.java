@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  */
 @ManagedBean
 @ViewScoped
-public class ParticipantsController {
+public class  ParticipantsController {
 
     /**
      * The log4j logger.

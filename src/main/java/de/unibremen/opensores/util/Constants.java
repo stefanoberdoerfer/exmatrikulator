@@ -64,6 +64,11 @@ public final class Constants {
     public static final String HTTP_PARAM_STUDENT_ID = "student-id";
 
     /**
+     * The http parameter key by which the tutorial id gets passed.
+     */
+    public static final String HTTP_PARAM_TUTORIAL_ID = "tutorial-id";
+
+    /**
      * The path to the course overview site.
      */
     public static final String PATH_TO_COURSE_OVERVIEW =
