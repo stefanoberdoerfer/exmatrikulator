@@ -30,7 +30,7 @@ import javax.ejb.Timer;
  * @author Lorenz Huether
  */
 @Stateless
-public class BackupService extends GenericService {
+public class BackupService extends GenericService<Backup> {
 
     private static Logger log = LogManager.getLogger(BackupService.class);
     private final String dirPropertyKey = "exmatrikulator.backup.dir";
