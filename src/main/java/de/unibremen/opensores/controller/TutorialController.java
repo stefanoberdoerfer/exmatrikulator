@@ -280,16 +280,16 @@ public class TutorialController implements Serializable {
      * Creates a new group in the current tutorial.
      */
     public void createGroup() {
-        group = new Group();
+        group = updateMembers(new Group());
         group.setName(groupName);
         group.setCourse(course);
         group.setTutorial(tutorial);
 
-        group = updateMembers(group);
         course.getGroups().add(group);
         tutorial.getGroups().add(group);
+        group.setTutorial(tutorial);
 
-        tutorial = tutorialService.update(tutorial);
+        course = courseService.update(course);
         log.debug(String.format("Created new group %s in tutorial %s",
             group.getName(), tutorial.getName()));
     }

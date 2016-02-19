@@ -64,6 +64,7 @@ public class Student {
     private Tutorial tutorial;
 
     @ManyToOne(optional = true)
+    @JoinColumn(name = "groupId")
     private Group group;
 
     @ManyToOne
