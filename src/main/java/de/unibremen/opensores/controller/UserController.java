@@ -72,7 +72,7 @@ public class UserController {
      * @Pre The user has valid fields.
      */
     public String saveUser() {
-        userService.update(user);
+        user = userService.update(user);
         return "profile.xhtml";
     }
 
