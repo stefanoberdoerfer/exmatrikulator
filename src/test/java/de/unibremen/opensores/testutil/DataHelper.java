@@ -72,7 +72,7 @@ public final class DataHelper {
 
         Semester semester = new Semester();
         semester.setIsWinter(true);
-        semester.setName("2016");
+        semester.setSemesterYear(2016);
         course.setSemester(semester);
 
         ParticipationType participationType = new ParticipationType();

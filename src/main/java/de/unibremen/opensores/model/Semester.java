@@ -18,19 +18,12 @@ public class Semester {
     private Long semesterId;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private Boolean isWinter;
 
-    public String getName() {
-        return name;
-    }
+    @Column(nullable = false)
+    private Integer semesterYear;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    @Column(nullable = false)
     public Boolean isWinter() {
         return isWinter;
     }
@@ -43,12 +36,20 @@ public class Semester {
         return semesterId;
     }
 
+    public Integer getSemesterYear() {
+        return semesterYear;
+    }
+
+    public void setSemesterYear(Integer semesterYear) {
+        this.semesterYear = semesterYear;
+    }
+
     @Override
     public String toString() {
-        if (name == null) {
-            return "";
-        }
+        Integer nextYear = semesterYear + 1;
+        String ty = semesterYear.toString();
+        String ny = nextYear.toString();
 
-        return ((isWinter) ? "WiSe" : "SoSe") + " " + name;
+        return ((isWinter) ? "WiSe" + ty + "/" + ny : "SoSe" + ty);
     }
 }

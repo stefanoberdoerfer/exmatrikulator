@@ -12,13 +12,29 @@
       <session-type>Stateless</session-type>
       <timer>
         <schedule>
-	  <minute>*/1</minute>
-          <hour>*</hour>
+	  <hour>*/1</hour>
           <month>*</month>
           <year>*</year>
         </schedule>
         <timeout-method>
           <method-name>scheduledBackup</method-name>
+          <method-params>
+            <method-param>javax.ejb.Timer</method-param>
+          </method-params>
+       </timeout-method>
+     </timer>
+     </session>
+     <session>
+      <ejb-name>SemesterService</ejb-name>
+      <ejb-class>de.unibremen.opensores.service.SemesterService</ejb-class>
+      <session-type>Stateless</session-type>
+      <timer>
+        <schedule>
+	  <month>Mar, Sep</month>
+          <year>*</year>
+        </schedule>
+        <timeout-method>
+          <method-name>scheduledSemesterCreator</method-name>
           <method-params>
             <method-param>javax.ejb.Timer</method-param>
           </method-params>
