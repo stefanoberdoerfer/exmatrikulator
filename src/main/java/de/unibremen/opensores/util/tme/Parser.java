@@ -292,7 +292,7 @@ public class Parser {
      * </p>
      *
      * <pre>
-     * array = "{", { value, "," }, "}";
+     * array = "{", { value, "," | "=" }, "}";
      * </pre>
      *
      * @param val Value Token which should be parsed.
@@ -317,9 +317,10 @@ public class Parser {
             t = next();
             switch (t.getType()) {
                 case COMMA:
+                case ASSIGN:
                     final Token nt = peek();
                     if (nt.getType() == TokenType.RIGHTCURLY) {
-                        throw new ParseException("Missing value after comma",
+                        throw new ParseException("Missing value after seperator",
                                 nt.getLine());
                     }
 
@@ -327,7 +328,7 @@ public class Parser {
                 case RIGHTCURLY:
                     break;
                 default:
-                    throw new ParseException("Expected ',' or '}'", t.getLine());
+                    throw new ParseException("Expected ',', '=' or '}'", t.getLine());
             }
 
             array.add(v);

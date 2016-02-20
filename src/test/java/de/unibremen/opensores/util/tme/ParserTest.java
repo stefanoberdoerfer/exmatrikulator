@@ -202,8 +202,8 @@ public class ParserTest {
         map.put("bar 23 {\n 23=42 \n}", "Expected key name");
         map.put("baz 99 {\n bar=23}", "Expected newline character");
         map.put("lel 12 {\n foo== \n}", "Unexpected key value");
-        map.put("kek 13 {\n a={1,} \n}", "Missing value after comma");
-        map.put("kek 13 {\n a={] \n}", "Expected ',' or '}'");
+        map.put("kek 13 {\n a={1,} \n}", "Missing value after seperator");
+        map.put("kek 13 {\n a={] \n}", "Expected ',', '=' or '}'");
 
         for (final Map.Entry<String, String> t : map.entrySet()) {
             try {
