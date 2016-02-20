@@ -82,16 +82,14 @@
                 </p:column>
                 <p:column headerText="#{msg['common.actions']}"
                           styleClass="table-common-options-one text-right">
-                    <div align="center">
-                        <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
-                                       update=":participantRemoveDialog"
-                                       rendered="#{participantsController.course.getLecturerFromUser(participantsController.loggedInUser) != null
+                    <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
+                                   update=":participantRemoveDialog"
+                                   rendered="#{participantsController.course.getLecturerFromUser(participantsController.loggedInUser) != null
                                                    and !participantsController.loggedInUser.equals(lecturer.user)}"
-                                       h5:data-placement="top" title="#{msg['course.lecturer.remove']}" class="btn btn-danger" >
-                            <i class="fa fa-remove"></i>
-                            <f:actionListener binding="#{participantsController.onDeleteLecturerDialogCalled(lecturer)}"/>
-                        </p:commandLink>
-                    </div>
+                                   h5:data-placement="top" title="#{msg['course.lecturer.remove']}" class="btn btn-danger" >
+                        <i class="fa fa-remove"></i>
+                        <f:actionListener binding="#{participantsController.onDeleteLecturerDialogCalled(lecturer)}"/>
+                    </p:commandLink>
                 </p:column>
             </p:dataTable>
         </h:form>

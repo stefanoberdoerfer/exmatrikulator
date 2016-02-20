@@ -89,10 +89,8 @@
                           sortBy="#{student.user.matriculationNumber}"
                           filterBy="#{student.user.matriculationNumber}"
                           filterMatchMode="contains"
-                          styleClass="table-users-matriculation-nr">
-                    <div align="center">
-                        <h:outputText value="#{student.user.matriculationNumber}"/>
-                    </div>
+                          styleClass="table-users-matriculation-nr text-center">
+                    <h:outputText value="#{student.user.matriculationNumber}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.participationType']}"
                           sortBy="#{student.participationType.name}"
