@@ -410,4 +410,26 @@ public class Course {
             this.lastFinalization = new Date(lastFinalization.getTime());
         }
     }
+
+    @Override
+    public int hashCode() {
+        if (this.courseId != null) {
+            return courseId.hashCode() + Course.class.hashCode();
+
+        } else {
+            return super.hashCode();
+
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this.courseId != null
+                && obj instanceof Course
+                && ((Course) obj).getCourseId() != null) {
+            return this.courseId.equals(((Course)obj).courseId);
+        } else {
+            return (obj == this);
+        }
+    }
 }

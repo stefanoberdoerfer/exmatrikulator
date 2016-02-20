@@ -1,6 +1,5 @@
 package de.unibremen.opensores.controller;
 
-import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GlobalRole;
@@ -15,6 +14,7 @@ import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
@@ -33,15 +33,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.io.File;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Startup controller, creates dummy data.
@@ -83,14 +87,88 @@ public class ApplicationController {
     private SemesterService semester;
 
     /**
+     * Map of courseIds to currently logged in users
+     * with rights to edit this course (Lecturers and PrivilegedUsers).
+     */
+    private ConcurrentHashMap<Long,List<User>> sessionRegister;
+
+    /**
      * The log4j logger.
      */
     private static Logger log = LogManager.getLogger(ApplicationController.class);
 
+    /**
+     * Initialisation method of whole the Exmatrikulator Application.
+     * Gets called on application start.
+     * Intialises the datastructures needed to show the status of currently
+     * logged in users with writing rights per course.
+     */
     @PostConstruct
     public void init() {
         initDummyData();
         initSemesters();
+
+        //initialize map used to determine the current login status of users
+        //with writing rights in all the different courses of the Exmatrikulator system
+        sessionRegister = new ConcurrentHashMap<>();
+        for (Course c : courseService.listCourses()) {
+            sessionRegister.put(c.getCourseId(),Collections.synchronizedList(new ArrayList<>()));
+        }
+    }
+
+    /**
+     * Method gets called for every newly started session in the Exmatrikulator system.
+     * The sessionRegister of courses and their corresponding users with edit-rights gets updated
+     * with the new users LECTURER or PRIVILEGED_USER course->role relations.
+     * @param user Newly logged in user object
+     * @param courseRoleMap map of the users courses to his corresponding role
+     */
+    public void registerSession(User user, Map<Course, Role> courseRoleMap) {
+        log.debug("Registering session of: " + user);
+        for (Map.Entry<Course,Role> entry : courseRoleMap.entrySet()) {
+            Role role = entry.getValue();
+            if (role == Role.PRIVILEGED_USER || role == Role.LECTURER) {
+                Course c = entry.getKey();
+                log.debug("Adding " + user + " to sessionMap entry for " + c.getName());
+                if (sessionRegister.get(c.getCourseId()) == null) {
+                    sessionRegister.putIfAbsent(c.getCourseId(),
+                            Collections.synchronizedList(new ArrayList<>()));
+                }
+                sessionRegister.get(c.getCourseId()).add(user);
+            }
+        }
+    }
+
+    /**
+     * Method gets called when the user session expired or was invalidated (logout).
+     * Removes all occurrences of the user in the sessionRegister to clear his logged-in
+     * status completely.
+     * @param user User object with invalid session after this hook
+     * @param courseRoleMap map of the users courses to his corresponding role
+     */
+    public void unregisterSession(User user, Map<Course, Role> courseRoleMap) {
+        log.debug("Unregistering session of: " + user);
+        for (Map.Entry<Course,Role> entry : courseRoleMap.entrySet()) {
+            Role role = entry.getValue();
+            if (role == Role.PRIVILEGED_USER || role == Role.LECTURER) {
+                Course c = entry.getKey();
+                if (sessionRegister.get(c.getCourseId()) != null) {
+                    log.debug("Removing " + user + " from sessionMap entry for " + c.getName());
+                    sessionRegister.get(c.getCourseId()).removeIf(u -> u.equals(user));
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the list of Users with editor privileges in the course specified with the
+     * courseId.
+     * @param courseId Id to specified the course which editors should be returned
+     * @return List of editors for the specified course. Empty list if there aren't any.
+     */
+    public List<User> getEditorSessions(Long courseId) {
+        List<User> editors = sessionRegister.get(courseId);
+        return editors != null ? editors : new ArrayList<>();
     }
 
     /**

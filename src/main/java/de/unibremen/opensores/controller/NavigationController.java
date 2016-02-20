@@ -11,11 +11,11 @@ import org.apache.logging.log4j.Logger;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -47,14 +47,15 @@ public class NavigationController {
     private UserService userService;
 
     /**
+     * UserController for getting the user object.
+     */
+    @ManagedProperty(value = "#{userController}")
+    private UserController userController;
+
+    /**
      * Map containing supported locales.
      */
     private static Map<String, Locale> languages;
-
-    /**
-     * Map containing the roles for each course.
-     */
-    private Map<Course, Role> courseRoles = new HashMap<>();
 
     /**
      * @todo This is retarded, locales should be fetched from faces-config.xml.
@@ -143,10 +144,22 @@ public class NavigationController {
      */
     public User getUser() {
         return (User)FacesContext
-            .getCurrentInstance()
-            .getExternalContext()
-            .getSessionMap()
-            .get(Constants.SESSION_MAP_KEY_USER);
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get(Constants.SESSION_MAP_KEY_USER);
+    }
+
+    /**
+     * Logs the user out of the current session.
+     * Invalidates the current session map.
+     * Redirects to the login page.
+     * @return The of the login page.
+     */
+    public String logout() {
+        FacesContext.getCurrentInstance()
+                .getExternalContext().invalidateSession();
+        return "/login.xhtml?faces-redirect=true";
     }
 
     /**
@@ -178,59 +191,6 @@ public class NavigationController {
     }
 
     /**
-     * Returns if the currently logged in user is a privileged user in the
-     * given course.
-     * @param course Course to check
-     * @return true if he/she is privileged
-     */
-    public boolean isPrivilegedUser(Course course) {
-        Role role = courseRoles.get(course);
-
-        if (role == null) {
-            role = determineRole(course);
-        }
-
-        return role.equals(Role.PRIVILEGED_USER);
-    }
-
-    /**
-     * Returns if the currently logged in user is a lecturer in the
-     * given course.
-     * @param course Course to check
-     * @return true if he/she is a lecturer
-     */
-    public boolean isLecturer(Course course) {
-        Role role = courseRoles.get(course);
-
-        if (role == null) {
-            role = determineRole(course);
-        }
-
-        return role.equals(Role.LECTURER);
-    }
-
-    /**
-     * Determines which highest role a user has.
-     * @param course Course to check
-     * @return Highest role of the user
-     */
-    private Role determineRole(Course course) {
-        Role role;
-        User user = getUser();
-
-        if (userService.hasCourseRole(user, "LECTURER", course)) {
-            role = Role.LECTURER;
-        } else if (userService.hasCourseRole(user, "PRIVILEGED_USER", course)) {
-            role = Role.LECTURER.PRIVILEGED_USER;
-        } else {
-            role = Role.STUDENT;
-        }
-
-        courseRoles.put(course, role);
-        return role;
-    }
-
-    /**
      * Returns if the given course is currently open. Is determined via the id
      * in the url.
      * @param course Course to check
@@ -257,5 +217,13 @@ public class NavigationController {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public UserController getUserController() {
+        return userController;
+    }
+
+    public void setUserController(UserController userController) {
+        this.userController = userController;
     }
 }
