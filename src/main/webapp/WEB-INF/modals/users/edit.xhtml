@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog id="editUserDialog" header="#{msg['participants.edit']}" appendTo="@(body)" widgetVar="participantEdit" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form>
+            <p:panel id="editDlgPnl">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editUserFirstname" class="col-xs-3 control-label">#{msg['common.name']}</label>
+                        <div class="col-xs-4">
+                            <h:inputText styleClass="form-control" id="editUserFirstname"
+                                         h5:placeholder="#{msg['common.firstName']}" autofocus="autofocus"
+                                         value="#{userController.selectedUser.firstName}">
+                                <f:validateLength minimum="#{EXcons.MIN_NAME_LENGTH}" maximum="#{EXcons.MAX_NAME_LENGTH}"/>
+                            </h:inputText>
+                        </div>
+                        <div class="col-xs-4">
+                            <h:inputText styleClass="form-control" id="editUserLastname"
+                                         h5:placeholder="#{msg['common.lastName']}"
+                                         value="#{userController.selectedUser.lastName}">
+                                <f:validateLength minimum="#{EXcons.MIN_NAME_LENGTH}" maximum="#{EXcons.MAX_NAME_LENGTH}"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserEmail" class="col-xs-3 control-label">#{msg['common.email']}</label>
+                        <div class="col-xs-8">
+                            <h:inputText styleClass="form-control" id="editUserEmail"
+                                         value="#{userController.selectedUser.email}"
+                                         validator="#{userController.validateEmail}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserMatriculation" class="col-xs-3 control-label">#{msg['common.studentNumber']}</label>
+                        <div class="col-xs-8">
+                            <h:inputText styleClass="form-control" id="editUserMatriculation"
+                                         value="#{userController.selectedUser.matriculationNumber}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserRoles" class="col-xs-3 control-label">#{msg['common.globalRoles']}</label>
+                        <div class="col-xs-8">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <p:button value="#{msg['common.close']}" type="button" onclick="return exModal(':participantEdit');"
+                                  styleClass="btn btn-default" />
+                        <p:commandLink id="editUserButton"
+                                       action="#{userController.saveEditChanges}"
+                                       class="btn btn-primary" value="#{msg['common.saveChanges']}"
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':participantEdit')" />
+                    </div>
+                </div>
+            </p:panel>
+            <p:blockUI block="editDlgPnl" trigger="editUserButton"/>
+        </h:form>
+    </p:dialog>
+</ui:composition>

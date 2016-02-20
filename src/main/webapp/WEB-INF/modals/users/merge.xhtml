@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['users.merge']}" appendTo="@(body)" widgetVar="userMerge" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <div class="alert alert-info">Hier dann den anzeigen bei dem man auf das Merge Icon geklickt hat gelle?</div>
+                        <h:outputText value="#{msg['users.merge.hint']}" />
+                        <h:inputText type="text" class="form-control" h5:placeholder="#{msg['users.search']}"
+                                     h5:autofocus="autofocus" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group">
+                    <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                     onclick="return exModal(':userMerge');" styleClass="btn btn-default" />
+                    <p:commandLink action="#{userController.mergeUser}"
+                                   id="mergeUserButton"
+                                   class="btn btn-primary" value="#{msg['users.merge']}"
+                                   oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userMerge')" />
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>

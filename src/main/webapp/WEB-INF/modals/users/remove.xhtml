@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['users.remove']}" id="userRemoveDialog"
+              appendTo="@(body)" widgetVar="userRemove" modal="true">
+        <h:form>
+            <p:panel id="removeDlgPnl">
+                <ui:include src="/WEB-INF/alerts.xhtml" />
+                <div class="modal-body">
+                    #{msg['users.remove.question']}<br />
+                    <strong>
+                        #{userController.selectedUser.firstName
+                                .concat(' ')
+                                .concat(userController.selectedUser.lastName)}
+                    </strong>
+                    <br />
+                    #{msg['users.remove.confirm']}<br />
+                    <h:inputText type="text" id="userNameInput" class="form-control"
+                                 required="true"
+                                 validator="#{userController.validateDeletionNameInput}"/>
+                    <h:message for="userNameInput"/>
+                    <br />
+                    #{msg['users.remove.hint']}
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                         onclick="return exModal(':userRemove');" styleClass="btn btn-default" />
+                        <p:commandLink id="removeBtn"
+                                       action="#{userController.deleteUser}"
+                                       class="btn btn-danger" value="#{msg['common.remove']}"
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userRemove')" />
+
+                    </div>
+                </div>
+            </p:panel>
+            <p:blockUI block="removeDlgPnl" trigger="removeBtn"/>
+        </h:form>
+    </p:dialog>
+</ui:composition>

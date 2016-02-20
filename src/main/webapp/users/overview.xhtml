@@ -1,0 +1,81 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.course.participants']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li class="active">#{msg['common.user']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <h:panelGroup class="btn-group main-buttons pull-right" type="block">
+                <h:form styleClass="section-search">
+                    <h:inputText styleClass="form-control" h5:placeholder="#{msg['users.search']}"
+                                 value="#{userController.searchValue}"/>
+                    <h:commandLink styleClass="btn btn-default">
+                        <i class="fa fa-search"></i>
+                    </h:commandLink>
+                </h:form>
+                <h:link onclick="return exModal('userCreate');" value="#{msg['users.create']}"
+                               class="btn btn-primary" />
+            </h:panelGroup>
+            <h1>#{msg['common.user']}</h1>
+        </div>
+
+        <p:dataTable var="user" value="#{userController.users}">
+            <p:column filterBy="#{user.lastName}" sortBy="#{user.lastName}"
+                      filterMatchMode="contains"
+                      headerText="#{msg['common.lastName']}"
+                      styleClass="table-users-lastname">
+                <h:outputText value="#{user.lastName}"/>
+            </p:column>
+            <p:column filterBy="#{user.firstName}" sortBy="#{user.firstName}"
+                      filterMatchMode="contains"
+                      headerText="#{msg['common.firstName']}"
+                      styleClass="table-users-firstname">
+                <h:outputText value="#{user.firstName}"/>
+            </p:column>
+            <p:column filterBy="#{user.email}" sortBy="#{user.email}"
+                      filterMatchMode="contains"
+                      headerText="#{msg['common.email']}"
+                      styleClass="table-common-email">
+                <h:outputText value="#{user.email}"/>
+            </p:column>
+            <p:column filterBy="#{user.matriculationNumber}" sortBy="#{user.matriculationNumber}"
+                      filterMatchMode="contains"
+                      headerText="#{msg['common.studentNumber']}"
+                      styleClass="table-users-matriculation-nr">
+                <h:outputText value="#{user.matriculationNumber}"/>
+            </p:column>
+            <p:column headerText="#{msg['common.roles']}" styleClass="table-users-type">
+                <h:outputText value="#{user.roles}"/>
+            </p:column>
+            <p:column styleClass="table-common-options-four text-right">
+                <p:commandLink onclick="return exModal('userEdit');" class="btn btn-default">
+                    <i class="fa fa-pencil"></i>
+                </p:commandLink>
+                <p:commandLink onclick="return exModal('userPassword');" class="btn btn-default">
+                    <i class="fa fa-user-secret"></i>
+                </p:commandLink>
+                <p:commandLink onclick="return exModal('userMerge');" class="btn btn-default">
+                    <i class="fa fa-code-fork"></i>
+                </p:commandLink>
+                <p:commandLink onclick="return exModal('userRemove');" class="btn btn-danger">
+                    <i class="fa fa-remove"></i>
+                </p:commandLink>
+            </p:column>
+        </p:dataTable>
+
+        <ui:include src="/WEB-INF/modals/users/create.xhtml" />
+        <ui:include src="/WEB-INF/modals/users/edit.xhtml" />
+        <ui:include src="/WEB-INF/modals/users/password.xhtml" />
+        <ui:include src="/WEB-INF/modals/users/remove.xhtml" />
+        <ui:include src="/WEB-INF/modals/users/merge.xhtml" />
+    </ui:define>
+</ui:composition>

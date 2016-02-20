@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Kevin Scheck
  * @author Sören Tempel
  * @author Stefan Oberdörfer
+ * @author Matthias Reichmann
  */
 @Stateless
 public class UserService extends GenericService<User> {
@@ -343,5 +344,17 @@ public class UserService extends GenericService<User> {
 
         return String.format("%s/%s?id=%d&token=%s", baseUrl,
                 "recovery/new-password.xhtml", user.getUserId(), token.getToken());
+    }
+
+    /**
+     * Returns a list of all users ordered by the last name.
+     * @return List of users
+     */
+    public List<User> getUsers() {
+        return em.createQuery(
+                    "SELECT DISTINCT u FROM User u "
+                        + "ORDER BY u.lastName ASC",
+                    User.class)
+                .getResultList();
     }
 }
