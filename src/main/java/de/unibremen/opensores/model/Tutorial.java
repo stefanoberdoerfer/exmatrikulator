@@ -32,7 +32,7 @@ public class Tutorial {
     @JoinColumn(name = "courseId")
     private Course course;
 
-    @OneToMany(mappedBy = "tutorial", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tutorial", cascade = CascadeType.MERGE)
     private List<Student> students = new ArrayList<>();
 
     @OneToMany(mappedBy = "tutorial", cascade = CascadeType.ALL, orphanRemoval = true)

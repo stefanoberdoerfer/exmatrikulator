@@ -98,6 +98,23 @@ public class CourseService extends GenericService<Course> {
     }
 
     /**
+     * Returns list of students without a tutorial.
+     *
+     * @param course Course to look at.
+     * @return List of students without a tutorial.
+     */
+    public List<Student> studentsWithoutTutorial(Course course) {
+        List<Student> students = em.createQuery(
+                "SELECT s FROM Student s "
+                + "JOIN s.course AS c WITH c.courseId = :id "
+                + "WHERE s.tutorial IS NULL", Student.class)
+            .setParameter("id", course.getCourseId())
+            .getResultList();
+
+        return students;
+    }
+
+    /**
      * Lists all courses of the COURSES table.
      * @return A list of all courses or an empty list if no courses were found.
      */
