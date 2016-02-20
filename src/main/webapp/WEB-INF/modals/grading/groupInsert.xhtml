@@ -76,8 +76,8 @@
                     <p:commandButton value="#{msg['common.cancel']}" type="button"
                                      onclick="return exModal(':gradeInsertGroup');"
                                      styleClass="btn btn-default" />
-                    <p:commandButton value="#{msg['gradings.insert']}" type="button"
-                                     styleClass="btn btn-primary">
+                    <p:commandButton value="#{msg['gradings.insert']}"
+                                     styleClass="btn btn-primary" id="groupInsertSubmit">
                         <f:ajax listener="#{gradingInsertController.storeGroupGrading(gradingController.course, false)}"
                                 execute="@form"
                                 render="gradeInsertForm"
@@ -94,6 +94,8 @@
                                 onerror="gradingAjaxError"
                                 />
                     </p:commandButton>
+
+                    <p:defaultCommand target="groupInsertSubmit" />
                 </div>
             </div>
         </h:form>

@@ -187,6 +187,10 @@ public class Exam {
      * @return true if valid
      */
     public boolean isValidGrading(String value) {
+        if (value.trim().length() == 0) {
+            return false;
+        }
+
         value = value.replace(',', '.');
         BigDecimal decimal = new BigDecimal(value);
 
@@ -196,6 +200,6 @@ public class Exam {
             }
         }
 
-        throw new IllegalArgumentException("Invalid GradeType enum id");
+        return false;
     }
 }

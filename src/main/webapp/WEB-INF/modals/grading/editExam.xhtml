@@ -60,8 +60,8 @@
                     <p:commandButton value="#{msg['common.cancel']}" type="button"
                                      onclick="return exModal(':gradeEditExam');"
                                      styleClass="btn btn-default" />
-                    <p:commandButton value="#{msg['common.saveChanges']}" type="button"
-                                     styleClass="btn btn-danger">
+                    <p:commandButton value="#{msg['common.saveChanges']}"
+                                     styleClass="btn btn-danger" id="gradeEditSubmit">
                         <f:ajax listener="#{gradingEditController.updateExamGrading(gradingController.course)}"
                                 execute="@form"
                                 render="gradeEditExamForm"
@@ -69,6 +69,8 @@
                                 onerror="gradingAjaxError"
                                 />
                     </p:commandButton>
+
+                    <p:defaultCommand target="gradeEditSubmit" />
                 </div>
             </div>
         </h:form>
