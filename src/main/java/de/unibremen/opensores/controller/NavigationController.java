@@ -36,6 +36,11 @@ public class NavigationController {
     private Locale userLocale;
 
     /**
+     * Currently logged in user.
+     */
+    private User user;
+
+    /**
      * UserService instance.
      */
     @EJB
@@ -62,12 +67,20 @@ public class NavigationController {
 
     /**
      * Creates a new NavigationController instance.
+     * Sets the used language by JSF to either the corresponding user setting or
+     * - if nothing was set - to the browser default language.
      */
     public NavigationController() {
-        this.userLocale = FacesContext
-                .getCurrentInstance()
-                .getViewRoot()
-                .getLocale();
+        user = getUser();
+        if (user.getLanguage() == null || user.getLanguage().trim().isEmpty()) {
+            userLocale = FacesContext
+                    .getCurrentInstance()
+                    .getViewRoot()
+                    .getLocale();
+        } else {
+            userLocale = new Locale(user.getLanguage());
+        }
+
     }
 
     /**
@@ -99,6 +112,8 @@ public class NavigationController {
 
     /**
      * Changes the locale for the logged in user.
+     * Updates this user-setting to the database and updates the logged in
+     * user-object in the session map.
      *
      * @param locale Locale to use.
      */
@@ -112,7 +127,13 @@ public class NavigationController {
                 .getViewRoot()
                 .setLocale(lang);
 
-        this.userLocale = lang;
+        userLocale = lang;
+        user.setLanguage(lang.toString());
+        user = userService.update(user);
+        FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .put(Constants.SESSION_MAP_KEY_USER, user);
     }
 
     /**
@@ -125,7 +146,7 @@ public class NavigationController {
             .getCurrentInstance()
             .getExternalContext()
             .getSessionMap()
-            .get("user");
+            .get(Constants.SESSION_MAP_KEY_USER);
     }
 
     /**

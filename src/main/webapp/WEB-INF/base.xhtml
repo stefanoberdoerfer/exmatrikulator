@@ -5,9 +5,11 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions">
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xml:lang="#{navigation.userLocale.language}">
 <pe:importConstants className="de.unibremen.opensores.util.Constants" var="EXcons" />
 <pe:importEnum type="de.unibremen.opensores.model.Role" var="Role" allSuffix="ALL_ROLES" />
+<f:view locale="#{navigation.userLocale}">
 <h:head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -46,7 +48,9 @@
                 </div>
                 <ul class="dropdown-menu">
                     <ui:repeat value="#{navigation.languages}" var="lang">
-                        <li><h:commandLink update="@all" action="#{navigation.setUserLocale(lang)}" value="#{lang}" /></li>
+                        <li><h:commandLink value="#{lang}">
+                            <p:ajax listener="#{navigation.setUserLocale(lang)}" update="@all"/>
+                        </h:commandLink></li>
                     </ui:repeat>
                 </ul>
             </h:form>
@@ -154,4 +158,5 @@
     <ui:insert name="modal"></ui:insert>
     <h:panelGroup layout="block" rendered="#{showModal}" class="modal-backdrop fade in"></h:panelGroup>
 </h:body>
+</f:view>
 </html>
