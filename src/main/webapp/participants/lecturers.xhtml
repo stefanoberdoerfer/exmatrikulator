@@ -64,20 +64,24 @@
                          filteredValue="#{participantsController.filteredLecturers}">
                 <p:column filterBy="#{lecturer.user.lastName}" sortBy="#{lecturer.user.lastName}"
                           filterMatchMode="contains"
-                          headerText="#{msg['common.lastName']}">
+                          headerText="#{msg['common.lastName']}"
+                          styleClass="table-users-lastname">
                     <h:outputText value="#{lecturer.user.lastName}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.firstName']}"
                           filterBy="#{lecturer.user.firstName}" sortBy="#{lecturer.user.firstName}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-users-firstname">
                    <h:outputText value="#{lecturer.user.firstName}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.email']}"
                           filterBy="#{lecturer.user.email}" sortBy="#{lecturer.user.email}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-common-email">
                     <h:outputText value="#{lecturer.user.email}"/>
                 </p:column>
-                <p:column headerText="#{msg['common.actions']}">
+                <p:column headerText="#{msg['common.actions']}"
+                          styleClass="table-common-options-one text-right">
                     <div align="center">
                         <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
                                        update=":participantRemoveDialog"

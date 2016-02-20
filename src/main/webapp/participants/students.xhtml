@@ -64,65 +64,71 @@
                      value="#{participantsController.course.confirmedUndeletedStudents}"
                      filteredValue="#{participantsController.filteredStudents}"
                      emptyMessage="#{msg['participants.noStudents']}">
-            <p:column headerText="#{msg['common.lastName']}"
-                      sortBy="#{student.user.lastName}"
-                      filterBy="#{student.user.lastName}"
-                      filterMatchMode="contains">
-                <h:outputText value="#{student.user.lastName}"/>
-            </p:column>
-            <p:column headerText="#{msg['common.firstName']}"
-                      sortBy="#{student.user.firstName}"
-                      filterBy="#{student.user.firstName}"
-                      filterMatchMode="contains">
-                <h:outputText value="#{student.user.firstName}"/>
-            </p:column>
-            <p:column headerText="#{msg['common.email']}"
-                      sortBy="#{student.user.email}"
-                      filterBy="#{student.user.email}"
-                      filterMatchMode="contains">
-                <h:outputText value="#{student.user.email}"/>
-            </p:column>
-            <p:column headerText="#{msg['common.studentNumber']}"
-                      sortBy="#{student.user.matriculationNumber}"
-                      filterBy="#{student.user.matriculationNumber}"
-                      filterMatchMode="contains">
+                <p:column headerText="#{msg['common.lastName']}"
+                          sortBy="#{student.user.lastName}"
+                          filterBy="#{student.user.lastName}"
+                          filterMatchMode="contains"
+                          styleClass="table-users-lastname">
+                    <h:outputText value="#{student.user.lastName}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.firstName']}"
+                          sortBy="#{student.user.firstName}"
+                          filterBy="#{student.user.firstName}"
+                          filterMatchMode="contains"
+                          styleClass="table-users-firstname">
+                    <h:outputText value="#{student.user.firstName}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.email']}"
+                          sortBy="#{student.user.email}"
+                          filterBy="#{student.user.email}"
+                          filterMatchMode="contains"
+                          styleClass="table-common-email">
+                    <h:outputText value="#{student.user.email}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.studentNumber']}"
+                          sortBy="#{student.user.matriculationNumber}"
+                          filterBy="#{student.user.matriculationNumber}"
+                          filterMatchMode="contains"
+                          styleClass="table-users-matriculation-nr">
+                        <div align="center">
+                            <h:outputText value="#{student.user.matriculationNumber}" />
+                        </div>
+                </p:column>
+                <p:column headerText="#{msg['common.participationType']}"
+                          sortBy="#{student.participationType.name}"
+                          filterBy="#{student.participationType.name}"
+                          filterMatchMode="contains">
+                        <h:outputText value="#{student.participationType.name}"/>
+                </p:column>
+                <p:column headerText="#{msg['gradeType.paboGrade']}"
+                          sortBy="#{student.paboGrade}"
+                          filterBy="#{student.paboGrade}"
+                          filterMatchMode="contains"
+                          styleClass="table-grades-grade">
                     <div align="center">
-                        <h:outputText value="#{student.user.matriculationNumber}" />
+                        <h:outputText value="#{student.paboGrade}"/>
                     </div>
-            </p:column>
-            <p:column headerText="#{msg['common.participationType']}"
-                      sortBy="#{student.participationType.name}"
-                      filterBy="#{student.participationType.name}"
-                      filterMatchMode="contains">
-                    <h:outputText value="#{student.participationType.name}"/>
-            </p:column>
-            <p:column headerText="#{msg['gradeType.paboGrade']}"
-                      sortBy="#{student.paboGrade}"
-                      filterBy="#{student.paboGrade}"
-                      filterMatchMode="contains">
-                <div align="center">
-                    <h:outputText value="#{student.paboGrade}"/>
-                </div>
-            </p:column>
-            <p:column headerText="#{msg['common.actions']}">
-                <div align="center">
+                </p:column>
+                <p:column headerText="#{msg['common.actions']}"
+                          styleClass="table-common-options-two text-right">
                     <p:commandLink oncomplete="return exModal('participantEdit');"
                                    h5:data-toggle="tooltip" update=":editUserDialog"
-                                   h5:data-placement="top" title="#{msg['course.student.edit']}" class="btn btn-default"
+                                   h5:data-placement="top" title="#{msg['course.student.edit']}"
+                                   class="btn btn-default"
                                    rendered="#{participantsController.loggedInUserCanManageStudents}">
                         <i class="fa fa-pencil"></i>
                         <f:actionListener binding="#{participantsController.onEditStudentDialogCalled(student)}" />
                     </p:commandLink>
                     <p:commandLink oncomplete="return exModal('participantRemove');"
                                    update=":participantRemoveDialog" h5:data-toggle="tooltip"
-                                   h5:data-placement="top" title="#{msg['course.student.remove']}" class="btn btn-danger"
+                                   h5:data-placement="top" title="#{msg['course.student.remove']}"
+                                   class="btn btn-danger"
                                    rendered="#{participantsController.loggedInUserCanManageStudents}">
                         <i class="fa fa-remove"></i>
                         <f:actionListener binding="#{participantsController.onDeleteStudentDialogCalled(student)}" />
                     </p:commandLink>
-                </div>
-            </p:column>
-        </p:dataTable>
+                </p:column>
+            </p:dataTable>
         </h:form>
 
         <ui:include src="/WEB-INF/modals/participants/create.xhtml" />

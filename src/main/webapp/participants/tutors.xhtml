@@ -66,43 +66,45 @@
                 <p:column headerText="#{msg['common.lastName']}"
                           sortBy="#{tutor.user.lastName}"
                           filterBy="#{tutor.user.lastName}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-users-lastname">
                         <h:outputText value="#{tutor.user.lastName}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.firstName']}"
                           sortBy="#{tutor.user.firstName}"
                           filterBy="#{tutor.user.firstName}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-users-firstname">
                         <h:outputText value="#{tutor.user.firstName}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.email']}"
                           sortBy="#{tutor.user.email}"
                           filterBy="#{tutor.user.email}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-common-email">
                     <h:outputText value="#{tutor.user.email}"/>
                 </p:column>
-                <p:column headerText="#{msg['common.actions']}">
-                    <div align="center">
-                        <p:commandLink oncomplete="return exModal('participantEdit');"
-                                       update=":editUserDialog"
-                                       h5:data-toggle="tooltip"
-                                       h5:data-placement="top" title="#{msg['course.tutor.edit']}"
-                                       class="btn btn-default"
-                                       rendered="#{participantsController.loggedInUserCanManageTutors
+                <p:column headerText="#{msg['common.actions']}"
+                          styleClass="table-common-options-two text-right">
+                    <p:commandLink oncomplete="return exModal('participantEdit');"
+                                   update=":editUserDialog"
+                                   h5:data-toggle="tooltip"
+                                   h5:data-placement="top" title="#{msg['course.tutor.edit']}"
+                                   class="btn btn-default"
+                                   rendered="#{participantsController.loggedInUserCanManageTutors
                                        and participantsController.course.getLecturerFromUser(tutor.user) == null}">
-                            <f:actionListener binding="#{participantsController.onEditPrivilegedUserDialogCalled(tutor)}"/>
-                            <i class="fa fa-pencil"></i>
-                        </p:commandLink>
-                        <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
-                                       update=":participantRemoveDialog"
-                                       h5:data-placement="top" title="#{msg['course.tutor.remove']}"
-                                       class="btn btn-danger"
-                                       rendered="#{participantsController.loggedInUserCanManageTutors
+                        <f:actionListener binding="#{participantsController.onEditPrivilegedUserDialogCalled(tutor)}"/>
+                        <i class="fa fa-pencil"></i>
+                    </p:commandLink>
+                    <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
+                                   update=":participantRemoveDialog"
+                                   h5:data-placement="top" title="#{msg['course.tutor.remove']}"
+                                   class="btn btn-danger"
+                                   rendered="#{participantsController.loggedInUserCanManageTutors
                                        and participantsController.course.getLecturerFromUser(tutor.user) == null}">
-                            <i class="fa fa-remove"></i>
-                            <f:actionListener binding="#{participantsController.onDeletePrivilegedUserDialogCalled(tutor)}"/>
-                        </p:commandLink>
-                    </div>
+                        <i class="fa fa-remove"></i>
+                        <f:actionListener binding="#{participantsController.onDeletePrivilegedUserDialogCalled(tutor)}"/>
+                    </p:commandLink>
                 </p:column>
             </p:dataTable>
         </h:form>

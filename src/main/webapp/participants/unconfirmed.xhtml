@@ -67,25 +67,29 @@
                 <p:column headerText="#{msg['common.lastName']}"
                           sortBy="#{student.user.lastName}"
                           filterBy="#{student.user.lastName}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-users-lastname">
                     <h:outputText value="#{student.user.lastName}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.firstName']}"
                           sortBy="#{student.user.firstName}"
                           filterBy="#{student.user.firstName}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-users-firstname">
                     <h:outputText value="#{student.user.firstName}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.email']}"
                           sortBy="#{student.user.email}"
                           filterBy="#{student.user.email}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-common-email">
                     <h:outputText value="#{student.user.email}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.studentNumber']}"
                           sortBy="#{student.user.matriculationNumber}"
                           filterBy="#{student.user.matriculationNumber}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          styleClass="table-users-matriculation-nr">
                     <div align="center">
                         <h:outputText value="#{student.user.matriculationNumber}"/>
                     </div>
@@ -96,23 +100,22 @@
                           filterMatchMode="contains">
                     <h:outputText value="#{student.participationType.name}"/>
                 </p:column>
-                <p:column headerText="#{msg['common.actions']}">
-                    <div align="center">
-                        <p:commandLink h5:data-toggle="tooltip"
-                                       update=":studentForm:studentTbl :unconfirmedStudentForm:unconfirmedStudentsTbl"
-                                       h5:data-placement="top" title="#{msg['participation.confirm']}" styleClass="btn btn-success"
-                                       rendered="#{participantsController.loggedInUserCanManageStudents}">
-                            <i class="fa fa-plus"/>
-                            <f:actionListener binding="#{participantsController.confirmStudent(student)}"/>
-                        </p:commandLink>
-                        <p:commandLink oncomplete="return exModal('participantRemove');"
-                                       update=":participantRemoveDialog" h5:data-toggle="tooltip"
-                                       h5:data-placement="top" title="#{msg['course.student.remove']}" class="btn btn-danger"
-                                       rendered="#{participantsController.loggedInUserCanManageStudents}">
-                            <i class="fa fa-remove"></i>
-                            <f:actionListener binding="#{participantsController.onDeleteStudentDialogCalled(student)}"/>
-                        </p:commandLink>
-                    </div>
+                <p:column headerText="#{msg['common.actions']}"
+                          styleClass="table-common-options-two text-right">
+                    <p:commandLink h5:data-toggle="tooltip"
+                                   update=":studentForm:studentTbl :unconfirmedStudentForm:unconfirmedStudentsTbl"
+                                   h5:data-placement="top" title="#{msg['participation.confirm']}" styleClass="btn btn-success"
+                                   rendered="#{participantsController.loggedInUserCanManageStudents}">
+                        <i class="fa fa-plus"/>
+                        <f:actionListener binding="#{participantsController.confirmStudent(student)}"/>
+                    </p:commandLink>
+                    <p:commandLink oncomplete="return exModal('participantRemove');"
+                                   update=":participantRemoveDialog" h5:data-toggle="tooltip"
+                                   h5:data-placement="top" title="#{msg['course.student.remove']}" class="btn btn-danger"
+                                   rendered="#{participantsController.loggedInUserCanManageStudents}">
+                        <i class="fa fa-remove"></i>
+                        <f:actionListener binding="#{participantsController.onDeleteStudentDialogCalled(student)}"/>
+                    </p:commandLink>
                 </p:column>
             </p:dataTable>
         </h:form>
