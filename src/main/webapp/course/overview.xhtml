@@ -48,7 +48,7 @@
             <h:column>
                 <h:link onclick="return exModal('courseRemove');" h5:data-toggle="tooltip"
                         h5:data-placement="top" title="#{msg['courses.remove']}" class="btn btn-danger"
-                        rendered="#{navigation.isLecturer(course)}">
+                        rendered="#{userController.isLecturer(course)}">
                     <i class="fa fa-remove"></i>
                 </h:link>
                 <h:link onclick="return exModal('courseLeave');" h5:data-toggle="tooltip"

@@ -5,7 +5,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:pe="http://primefaces.org/ui/extensions" xmlns:c="http://java.sun.com/jsp/jstl/core"
       xml:lang="#{navigation.userLocale.language}">
 <pe:importConstants className="de.unibremen.opensores.util.Constants" var="EXcons" />
 <pe:importEnum type="de.unibremen.opensores.model.Role" var="Role" allSuffix="ALL_ROLES" />
@@ -42,6 +42,21 @@
 <h:body styleClass="#{showModal ? 'modal-open' : ''}">
     <div id="header">
         <div class="btn-group user pull-right">
+            <h:panelGroup rendered="#{param[EXcons.HTTP_PARAM_COURSE_ID] != null
+                and userController.getEditorSessions(param[EXcons.HTTP_PARAM_COURSE_ID]).size() > 0}">
+                <h:panelGroup layout="block" class="btn btn-default" >
+                    <div class="dropdown-toggle active-language" title="#{msg['common.onlineEditorsHint']}">
+                        <i class="fa fa-user-secret"></i>
+                        #{userController.getEditorSessions(param[EXcons.HTTP_PARAM_COURSE_ID]).size()}
+                    </div>
+                    <ul class="dropdown-menu">
+                        <ui:repeat value="#{userController.getEditorSessions(param[EXcons.HTTP_PARAM_COURSE_ID])}"
+                                   var="user">
+                            <li><h:outputText value="#{user}"/></li>
+                        </ui:repeat>
+                    </ul>
+                </h:panelGroup>
+            </h:panelGroup>
             <h:form layout="block" class="btn btn-default">
                 <div class="dropdown-toggle active-language">
                     #{navigation.userLocale}
@@ -50,6 +65,9 @@
                     <ui:repeat value="#{navigation.languages}" var="lang">
                         <li><h:commandLink value="#{lang}">
                             <p:ajax listener="#{navigation.setUserLocale(lang)}" update="@all"/>
+                            <c:if test="${param[EXcons.HTTP_PARAM_COURSE_ID] != null}">
+                                <f:param name="course-id" value="#{param[EXcons.HTTP_PARAM_COURSE_ID]}"/>
+                            </c:if>
                         </h:commandLink></li>
                     </ui:repeat>
                 </ul>
@@ -62,7 +80,7 @@
                     <!-- Todo: Links setzen -->
                     <li><h:link value="#{msg['common.myProfile']}" outcome="/profile/show" /></li>
                     <li role="separator" class="divider"></li>
-                    <li><h:commandLink value="#{msg['common.logout']}" action="#{userController.logout}"/></li>
+                    <li><h:commandLink value="#{msg['common.logout']}" action="#{navigation.logout}"/></li>
                 </ul>
             </h:form>
         </div>
@@ -116,10 +134,10 @@
                             <h:link>
                                 #{course.name}
                                 <h:panelGroup styleClass="course-icons pull-right">
-                                    <h:panelGroup rendered="#{navigation.isLecturer(course)}">
+                                    <h:panelGroup rendered="#{userController.isLecturer(course)}">
                                         <i class="fa fa-user-md fa-lecturer"></i>
                                     </h:panelGroup>
-                                    <h:panelGroup rendered="#{navigation.isPrivilegedUser(course)}">
+                                    <h:panelGroup rendered="#{userController.isPrivilegedUser(course)}">
                                         <i class="fa fa-user-md"></i>
                                     </h:panelGroup>
 

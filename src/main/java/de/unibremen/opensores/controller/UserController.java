@@ -1,15 +1,19 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
@@ -35,7 +39,19 @@ public class UserController {
 
     private Map<Semester, List<Course>> coursesBySemester;
 
-    private static transient Logger log = LogManager.getLogger(UserController.class);
+    private static Logger log = LogManager.getLogger(UserController.class);
+
+    /**
+     * Map containing the roles for each course.
+     */
+    private Map<Course, Role> courseRoles = new HashMap<>();
+
+    /**
+     * ApplicationController to insert session information about the rights
+     * of the currently logged in user (sessionRegister).
+     */
+    @ManagedProperty(value = "#{applicationController}")
+    private ApplicationController applicationController;
 
     /**
      * The UserService for database connection.
@@ -48,23 +64,83 @@ public class UserController {
      * his active courses from the database.
      */
     @PostConstruct
-    public void init() {
+    public void initSession() {
         user = (User) FacesContext.getCurrentInstance()
-                .getExternalContext().getSessionMap().get("user");
+                .getExternalContext().getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
         updateUserCourses();
+
+        applicationController.registerSession(user,courseRoles);
     }
 
     /**
-     * Logs the user out of the current session.
-     * Invalidates the current session map.
-     * Redirects to the login page.
-     * TODO Maybe move this method to NavigationController
-     * @return The of the login page.
+     * Removes the user from the ApplicationControllers sessionRegister.
      */
-    public String logout() {
-        FacesContext.getCurrentInstance()
-                .getExternalContext().invalidateSession();
-        return "/login.xhtml?faces-redirect=true";
+    @PreDestroy
+    public void destroySession() {
+        applicationController.unregisterSession(user,courseRoles);
+    }
+
+    /**
+     * Returns if the currently logged in user is a privileged user in the
+     * given course.
+     * @param course Course to check
+     * @return true if he/she is privileged
+     */
+    public boolean isPrivilegedUser(Course course) {
+        Role role = courseRoles.get(course);
+
+        if (role == null) {
+            role = determineRole(course);
+        }
+
+        return role.equals(Role.PRIVILEGED_USER);
+    }
+
+    /**
+     * Returns if the currently logged in user is a lecturer in the
+     * given course.
+     * @param course Course to check
+     * @return true if he/she is a lecturer
+     */
+    public boolean isLecturer(Course course) {
+        Role role = courseRoles.get(course);
+
+        if (role == null) {
+            role = determineRole(course);
+        }
+
+        return role.equals(Role.LECTURER);
+    }
+
+    /**
+     * Wrapper method for method with same signature of ApplicationController in order to
+     * provide consistent call syntax in the corresponding xhtml-views.
+     * @param courseId Id to specified the course which editors should be returned
+     * @return List of editors for the specified course. Empty list if there aren't any.
+     */
+    public List<User> getEditorSessions(Long courseId) {
+        return applicationController.getEditorSessions(courseId);
+    }
+
+    /**
+     * Determines which highest role a user has.
+     * @param course Course to check
+     * @return Highest role of the user
+     */
+    private Role determineRole(Course course) {
+        Role role;
+        User user = getUser();
+
+        if (userService.hasCourseRole(user, "LECTURER", course)) {
+            role = Role.LECTURER;
+        } else if (userService.hasCourseRole(user, "PRIVILEGED_USER", course)) {
+            role = Role.PRIVILEGED_USER;
+        } else {
+            role = Role.STUDENT;
+        }
+
+        courseRoles.put(course, role);
+        return role;
     }
 
     /**
@@ -111,7 +187,9 @@ public class UserController {
     }
 
     /**
-     * loads a map from semesters to active courses from the db.
+     * Loads a map from semesters to active courses from the db.
+     * Also builds up a map from courses to the corresponding Role of the currently
+     * logged in user.
      */
     public void updateUserCourses() {
         Map<Semester, List<Course>> map = new HashMap<>();
@@ -120,6 +198,7 @@ public class UserController {
 
         if (courses != null) {
             for (Course course : courses) {
+                //building map from semester to course
                 Semester se = course.getSemester();
                 List<Course> cs = map.get(se);
                 if (cs == null) {
@@ -128,6 +207,9 @@ public class UserController {
 
                 cs.add(course);
                 map.put(se, cs);
+
+                //building map from course to role
+                determineRole(course);
             }
         }
 
@@ -142,5 +224,13 @@ public class UserController {
 
     public void setCoursesBySemester(Map<Semester, List<Course>> coursesBySemester) {
         this.coursesBySemester = coursesBySemester;
+    }
+
+    public ApplicationController getApplicationController() {
+        return applicationController;
+    }
+
+    public void setApplicationController(ApplicationController applicationController) {
+        this.applicationController = applicationController;
     }
 }
