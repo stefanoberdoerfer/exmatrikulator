@@ -1,7 +1,11 @@
 package de.unibremen.opensores.controller;
 
-import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Role;
+import de.unibremen.opensores.model.GlobalRole;
+import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.util.DateUtil;
@@ -13,25 +17,30 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.context.ExternalContext;
+import javax.faces.application.FacesMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.ResourceBundle;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This is the basic log controlle for displaying logs of a course.
- * //TODO Maybe extend for the case that an admin views all logs?
+ *
  * @author Kevin Scheck
+ * @author Sören Tempel
  */
 @ViewScoped
 @ManagedBean
 public class LogController {
-
-
     /**
      * The path to the course overview site.
      */
@@ -43,12 +52,17 @@ public class LogController {
      */
     private static final String HTTP_PARAM_COURSE_ID = "course-id";
 
-
     /**
      * The log4j logger for debug, errors logs from log4j.
      * These logs are not related to actions in the exmatrikulator business domain.
      */
     private static Logger log = LogManager.getLogger(LogController.class);
+
+    /**
+     * The user service for connection to the database.
+     */
+    @EJB
+    private transient UserService userService;
 
     /**
      * CourseService for database transactions related to courses.
@@ -68,7 +82,7 @@ public class LogController {
     /**
      * A list of the raw logs unfiltered by dates or PrimeFaces.
      */
-    private List<Log> rawLogs;
+    private List<Log> rawLogs = null;
 
     /**
      * The list of all logs of the course.
@@ -91,54 +105,75 @@ public class LogController {
     private Date endDate;
 
     /**
+     * The currently logged in user.
+     */
+    private transient User user;
+
+    /**
      * Gets the Course from the Course-id http parameter.
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext exContext = facesContext.getExternalContext();
 
-        HttpServletRequest httpReq
-                = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext().getRequest();
-        log.debug("Request URI: " + httpReq.getRequestURI());
-        final String courseIdString = httpReq.getParameter(HTTP_PARAM_COURSE_ID);
+        HttpServletRequest req = (HttpServletRequest) exContext.getRequest();
+        HttpServletResponse res = (HttpServletResponse) exContext.getResponse();
 
-        log.debug("course-id: " + courseIdString);
-        long courseId = -1;
-        if (courseIdString != null) {
-            try {
-                courseId = Long.parseLong(courseIdString.trim());
-            } catch (NumberFormatException e) {
-                log.debug("NumberFormatException while parsing courseId");
-            }
+        user = (User) exContext.getSessionMap().get("user");
+        if (user.hasGlobalRole(GlobalRole.ADMIN)) {
+            rawLogs = logService.listLogs();
+            resetDateRange();
+            return;
         }
 
-        if (courseId != -1) {
-            course = courseService.find(Course.class, courseId);
-        }
-
-        log.debug("Loaded course object: " + course);
-
-        if (course == null) {
-            log.debug("trying to redirect to /course/overview");
+        course = courseService.findCourseById(req.getParameter(HTTP_PARAM_COURSE_ID));
+        if (course == null || user == null) {
             try {
-                FacesContext.getCurrentInstance()
-                        .getExternalContext().redirect(FacesContext
-                        .getCurrentInstance().getExternalContext()
-                        .getApplicationContextPath() + PATH_TO_COURSE_OVERVIEW);
-                return;
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             } catch (IOException e) {
-                e.printStackTrace();
-                log.fatal("Could not redirect to " + PATH_TO_COURSE_OVERVIEW);
-                return;
+                log.fatal(e);
             }
+            return;
         }
 
-        rawLogs = logService.getLogFromCourse(course);
-        log.debug("Raw logs size: " + rawLogs);
+        if (userService.hasCourseRole(user, Role.LECTURER, course)) {
+            rawLogs = logService.getLogFromCourse(course);
+        } else {
+            try {
+                res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (IOException e) {
+                log.fatal(e);
+            }
+            return;
+        }
 
-        setDefaultDateRange();
-        filterByDates();
+        resetDateRange();
+    }
+
+    /**
+     * Deletes the logs in the currently selected range.
+     */
+    public void deleteLogRange() {
+        ListIterator<Log> it = null;
+        if (filteredLogs != null) {
+            it = filteredLogs.listIterator();
+        } else {
+            it = logs.listIterator();
+        }
+
+        while (it.hasNext()) {
+            logService.remove(it.next());
+            it.remove();
+        }
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        String msg = bundle.getString("settings.logs.removeSuccess");
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+            .SEVERITY_INFO, bundle.getString("common.success"), msg));
     }
 
     /**

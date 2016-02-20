@@ -12,7 +12,6 @@ import java.util.List;
  */
 @Stateless
 public class LogService extends GenericService<Log> {
-
     /**
      * Gets all the logs related to a course.
      * @param course The course from which all logs should be queried.
@@ -33,5 +32,18 @@ public class LogService extends GenericService<Log> {
                + "ORDER BY l.date DESC", Log.class)
                 .setParameter("id", course.getCourseId())
                 .getResultList();
+    }
+
+    /**
+     * Lists all logs from the logs table.
+     *
+     * @return A list of all existing logs.
+     */
+    public List<Log> listLogs() {
+        List<Log> logList = em.createQuery(
+                "SELECT DISTINCT l FROM Log l", Log.class)
+            .getResultList();
+
+        return logList;
     }
 }

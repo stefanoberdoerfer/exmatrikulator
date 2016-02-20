@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+      <p:dialog header="#{msg['settings.logs.delete']}" appendTo="@(body)" widgetVar="removeLogs"
+          id="removeTutorialDialog" modal="true" visible="#{facesContext.isValidationFailed()}">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+
+        <h:form id="removeLogsForm">
+          <div class="modal-body">
+              #{msg['settings.logs.remove']}
+          </div>
+          <div class="modal-footer">
+              <div class="btn-group">
+                  <p:commandButton value="#{msg['common.cancel']}" type="button" styleClass="btn btn-default"
+                      onclick="return exModal(':removeLogs');" />
+
+                  <p:commandLink value="#{msg['common.remove']}"
+                      update=":removeTutorialDialog :logList"
+                      class="btn btn-danger">
+                    <f:actionListener binding="#{logController.deleteLogRange()}" />
+                  </p:commandLink>
+              </div>
+          </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>

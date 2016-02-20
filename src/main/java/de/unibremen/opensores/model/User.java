@@ -82,12 +82,21 @@ public class User {
     /**
      * Returns true if the user has the given global role.
      *
+     * @param role Role the user should have.
+     * @return True if he has the given role, false otherwise.
+     */
+    public boolean hasGlobalRole(GlobalRole role) {
+        return roles.contains(role.getId());
+    }
+
+    /**
+     * Returns true if the user has the given global role.
+     *
      * @param roleStr Role (as a string) the user should have.
      * @return True if he has the given role, false otherwise.
      */
     public boolean hasGlobalRole(String roleStr) {
-        GlobalRole role = GlobalRole.valueOf(roleStr);
-        return roles.contains(role.getId());
+        return hasGlobalRole(GlobalRole.valueOf(roleStr));
     }
 
     public String getEmail() {
