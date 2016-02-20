@@ -128,6 +128,8 @@ public class TMEObject {
         final Object obj = get(key);
         if (obj instanceof String) {
             return (String)obj;
+        } else if (obj instanceof Number) {
+            return ((Number)obj).toString();
         }
 
         throw new NoSuchElementException();
