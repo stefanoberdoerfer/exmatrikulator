@@ -1,0 +1,74 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:p="http://primefaces.org/ui">
+  <!-- Define Params -->
+  <ui:param name="pageTitle" value="#{msg['settings.import']}" />
+
+  <!-- Breadcrumbs -->
+  <!-- TODO -->
+
+  <!-- Page Content -->
+  <ui:define name="content">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form layout="block" id="uploadform" enctype="multipart/form-data">
+          <h1>#{settings.import}</h1>
+          <div class="row">
+            <div class="col-xs-6">
+              <p>#{msg['import.hint']}</p>
+              <br />
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>#{msg['import.filename']}</th>
+                    <th class="table-common-filesize">#{msg['import.filesize']}</th>
+                    <th class="table-common-options-one"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ui:repeat value="#{tmeController.files}" var="file">
+                  <tr class="vert-align-middle">
+                    <td>#{file.fileName}</td>
+                    <td>#{tmeController.getHumanReadableFileSize(file.getSize())}</td>
+                    <td>
+                      <p:commandLink class="btn btn-danger">
+                        <i class="fa fa-remove"></i>
+                      </p:commandLink>
+                    </td>
+                  </tr>
+                  </ui:repeat>
+                </tbody>
+              </table>
+
+              <p:fileUpload fileUploadListener="#{tmeController.handleFileUpload}"
+                mode="advanced" allowTypes="/(\.|\/)(tme)$/" auto="true"
+                update="@form" uploadLabel="#{msg['import.upload']}"
+                sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}" />
+              <h:commandButton action="#{tmeController.importFiles()}"
+                class="btn btn-primary" value="#{msg['import.startUserImport']}" />
+            </div>
+
+            <div class="col-xs-4">
+              <ui:repeat value="#{tmeController.importedUsers}" var="user">
+              <h1>#{user}</h1>
+              </ui:repeat>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="row form-buttons">
+            <div class="col-xs-6">
+              <p:commandButton class="btn btn-default" action="#{tmeController.persistImports()}"
+                value="#{msg['common.submit']}" immediate="true" />
+            </div>
+          </div>
+
+        </h:form>
+  </ui:define>
+
+</ui:composition>
