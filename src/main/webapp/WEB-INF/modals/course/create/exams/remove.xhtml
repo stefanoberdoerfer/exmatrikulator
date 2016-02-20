@@ -4,23 +4,40 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['examination.remove']}" appendTo="@(body)" widgetVar="examRemove" modal="true">
-        <ui:include src="/WEB-INF/alerts.xhtml" />
-        <div class="modal-body">
-            #{msg['examination.remove.question']}<br />
-            <br />
-            #{msg['examination.remove.confirm']}<br />
-            <h:inputText type="text" class="form-control" />
-            <br />
-            #{msg['examination.remove.hint']}
-        </div>
-        <div class="modal-footer">
-            <div class="btn-group">
-                <p:commandButton value="#{msg['common.cancel']}" type="button" onclick="return exModal(':examRemove');"
-                                 styleClass="btn btn-default" />
-                <h:link outcome="/course/create/step2" class="btn btn-danger"
-                        value="#{msg['common.remove']}" />
-            </div>
-        </div>
+    <p:dialog header="#{msg['examination.remove']}" id="examRemoveDialog" appendTo="@(body)" widgetVar="examRemove" modal="true">
+        <h:form>
+            <p:panel id="removeExamDlgPnl">
+                <ui:include src="/WEB-INF/alerts.xhtml" />
+                <div class="modal-body">
+                    #{msg['examination.remove.question']}<br />
+                    <b>#{step2.examController.selectedExam.name}</b>
+                    <br />
+                    #{msg['examination.remove.confirm']}<br />
+                    <h:message for="deletionConfirmation"/>
+                    <h:inputText type="text" class="form-control" id="deletionConfirmation"
+                                 value="#{step2.examController.examNameDeletionTextInput}"
+                                 validator="#{step2.examController.validateExamDeletionName}"
+                                 validatorMessage="#{msg['examination.messageDeleteWrongConfirm']}"/>
+                    <br />
+                    <div class="alert alert-danger">
+                        #{msg['examination.remove.hint']}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <h:link class="btn btn-default" onclick="return exModal(':examRemove');"
+                                value="#{msg['common.cancel']}" />
+                        <p:commandLink id="removeExamBtn"
+                                       value="#{msg['common.remove']}"
+                                       update=":examTblForm:examTbl"
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':examRemove');"
+                                       styleClass="btn btn-danger">
+                            <f:actionListener binding="#{step2.examController.deleteExam()}"/>
+                        </p:commandLink>
+                    </div>
+                </div>
+            </p:panel>
+            <p:blockUI block="removeExamDlgPnl" trigger="removeExamBtn"/>
+        </h:form>
     </p:dialog>
 </ui:composition>

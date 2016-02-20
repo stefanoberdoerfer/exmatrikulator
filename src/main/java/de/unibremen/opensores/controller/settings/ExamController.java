@@ -1,18 +1,14 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GradeType;
-import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.ExamService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.util.Constants;
 import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.User;
-import de.unibremen.opensores.service.CourseService;
-import de.unibremen.opensores.service.ExamService;
-import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.LogService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +22,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -127,6 +122,12 @@ public class ExamController {
     private User loggedInUser;
 
     /**
+     * Flag to indicate that this controller was initiated from the courseCreateWizard.
+     * No db transactions have to be made if this attribute is 'true'.
+     */
+    private boolean calledFromWizard;
+
+    /**
      * Method called after initialisation.
      * Gets the corresponding course from the http param.
      */
@@ -155,6 +156,8 @@ public class ExamController {
 
         log.debug("Loaded course object: " + course);
 
+
+        /*
         if (course == null) {
             log.debug("trying to redirect to /course/overview");
             try {
@@ -171,6 +174,8 @@ public class ExamController {
         }
 
         log.debug("Course exam list size: " + course.getExams().size());
+        */
+
 
         gradeTypeLabels = new HashMap<>();
         bundle = ResourceBundle.getBundle("messages",
@@ -255,9 +260,11 @@ public class ExamController {
 
         selectedExam.setCourse(course);
         course.getExams().add(selectedExam);
-        examService.persist(selectedExam);
-        log.debug("Number of exams before updating course: " + course.getExams().size());
-        course = courseService.update(course);
+        if (!calledFromWizard) {
+            examService.persist(selectedExam);
+            log.debug("Number of exams before updating course: " + course.getExams().size());
+            course = courseService.update(course);
+        }
         logExamCreated(selectedExam);
     }
 
@@ -270,12 +277,14 @@ public class ExamController {
     public void editExam() {
         log.debug("editExam() called");
         logExamEdited(selectedExam);
-        if (oldSelectedGradeTypeId != selectedExam.getGradeType()) {
+        if (oldSelectedGradeTypeId != selectedExam.getGradeType() && !calledFromWizard) {
             log.debug("Deleting all gradings from exam");
             logGradesFromExamDeleted(selectedExam);
             gradingService.deleteAllGradingsFromExam(selectedExam);
         }
-        course = courseService.update(course); // Assuming CascadeType.MERGE
+        if (!calledFromWizard) {
+            course = courseService.update(course); // Assuming CascadeType.MERGE
+        }
     }
 
     /**
@@ -288,11 +297,15 @@ public class ExamController {
     public void deleteExam() {
         log.debug("deleteExam() called");
         logGradesFromExamDeleted(selectedExam);
-        gradingService.deleteAllGradingsFromExam(selectedExam);
+        if (!calledFromWizard) {
+            gradingService.deleteAllGradingsFromExam(selectedExam);
+        }
         logExamDeleted(selectedExam);
         course.getExams().remove(selectedExam);
-        course = courseService.update(course);
-        examService.remove(selectedExam);
+        if (!calledFromWizard) {
+            course = courseService.update(course);
+            examService.remove(selectedExam);
+        }
         //TODO Mark every grade script unvalid which contains the shortcut of exam
     }
 
@@ -513,8 +526,10 @@ public class ExamController {
      * @param exam The created exam.
      */
     private void logExamCreated(Exam exam) {
-        String description = "Has created the exam " + exam.getName();
-        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        if (!calledFromWizard) {
+            String description = "Has created the exam " + exam.getName();
+            logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        }
     }
 
     /**
@@ -522,8 +537,10 @@ public class ExamController {
      * @param exam The to be edited exam.
      */
     private void logExamOpenToEdit(Exam exam) {
-        String description = "Has opened the exam for editing: " + exam.getName();
-        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        if (!calledFromWizard) {
+            String description = "Has opened the exam for editing: " + exam.getName();
+            logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        }
     }
 
 
@@ -532,8 +549,10 @@ public class ExamController {
      * @param exam The edited exam.
      */
     private void logExamEdited(Exam exam) {
-        String description = "Has edited the exam " + exam.getName();
-        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        if (!calledFromWizard) {
+            String description = "Has edited the exam " + exam.getName();
+            logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        }
     }
 
     /**
@@ -541,8 +560,10 @@ public class ExamController {
      * @param exam The exam from which the gradings get deleted.
      */
     private void logGradesFromExamDeleted(Exam exam) {
-        String description = "All gradings from exam " + exam.getName() + " get deleted.";
-        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        if (!calledFromWizard) {
+            String description = "All gradings from exam " + exam.getName() + " get deleted.";
+            logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        }
     }
 
 
@@ -551,8 +572,10 @@ public class ExamController {
      * @param exam The to be deleted exam.
      */
     private void logExamDeleted(Exam exam) {
-        String description = "The exam " + exam.getName() + " gets deleted.";
-        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        if (!calledFromWizard) {
+            String description = "The exam " + exam.getName() + " gets deleted.";
+            logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+        }
     }
 
 
@@ -639,5 +662,9 @@ public class ExamController {
 
     public void setAllowedFileEndings(String allowedFileEndings) {
         this.allowedFileEndings = allowedFileEndings;
+    }
+
+    public void setCalledFromWizard(boolean calledFromWizard) {
+        this.calledFromWizard = calledFromWizard;
     }
 }

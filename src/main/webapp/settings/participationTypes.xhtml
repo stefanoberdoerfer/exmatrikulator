@@ -4,13 +4,15 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough" xmlns:p="http://primefaces.org/ui">
     <!-- Define Params -->
     <ui:param name="pageTitle" value="#{msg['common.course.participationTypes']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
-        <li>Veranstaltung trololol</li>
-        <li><h:link value="#{msg['common.settings']}" outcome="/settings/overview" /></li>
+        <li>#{partTypeController.course.name}</li>
+        <li><h:link value="#{msg['common.settings']}" outcome="/settings/overview">
+            <f:param name="course-id" value="#{partTypeController.course.courseId}"/>
+        </h:link></li>
         <li class="active">#{msg['common.course.participationTypes']}</li>
     </ui:define>
     <!-- Page Content -->
@@ -18,8 +20,11 @@
         <h:form>
             <div class="headline">
                 <div class="btn-group main-buttons pull-right">
-                    <h:link class="btn btn-primary" value="#{msg['common.saveChanges']}"
-                            outcome="/settings/overview"/>
+                    <p:commandLink styleClass="btn btn-primary" value="#{msg['settings.saveAndGoBack']}"
+                                   action="/settings/overview">
+                        <f:ajax execute="@form"/>
+                        <f:param name="course-id" value="#{partTypeController.course.courseId}"/>
+                    </p:commandLink>
                 </div>
                 <h1>#{msg['common.course.participationTypes']}</h1>
             </div>
@@ -32,20 +37,100 @@
                         <p>#{msg['participationType.explanation']}</p>
                         <table class="table table-invisible">
                             <tbody>
+                            <ui:repeat value="#{partTypeController.course.participationTypes}" var="value" id="parttype">
+                                <tr class="table-row-blank">
+                                    <td class="col-xs-9 form-control-static">
+                                        <strong>#{value.name}</strong>
+                                        <h:outputText value="(#{msg['participationType.defaultPartType']})"
+                                                      rendered="#{value.isDefaultParttype()}" styleClass="col-xs-offset-1"/>
+                                    </td>
+                                    <td class="table-common-options-two">
+                                        <h:commandLink class="btn btn-default">
+                                            <i class="fa fa-edit"></i>
+                                            <f:ajax listener="#{partTypeController.editPartType(value)}"
+                                                    execute="@form"
+                                                    render="@form"
+                                            />
+                                        </h:commandLink>
+                                        <h:commandLink class="btn btn-danger" rendered="#{!value.isDefaultParttype()}">
+                                            <i class="fa fa-remove"></i>
+                                            <f:ajax listener="#{partTypeController.removePartType(value)}"
+                                                    execute="@form"
+                                                    render="@form"
+                                            />
+                                        </h:commandLink>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                            </tbody>
+                        </table>
+                        <h4>#{msg['participationType.newParticipationType']}</h4>
+                        <table>
+                            <tbody>
                             <tr class="table-row-blank">
                                 <td>
-                                    <h:inputText type="text" class="form-control" />
+                                    <h:outputLabel for="partTypeName" class="col-xs-3 control-label text-left"
+                                                   value="#{msg['common.name']}"/>
+                                    <div class="col-xs-9" >
+                                        <h:inputText value="#{partTypeController.currentPartType.name}" class="form-control"
+                                                     id="partTypeName"/>
+                                    </div>
                                 </td>
-                                <td class="table-common-options-one">
-                                    <h:commandLink class="btn btn-danger">
-                                        <i class="fa fa-remove"></i>
-                                    </h:commandLink>
+                            </tr>
+                            <tr class="table-row-blank">
+                                <td>
+                                    <h:selectBooleanCheckbox styleClass="col-xs-3"
+                                                             id="isGroupPerformance"
+                                                             value="#{partTypeController.currentPartType.groupPerformance}"/>
+                                    <h:outputLabel value="#{msg['participationType.groupPerformance']}"
+                                                   for="isGroupPerformance" styleClass="col-xs-offset-1"/>
+                                </td>
+                            </tr>
+                            <tr class="table-row-blank">
+                                <td>
+                                    <h:outputLabel for="partTypeContent" class="col-xs-3 control-label text-left"
+                                                   value="#{msg['participationType.performanceContent']}"/>
+                                    <div class="col-xs-9" >
+                                        <p:inputTextarea value="#{partTypeController.currentPartType.performanceContent}"
+                                                         class="form-control" id="partTypeContent" rows="2" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row-blank">
+                                <td>
+                                    <h:outputLabel for="partTypeArea" class="col-xs-3 control-label text-left"
+                                                   value="#{msg['participationType.performanceArea']}"/>
+                                    <div class="col-xs-9" >
+                                        <p:inputTextarea value="#{partTypeController.currentPartType.performanceArea}"
+                                                         class="form-control" id="partTypeArea" rows="2" cols="100" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row-blank">
+                                <td>
+                                    <h:selectBooleanCheckbox styleClass="col-xs-3"
+                                                             id="isRestricted"
+                                                             value="#{partTypeController.currentPartType.restricted}"/>
+                                    <h:outputLabel value="#{msg['participationType.restricted']}"
+                                                   for="isRestricted" styleClass="col-xs-offset-1"/>
                                 </td>
                             </tr>
                             <tr class="table-row-blank">
                                 <td colspan="2">
-                                    <h:commandButton class="btn btn-default"
-                                                     value="#{msg['participationType.additional']}"></h:commandButton>
+                                    <h:commandButton value="#{msg['participationType.add']}" class="btn btn-default"
+                                                     rendered="#{!partTypeController.editmode}">
+                                        <f:ajax listener="#{partTypeController.addPartType()}"
+                                                execute="@form"
+                                                render="@form"
+                                        />
+                                    </h:commandButton>
+                                    <h:commandButton value="#{msg['common.saveChanges']}" class="btn btn-default"
+                                                     rendered="#{partTypeController.editmode}">
+                                        <f:ajax listener="#{partTypeController.addPartType()}"
+                                                execute="@form"
+                                                render="@form"
+                                        />
+                                    </h:commandButton>
                                 </td>
                             </tr>
                             </tbody>

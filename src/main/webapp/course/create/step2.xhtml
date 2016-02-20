@@ -1,10 +1,9 @@
-<!-- Todo: Seite darf nur von Dozenten aufgerufen werden -->
 <ui:composition template="/WEB-INF/base.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough" xmlns:p="http://primefaces.org/ui">
     <!-- Define Params -->
     <ui:param name="pageTitle" value="#{msg['courses.create']}" />
     <!-- Breadcrumbs -->
@@ -23,52 +22,74 @@
                 <i class="fa fa-check-square-o"></i> #{msg['common.course.commonData']}</h:link></li>
             <li class="active"><a><i class="fa fa-square-o"></i> #{msg['common.course.exams']}</a></li>
             <li><a><i class="fa fa-square-o"></i> #{msg['common.course.participationTypes']}</a></li>
-            <li><a><i class="fa fa-square-o"></i> #{msg['common.course.gradingFormula']}</a></li>
             <li><a><i class="fa fa-square-o"></i> #{msg['common.course.participants']}</a></li>
         </ul>
 
+        <h:form id="headlineForm">
+            <div class="headline">
+                <div class="btn-group main-buttons pull-right">
+                    <p:commandLink oncomplete="return exModal('examAdd');"
+                                   class="btn btn-default"
+                                   update=":examAddDialog"
+                                   value="#{msg['examination.add']}">
+                        <f:actionListener binding="#{step2.examController.onAddExamDialogCalled()}"/>
+                    </p:commandLink>
+                </div>
+                <h1>#{msg['common.course.exams']}</h1>
+            </div>
+        </h:form>
+
         <ui:include src="/WEB-INF/alerts.xhtml" />
 
-        <h:form layout="block">
-            <div class="btn-group main-buttons pull-right">
-                <h:link onclick="return exModal('examAdd');"
-                        class="btn btn-default"
-                        value="#{msg['examination.add']}" />
-            </div>
-            <h3>#{msg['common.course.exams']}</h3>
+        <h:form id="examTblForm">
+            <p:dataTable id="examTbl"
+                         value="#{step2.examController.course.exams}"
+                         var="exam"
+                         filteredValue="#{step2.examController.filteredExams}"
+                         emptyMessage="#{msg['examination.messageNoExams']}">
+                <p:column headerText="#{msg['examination.name']}"
+                          filterMatchMode="contains"
+                          filterBy="#{exam.name}"
+                          sortBy="#{exam.name}">
+                    <h:outputText value="#{exam.name}"/>
+                </p:column>
 
-            <table class="table table-hover table-examinations">
-                <thead>
-                <tr>
-                    <th class="table-examination-name">#{msg['examination.name']}</th>
-                    <th>#{msg['examination.shortcut']}</th>
-                    <th class="table-examination-grade">#{msg['examination.gradeType']}</th>
-                    <th class="table-common-options-two"></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="vert-align-middle">
-                    <td>Übungsblatt 1</td>
-                    <td>ÜB1</td>
-                    <td>Prozent</td>
-                    <td>
-                        <div class="btn-group">
-                            <h:link onclick="return exModal('examEdit');"
-                                    class="btn btn-default" h5:data-toggle="tooltip"
-                                    h5:data-placement="top" title="#{msg['examination.add']}">
-                                <i class="fa fa-pencil"></i>
-                            </h:link>
-                            <h:link onclick="return exModal('examRemove');"
-                                    class="btn btn-danger" h5:data-toggle="tooltip"
-                                    h5:data-placement="top" title="#{msg['examination.remove']}">
-                                <i class="fa fa-remove"></i>
-                            </h:link>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                <p:column headerText="#{msg['examination.shortcut']}"
+                          filterBy="#{exam.shortcut}"
+                          filterMatchMode="contains"
+                          sortBy="#{exam.shortcut}">
+                    <!-- Monospace, damit klar wird, damit man evtl. merkt,
+                         dass man spaeter damit programmieren wird -->
+                    <h:outputText style="font-family: monospace"
+                                  value="#{exam.shortcut}"/>
+                </p:column>
 
+                <p:column headerText="#{msg['examination.gradeType']}"
+                          filterMatchMode="contains"
+                          filterBy="#{step2.examController.gradeLabelFromId(exam.gradeType)}"
+                          sortBy="#{step2.examController.gradeLabelFromId(exam.gradeType)}">
+                    <h:outputText value="#{step2.examController.gradeLabelFromId(exam.gradeType)}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['common.actions']}">
+                    <div class="btn-group">
+                        <p:commandLink oncomplete="return exModal('examEdit');"
+                                       update="examEditDialog"
+                                       class="btn btn-default" h5:data-toggle="tooltip"
+                                       h5:data-placement="top" title="#{msg['examination.edit']}">
+                            <f:actionListener binding="#{step2.examController.onEditExamDialogCalled(exam)}"/>
+                            <i class="fa fa-pencil"></i>
+                        </p:commandLink>
+                        <p:commandLink oncomplete="return exModal('examRemove');"
+                                       update="examRemoveDialog"
+                                       class="btn btn-danger" h5:data-toggle="tooltip"
+                                       h5:data-placement="top" title="#{msg['examination.remove']}">
+                            <f:actionListener binding="#{step2.examController.onDeleteExamDialogCalled(exam)}"/>
+                            <i class="fa fa-remove"></i>
+                        </p:commandLink>
+                    </div>
+                </p:column>
+            </p:dataTable>
             <hr />
             <div class="row form-buttons">
                 <div class="col-xs-6">
