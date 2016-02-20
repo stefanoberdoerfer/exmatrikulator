@@ -32,7 +32,7 @@
                         <p:commandLink id="removeBtn"
                                        action="#{participantsController.deleteSelectedParticipation}"
                                        class="btn btn-danger" value="#{msg['common.remove']}"
-                                       update=":lecturerForm:lecturerTbl :studentForm:studentTbl :tutorForm:tutorTbl :unconfirmedStudentForm:unconfirmedStudentsTbl"
+                                       update=":participantForm:participantTbl"
                                        oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':participantRemove')" />
 
                     </div>
