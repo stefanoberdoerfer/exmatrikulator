@@ -169,8 +169,8 @@ public class BackupService extends GenericService<Backup> {
      */
     public List<Backup> listBackups() {
         List<Backup> backupList = em.createQuery(
-                "SELECT * "
-                + "FROM Backup", Backup.class)
+                "SELECT DISTINCT b "
+                + "FROM Backup b", Backup.class)
                 .getResultList();
         return backupList;
     }
