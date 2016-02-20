@@ -109,12 +109,14 @@
             <ui:fragment rendered='#{navigation.user.hasGlobalRole("ADMIN")}'>
                 <li>
                     <h:link outcome="/admin/users/overview">
-                        <i class="fa fa-user"></i>#{msg['common.user']}
+                        <i class="fa fa-user"></i>
+                        #{msg['common.user']}
                     </h:link>
                 </li>
                 <li>
                     <h:link outcome="/admin/backups/overview">
-                        <i class="fa fa-hdd-o"></i>#{msg['common.backups']}
+                        <i class="fa fa-hdd-o"></i>
+                        #{msg['common.backups']}
                     </h:link>
                 </li>
             </ui:fragment>

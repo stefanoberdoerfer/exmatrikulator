@@ -22,10 +22,11 @@
               <hr />
               <div class="form-group">
                   <label for="createTutorialTutors" class="col-xs-3 control-label">#{msg['common.tutors']}</label>
-                    <div class="col-xs-8">
+                    <div class="col-xs-9">
                         <p:pickList id="editTutorialTutors" value="#{tutorialController.tutorialTutors}"
                             var="tutorialTutors" itemLabel="#{tutorialTutors.user}"
-                            itemValue="#{tutorialTutors}" converter="#{privilegedUserConverter}">
+                            itemValue="#{tutorialTutors}" converter="#{privilegedUserConverter}"
+                            responsive="true">
                           <f:attribute name="course" value="#{tutorialController.course}" />
                         </p:pickList>
                         <div class="alert alert-info">
