@@ -26,8 +26,10 @@
 
                     <p:defaultCommand target="gradingSearchBtn" />
                 </h:form>
-                <h:link onclick="return exModal('gradeCalculateFinal');" value="#{msg['gradings.finalGrade.calculate']}"
-                        class="btn btn-default" />
+                <h:link outcome="/settings/formula/overview" value="#{msg['gradings.finalGrade.calculate']}"
+                        class="btn btn-default">
+                        <f:param name="course-id" value="#{gradingController.course.courseId}"/>
+                </h:link>
                 <h:link onclick="return exModal('gradeInsert');" value="#{msg['gradings.insert']}"
                         class="btn btn-primary" />
             </div>
@@ -97,6 +99,5 @@
         <ui:include src="/WEB-INF/modals/grading/insert.xhtml" />
         <ui:include src="/WEB-INF/modals/grading/editExam.xhtml" />
         <ui:include src="/WEB-INF/modals/grading/editFinal.xhtml" />
-        <ui:include src="/WEB-INF/modals/grading/calculateGrades.xhtml" />
     </ui:define>
 </ui:composition>
