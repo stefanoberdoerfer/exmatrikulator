@@ -1,6 +1,8 @@
 package de.unibremen.opensores.controller.grading;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.PaboGrade;
@@ -20,6 +22,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,12 +159,15 @@ public class GradingController {
     }
 
     /**
-     * Returns the student gradings for a student. Uses map because gradings
-     * are only stored for graded exams. But we want all exams to show up.
+     * Returns the grading of a single exam and student. Uses map because
+     * gradings are only stored for graded exams. But we want all exams to
+     * show up.
      * @param student Student whose gradings shall be loaded
+     * @param exam Exam to check
      * @return Map of exams with gradings
      */
-    public Map<Long, Grading> getStudentGradings(Student student) {
+    public Grading getStudentGrading(final Student student,
+                                                final Exam exam) {
         log.debug("load student gradings for student "
                 + student.getUser().getFirstName());
 
@@ -176,7 +182,7 @@ public class GradingController {
             studentGradings.put(student, gradings);
         }
 
-        return gradings;
+        return gradings.get(exam.getExamId());
     }
 
     public void setSearchValue(String search) {
@@ -198,5 +204,22 @@ public class GradingController {
 
     public String getPaboGradeName(final String name) {
         return gradeService.paboGradeDisplayName(name);
+    }
+
+    public boolean hasBooleanGradeType(final Exam exam) {
+        return (exam != null && exam.hasGradeType(GradeType.Boolean));
+    }
+
+    /**
+     * Returns if the given user passed the given boolean exam.
+     * @param student Student to check
+     * @param exam Exam to check
+     * @return true if the student passed
+     */
+    public boolean hasPassed(final Student student, final Exam exam) {
+        final Grading grading = getStudentGrading(student, exam);
+
+        return grading != null && GradeType.Boolean.hasPassed(grading
+                .getGrade().getValue());
     }
 }

@@ -47,4 +47,20 @@ public enum GradeType {
                 return false;
         }
     }
+
+    /**
+     * Returns if the given value can be considered as passed.
+     * @param value Value to check
+     * @return True if passed
+     */
+    public boolean hasPassed(BigDecimal value) {
+        switch (this) {
+            case Boolean:
+                return value != null
+                       && value.compareTo(new BigDecimal("1")) == 0;
+
+            default:
+                return false;
+        }
+    }
 }

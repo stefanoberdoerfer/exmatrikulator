@@ -73,7 +73,7 @@
                                 <ui:repeat value="#{gradingController.course.exams}" var="exam">
                                     <div class="col-xs-3 grading">
                                         <strong>#{exam.getName()}</strong><br />
-                                        #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
+                                        #{gradingController.getStudentGrading(student, exam).grade.value}
                                         <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
                                                        oncomplete="return exModal('gradeEditExam');"
                                                        update="gradeEditExamForm">

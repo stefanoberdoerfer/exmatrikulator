@@ -87,22 +87,53 @@
                 <p:rowExpansion>
                     <div class="row student-gradings">
                         <ui:repeat value="#{gradingController.course.exams}" var="exam">
-                            <div class="col-xs-2 grading">
+                            <h:panelGroup layout="block" class="col-xs-2 grading"
+                                          rendered="#{!gradingController.hasBooleanGradeType(exam) or
+                                          gradingController.getStudentGrading(student, exam) == null}">
                                 <strong>#{exam.getName()}</strong><br />
                                 <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course) and
-                                    !gradingController.getStudentGradings(student).get(exam.examId).corrector.equals(userController.user)}">
+                                    !gradingController.getStudentGrading(student, exam).corrector
+                                    .equals(userController.user)}">
                                     <i class="fa fa-lock"></i>
                                 </h:panelGroup>
+
                                 <h:panelGroup rendered="#{userController.isLecturer(gradingController.course) or
-                                    gradingController.getStudentGradings(student).get(exam.examId).corrector.equals(userController.user)}">
-                                    #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
+                                    gradingController.getStudentGrading(student, exam).corrector
+                                    .equals(userController.user)}">
+                                    #{gradingController.getStudentGrading(student, exam).grade.value}
                                 </h:panelGroup>
+
                                 <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
                                                oncomplete="return exModal('gradeEditExam');"
                                                update="gradeEditExamForm"><i
                                         class="fa fa-pencil"></i>
                                 </p:commandLink>
-                            </div>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block" class="col-xs-2 grading"
+                                          rendered="#{gradingController.hasBooleanGradeType(exam) and
+                                          gradingController.getStudentGrading(student, exam) != null}">
+                                <strong>#{exam.getName()}</strong><br />
+                                <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course) and
+                                    !gradingController.getStudentGrading(student, exam).corrector
+                                    .equals(userController.user)}">
+                                    <i class="fa fa-lock"></i>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{userController.isLecturer(gradingController.course) or
+                                    gradingController.getStudentGrading(student, exam).corrector
+                                    .equals(userController.user)}" styleClass="boolean-grade-label">
+                                    <h:outputText value="#{msg['gradings.passed']}"
+                                                  rendered="#{gradingController.hasPassed(student, exam)}" />
+                                    <h:outputText value="#{msg['gradings.failed']}"
+                                                  rendered="#{!gradingController.hasPassed(student, exam)}" />
+                                </h:panelGroup>
+
+                                <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
+                                               oncomplete="return exModal('gradeEditExam');"
+                                               update="gradeEditExamForm"><i
+                                        class="fa fa-pencil"></i>
+                                </p:commandLink>
+                            </h:panelGroup>
                         </ui:repeat>
                     </div>
                 </p:rowExpansion>
