@@ -81,7 +81,7 @@
                                      styleClass="btn btn-primary" id="gradeInsertSubmit">
                         <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course, false)}"
                                 execute="@form"
-                                render="gradeInsertForm"
+                                render="gradeInsertForm gradingForm"
                                 onevent="gradingAjaxEvent"
                                 onerror="gradingAjaxError"
                                 />
@@ -90,7 +90,7 @@
                                      styleClass="btn btn-danger">
                         <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course, true)}"
                                 execute="@form"
-                                render="gradeInsertForm"
+                                render="gradeInsertForm gradingForm"
                                 onevent="gradingAjaxEvent"
                                 onerror="gradingAjaxError"
                                 />

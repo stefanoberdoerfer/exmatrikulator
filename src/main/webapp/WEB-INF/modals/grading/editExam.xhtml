@@ -64,7 +64,7 @@
                                      styleClass="btn btn-danger" id="gradeEditSubmit">
                         <f:ajax listener="#{gradingEditController.updateExamGrading(gradingController.course)}"
                                 execute="@form"
-                                render="gradeEditExamForm"
+                                render="gradeEditExamForm gradingForm"
                                 onevent="gradingAjaxEvent"
                                 onerror="gradingAjaxError"
                                 />
