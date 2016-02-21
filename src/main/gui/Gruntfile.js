@@ -12,7 +12,8 @@ module.exports = function(grunt) {
                     './../webapp/resources/fonts',
                     './../webapp/resources/css',
                     './../webapp/resources/js',
-                    './../webapp/resources/images'
+                    './../webapp/resources/images',
+                    './../webapp/resources/videos'
                 ]
             }
         },
@@ -98,6 +99,13 @@ module.exports = function(grunt) {
                 expand: true,
                 src: './img/*',
                 dest: './../webapp/resources/images/',
+                flatten: true,
+                filter: 'isFile'
+            },
+            videos: {
+                expand: true,
+                src: './videos/*',
+                dest: './../webapp/resources/videos/',
                 flatten: true,
                 filter: 'isFile'
             },
