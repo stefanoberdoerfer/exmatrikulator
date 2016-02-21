@@ -79,8 +79,9 @@
                             <strong>#{exam.getName()}</strong><br />
                             #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
                             <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
-                                           oncomplete="return exModal('gradeEditExam');" update="gradeEditExamForm"
-                                    ><i class="fa fa-pencil"></i>
+                                           oncomplete="return exModal('gradeEditExam');"
+                                           update="gradeEditExamForm">
+                                <i class="fa fa-pencil"></i>
                             </p:commandLink>
                         </div>
                     </ui:repeat>
