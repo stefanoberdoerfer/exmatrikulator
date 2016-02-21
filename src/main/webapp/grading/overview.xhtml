@@ -18,10 +18,13 @@
             <div class="btn-group main-buttons pull-right">
                 <h:form styleClass="section-search">
                     <h:inputText styleClass="form-control" h5:placeholder="#{msg['gradings.search.students']}"
-                            value="#{gradingController.searchValue}"/>
-                    <h:commandLink styleClass="btn btn-default">
+                            value="#{gradingController.searchValue}" h5:autocomplete="off" />
+                    <h:commandLink styleClass="btn btn-default" id="gradingSearchBtn">
+                        <f:param name="course-id" value="#{gradingController.course.courseId}" />
                         <i class="fa fa-search"></i>
                     </h:commandLink>
+
+                    <p:defaultCommand target="gradingSearchBtn" />
                 </h:form>
                 <h:link onclick="return exModal('gradeCalculateFinal');" value="#{msg['gradings.finalGrade.calculate']}"
                         class="btn btn-default" />
