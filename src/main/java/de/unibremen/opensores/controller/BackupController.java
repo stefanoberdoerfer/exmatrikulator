@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.controller.settings.CourseSettingsController;
 import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.util.ServerProperties;
@@ -9,17 +10,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.persistence.PersistenceException;
-import javax.persistence.QueryTimeoutException;
-import javax.persistence.StoredProcedureQuery;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Properties;

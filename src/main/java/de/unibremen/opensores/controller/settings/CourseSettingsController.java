@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.service.CourseService;

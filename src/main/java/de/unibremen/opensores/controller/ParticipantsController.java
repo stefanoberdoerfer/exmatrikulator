@@ -13,6 +13,7 @@ import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.GradeService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.service.StudentService;
@@ -102,6 +103,12 @@ public class ParticipantsController {
      * The LogService for adding logs related to the exmatrikulator actions.
      */
     private LogService logService;
+
+    /**
+     * GradeService for database transactions related to grades.
+     */
+    @EJB
+    private GradeService gradeService;
 
     /**
      * The currently selected user for editing the values.
@@ -1001,25 +1008,9 @@ public class ParticipantsController {
         this.privilegedUserService = privilegedUserService;
     }
 
-    /**
-     * Returns the grade name of the PaboGrade enum instance identified by the
-     * given name. Returns a question mark if unknown.
-     * @param name Name of the instance
-     * @return Grade name or Question mark
-     */
     public String getPaboGradeName(final String name) {
-        try {
-            PaboGrade paboGrade = PaboGrade.valueOf(name);
-            log.debug("Found pabo grade instance: " + name);
-
-            return paboGrade.getGradeName();
-        } catch (IllegalArgumentException | NullPointerException e) {
-            log.debug("Pabo grade instance not found: " + name);
-
-            return "?";
-        }
+        return gradeService.paboGradeDisplayName(name);
     }
-
 
     public Course getCourse() {
         return this.course;

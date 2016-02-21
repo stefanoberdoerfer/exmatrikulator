@@ -1,13 +1,12 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.controller.settings.GradeScriptController;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.ParticipationType;
-import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradeFormulaService;
-import de.unibremen.opensores.service.GradeService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.testutil.ContextMocker;
@@ -18,7 +17,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.event.TabChangeEvent;
 import org.python.core.PySystemState;
@@ -27,7 +25,6 @@ import org.python.util.PythonInterpreter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertSame;
