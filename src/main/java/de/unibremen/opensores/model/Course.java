@@ -39,10 +39,10 @@ public class Course {
     private String name;
 
     @Column(nullable = false)
-    private Integer sws;
+    private String defaultSws;
 
     @Column(nullable = false)
-    private Integer creditPoints;
+    private Integer defaultCreditPoints;
 
     @ElementCollection
     @CollectionTable(name = "COURSE_NUMBERS", joinColumns = @JoinColumn(name = "courseId"))
@@ -239,21 +239,20 @@ public class Course {
         return null;
     }
 
-
-    public Integer getCreditPoints() {
-        return creditPoints;
+    public Integer getDefaultCreditPoints() {
+        return defaultCreditPoints;
     }
 
-    public void setCreditPoints(Integer creditPoints) {
-        this.creditPoints = creditPoints;
+    public void setDefaultCreditPoints(Integer defaultCreditPoints) {
+        this.defaultCreditPoints = defaultCreditPoints;
     }
 
-    public Integer getSws() {
-        return sws;
+    public String getDefaultSws() {
+        return defaultSws;
     }
 
-    public void setSws(Integer sws) {
-        this.sws = sws;
+    public void setDefaultSws(String defaultSws) {
+        this.defaultSws = defaultSws;
     }
 
     public String getName() {

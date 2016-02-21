@@ -63,12 +63,12 @@ public final class DataHelper {
         Course course = new Course();
         course.setName("Test Course");
         course.setCourseId(COURSE_ID);
-        course.setCreditPoints(9);
+        course.setDefaultCreditPoints(9);
         course.getNumbers().add("VAK TEST-COURSE");
         course.setMinGroupSize(1);
         course.setMaxGroupSize(6);
         course.setRequiresConfirmation(true);
-        course.setSws(2);
+        course.setDefaultSws("2");
 
         Semester semester = new Semester();
         semester.setIsWinter(true);

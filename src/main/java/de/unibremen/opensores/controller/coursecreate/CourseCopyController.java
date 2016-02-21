@@ -303,8 +303,8 @@ public class CourseCopyController implements Serializable {
         log.debug("Copy common data from: " + courseToCopy.getName());
         course.setName(courseToCopy.getName());
         course.setNumbers(courseToCopy.getNumbers());
-        course.setSws(courseToCopy.getSws());
-        course.setCreditPoints(courseToCopy.getCreditPoints());
+        course.setDefaultSws(courseToCopy.getDefaultSws());
+        course.setDefaultCreditPoints(courseToCopy.getDefaultCreditPoints());
         course.setStudentsCanSeeFormula(courseToCopy.getStudentsCanSeeFormula());
         course.setRequiresConfirmation(courseToCopy.getRequiresConfirmation());
         course.setMinGroupSize(courseToCopy.getMinGroupSize());
