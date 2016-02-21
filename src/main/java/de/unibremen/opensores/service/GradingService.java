@@ -91,8 +91,7 @@ public class GradingService extends GenericService<Grading> {
         List<Student> s = em.createQuery("SELECT DISTINCT s "
                         + "FROM Student s "
                         + "WHERE s.course.courseId = :courseId "
-                        + "AND s.isConfirmed = true "
-                        + "AND s.acceptedInvitation = true",
+                        + "AND s.isConfirmed = true",
                     Student.class)
                 .setParameter("courseId", course.getCourseId())
                 .getResultList();
