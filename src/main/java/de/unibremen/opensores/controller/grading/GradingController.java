@@ -41,6 +41,12 @@ public class GradingController {
      * The course which exams get edited.
      */
     private Course course;
+
+    /**
+     * Currently logged in user
+     */
+    private User user;
+
     /**
      * Student gradings. Stored here so it won't be loaded multiple times.
      */
@@ -116,6 +122,14 @@ public class GradingController {
                 return;
             }
         }
+        /*
+        Load the user
+         */
+        user = (User)FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("user");
     }
 
     /**
@@ -135,9 +149,9 @@ public class GradingController {
     public List<Student> getStudents() {
         if (searchValue != null && searchValue.trim().length() > 0) {
             log.debug("Search for " + searchValue);
-            return gradingService.getStudents(course, searchValue.trim());
+            return gradingService.getStudents(course, user, searchValue.trim());
         } else {
-            return gradingService.getStudents(course);
+            return gradingService.getStudents(course, user);
         }
     }
 
@@ -179,7 +193,7 @@ public class GradingController {
      * @return List of groups or null
      */
     public List<Group> getGroups() {
-        return gradingService.getGroups(course);
+        return gradingService.getGroups(course, user);
     }
 
     public String getPaboGradeName(final String name) {

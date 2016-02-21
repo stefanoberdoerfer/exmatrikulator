@@ -72,10 +72,16 @@
                     <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
                     <p:commandLink action="#{gradingEditController.setFinalGrading(student)}"
                                    oncomplete="return exModal('gradeEditFinal');" update="gradeEditFinalForm"
-                                   styleClass="pull-right">
-                        <i class="fa fa-pencil"></i>
+                                   styleClass="pull-right"
+                                   rendered="#{userController.isLecturer(gradingController.course)}"><i
+                            class="fa fa-pencil"></i>
                     </p:commandLink>
-                    <strong>#{gradingController.getPaboGradeName(student.paboGrade)}</strong>
+                    <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course)}"><i
+                            class="fa fa-lock"></i>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{userController.isLecturer(gradingController.course)}">
+                        <strong>#{gradingController.getPaboGradeName(student.paboGrade)}</strong>
+                    </h:panelGroup>
                 </p:column>
 
                 <p:rowExpansion>
@@ -83,11 +89,18 @@
                         <ui:repeat value="#{gradingController.course.exams}" var="exam">
                             <div class="col-xs-2 grading">
                                 <strong>#{exam.getName()}</strong><br />
-                                #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
+                                <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course) and
+                                    !gradingController.getStudentGradings(student).get(exam.examId).corrector.equals(userController.user)}">
+                                    <i class="fa fa-lock"></i>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{userController.isLecturer(gradingController.course) or
+                                    gradingController.getStudentGradings(student).get(exam.examId).corrector.equals(userController.user)}">
+                                    #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
+                                </h:panelGroup>
                                 <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
                                                oncomplete="return exModal('gradeEditExam');"
-                                               update="gradeEditExamForm">
-                                    <i class="fa fa-pencil"></i>
+                                               update="gradeEditExamForm"><i
+                                        class="fa fa-pencil"></i>
                                 </p:commandLink>
                             </div>
                         </ui:repeat>
