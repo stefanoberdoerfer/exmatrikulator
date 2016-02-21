@@ -49,7 +49,10 @@
                         <i class="fa fa-user-secret"></i>
                         #{userController.getEditorSessions(param[EXcons.HTTP_PARAM_COURSE_ID]).size()}
                     </div>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu active-users">
+                        <li class="hint">
+                            #{msg['common.onlineEditorsHint']}
+                        </li>
                         <ui:repeat value="#{userController.getEditorSessions(param[EXcons.HTTP_PARAM_COURSE_ID])}"
                                    var="user">
                             <li><h:outputText value="#{user}"/></li>

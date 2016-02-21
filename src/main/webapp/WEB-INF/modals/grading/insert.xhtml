@@ -7,6 +7,9 @@
     <p:dialog header="#{msg['gradings.insert']}" appendTo="@(body)" widgetVar="gradeInsert" modal="true">
         <h:form id="gradeInsertForm">
             <ui:include src="/WEB-INF/alerts.xhtml" />
+            <div class="alert alert-warning" id="gradeInsertOverwriteHint">
+                #{msg['gradings.overwriting']}
+            </div>
             <h:panelGroup layout="block" styleClass="modal-body">
                 <div class="form-group">
                     <label for="gradeExamination" class="col-xs-3 control-label">
@@ -20,9 +23,6 @@
                             <f:selectItems value="#{gradingController.course.exams}" var="exam"
                                            itemLabel="#{exam.name}" itemValue="#{exam.examId}" />
                         </h:selectOneMenu>
-                        <div class="alert alert-warning" id="gradeInsertOverwriteHint">
-                            #{msg['gradings.overwriting']}
-                        </div>
                     </div>
                 </div>
                 <div class="form-group">
