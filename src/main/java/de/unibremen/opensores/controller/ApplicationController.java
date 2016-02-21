@@ -14,6 +14,7 @@ import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.RecordBookEntry;
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.Student;
@@ -25,6 +26,7 @@ import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.ParticipationTypeService;
+import de.unibremen.opensores.service.RecordBookService;
 import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UploadService;
@@ -84,7 +86,7 @@ public class ApplicationController {
     private ParticipationTypeService participationTypeService;
 
     @EJB
-    private SemesterService semester;
+    private RecordBookService recordBookService;
 
     /**
      * Map of courseIds to currently logged in users
@@ -178,7 +180,7 @@ public class ApplicationController {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
 
-        List<Semester> semesters = semester.listSemesters();
+        List<Semester> semesters = semesterService.listSemesters();
         int toCreate = 0;
 
         if (semesters.isEmpty()) {
@@ -189,7 +191,7 @@ public class ApplicationController {
         }
 
         if (toCreate > 0) {
-            semester.createNextSemesters(toCreate);
+            semesterService.createNextSemesters(toCreate);
             log.debug("Created " + toCreate + " semesters.");
         } else {
             log.debug("Nothing to create.");
@@ -461,11 +463,14 @@ public class ApplicationController {
         //persist everything
         course = courseService.update(course);
 
+        student = course.getStudents().get(0);
+        exam = course.getExams().get(0);
+
+        RecordBookEntry rbe = RecordBookEntry.from(student,course,exam,
+                new Date(),60,"Alles komplett gelöst");
+        recordBookService.persist(rbe);
+
         //Testlogs
-        if (course.getStudents().size() > 0) {
-            student = course.getStudents().get(0);
-            log.debug("Studentlist of course is not empty");
-        }
 
         //Grading
         Grading grading = new Grading();
@@ -532,5 +537,10 @@ public class ApplicationController {
                 + " from " + student.getGradings().get(0).getCorrector().getFirstName());
         log.debug("Upload with id " + upload.getUploadId() + " uploaded by "
                 + upload.getUploaders().get(0).getUser().getFirstName());
+        if (rbe != null) {
+            log.debug("RecordBookEntry with id " + rbe.getEntryId() + " persisted. Summary: "
+                    + rbe.getDuration() + " Minutes for exam " + rbe.getExam().getName()
+                    + " of Course " + rbe.getCourse().getName() + ". Comment: " + rbe.getComment());
+        }
     }
 }
