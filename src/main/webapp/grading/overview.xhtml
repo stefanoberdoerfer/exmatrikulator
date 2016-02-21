@@ -48,45 +48,48 @@
             </li>
         </ul>
 
-        <p:dataTable var="student" value="#{gradingController.students}"
-                     styleClass="table table-hover table-courses-overview"
-                     paginatior="true" rows="15">
-            <p:column styleClass="table-common-options-one">
-                <p:rowToggler/>
-            </p:column>
-            <p:column styleClass="table-grades-name">
-                <f:facet name="header">#{msg['common.student']}</f:facet>
-                #{student.user.firstName} <strong>#{student.user.lastName}</strong>
-                <div class="table-common-sub">#{student.user.email}</div>
-            </p:column>
-            <p:column>
-                <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
-            </p:column>
-            <p:column styleClass="table-grades-grade text-center">
-                <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
-                <p:commandLink action="#{gradingEditController.setFinalGrading(student)}"
-                               oncomplete="return exModal('gradeEditFinal');" update="gradeEditFinalForm"
-                               styleClass="pull-right">
-                    <i class="fa fa-pencil"></i>
-                </p:commandLink>
-                <strong>#{gradingController.getPaboGradeName(student.paboGrade)}</strong>
-            </p:column>
+        <h:form id="gradingForm">
+            <p:dataTable id="gradingTbl" var="student" value="#{gradingController.students}"
+                         styleClass="table table-hover table-courses-overview"
+                         paginatior="true" rows="15">
+                <p:column styleClass="table-common-options-one">
+                    <p:rowToggler/>
+                </p:column>
+                <p:column styleClass="table-grades-name">
+                    <f:facet name="header">#{msg['common.student']}</f:facet>
+                    #{student.user.firstName} <strong>#{student.user.lastName}</strong>
+                    <div class="table-common-sub">#{student.user.email}</div>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
+                </p:column>
+                <p:column styleClass="table-grades-grade text-center">
+                    <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
+                    <p:commandLink action="#{gradingEditController.setFinalGrading(student)}"
+                                   oncomplete="return exModal('gradeEditFinal');" update="gradeEditFinalForm"
+                                   styleClass="pull-right">
+                        <i class="fa fa-pencil"></i>
+                    </p:commandLink>
+                    <strong>#{gradingController.getPaboGradeName(student.paboGrade)}</strong>
+                </p:column>
 
-            <p:rowExpansion>
-                <div class="row student-gradings">
-                    <ui:repeat value="#{gradingController.course.exams}" var="exam">
-                        <div class="col-xs-2 grading">
-                            <strong>#{exam.getName()}</strong><br />
-                            #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
-                            <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
-                                           oncomplete="return exModal('gradeEditExam');" update="gradeEditExamForm"
-                                    ><i class="fa fa-pencil"></i>
-                            </p:commandLink>
-                        </div>
-                    </ui:repeat>
-                </div>
-            </p:rowExpansion>
-        </p:dataTable>
+                <p:rowExpansion>
+                    <div class="row student-gradings">
+                        <ui:repeat value="#{gradingController.course.exams}" var="exam">
+                            <div class="col-xs-2 grading">
+                                <strong>#{exam.getName()}</strong><br />
+                                #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
+                                <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
+                                               oncomplete="return exModal('gradeEditExam');"
+                                               update="gradeEditExamForm">
+                                    <i class="fa fa-pencil"></i>
+                                </p:commandLink>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </p:rowExpansion>
+            </p:dataTable>
+        </h:form>
 
         <ui:include src="/WEB-INF/modals/grading/insert.xhtml" />
         <ui:include src="/WEB-INF/modals/grading/editExam.xhtml" />
