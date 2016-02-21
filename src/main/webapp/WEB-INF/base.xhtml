@@ -108,18 +108,15 @@
             </ui:fragment>
             <ui:fragment rendered='#{navigation.user.hasGlobalRole("ADMIN")}'>
                 <li>
-                    <h:link outcome="/users/overview">
-                        <i class="fa fa-user"></i>#{msg['common.user']}
+                    <h:link outcome="/admin/users/overview">
+                        <i class="fa fa-user"></i>
+                        #{msg['common.user']}
                     </h:link>
                 </li>
                 <li>
-                    <h:link outcome="/users/overview">
-                        <i class="fa fa-hdd-o"></i>#{msg['common.backups']}
-                    </h:link>
-                </li>
-                <li>
-                    <h:link outcome="/languages/overview">
-                        <i class="fa fa-language"></i>#{msg['common.languages']}
+                    <h:link outcome="/admin/backups/overview">
+                        <i class="fa fa-hdd-o"></i>
+                        #{msg['common.backups']}
                     </h:link>
                 </li>
             </ui:fragment>
@@ -150,7 +147,7 @@
                                 </h:panelGroup>
                             </h:link>
                             <ul class="nav nav-pills nav-stacked sub-pills">
-                                <li><h:link outcome="/participants/overview" value="#{msg['common.course.participants']}">
+                                <li><h:link outcome="/participants/students" value="#{msg['common.course.participants']}">
                                     <f:param name="course-id" value="#{course.courseId}"/>
                                 </h:link></li>
                                 <li><h:link outcome="/tutorialsGroups/overview" value="#{msg['courses.tutorialsGroups']}">

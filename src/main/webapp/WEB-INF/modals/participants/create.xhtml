@@ -128,7 +128,7 @@
                     <p:commandLink action="#{participantsController.createNewUser}"
                                    id="createUserButton"
                                    class="btn btn-primary" value="#{msg['users.create']}"
-                                   update=":lecturerForm:lecturerTbl :studentForm:studentTbl :tutorForm:tutorTbl"
+                                   update=":participantForm:participantTbl"
                                    oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userCreate')" />
                 </div>
             </div>

@@ -1,0 +1,128 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.course.participants']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li>#{participantsController.course.name}</li>
+        <li class="active">#{msg['common.course.participants']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <h:panelGroup class="btn-group main-buttons pull-right"
+                          rendered="#{participantsController.loggedInUserCanManageStudents}">
+                <h:form>
+                    <p:commandLink oncomplete="return exModal('userCreate');" value="#{msg['users.create']}"
+                                   class="btn btn-default"
+                                   actionListener="#{participantsController.onCreateUserDialogCalled}"
+                                   update=":createUserDialog">
+                    </p:commandLink>
+                    <p:commandLink oncomplete="return exModal('userLinkSearch');" value="#{msg['users.link']}"
+                        class="btn btn-default" update=":userSearchDialog">
+                        <f:actionListener binding="#{participantsController.resetSelectedValues()}"/>
+                    </p:commandLink>
+                    <h:commandLink onclick="return exModal('participantsImport');" value="#{msg['participants.import']}"
+                        class="btn btn-primary" />
+                </h:form>
+            </h:panelGroup>
+            <h1>#{msg['common.course.participants']}</h1>
+        </div>
+
+        <ul class="nav nav-tabs inverted" role="tablist">
+            <li>
+                <h:link outcome="/participants/students" value="#{msg['common.students']}">
+                    <f:param name="course-id" value="#{participantsController.course.courseId}"/>
+                </h:link>
+            </li>
+            <li class="active">
+                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}">
+                    <f:param name="course-id" value="#{participantsController.course.courseId}"/>
+                </h:link>
+            </li>
+            <li>
+                <h:link outcome="/participants/tutors" value="#{msg['common.tutors']}">
+                    <f:param name="course-id" value="#{participantsController.course.courseId}"/>
+                </h:link>
+            </li>
+            <li>
+                <h:link outcome="/participants/lecturers" value="#{msg['common.lecturers']}">
+                    <f:param name="course-id" value="#{participantsController.course.courseId}"/>
+                </h:link>
+            </li>
+        </ul>
+
+        <h:form id="participantForm"
+                rendered="#{participantsController.loggedInUserCanManageStudents}">
+            <p:dataTable id="participantTbl" widgetVar="unconfirmedStudentsTblWidget"
+                         var="student"
+                         value="#{participantsController.course.unconfirmedAndUndeletedStudents}"
+                         filteredValue="#{participantsController.filteredUnconfirmedStudents}"
+                         emptyMessage="#{msg['participants.noUnconfirmedStudents']}">
+                <p:column headerText="#{msg['common.lastName']}"
+                          sortBy="#{student.user.lastName}"
+                          filterBy="#{student.user.lastName}"
+                          filterMatchMode="contains"
+                          styleClass="table-users-lastname">
+                    <h:outputText value="#{student.user.lastName}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.firstName']}"
+                          sortBy="#{student.user.firstName}"
+                          filterBy="#{student.user.firstName}"
+                          filterMatchMode="contains"
+                          styleClass="table-users-firstname">
+                    <h:outputText value="#{student.user.firstName}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.email']}"
+                          sortBy="#{student.user.email}"
+                          filterBy="#{student.user.email}"
+                          filterMatchMode="contains"
+                          styleClass="table-common-email">
+                    <h:outputText value="#{student.user.email}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.studentNumber']}"
+                          sortBy="#{student.user.matriculationNumber}"
+                          filterBy="#{student.user.matriculationNumber}"
+                          filterMatchMode="contains"
+                          styleClass="table-users-matriculation-nr text-center">
+                    <h:outputText value="#{student.user.matriculationNumber}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.participationType']}"
+                          sortBy="#{student.participationType.name}"
+                          filterBy="#{student.participationType.name}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{student.participationType.name}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.actions']}"
+                          styleClass="table-common-options-two text-right">
+                    <p:commandLink h5:data-toggle="tooltip"
+                                   update=":studentForm:studentTbl :unconfirmedStudentForm:unconfirmedStudentsTbl"
+                                   h5:data-placement="top" title="#{msg['participation.confirm']}" styleClass="btn btn-success"
+                                   rendered="#{participantsController.loggedInUserCanManageStudents}">
+                        <i class="fa fa-plus"/>
+                        <f:actionListener binding="#{participantsController.confirmStudent(student)}"/>
+                    </p:commandLink>
+                    <p:commandLink oncomplete="return exModal('participantRemove');"
+                                   update=":participantRemoveDialog" h5:data-toggle="tooltip"
+                                   h5:data-placement="top" title="#{msg['course.student.remove']}" class="btn btn-danger"
+                                   rendered="#{participantsController.loggedInUserCanManageStudents}">
+                        <i class="fa fa-remove"></i>
+                        <f:actionListener binding="#{participantsController.onDeleteStudentDialogCalled(student)}"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <ui:include src="/WEB-INF/modals/participants/create.xhtml" />
+        <ui:include src="/WEB-INF/modals/participants/edit.xhtml" />
+        <ui:include src="/WEB-INF/modals/participants/remove.xhtml" />
+        <ui:include src="/WEB-INF/modals/participants/import.xhtml" />
+        <ui:include src="/WEB-INF/modals/participants/link/search.xhtml" />
+        <ui:include src="/WEB-INF/modals/participants/link/participationType.xhtml" />
+    </ui:define>
+</ui:composition>

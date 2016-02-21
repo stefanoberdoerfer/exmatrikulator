@@ -128,7 +128,7 @@
                         <p:commandLink id="editUserButton"
                                        action="#{participantsController.saveEditChanges}"
                                        class="btn btn-primary" value="#{msg['common.saveChanges']}"
-                                       update=":lecturerForm:lecturerTbl :studentForm:studentTbl :tutorForm:tutorTbl"
+                                       update=":participantForm:participantTbl"
                                        oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':participantEdit')" />
                     </div>
                 </div>

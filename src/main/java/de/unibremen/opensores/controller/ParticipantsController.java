@@ -4,6 +4,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.model.Privilege;
@@ -998,6 +999,25 @@ public class ParticipantsController {
     @EJB
     public void setPrivilegedUserService(PrivilegedUserService privilegedUserService) {
         this.privilegedUserService = privilegedUserService;
+    }
+
+    /**
+     * Returns the grade name of the PaboGrade enum instance identified by the
+     * given name. Returns a question mark if unknown.
+     * @param name Name of the instance
+     * @return Grade name or Question mark
+     */
+    public String getPaboGradeName(final String name) {
+        try {
+            PaboGrade paboGrade = PaboGrade.valueOf(name);
+            log.debug("Found pabo grade instance: " + name);
+
+            return paboGrade.getGradeName();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            log.debug("Pabo grade instance not found: " + name);
+
+            return "?";
+        }
     }
 
 
