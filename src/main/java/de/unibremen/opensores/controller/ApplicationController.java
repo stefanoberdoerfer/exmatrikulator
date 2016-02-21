@@ -299,8 +299,8 @@ public class ApplicationController {
 
         //Course with all relations filled
         Course course = new Course();
-        course.setSws(42);
-        course.setCreditPoints(1337);
+        course.setDefaultSws("2+2");
+        course.setDefaultCreditPoints(1337);
         course.setName("TestVeranstaltung");
         course.getNumbers().add("VAK-Nummer123");
         course.setRequiresConfirmation(false);

@@ -42,6 +42,12 @@ public class ParticipationType {
     @Column(nullable = false)
     private Boolean isRestricted;
 
+    @Column(nullable = true)
+    private String sws;
+
+    @Column(nullable = true)
+    private Integer creditPoints;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
     private Course course;
@@ -172,5 +178,21 @@ public class ParticipationType {
 
     public void setGradeFormulas(List<GradeFormula> gradeFormulas) {
         this.gradeFormulas = gradeFormulas;
+    }
+
+    public Integer getCreditPoints() {
+        return creditPoints;
+    }
+
+    public void setCreditPoints(Integer creditPoints) {
+        this.creditPoints = creditPoints;
+    }
+
+    public String getSws() {
+        return sws;
+    }
+
+    public void setSws(String sws) {
+        this.sws = sws;
     }
 }

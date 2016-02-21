@@ -84,7 +84,7 @@
                         <div class="col-xs-3">
                             <h:inputText type="number" class="form-control" id="courseCP"
                                          label="#{msg['courses.creditPoints']}" converter="javax.faces.Integer"
-                                         value="#{commonDataController.course.creditPoints}"
+                                         value="#{commonDataController.course.defaultCreditPoints}"
                                          required="#{not empty param['commonDataForm:continueButton']}"
                                          requiredMessage="#{msg['courses.create.messageInputCreditPoints']}">
                                 <f:convertNumber integerOnly="true"/>
@@ -95,7 +95,7 @@
                                        value="#{msg['courses.sws']}"/>
                         <div class="col-xs-3">
                             <h:inputText type="number" class="form-control" id="courseSWS" label="#{msg['courses.sws']}"
-                                         value="#{commonDataController.course.sws}"
+                                         value="#{commonDataController.course.defaultSws}"
                                          required="#{not empty param['commonDataForm:continueButton']}"
                                          requiredMessage="#{msg['courses.create.messageInputSWS']}">
                                 <f:convertNumber integerOnly="true"/>
