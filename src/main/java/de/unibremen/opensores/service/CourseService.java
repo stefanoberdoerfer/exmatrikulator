@@ -82,9 +82,8 @@ public class CourseService extends GenericService<Course> {
     public PrivilegedUser findPrivileged(Course course, String email) {
         List<PrivilegedUser> privUsers = em.createQuery(
                 "SELECT DISTINCT u FROM PrivilegedUser u"
-                + " JOIN u.course AS c"
-                + " WITH c.courseId = :courseId"
-                + " AND u.user.email = :email", PrivilegedUser.class)
+                + " JOIN u.course AS c WITH c.courseId = :courseId"
+                + " WHERE u.user.email = :email", PrivilegedUser.class)
             .setParameter("courseId", course.getCourseId())
             .setParameter("email", email)
             .getResultList();

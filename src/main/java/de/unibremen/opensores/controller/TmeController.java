@@ -13,10 +13,16 @@ import de.unibremen.opensores.util.tme.TMEObject;
 import de.unibremen.opensores.util.tme.TMEArray;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Semester;
+import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.LecturerService;
+import de.unibremen.opensores.service.TutorialService;
 import de.unibremen.opensores.service.SemesterService;
+import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.exception.TmeException;
 import de.unibremen.opensores.exception.SemesterFormatException;
 
@@ -78,12 +84,38 @@ public class TmeController implements Serializable {
     private transient SemesterService semesterService;
 
     /**
+     * Tutorial service for connecting to the database.
+     */
+    @EJB
+    private transient TutorialService tutorialService;
+
+    /**
+     * PrivilegedUser service for connecting to the database.
+     */
+    @EJB
+    private transient PrivilegedUserService privilegedUserService;
+
+    /**
+     * Lecturer service for connecting to the database.
+     */
+    @EJB
+    private transient LecturerService lecturerService;
+
+    /**
      * List of uploaded files by the user.
      */
     @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
             justification = "actually findbugs is right this needs to be "
             + "serializable but I am too lazy to fix it")
     private transient List<UploadedFile> files = new ArrayList<>();
+
+    /**
+     * List of parsed TME objects.
+     */
+    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
+            justification = "actually findbugs is right this needs to be "
+            + "serializable but I am too lazy to fix it")
+    private transient List<TMEObject> parsedObjs = new ArrayList<>();
 
     /**
      * Handles file upload events.
@@ -142,7 +174,6 @@ public class TmeController implements Serializable {
             return;
         }
 
-        List<TMEObject> parsedObjs = new ArrayList<>();
         for (File file : uploaded) {
             try {
                 String data = FileUtils.readFileToString(file);
@@ -164,7 +195,12 @@ public class TmeController implements Serializable {
 
         for (TMEObject obj : parsedObjs) {
             try {
-                importTMEObject(obj);
+                /* We only import courses directly everything else is imported
+                 * indirectly using the relations from the course node. */
+
+                if (obj.getName().equals("jgradebook.data.Course")) {
+                    importCourse(obj);
+                }
             } catch (TmeException e) {
                 log.debug(e);
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -180,79 +216,12 @@ public class TmeController implements Serializable {
     }
 
     /**
-     * Imports the given TME Object into our database.
-     *
-     * @param obj Object which should be imported.
-     * @throws TmeException On mailformated TME files.
-     */
-    private void importTMEObject(TMEObject obj) throws TmeException {
-        String[] splited = obj.getName().split("\\.");
-        if (splited.length <= 0) {
-            throw new TmeException("Invalid node key");
-        }
-
-        String key = splited[splited.length - 1];
-        switch (key) {
-            case "StudentData":
-                importUser(obj);
-                break;
-            case "Course":
-                importCourse(obj);
-                break;
-            case "Student":
-            case "Assignment":
-            case "Category":
-            case "Exam":
-            case "ExamDate":
-            case "StudentExam":
-            case "Teacher":
-            case "Tutorial":
-            case "TutorialDate":
-            case "WorkPackage":
-            case "Group":
-            case "Permission":
-            case "Activity":
-            case "Submission":
-            case "ActualSubmission":
-            case "Mark":
-            case "SubMark":
-                // TODO not implemented
-                return;
-            default:
-                throw new TmeException("Unknown node key " + key);
-        }
-    }
-
-    /**
-     * Imports a studentData TME object.
-     *
-     * @param obj StudentData TME object.
-     */
-    private void importUser(TMEObject obj) {
-        String email = obj.getString("email");
-        if (userService.findByEmail(email) != null) {
-            return;
-        }
-
-        User user = new User();
-        user.setEmail(email);
-        user.setFirstName(obj.getString("firstname"));
-        user.setLastName(obj.getString("lastname"));
-        user.setMatriculationNumber(obj.getString("matriculationNumber"));
-
-        String plainPasswd = obj.getString("password");
-        user.setPassword(BCrypt.hashpw(plainPasswd, BCrypt.gensalt()));
-
-        userService.persist(user);
-        log.debug("Persisted user " + user.toString());
-    }
-
-    /**
-     * Imports a course TME object.
+     * Imports a course and associated TME objects.
      *
      * @param obj Course TME object.
+     * @throws TmeException On a failed import.
      */
-    private void importCourse(TMEObject obj) {
+    private void importCourse(TMEObject obj) throws TmeException {
         String name = obj.getString("name");
         if (courseService.findCourseByName(name) != null) {
             return;
@@ -265,23 +234,8 @@ public class TmeController implements Serializable {
         course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
 
-        Semester sem = null;
-        try {
-            sem = Semester.valueOf(obj.getString("zeitraum"));
-        } catch (SemesterFormatException e) {
-            log.error(e);
-            return;
-        }
-
-        Semester semester = semesterService.findSemester(
-                sem.getSemesterYear(), sem.isWinter());
-        if (semester == null) {
-            course.setSemester(sem);
-            semesterService.persist(sem);
-            log.debug("Persisted semester " + sem.toString());
-        } else {
-            course.setSemester(semester);
-        }
+        Semester semester = createSemester(obj.getString("zeitraum"));
+        course.setSemester(semester);
 
         List<String> vaks = new ArrayList<>();
         vaks.add(obj.getString("nummer"));
@@ -297,7 +251,169 @@ public class TmeController implements Serializable {
         course.setMaxGroupSize(obj.getInt("maximaleGruppenGroesse"));
 
         courseService.persist(course);
+        List<Tutorial> tutorials = createTutorials(
+                obj.getArray("tutorials"), course);
+        course.setTutorials(tutorials);
+
+        course = courseService.update(course);
         log.debug("Persisted course " + course.getName());
+    }
+
+    /**
+     * Returns a semester object form the given string.
+     *
+     * @param str String to use to create semester object.
+     * @return Semester object.
+     * @throws TmeException On invalid string format.
+     */
+    private Semester createSemester(String str) throws TmeException {
+        Semester semester = null;
+        try {
+            semester = Semester.valueOf(str);
+        } catch (SemesterFormatException e) {
+            throw new TmeException("Invalid semester string format");
+        }
+
+        Semester sem = semesterService.findSemester(
+                semester.getSemesterYear(), semester.isWinter());
+        if (sem != null) {
+            return sem;
+        }
+
+        semesterService.persist(semester);
+        log.debug("Persist semester " + semester.toString());
+
+        return semester;
+    }
+
+    /**
+     * Creates all tutorials from the given TMEArray.
+     *
+     * @param array TMEArray to create tutorials from.
+     * @param course Course the tutorials belong to.
+     * @return List of created tutorials entities.
+     * @throws TmeException On a failed creation.
+     */
+    private List<Tutorial> createTutorials(TMEArray array, Course course)
+            throws TmeException {
+        List<Tutorial> tutorials = new ArrayList<>();
+        for (int i = 0; i < array.size(); i++) {
+            int id = array.getInt(i);
+
+            TMEObject node = findNode("jgradebook.data.Tutorial", id);
+            if (node == null) {
+                throw new TmeException("non-existend tutorial " + id);
+            }
+
+            Tutorial tutorial = createTutorial(node, course);
+            tutorials.add(tutorial);
+        }
+
+        return tutorials;
+    }
+
+    /**
+     * Creates a tutorial with the given id in the TME objects array.
+     *
+     * @param node TME tutorial object.
+     * @param course Course the tutorial belongs to.
+     * @return Created tutorial entity.
+     * @throws TmeException On a failed creation.
+     */
+    private Tutorial createTutorial(TMEObject node, Course course)
+            throws TmeException {
+        int tutorId = node.getInt("tutor");
+        TMEObject tutorNode = findNode("jgradebook.data.Teacher", tutorId);
+        if (tutorNode == null) {
+            throw new TmeException("non-existend tutor " + tutorId);
+        }
+
+        Tutorial tutorial = new Tutorial();
+        tutorial.setCourse(course);
+        tutorial.setName("jgradebook Tutorial " + node.getId());
+
+        User user = createUser(tutorNode);
+        if (tutorNode.getBoolean("superuser")) {
+            Lecturer lecturer = new Lecturer();
+            lecturer.setCourse(course);
+            lecturer.setHidden(false);
+            lecturer.setDeleted(false);
+            lecturer.setIsCourseCreator(true);
+            lecturer.setUser(user);
+
+            lecturerService.persist(lecturer);
+            course.getLecturers().add(lecturer);
+        } else {
+            PrivilegedUser tutor = new PrivilegedUser();
+            tutor.setCourse(course);
+            tutor.setSecretary(false);
+            tutor.setUser(user);
+            tutor.setHidden(false);
+            tutor.setDeleted(false);
+            tutor.getTutorials().add(tutorial);
+
+            privilegedUserService.persist(tutor);
+            tutorial.getTutors().add(tutor);
+        }
+
+        tutorialService.persist(tutorial);
+        log.debug("Persisted tutorial " + tutorial.getName());
+
+        return tutorial;
+    }
+
+    /**
+     * Returns a user entity from the given TME object.
+     *
+     * @param obj StudentData TME object.
+     * @return User entity.
+     */
+    private User createUser(TMEObject obj) {
+        String email = obj.getString("email");
+        User user = userService.findByEmail(email);
+        if (user != null) {
+            return user;
+        }
+
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setFirstName(obj.getString("firstname"));
+        newUser.setLastName(obj.getString("lastname"));
+
+        // Teachers don't have a marticulation number
+        if (obj.has("matriculationNumber")) {
+            newUser.setMatriculationNumber(obj.getString("matriculationNumber"));
+        } else {
+            newUser.setMatriculationNumber(null);
+        }
+
+        String plainPasswd = obj.getString("password");
+        newUser.setPassword(BCrypt.hashpw(plainPasswd, BCrypt.gensalt()));
+
+        userService.persist(newUser);
+        log.debug(String.format("Persisted new user '%s' (%s)",
+                    newUser.toString(), newUser.getEmail()));
+
+        return newUser;
+    }
+
+    /**
+     * Finds the node with the given name and id in the TME objects list.
+     *
+     * @param name Node name.
+     * @param id Node id.
+     * @return Associated node or null.
+     */
+    private TMEObject findNode(String name, int id) {
+        for (TMEObject obj : parsedObjs) {
+            if (!obj.getName().equals(name)) {
+                continue;
+            } else if (obj.getId() == id) {
+                return obj;
+            }
+        }
+
+        return null;
     }
 
     /**

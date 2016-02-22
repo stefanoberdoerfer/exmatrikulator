@@ -127,9 +127,9 @@ public class TMEObject {
     public String getString(final String key) {
         final Object obj = get(key);
         if (obj instanceof String) {
-            return (String)obj;
+            return (String) obj;
         } else if (obj instanceof Number) {
-            return ((Number)obj).toString();
+            return ((Number) obj).toString();
         }
 
         throw new NoSuchElementException();
