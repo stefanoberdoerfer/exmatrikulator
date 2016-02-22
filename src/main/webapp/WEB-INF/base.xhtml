@@ -81,7 +81,6 @@
                     #{user.firstName} #{user.lastName} <span class="caret"></span>
                 </div>
                 <ul class="dropdown-menu dropdown-menu-right">
-                    <!-- Todo: Links setzen -->
                     <li><h:link value="#{msg['common.myProfile']}" outcome="/profile/show" /></li>
                     <li role="separator" class="divider"></li>
                     <li><h:commandLink value="#{msg['common.logout']}" action="#{navigation.logout}"/></li>
@@ -123,6 +122,18 @@
                         #{msg['common.backups']}
                     </h:link>
                 </li>
+                <li>
+                    <h:link outcome="/admin/logs">
+                        <i class="fa fa-terminal"></i>
+                        #{msg['settings.logs']}
+                    </h:link>
+                </li>
+                <li>
+                    <h:link outcome="/admin/import">
+                        <i class="fa fa-cloud-download"></i>
+                        #{msg['tme.import']}
+                    </h:link>
+                </li>
             </ui:fragment>
         </ul>
 
@@ -134,7 +145,9 @@
                         <li class='#{navigation.isOpen(course) ? "active" : ""}'>
                             <h:link>
                                 #{course.name}
-                                <h:panelGroup styleClass="course-icons pull-right">
+                                <h:panelGroup styleClass="course-icons pull-right"
+                                        rendered="#{userController.isLecturer(course) or
+                                        userController.isPrivilegedUser(course)}">
                                     <h:panelGroup rendered="#{userController.isLecturer(course)}">
                                         <i class="fa fa-user-md fa-lecturer"></i>
                                     </h:panelGroup>
@@ -150,6 +163,8 @@
                                     </h:panelGroup>
                                 </h:panelGroup>
                             </h:link>
+                            <ui:fragment rendered='#{userController.isLecturer(course) or
+                                        userController.isPrivilegedUser(course)}'>
                             <ul class="nav nav-pills nav-stacked sub-pills">
                                 <li><h:link outcome="/participants/students" value="#{msg['common.course.participants']}">
                                     <f:param name="course-id" value="#{course.courseId}"/>
@@ -164,6 +179,23 @@
                                     <f:param name="course-id" value="#{course.courseId}"/>
                                 </h:link></li>
                             </ul>
+                            </ui:fragment>
+                            <ui:fragment rendered='#{userController.isStudent(course)}'>
+                                <ul class="nav nav-pills nav-stacked sub-pills">
+                                    <li><h:link outcome="/participants/students" value="#{msg['common.course.participants']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                    <li><h:link outcome="/participants/students" value="#{msg['participationType.my']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                    <li><h:link outcome="/tutorialsGroups/overview" value="#{msg['courses.tutorialsGroups.my']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                    <li><h:link outcome="/grades/" value="#{msg['courses.grading.my']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                </ul>
+                            </ui:fragment>
                         </li>
                     </ui:repeat>
                 </ul>
@@ -173,9 +205,6 @@
     <div id="main">
         <ui:insert name="content"></ui:insert>
     </div>
-
-    <ui:insert name="modal"></ui:insert>
-    <h:panelGroup layout="block" rendered="#{showModal}" class="modal-backdrop fade in"></h:panelGroup>
 </h:body>
 </f:view>
 </html>
