@@ -25,130 +25,134 @@
         </div>
 
         <h:panelGroup id="tutorialList">
-          <ui:repeat var="tutorial" value="#{tutorialController.tutorials}">
-              <div class="row table-groups-header">
-                  <div class="col-xs-8">
-                      <h3>#{tutorial.name}</h3>
-                      <h4 class="table-groups-tutors">
-                          <strong>#{msg['common.tutors']}:</strong>
-                          <ui:repeat var="tutor" value="#{tutorial.tutors}">#{tutor.user}</ui:repeat>
-                      </h4>
-                  </div>
-                  <div class="col-xs-4 text-right">
-                      <div class="btn-group">
-                          <h:form>
-                            <p:commandLink update=":editTutorialForm"
-                              oncomplete="return exModal('tutorialEdit');"
-                              class="btn btn-default">
-                                <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
-                                <i class="fa fa-pencil"></i>
-                            </p:commandLink>
+        <p:tabView value="#{tutorialController.tutorials}" var="tutorial" scrollable="true">
+            <p:tab title="#{tutorial.name}">
 
-                            <p:commandLink update=":removeTutorialForm"
-                              oncomplete="return exModal('tutorialRemove');"
-                              class="btn btn-danger">
-                                <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
-                                <i class="fa fa-remove"></i>
-                            </p:commandLink>
-                          </h:form>
-                      </div>
-                  </div>
+            <div class="row table-groups-header">
+              <div class="col-xs-8">
+                <h3>#{tutorial.name}</h3>
+                <h4 class="table-groups-tutors">
+                  <strong>#{msg['common.tutors']}:</strong>
+                  <ui:repeat var="tutor" value="#{tutorial.tutors}">#{tutor.user}</ui:repeat>
+                </h4>
+              </div>
+
+              <div class="col-xs-4 text-right">
+                <div class="btn-group">
+                  <h:form>
+                    <p:commandLink update=":editTutorialForm"
+                        oncomplete="return exModal('tutorialEdit');"
+                        class="btn btn-default">
+                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                      <i class="fa fa-pencil"></i>
+                    </p:commandLink>
+
+                    <p:commandLink update=":removeTutorialForm"
+                        oncomplete="return exModal('tutorialRemove');"
+                        class="btn btn-danger">
+                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                      <i class="fa fa-remove"></i>
+                    </p:commandLink>
+                  </h:form>
                 </div>
+              </div>
+            </div>
 
-              <table class="table table-hover table-groups">
-                  <thead>
-                  <tr>
-                      <th class="table-groups-name">#{msg['groups.name']}</th>
-                      <th class="table-groups-students-name">#{msg['common.students']}</th>
-                      <th>#{msg['common.studentNumber']}</th>
-                      <th class="table-common-options-one"></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <ui:repeat var="student" value="#{tutorialController.studentsWithoutGroup(tutorial)}">
-                    <tr class="vert-align-middle">
-                        <td></td>
-                        <td>
-                          #{student.user}
-                        </td>
-                        <td>#{student.user.matriculationNumber}</td>
-                        <td class="text-right">
-                            <div class="btn-group">
-                                <h:form>
-                                  <p:commandLink
-                                    oncomplete="return exModal('studentRemove');"
-                                    class="btn btn-danger">
-                                      <f:actionListener binding="#{tutorialController.changeCurrentStudent(student)}" />
-                                      <i class="fa fa-remove"></i>
-                                  </p:commandLink>
-                                </h:form>
-                            </div>
-                        </td>
-                    </tr>
-                  </ui:repeat>
-                  <ui:repeat var="group" value="#{tutorial.groups}">
-                      <ui:repeat var="student" value="#{group.students}">
-                      <tr class="vert-align-middle">
-                          <td>
-                            <strong>#{group.name}</strong>
-                            <div class="btn-group pull-right">
-                              <h:form>
-                                <p:commandLink update=":editGroupForm"
-                                  oncomplete="return exModal('groupEdit');"
-                                  class="btn btn-default">
-                                    <f:actionListener binding="#{tutorialController.changeCurrentGroup(group)}" />
-                                    <i class="fa fa-pencil"></i>
-                                </p:commandLink>
+            <table class="table table-hover table-groups">
+              <thead>
+                <tr>
+                  <th class="table-groups-name">#{msg['groups.name']}</th>
+                  <th class="table-groups-students-name">#{msg['common.students']}</th>
+                  <th>#{msg['common.studentNumber']}</th>
+                  <th class="table-common-options-one"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <ui:repeat var="student" value="#{tutorialController.studentsWithoutGroup(tutorial)}">
+                <tr class="vert-align-middle">
+                  <td></td>
+                  <td>
+                    #{student.user}
+                  </td>
+                  <td>#{student.user.matriculationNumber}</td>
+                  <td class="text-right">
+                    <div class="btn-group">
+                      <h:form>
+                        <p:commandLink
+                            oncomplete="return exModal('studentRemove');"
+                            class="btn btn-danger">
+                          <f:actionListener binding="#{tutorialController.changeCurrentStudent(student)}" />
+                          <i class="fa fa-remove"></i>
+                        </p:commandLink>
+                      </h:form>
+                    </div>
+                  </td>
+                </tr>
+                </ui:repeat>
+                <ui:repeat var="group" value="#{tutorial.groups}">
+                <ui:repeat var="student" value="#{group.students}">
+                <tr class="vert-align-middle">
+                  <td>
+                    <strong>#{group.name}</strong>
+                    <div class="btn-group pull-right">
+                      <h:form>
+                        <p:commandLink update=":editGroupForm"
+                            oncomplete="return exModal('groupEdit');"
+                            class="btn btn-default">
+                          <f:actionListener binding="#{tutorialController.changeCurrentGroup(group)}" />
+                          <i class="fa fa-pencil"></i>
+                        </p:commandLink>
 
-                                <p:commandLink
-                                  oncomplete="return exModal('groupRemove');"
-                                  class="btn btn-danger">
-                                    <f:actionListener binding="#{tutorialController.changeCurrentGroup(group)}" />
-                                    <i class="fa fa-remove"></i>
-                                </p:commandLink>
-                              </h:form>
-                            </div>
-                          </td>
-                          <td>
-                            <strong>#{student.user}</strong>
-                          </td>
-                          <td>#{student.user.matriculationNumber}</td>
-                          <td class="text-right">
-                              <div class="btn-group">
-                                <h:form>
-                                  <p:commandLink
-                                    oncomplete="return exModal('studentRemove');"
-                                    class="btn btn-danger">
-                                      <f:actionListener binding="#{tutorialController.changeCurrentStudent(student)}" />
-                                      <i class="fa fa-remove"></i>
-                                  </p:commandLink>
-                                </h:form>
-                              </div>
-                          </td>
-                      </tr>
-                      </ui:repeat>
-                  </ui:repeat>
-                  </tbody>
-              </table>
+                        <p:commandLink
+                            oncomplete="return exModal('groupRemove');"
+                            class="btn btn-danger">
+                          <f:actionListener binding="#{tutorialController.changeCurrentGroup(group)}" />
+                          <i class="fa fa-remove"></i>
+                        </p:commandLink>
+                      </h:form>
+                    </div>
+                  </td>
+                  <td>
+                    <strong>#{student.user}</strong>
+                  </td>
+                  <td>#{student.user.matriculationNumber}</td>
+                  <td class="text-right">
+                    <div class="btn-group">
+                      <h:form>
+                        <p:commandLink
+                            oncomplete="return exModal('studentRemove');"
+                            class="btn btn-danger">
+                          <f:actionListener binding="#{tutorialController.changeCurrentStudent(student)}" />
+                          <i class="fa fa-remove"></i>
+                        </p:commandLink>
+                      </h:form>
+                    </div>
+                  </td>
+                </tr>
+                </ui:repeat>
+                </ui:repeat>
+              </tbody>
+            </table>
 
-              <div class="table-groups-buttons btn-group">
-                <h:form>
-                  <p:commandLink value="#{msg['groups.add']}"
+            <div class="table-groups-buttons btn-group">
+              <h:form>
+                <p:commandLink value="#{msg['groups.add']}"
                     oncomplete="return exModal('groupCreate');"
                     update=":createGroupForm"
                     class="btn btn-default">
-                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
-                  </p:commandLink>
+                  <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                </p:commandLink>
 
-                  <p:commandLink value="#{msg['students.add']}"
+                <p:commandLink value="#{msg['students.add']}"
                     oncomplete="return exModal('studentAdd');"
                     update=":addStudentForm"
                     class="btn btn-default">
-                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
-                  </p:commandLink>
-                </h:form>
-              </div>
-          </ui:repeat>
+                  <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                </p:commandLink>
+              </h:form>
+            </div>
+            </p:tab>
+          </p:tabView>
         </h:panelGroup>
 
         <ui:include src="/WEB-INF/modals/tutorials/create.xhtml" />
