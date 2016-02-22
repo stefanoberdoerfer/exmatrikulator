@@ -78,18 +78,18 @@ public class Semester {
         }
 
         String[] years = splited[1].split("/");
-        if (years.length != 2 || years[0].length() !=
-                years[1].length()) {
+        if (years.length != 2 || years[0].length()
+                != years[1].length()) {
             throw new SemesterFormatException("Invalid year length");
         }
 
         String fmt = null;
         if (years[0].length() == 2) {
-                fmt = "yy";
+            fmt = "yy";
         } else if (years[0].length() == 4) {
-                fmt = "yyyy";
+            fmt = "yyyy";
         } else {
-                throw new SemesterFormatException("Invalid year format");
+            throw new SemesterFormatException("Invalid year format");
         }
 
         Calendar cal = Calendar.getInstance();

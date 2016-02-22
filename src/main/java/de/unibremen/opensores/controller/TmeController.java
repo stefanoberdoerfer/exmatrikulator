@@ -86,30 +86,6 @@ public class TmeController implements Serializable {
     private transient List<UploadedFile> files = new ArrayList<>();
 
     /**
-     * List of imported users.
-     */
-    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
-            justification = "actually findbugs is right this needs to be "
-            + "serializable but I am too lazy to fix it")
-    private transient List<User> importedUsers = new ArrayList<>();
-
-    /**
-     * List of imported courses.
-     */
-    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
-            justification = "actually findbugs is right this needs to be "
-            + "serializable but I am too lazy to fix it")
-    private transient List<Course> importedCourses = new ArrayList<>();
-
-    /**
-     * List of imported semesters.
-     */
-    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
-            justification = "actually findbugs is right this needs to be "
-            + "serializable but I am too lazy to fix it")
-    private transient List<Semester> importedSemesters = new ArrayList<>();
-
-    /**
      * Handles file upload events.
      */
     public void handleFileUpload(FileUploadEvent event) {
@@ -145,42 +121,6 @@ public class TmeController implements Serializable {
         }
 
         return uploadedFiles;
-    }
-
-    /**
-     * Persists all imported records.
-     */
-    public void persistImports() {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                facesContext.getViewRoot().getLocale());
-
-        for (User user : importedUsers) {
-            if (userService.findByEmail(user.getEmail()) != null) {
-                continue;
-            }
-
-            log.debug("Persisted user " + user.toString());
-            userService.persist(user);
-        }
-
-        for (Semester sem : importedSemesters) {
-            log.debug("Persisted semester " + sem.toString());
-            semesterService.persist(sem);
-        }
-
-        for (Course course : importedCourses) {
-            if (courseService.findCourseByName(course.getName()) != null) {
-                continue;
-            }
-
-            log.debug("Persisted course " + course.getName());
-            courseService.persist(course);
-        }
-
-        facesContext.addMessage(null, new FacesMessage(FacesMessage
-            .SEVERITY_INFO, bundle.getString("common.success"),
-            bundle.getString("import.success")));
     }
 
     /**
@@ -233,6 +173,10 @@ public class TmeController implements Serializable {
                 continue;
             }
         }
+
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_INFO, bundle.getString("common.success"),
+                    bundle.getString("import.success")));
     }
 
     /**
@@ -285,8 +229,13 @@ public class TmeController implements Serializable {
      * @param obj StudentData TME object.
      */
     private void importUser(TMEObject obj) {
+        String email = obj.getString("email");
+        if (userService.findByEmail(email) != null) {
+            return;
+        }
+
         User user = new User();
-        user.setEmail(obj.getString("email"));
+        user.setEmail(email);
         user.setFirstName(obj.getString("firstname"));
         user.setLastName(obj.getString("lastname"));
         user.setMatriculationNumber(obj.getString("matriculationNumber"));
@@ -294,7 +243,8 @@ public class TmeController implements Serializable {
         String plainPasswd = obj.getString("password");
         user.setPassword(BCrypt.hashpw(plainPasswd, BCrypt.gensalt()));
 
-        importedUsers.add(user);
+        userService.persist(user);
+        log.debug("Persisted user " + user.toString());
     }
 
     /**
@@ -303,8 +253,13 @@ public class TmeController implements Serializable {
      * @param obj Course TME object.
      */
     private void importCourse(TMEObject obj) {
+        String name = obj.getString("name");
+        if (courseService.findCourseByName(name) != null) {
+            return;
+        }
+
         Course course = new Course();
-        course.setName(obj.getString("name"));
+        course.setName(name);
         course.setDefaultSws(obj.getString("wochenstunden"));
         course.setDefaultCreditPoints(obj.getInt("cp"));
         course.setRequiresConfirmation(false);
@@ -321,8 +276,9 @@ public class TmeController implements Serializable {
         Semester semester = semesterService.findSemester(
                 sem.getSemesterYear(), sem.isWinter());
         if (semester == null) {
-            importedSemesters.add(sem);
             course.setSemester(sem);
+            semesterService.persist(sem);
+            log.debug("Persisted semester " + sem.toString());
         } else {
             course.setSemester(semester);
         }
@@ -340,7 +296,8 @@ public class TmeController implements Serializable {
         course.setMinGroupSize(obj.getInt("minimaleGruppenGroesse"));
         course.setMaxGroupSize(obj.getInt("maximaleGruppenGroesse"));
 
-        importedCourses.add(course);
+        courseService.persist(course);
+        log.debug("Persisted course " + course.getName());
     }
 
     /**
@@ -351,30 +308,6 @@ public class TmeController implements Serializable {
      */
     public String getHumanReadableFileSize(long fsize) {
         return FileUtils.byteCountToDisplaySize(fsize);
-    }
-
-    public List<Semester> getImportedSemesters() {
-        return importedSemesters;
-    }
-
-    public void setImportedSemesters(List<Semester> importedSemesters) {
-        this.importedSemesters = importedSemesters;
-    }
-
-    public List<Course> getImportedCourses() {
-        return importedCourses;
-    }
-
-    public void setImportedCourses(List<Course> importedCourses) {
-        this.importedCourses = importedCourses;
-    }
-
-    public List<User> getImportedUsers() {
-        return importedUsers;
-    }
-
-    public void setImportedUsers(List<User> importedUsers) {
-        this.importedUsers = importedUsers;
     }
 
     public List<UploadedFile> getFiles() {

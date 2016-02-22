@@ -19,7 +19,7 @@ public class SemesterService extends GenericService<Semester> {
      *
      * @param year Semester year.
      * @param winter True if the semester should be a winter semester,
-     *   false otherwise.
+     *     false otherwise.
      * @return Semester with given parameters or false.
      */
     public Semester findSemester(int year, boolean winter) {
