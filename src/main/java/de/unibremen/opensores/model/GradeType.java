@@ -6,7 +6,7 @@ import java.math.BigDecimal;
  * Enumeration of the different GradeTypes of a Grade.
  */
 public enum GradeType {
-    Numeric(1), Boolean(2), Point(3), Percent(4);
+    Pabo(-1), Numeric(1), Boolean(2), Point(3), Percent(4);
 
     private Integer id;
 

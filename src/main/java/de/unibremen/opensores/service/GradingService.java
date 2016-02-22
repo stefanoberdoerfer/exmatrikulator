@@ -1,6 +1,7 @@
 
 package de.unibremen.opensores.service;
 
+import de.unibremen.opensores.exception.AlreadyGradedException;
 import de.unibremen.opensores.exception.InvalidGradeException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
@@ -401,7 +402,7 @@ public class GradingService extends GenericService<Grading> {
                                final String privateComment,
                                final String publicComment,
                                final boolean overwrite)
-            throws IllegalAccessException {
+            throws IllegalAccessException, AlreadyGradedException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
@@ -417,7 +418,7 @@ public class GradingService extends GenericService<Grading> {
 
         for (Student s : students) {
             if (s.getPaboGrade() != null && !overwrite) {
-                throw new IllegalStateException("GRADE_ALREADY_EXISTS");
+                throw new AlreadyGradedException();
             }
         }
         /*
@@ -446,7 +447,7 @@ public class GradingService extends GenericService<Grading> {
                                final String privateComment,
                                final String publicComment,
                                final boolean overwrite)
-            throws IllegalAccessException {
+            throws IllegalAccessException, AlreadyGradedException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
@@ -459,7 +460,7 @@ public class GradingService extends GenericService<Grading> {
         an exception so the ajax error function gets called.
          */
         if (student.getPaboGrade() != null && !overwrite) {
-            throw new IllegalStateException("GRADE_ALREADY_EXISTS");
+            throw new AlreadyGradedException();
         }
         /*
         Store the final grade
@@ -485,7 +486,8 @@ public class GradingService extends GenericService<Grading> {
                            final Exam exam, final Student student,
                            final String value, final String privateComment,
                            final String publicComment, final boolean overwrite)
-            throws IllegalAccessException, InvalidGradeException {
+            throws IllegalAccessException, InvalidGradeException,
+            AlreadyGradedException{
         /*
         Check if the user is a lecturer or tutors
          */
@@ -506,7 +508,7 @@ public class GradingService extends GenericService<Grading> {
         Grading grading = this.getGrading(student, exam);
 
         if (grading != null && !overwrite) {
-            throw new IllegalStateException("GRADE_ALREADY_EXISTS");
+            throw new AlreadyGradedException();
         }
         /*
         Check if the grading is valid
@@ -568,7 +570,7 @@ public class GradingService extends GenericService<Grading> {
             Grading grading = this.getGrading(s, exam);
 
             if (grading != null && !overwrite) {
-                throw new IllegalStateException("GRADE_ALREADY_EXISTS");
+                throw new IllegalStateException("");
             } else {
                 gradings.put(s, grading);
             }

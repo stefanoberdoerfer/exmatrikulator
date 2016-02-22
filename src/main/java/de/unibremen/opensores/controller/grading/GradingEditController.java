@@ -1,8 +1,10 @@
 package de.unibremen.opensores.controller.grading;
 
+import de.unibremen.opensores.exception.AlreadyGradedException;
 import de.unibremen.opensores.exception.InvalidGradeException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.Student;
@@ -39,9 +41,10 @@ public class GradingEditController {
     private Exam exam;
     private Student student;
     private String formGrading;
-    private String formPaboGrading;
     private String formPrivateComment;
     private String formPublicComment;
+    private boolean overwriting = false;
+    private Integer formGradeType;
 
     /**
      * CourseService for database transactions related to courses.
@@ -97,14 +100,6 @@ public class GradingEditController {
         return exam;
     }
 
-    public String getFormPaboGrading() {
-        return formPaboGrading;
-    }
-
-    public void setFormPaboGrading(String formPaboGrading) {
-        this.formPaboGrading = formPaboGrading;
-    }
-
     /**
      * Stores the grading for the given course.
      * @param course Course that is related to the exam
@@ -151,9 +146,12 @@ public class GradingEditController {
         try {
             log.debug("Using gradingService to store the grade");
 
+            final Boolean overwrite = overwriting;
+            overwriting = false;
+
             gradingService.storeGrade(course, user, exam, student,
                     formGrading, formPrivateComment, formPublicComment,
-                    true);
+                    overwrite);
         } catch (IllegalAccessException e) {
             if (e.getMessage().equals("NOT_GRADABLE")) {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -173,6 +171,12 @@ public class GradingEditController {
                         bundle.getString("gradings.invalidGrading")));
                 return;
             }
+        } catch (AlreadyGradedException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_WARN, bundle.getString("common.warning"),
+                    bundle.getString("gradings.overwriting")));
+            overwriting = true;
+            return;
         }
         /*
         Success
@@ -212,12 +216,15 @@ public class GradingEditController {
         Try to store the grade
          */
         try {
-            log.debug("Storing pabo grading: " + formPaboGrading);
-            PaboGrade paboGrade = PaboGrade.valueOf(formPaboGrading);
+            log.debug("Storing pabo grading: " + formGrading);
+            PaboGrade paboGrade = PaboGrade.valueOf(formGrading);
+
+            final Boolean overwrite = overwriting;
+            overwriting = false;
 
             gradingService.storePaboGrade(course, user, this.student,
                     paboGrade, formPrivateComment, formPublicComment,
-                    true);
+                    overwrite);
         } catch (IllegalAccessException e) {
             if (e.getMessage().equals("NOT_GRADABLE")) {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -235,6 +242,12 @@ public class GradingEditController {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
                     bundle.getString("gradings.invalidGrading")));
+            return;
+        } catch (AlreadyGradedException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_WARN, bundle.getString("common.warning"),
+                    bundle.getString("gradings.overwriting")));
+            overwriting = true;
             return;
         }
         /*
@@ -264,6 +277,8 @@ public class GradingEditController {
          */
         this.exam = exam;
         this.student = student;
+        this.overwriting = false;
+        this.formGradeType = exam.getGradeType();
 
         log.debug("Already graded? " + (grading != null ? "yes" : "no"));
 
@@ -285,8 +300,16 @@ public class GradingEditController {
      */
     public void setFinalGrading(final Student student) {
         this.student = student;
-        this.formPaboGrading = student.getPaboGrade();
+        this.formGrading = student.getPaboGrade();
         this.formPrivateComment = student.getPrivateComment();
         this.formPublicComment = student.getPublicComment();
+    }
+
+    public boolean isOverwriting() {
+        return overwriting;
+    }
+
+    public Integer getFormGradeType() {
+        return formGradeType;
     }
 }

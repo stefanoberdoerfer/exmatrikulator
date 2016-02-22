@@ -30,10 +30,28 @@
                 </div>
                 <div class="form-group">
                     <label class="col-xs-3 control-label">#{msg['common.result']}</label>
-                    <div class="col-xs-9">
+                    <h:panelGroup layout="block" class="col-xs-9"
+                                  rendered="#{gradingEditController.formGradeType == -1}">
+                        <h:selectOneMenu value="#{gradingEditController.formGrading}"
+                                         styleClass="form-control">
+                            <f:selectItems value="#{gradingEditController.paboGrades}" var="grade"
+                                           itemLabel="#{grade.gradeName}" itemValue="#{grade.name()}" />
+                        </h:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" class="col-xs-9"
+                                  rendered="#{gradingEditController.formGradeType != -1 and
+                                  gradingEditController.formGradeType != 2}">
                         <h:inputText styleClass="form-control"
                                      value="#{gradingEditController.formGrading}"/>
-                    </div>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" class="col-xs-9"
+                                  rendered="#{gradingEditController.formGradeType == 2}">
+                        <h:selectOneMenu value="#{gradingEditController.formGrading}"
+                                         styleClass="form-control">
+                            <f:selectItem itemValue="1.0" itemLabel="#{msg['gradings.passed']}" />
+                            <f:selectItem itemValue="0.0" itemLabel="#{msg['gradings.failed']}" />
+                        </h:selectOneMenu>
+                    </h:panelGroup>
                 </div>
                 <hr />
                 <div class="form-group">
@@ -61,12 +79,19 @@
                                      onclick="return exModal(':gradeEditExam');"
                                      styleClass="btn btn-default" />
                     <p:commandButton value="#{msg['common.saveChanges']}"
-                                     styleClass="btn btn-danger" id="gradeEditSubmit">
+                                     styleClass="btn btn-primary" id="gradeEditSubmit"
+                                     rendered="#{!gradingEditController.overwriting}">
                         <f:ajax listener="#{gradingEditController.updateExamGrading(gradingController.course)}"
                                 execute="@form"
                                 render="gradeEditExamForm gradingForm"
-                                onevent="gradingAjaxEvent"
-                                onerror="gradingAjaxError"
+                                />
+                    </p:commandButton>
+                    <p:commandButton value="#{msg['gradings.overwrite']}" type="button"
+                                     styleClass="btn btn-danger"
+                                     rendered="#{gradingEditController.overwriting}">
+                        <f:ajax listener="#{gradingEditController.updateExamGrading(gradingController.course)}"
+                                execute="@form"
+                                render="gradeEditExamForm gradingForm"
                                 />
                     </p:commandButton>
 
