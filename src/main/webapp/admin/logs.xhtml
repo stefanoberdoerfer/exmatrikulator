@@ -32,6 +32,7 @@
             </div>
             <div class="form-group">
                 <p:dataTable id="logTbl"
+                             widgetVar="logsTable"
                              value="#{logController.logs}"
                              var="log"
                              filteredValue="#{logController.filteredLogs}"
@@ -93,6 +94,19 @@
                               filterBy="#{log.actionDescription}"
                               sortBy="#{log.actionDescription}">
                         <h:outputText value="#{log.actionDescription}"/>
+                    </p:column>
+                    <p:column headerText="#{msg['common.course']}"
+                              filterMatchMode="exact"
+                              filterBy="#{log.courseId}"
+                              sortBy="#{log.courseId}">
+                      <f:facet name="filter">
+                          <p:selectOneMenu onchange="PF('logsTable').filter()"
+                              converter="#{courseConverter}" >
+                            <f:selectItems value="#{logController.courses}" var="course"
+                              itemValue="#{course}" itemLabel="#{course.name}" />
+                          </p:selectOneMenu>
+                      </f:facet>
+                      <h:outputText value="#{log.courseId}" /> <!-- TODO use a converter here too -->
                     </p:column>
                 </p:dataTable>
             </div>

@@ -80,6 +80,11 @@ public class LogController {
     private Course course;
 
     /**
+     * List of all available courses.
+     */
+    private List<Course> courses;
+
+    /**
      * A list of the raw logs unfiltered by dates or PrimeFaces.
      */
     private List<Log> rawLogs = null;
@@ -122,13 +127,15 @@ public class LogController {
 
         user = (User) exContext.getSessionMap().get("user");
         if (user.hasGlobalRole(GlobalRole.ADMIN)) {
+            courses = courseService.listCourses();
             rawLogs = logService.listLogs();
+
             resetDateRange();
             return;
         }
 
         course = courseService.findCourseById(req.getParameter(HTTP_PARAM_COURSE_ID));
-        if (course == null || user == null) {
+        if (course == null) {
             try {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             } catch (IOException e) {
@@ -264,5 +271,13 @@ public class LogController {
 
     public void setEndDate(Date endDate) {
         this.endDate = new Date(endDate.getTime());
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
     }
 }
