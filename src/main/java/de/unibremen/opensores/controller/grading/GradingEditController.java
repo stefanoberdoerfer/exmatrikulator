@@ -273,7 +273,7 @@ public class GradingEditController {
         /*
         Load the grading
         */
-        Grading grading = gradingService.getGrading(student, exam);
+        final Grading grading = gradingService.getGrading(student, exam);
         /*
         Set the data
          */

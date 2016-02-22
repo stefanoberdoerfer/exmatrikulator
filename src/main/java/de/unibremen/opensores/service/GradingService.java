@@ -487,7 +487,7 @@ public class GradingService extends GenericService<Grading> {
                            final String value, final String privateComment,
                            final String publicComment, final boolean overwrite)
             throws IllegalAccessException, InvalidGradeException,
-            AlreadyGradedException{
+            AlreadyGradedException {
         /*
         Check if the user is a lecturer or tutors
          */

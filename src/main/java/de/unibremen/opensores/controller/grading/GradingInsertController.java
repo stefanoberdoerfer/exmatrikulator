@@ -314,8 +314,7 @@ public class GradingInsertController {
 
         if (formExam == -1) {
             formGradeType = GradeType.Pabo.getId();
-        }
-        else if (formExam != 0) {
+        } else if (formExam != 0) {
             Exam exam = gradingService.getExam(course, formExam);
 
             if (exam != null) {

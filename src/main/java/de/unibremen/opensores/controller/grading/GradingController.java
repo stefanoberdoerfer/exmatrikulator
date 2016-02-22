@@ -46,7 +46,7 @@ public class GradingController {
     private Course course;
 
     /**
-     * Currently logged in user
+     * Currently logged in user.
      */
     private User user;
 
