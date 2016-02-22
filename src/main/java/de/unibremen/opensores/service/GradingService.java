@@ -1,6 +1,7 @@
 
 package de.unibremen.opensores.service;
 
+import de.unibremen.opensores.exception.AlreadyGradedException;
 import de.unibremen.opensores.exception.InvalidGradeException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
@@ -85,16 +86,32 @@ public class GradingService extends GenericService<Grading> {
     /**
      * Returns all students of a course.
      * @param course Course to load the students
+     * @param corrector Corrector who wants to see the students
      * @return List of Students or null
      */
-    public List<Student> getStudents(Course course) {
-        List<Student> s = em.createQuery("SELECT DISTINCT s "
-                        + "FROM Student s "
-                        + "WHERE s.course.courseId = :courseId "
-                        + "AND s.isConfirmed = true",
-                    Student.class)
-                .setParameter("courseId", course.getCourseId())
-                .getResultList();
+    public List<Student> getStudents(Course course, User corrector) {
+        List<Student> s;
+
+        if (userService.hasCourseRole(corrector, "LECTURER", course)) {
+            s = em.createQuery("SELECT DISTINCT s "
+                            + "FROM Student s "
+                            + "WHERE s.course.courseId = :courseId "
+                            + "AND s.isConfirmed = true",
+                        Student.class)
+                    .setParameter("courseId", course.getCourseId())
+                    .getResultList();
+        } else {
+            s = em.createQuery("SELECT DISTINCT s "
+                            + "FROM Student s "
+                            + "JOIN s.tutorial.tutors AS t "
+                            + "WHERE s.course.courseId = :courseId "
+                            + "AND s.isConfirmed = true "
+                            + "AND t.user.userId = :correctorId",
+                        Student.class)
+                    .setParameter("courseId", course.getCourseId())
+                    .setParameter("correctorId", corrector.getUserId())
+                    .getResultList();
+        }
 
         return (s.isEmpty() ? null : s);
     }
@@ -103,22 +120,45 @@ public class GradingService extends GenericService<Grading> {
      * Searches the students for the given data. Searches the e-mail, name
      * and matriculation number.
      * @param course Course to load the students
+     * @param corrector Corrector who wants to see the students
      * @param search String to search for
      * @return List of Students or null
      */
-    public List<Student> getStudents(Course course, String search) {
-        List<Student> ls = em.createQuery("SELECT DISTINCT s "
-                        + "FROM Student s "
-                        + "JOIN s.user AS u "
-                        + "JOIN s.course AS c WITH c.courseId = :cid "
-                        + "WHERE lower(u.email) LIKE :search "
-                        + "OR lower(concat(u.firstName, ' ', u.lastName)) "
-                        + "LIKE :search "
-                        + "OR u.matriculationNumber LIKE :search",
-                    Student.class)
-                .setParameter("cid", course.getCourseId())
-                .setParameter("search", "%" + search.toLowerCase() + "%")
-                .getResultList();
+    public List<Student> getStudents(Course course, User corrector, String search) {
+        List<Student> ls;
+
+        if (userService.hasCourseRole(corrector, "LECTURER", course)) {
+            ls = em.createQuery("SELECT DISTINCT s "
+                            + "FROM Student s "
+                            + "JOIN s.user AS u "
+                            + "JOIN s.course AS c WITH c.courseId = :cid "
+                            + "WHERE (lower(u.email) LIKE :search "
+                            + "OR lower(concat(u.firstName, ' ', u.lastName)) "
+                            + "LIKE :search "
+                            + "OR u.matriculationNumber LIKE :search) "
+                            + "AND s.isConfirmed = TRUE",
+                        Student.class)
+                    .setParameter("cid", course.getCourseId())
+                    .setParameter("search", "%" + search.toLowerCase() + "%")
+                    .getResultList();
+        } else {
+            ls = em.createQuery("SELECT DISTINCT s "
+                            + "FROM Student s "
+                            + "JOIN s.tutorial.tutors AS t "
+                            + "JOIN s.user AS u "
+                            + "JOIN s.course AS c WITH c.courseId = :cid "
+                            + "WHERE (lower(u.email) LIKE :search "
+                            + "OR lower(concat(u.firstName, ' ', u.lastName)) "
+                            + "LIKE :search "
+                            + "OR u.matriculationNumber LIKE :search) "
+                            + "AND s.isConfirmed = TRUE "
+                            + "AND t.user.userId = :correctorId",
+                        Student.class)
+                    .setParameter("cid", course.getCourseId())
+                    .setParameter("search", "%" + search.toLowerCase() + "%")
+                    .setParameter("correctorId", corrector.getUserId())
+                    .getResultList();
+        }
 
         return (ls.isEmpty() ? null : ls);
     }
@@ -126,16 +166,32 @@ public class GradingService extends GenericService<Grading> {
     /**
      * Returns all groups of a course.
      * @param course Course to load the students
+     * @param corrector Corrector who wants to see the students
      * @return List of Students or null
      */
-    public List<Group> getGroups(Course course) {
-        List<Group> s = em.createQuery("SELECT DISTINCT g "
-                        + "FROM Group g "
-                        + "WHERE g.course.courseId = :courseId "
-                        + "ORDER BY g.name ASC",
+    public List<Group> getGroups(Course course, User corrector) {
+        List<Group> s;
+
+        if (userService.hasCourseRole(corrector, "LECTURER", course)) {
+            s = em.createQuery("SELECT DISTINCT g "
+                            + "FROM Group g "
+                            + "WHERE g.course.courseId = :courseId "
+                            + "ORDER BY g.name ASC",
                     Group.class)
-                .setParameter("courseId", course.getCourseId())
-                .getResultList();
+                    .setParameter("courseId", course.getCourseId())
+                    .getResultList();
+        } else {
+            s = em.createQuery("SELECT DISTINCT g "
+                            + "FROM Group g "
+                            + "JOIN g.tutorial.tutors AS t "
+                            + "WHERE g.course.courseId = :courseId "
+                            + "AND t.user.userId = :correctorId "
+                            + "ORDER BY g.name ASC",
+                    Group.class)
+                    .setParameter("courseId", course.getCourseId())
+                    .setParameter("correctorId", corrector.getUserId())
+                    .getResultList();
+        }
 
         return (s.isEmpty() ? null : s);
     }
@@ -346,7 +402,7 @@ public class GradingService extends GenericService<Grading> {
                                final String privateComment,
                                final String publicComment,
                                final boolean overwrite)
-            throws IllegalAccessException {
+            throws IllegalAccessException, AlreadyGradedException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
@@ -362,7 +418,7 @@ public class GradingService extends GenericService<Grading> {
 
         for (Student s : students) {
             if (s.getPaboGrade() != null && !overwrite) {
-                throw new IllegalStateException("GRADE_ALREADY_EXISTS");
+                throw new AlreadyGradedException();
             }
         }
         /*
@@ -391,7 +447,7 @@ public class GradingService extends GenericService<Grading> {
                                final String privateComment,
                                final String publicComment,
                                final boolean overwrite)
-            throws IllegalAccessException {
+            throws IllegalAccessException, AlreadyGradedException {
         /*
         Check if the user is a lecturer. Only lecturers may change final
         grades.
@@ -404,7 +460,7 @@ public class GradingService extends GenericService<Grading> {
         an exception so the ajax error function gets called.
          */
         if (student.getPaboGrade() != null && !overwrite) {
-            throw new IllegalStateException("GRADE_ALREADY_EXISTS");
+            throw new AlreadyGradedException();
         }
         /*
         Store the final grade
@@ -430,7 +486,8 @@ public class GradingService extends GenericService<Grading> {
                            final Exam exam, final Student student,
                            final String value, final String privateComment,
                            final String publicComment, final boolean overwrite)
-            throws IllegalAccessException, InvalidGradeException {
+            throws IllegalAccessException, InvalidGradeException,
+            AlreadyGradedException {
         /*
         Check if the user is a lecturer or tutors
          */
@@ -451,7 +508,7 @@ public class GradingService extends GenericService<Grading> {
         Grading grading = this.getGrading(student, exam);
 
         if (grading != null && !overwrite) {
-            throw new IllegalStateException("GRADE_ALREADY_EXISTS");
+            throw new AlreadyGradedException();
         }
         /*
         Check if the grading is valid
@@ -513,7 +570,7 @@ public class GradingService extends GenericService<Grading> {
             Grading grading = this.getGrading(s, exam);
 
             if (grading != null && !overwrite) {
-                throw new IllegalStateException("GRADE_ALREADY_EXISTS");
+                throw new IllegalStateException("");
             } else {
                 gradings.put(s, grading);
             }

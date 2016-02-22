@@ -6,7 +6,7 @@ import java.math.BigDecimal;
  * Enumeration of the different GradeTypes of a Grade.
  */
 public enum GradeType {
-    Numeric(1), Boolean(2), Point(3), Percent(4);
+    Pabo(-1), Numeric(1), Boolean(2), Point(3), Percent(4);
 
     private Integer id;
 
@@ -42,6 +42,22 @@ public enum GradeType {
             case Percent:
                 return value.compareTo(new BigDecimal("0")) >= 0
                         && value.compareTo(new BigDecimal("100")) <= 0;
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Returns if the given value can be considered as passed.
+     * @param value Value to check
+     * @return True if passed
+     */
+    public boolean hasPassed(BigDecimal value) {
+        switch (this) {
+            case Boolean:
+                return value != null
+                       && value.compareTo(new BigDecimal("1")) == 0;
 
             default:
                 return false;

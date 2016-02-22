@@ -7,9 +7,6 @@
     <p:dialog header="#{msg['gradings.insert']}" appendTo="@(body)" widgetVar="gradeInsert" modal="true">
         <h:form id="gradeInsertForm">
             <ui:include src="/WEB-INF/alerts.xhtml" />
-            <div class="alert alert-warning" id="gradeInsertOverwriteHint">
-                #{msg['gradings.overwriting']}
-            </div>
             <h:panelGroup layout="block" styleClass="modal-body">
                 <div class="form-group">
                     <label for="gradeExamination" class="col-xs-3 control-label">
@@ -22,6 +19,9 @@
                             <f:selectItem itemValue="0" itemLabel="- - #{msg['common.pleaseSelect']} - -" />
                             <f:selectItems value="#{gradingController.course.exams}" var="exam"
                                            itemLabel="#{exam.name}" itemValue="#{exam.examId}" />
+                            <f:ajax listener="#{gradingInsertController.changedExamSelection(gradingController.course)}"
+                                    execute="@form"
+                                    render="gradeInsertForm" />
                         </h:selectOneMenu>
                     </div>
                 </div>
@@ -32,7 +32,11 @@
                     <div class="col-xs-9" id="gradeStudent">
                         <h:inputText styleClass="form-control"
                                      value="#{gradingInsertController.formStudent}"
-                                     h5:autofocus="true" h5:autocomplete="off"/>
+                                     h5:autofocus="true" h5:autocomplete="off">
+                            <f:ajax listener="#{gradingInsertController.userSelectionChanged}"
+                                    execute="@form"
+                                    render="gradeInsertForm" />
+                        </h:inputText>
                         <div class="alert alert-info">
                             #{msg['gradings.insert.student']}
                         </div>
@@ -40,17 +44,29 @@
                 </div>
                 <div class="form-group">
                     <label class="col-xs-3 control-label">#{msg['common.result']}</label>
-                    <div class="col-xs-9" id="pabo-grade-selection">
-                        <h:selectOneMenu value="#{gradingInsertController.formPaboGrading}"
+                    <h:panelGroup layout="block" class="col-xs-9"
+                                  rendered="#{gradingInsertController.formGradeType == -1}">
+                        <h:selectOneMenu value="#{gradingInsertController.formGrading}"
                                          styleClass="form-control">
                             <f:selectItems value="#{gradingInsertController.paboGrades}" var="grade"
                                            itemLabel="#{grade.gradeName}" itemValue="#{grade.name()}" />
                         </h:selectOneMenu>
-                    </div>
-                    <div class="col-xs-9" id="other-grade-selection">
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" class="col-xs-9"
+                                  rendered="#{gradingInsertController.formGradeType != -1 and
+                                  gradingInsertController.formGradeType != 2}">
                         <h:inputText styleClass="form-control"
-                                     value="#{gradingInsertController.formGrading}"/>
-                    </div>
+                                     value="#{gradingInsertController.formGrading}"
+                                     h5:autocomplete="off"/>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" class="col-xs-9"
+                                  rendered="#{gradingInsertController.formGradeType == 2}">
+                        <h:selectOneMenu value="#{gradingInsertController.formGrading}"
+                                         styleClass="form-control">
+                            <f:selectItem itemValue="1.00" itemLabel="#{msg['gradings.passed']}" />
+                            <f:selectItem itemValue="0.00" itemLabel="#{msg['gradings.failed']}" />
+                        </h:selectOneMenu>
+                    </h:panelGroup>
                 </div>
                 <hr />
                 <div class="form-group">
@@ -78,21 +94,21 @@
                                      onclick="return exModal(':gradeInsert');"
                                      styleClass="btn btn-default" />
                     <p:commandButton value="#{msg['gradings.insert']}"
-                                     styleClass="btn btn-primary" id="gradeInsertSubmit">
-                        <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course, false)}"
+                                     styleClass="btn btn-primary" id="gradeInsertSubmit"
+                                     rendered="#{!gradingInsertController.overwriting}">
+                        <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course)}"
                                 execute="@form"
                                 render="gradeInsertForm gradingForm"
-                                onevent="gradingAjaxEvent"
-                                onerror="gradingAjaxError"
+                                onevent="autofocusGradeInsert"
                                 />
                     </p:commandButton>
                     <p:commandButton value="#{msg['gradings.overwrite']}" type="button"
-                                     styleClass="btn btn-danger">
-                        <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course, true)}"
+                                     styleClass="btn btn-danger"
+                                     rendered="#{gradingInsertController.overwriting}">
+                        <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course)}"
                                 execute="@form"
                                 render="gradeInsertForm gradingForm"
-                                onevent="gradingAjaxEvent"
-                                onerror="gradingAjaxError"
+                                onevent="autofocusGradeInsert"
                                 />
                     </p:commandButton>
 

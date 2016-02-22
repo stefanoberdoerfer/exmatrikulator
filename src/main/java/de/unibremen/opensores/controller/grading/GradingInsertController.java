@@ -1,8 +1,10 @@
 package de.unibremen.opensores.controller.grading;
 
+import de.unibremen.opensores.exception.AlreadyGradedException;
 import de.unibremen.opensores.exception.InvalidGradeException;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.Student;
@@ -19,6 +21,7 @@ import javax.faces.context.FacesContext;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
@@ -41,10 +44,11 @@ public class GradingInsertController {
     private Long formExam;
     private Long formGroup;
     private String formStudent;
-    private String formPaboGrading;
     private String formGrading;
     private String formPrivateComment;
     private String formPublicComment;
+    private boolean overwriting = false;
+    private Integer formGradeType = GradeType.Pabo.getId();
 
     /**
      * CourseService for database transactions related to courses.
@@ -84,14 +88,6 @@ public class GradingInsertController {
         return this.formStudent;
     }
 
-    public void setFormPaboGrading(String formPaboGrading) {
-        this.formPaboGrading = formPaboGrading;
-    }
-
-    public String getFormPaboGrading() {
-        return this.formPaboGrading;
-    }
-
     public String getFormGrading() {
         return formGrading;
     }
@@ -127,9 +123,8 @@ public class GradingInsertController {
     /**
      * Stores the group grading for the given course.
      * @param course Course that is related to the exam
-     * @param overwrite If true, overwrite an existing grade
      */
-    public void storeGroupGrading(Course course, boolean overwrite) {
+    public void storeGroupGrading(Course course) {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
@@ -145,6 +140,8 @@ public class GradingInsertController {
         /*
         Try to store the grade
          */
+        Exam exam = null;
+
         try {
             Group group = gradingService.getGroup(course, formGroup);
 
@@ -155,15 +152,18 @@ public class GradingInsertController {
                 return;
             }
 
+            final Boolean overwrite = overwriting;
+            overwriting = false;
+
             if (formExam == -1) {
-                log.debug("Storing pabo grading: " + formPaboGrading);
-                PaboGrade paboGrade = PaboGrade.valueOfName(formPaboGrading);
+                log.debug("Storing pabo grading: " + formGrading);
+                PaboGrade paboGrade = PaboGrade.valueOf(formGrading);
 
                 gradingService.storePaboGrade(course, user, group,
                         paboGrade, formPrivateComment, formPublicComment,
                         overwrite);
             } else {
-                Exam exam = gradingService.getExam(course, formExam);
+                exam = gradingService.getExam(course, formExam);
 
                 if (exam == null) {
                     facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -188,12 +188,43 @@ public class GradingInsertController {
             }
 
             return;
-        } catch (InvalidGradeException e) {
+        } catch (InvalidGradeException | IllegalArgumentException e) {
+            String errorMessage = bundle.getString("gradings.invalidGrading");
+
+            if (exam != null) {
+                if (exam.hasGradeType(GradeType.Boolean)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.boolean");
+                } else if (exam.hasGradeType(GradeType.Numeric)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.numeric");
+                } else if (exam.hasGradeType(GradeType.Percent)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.percent");
+                } else if (exam.hasGradeType(GradeType.Point)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.point");
+
+                    errorMessage = MessageFormat.format(errorMessage,
+                            exam.getMaxPoints());
+                }
+            }
+
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("gradings.invalidGrading")));
+                    errorMessage));
+            return;
+        } catch (AlreadyGradedException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_WARN, bundle.getString("common.warning"),
+                    bundle.getString("gradings.overwriting")));
+            overwriting = true;
             return;
         }
+        /*
+        Reset the form values
+         */
+        resetFormValues();
         /*
         Success
          */
@@ -205,9 +236,8 @@ public class GradingInsertController {
     /**
      * Stores the student grading for the given course.
      * @param course Course that is related to the exam
-     * @param overwrite If true, overwrite an existing grade
      */
-    public void storeStudentGrading(Course course, boolean overwrite) {
+    public void storeStudentGrading(Course course) {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
@@ -223,6 +253,8 @@ public class GradingInsertController {
         /*
         Try to store the grade
          */
+        Exam exam = null;
+
         try {
             Student student = gradingService.findStudent(course,
                     formStudent);
@@ -234,15 +266,18 @@ public class GradingInsertController {
                 return;
             }
 
+            final Boolean overwrite = overwriting;
+            overwriting = false;
+
             if (formExam == -1) {
-                log.debug("Storing pabo grading: " + formPaboGrading);
-                PaboGrade paboGrade = PaboGrade.valueOf(formPaboGrading);
+                log.debug("Storing pabo grading: " + formGrading);
+                PaboGrade paboGrade = PaboGrade.valueOf(formGrading);
 
                 gradingService.storePaboGrade(course, user, student,
                         paboGrade, formPrivateComment, formPublicComment,
                         overwrite);
             } else {
-                Exam exam = gradingService.getExam(course, formExam);
+                exam = gradingService.getExam(course, formExam);
 
                 if (exam == null) {
                     facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -267,17 +302,107 @@ public class GradingInsertController {
             }
 
             return;
-        } catch (InvalidGradeException e) {
+        } catch (InvalidGradeException | IllegalArgumentException e) {
+            String errorMessage = bundle.getString("gradings.invalidGrading");
+
+            if (exam != null) {
+                if (exam.hasGradeType(GradeType.Boolean)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.boolean");
+                } else if (exam.hasGradeType(GradeType.Numeric)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.numeric");
+                } else if (exam.hasGradeType(GradeType.Percent)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.percent");
+                } else if (exam.hasGradeType(GradeType.Point)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.point");
+
+                    errorMessage = MessageFormat.format(errorMessage,
+                            exam.getMaxPoints());
+                }
+            }
+
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("gradings.invalidGrading")));
+                    errorMessage));
+            return;
+        } catch (AlreadyGradedException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_WARN, bundle.getString("common.warning"),
+                    bundle.getString("gradings.overwriting")));
+            overwriting = true;
             return;
         }
+        /*
+        Reset values
+         */
+        resetFormValues();
         /*
         Success
          */
         facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_INFO, bundle.getString("common.success"),
                 bundle.getString("gradings.stored")));
+    }
+
+    public boolean isOverwriting() {
+        return overwriting;
+    }
+
+    /**
+     * Called whenever the exam selection changes. Also resets the overwriting
+     * flag.
+     * @param course Course in which to search for the exam.
+     */
+    public void changedExamSelection(Course course) {
+        log.debug("Exam selection changed: " + formExam);
+
+        if (formExam == -1) {
+            formGradeType = GradeType.Pabo.getId();
+        } else if (formExam != 0) {
+            Exam exam = gradingService.getExam(course, formExam);
+
+            if (exam != null) {
+                formGradeType = exam.getGradeType();
+            } else {
+                formGradeType = null;
+            }
+        } else {
+            formGradeType = null;
+        }
+
+        formGrading = "";
+        overwriting = false;
+
+        log.debug("New grade type: " + formGradeType);
+    }
+
+    public void userSelectionChanged() {
+        log.debug("User selection changed");
+        overwriting = false;
+    }
+
+    public void groupSelectionChanged() {
+        log.debug("Group selection changed");
+        overwriting = false;
+    }
+
+    public Integer getFormGradeType() {
+        return formGradeType;
+    }
+
+    /**
+     * Resets the form values. Exam will not be reset so the user can keep
+     * on grading.
+     */
+    private void resetFormValues() {
+        formGroup = null;
+        formStudent = "";
+        formGrading = "";
+        formPrivateComment = "";
+        formPublicComment = "";
+        overwriting = false;
     }
 }

@@ -131,14 +131,17 @@
         </div>
         <div class="form-group">
             <h:form id="studentsForm" rendered="#{scriptController.userIsLecturer}">
-                <h2>#{msg['gradingFormula.studentsOfParticipationType']}
+                <div class="pull-right btn-group">
                     <p:commandLink styleClass="btn btn-primary"
                                    value="#{msg['gradingFormula.saveFinalGrades']}">
                         <f:actionListener binding="#{scriptController.updateStudentsFrom
                                                     (scriptController.activeParticipationType)}"/>
                     </p:commandLink>
-                </h2>
-                <h4>#{msg['gradingFormula.saveFinalGradesExplanation']}</h4>
+                </div>
+                <h2>#{msg['gradingFormula.studentsOfParticipationType']}</h2>
+                <h:panelGroup layout="block" styleClass="alert alert-info">
+                    #{msg['gradingFormula.saveFinalGradesExplanation']}"
+                </h:panelGroup>
                 <p:dataTable id="studentGradesTbl"
                              rendered="#{scriptController.userIsLecturer}"
                              value="#{scriptController.getGradedStudentsFrom(scriptController.activeParticipationType)}"
@@ -149,13 +152,11 @@
                              {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="20,50,100"
                              emptyMessage="#{msg['gradingFormula.noStudentsOfPartType']}">
-                    <p:column headerText="#{msg['common.name']}">
-                        <div align="center">
-                            <h:outputText value="#{student.user.toString()}"/>
-                        </div>
+                    <p:column headerText="#{msg['common.name']}" styleClass="text-center">
+                        <h:outputText value="#{student.user.toString()}"/>
                     </p:column>
-                    <p:column headerText="#{msg['gradingFormula.finalGrade']}">
-                        <h:outputText value="#{student.paboGrade == null ? '' : student.paboGrade}"/>
+                    <p:column headerText="#{msg['gradingFormula.finalGrade']}" styleClass="text-center">
+                        <h:outputText value="#{scriptController.getPaboGradeName(student.paboGrade)}"/>
                     </p:column>
                     <c:forEach items="#{scriptController.activeParticipationType.course.exams}"
                                var="exam">
@@ -163,14 +164,11 @@
                                             .concat(' &#10; '
                                             .concat(scriptController
                                             .gradeLabelFromId(exam.gradeType)))}"
-                                  escape="false" style="white-space:pre-line;">
-                            <div align="center">
-                                <h:outputText value="#{(student.getGradingFromExam(exam) eq null )
-                                            ? ''
-                                            : student.getGradingFromExam(exam).grade.value}">
-                                    <f:converter converterId="javax.faces.BigDecimal"/>
-                                </h:outputText>
-                            </div>
+                                  escape="false" style="white-space:pre-line;" styleClass="text-center">
+                            <h:outputText rendered="#{student.getGradingFromExam(exam) != null}"
+                                          value="#{student.getGradingFromExam(exam).grade.value}">
+                                <f:converter converterId="javax.faces.BigDecimal"/>
+                            </h:outputText>
                         </p:column>
                     </c:forEach>
                 </p:dataTable>

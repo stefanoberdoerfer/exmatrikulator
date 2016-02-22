@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
@@ -15,6 +15,7 @@ import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradeFormulaService;
+import de.unibremen.opensores.service.GradeService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.ParticipationTypeService;
 import de.unibremen.opensores.service.StudentService;
@@ -210,6 +211,12 @@ public class GradeScriptController {
      * The GradeFormulaService fro database transaction related to gradeFornulas.
      */
     private GradeFormulaService gradeFormulaService;
+
+    /**
+     * GradeService for database transactions related to grades.
+     */
+    @EJB
+    private GradeService gradeService;
 
     /**
      * The ResourceBundle for string properties.
@@ -506,7 +513,7 @@ public class GradeScriptController {
                 entry.getKey().setPaboGrade(null);
                 allValidPaboGradesSet = false;
             } else {
-                entry.getKey().setPaboGrade(((PaboGrade) paboGradeObj).getGradeName());
+                entry.getKey().setPaboGrade(((PaboGrade) paboGradeObj).name());
             }
         }
 
@@ -1181,5 +1188,8 @@ public class GradeScriptController {
         return userIsLecturer;
     }
 
+    public String getPaboGradeName(final String name) {
+        return gradeService.paboGradeDisplayName(name);
+    }
 
 }

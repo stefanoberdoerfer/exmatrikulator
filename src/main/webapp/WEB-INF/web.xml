@@ -89,6 +89,11 @@
 
   <filter-mapping>
     <filter-name>LoginFilter</filter-name>
+    <url-pattern>/grading/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>LoginFilter</filter-name>
     <url-pattern>/profile/*</url-pattern>
   </filter-mapping>
 

@@ -18,13 +18,18 @@
             <div class="btn-group main-buttons pull-right">
                 <h:form styleClass="section-search">
                     <h:inputText styleClass="form-control" h5:placeholder="#{msg['gradings.search.students']}"
-                            value="#{gradingController.searchValue}"/>
-                    <h:commandLink styleClass="btn btn-default">
+                            value="#{gradingController.searchValue}" h5:autocomplete="off" />
+                    <h:commandLink styleClass="btn btn-default" id="gradingSearchBtn">
+                        <f:param name="course-id" value="#{gradingController.course.courseId}" />
                         <i class="fa fa-search"></i>
                     </h:commandLink>
+
+                    <p:defaultCommand target="gradingSearchBtn" />
                 </h:form>
-                <h:link onclick="return exModal('gradeCalculateFinal');" value="#{msg['gradings.finalGrade.calculate']}"
-                        class="btn btn-default" />
+                <h:link outcome="/settings/formula/overview" value="#{msg['gradings.finalGrade.calculate']}"
+                        class="btn btn-default">
+                        <f:param name="course-id" value="#{gradingController.course.courseId}"/>
+                </h:link>
                 <h:link onclick="return exModal('gradeInsert');" value="#{msg['gradings.insert']}"
                         class="btn btn-primary" />
             </div>
@@ -67,24 +72,68 @@
                     <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
                     <p:commandLink action="#{gradingEditController.setFinalGrading(student)}"
                                    oncomplete="return exModal('gradeEditFinal');" update="gradeEditFinalForm"
-                                   styleClass="pull-right">
-                        <i class="fa fa-pencil"></i>
+                                   styleClass="pull-right"
+                                   rendered="#{userController.isLecturer(gradingController.course)}"><i
+                            class="fa fa-pencil"></i>
                     </p:commandLink>
-                    <strong>#{gradingController.getPaboGradeName(student.paboGrade)}</strong>
+                    <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course)}"><i
+                            class="fa fa-lock"></i>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{userController.isLecturer(gradingController.course)}">
+                        <strong>#{gradingController.getPaboGradeName(student.paboGrade)}</strong>
+                    </h:panelGroup>
                 </p:column>
 
                 <p:rowExpansion>
                     <div class="row student-gradings">
                         <ui:repeat value="#{gradingController.course.exams}" var="exam">
-                            <div class="col-xs-2 grading">
+                            <h:panelGroup layout="block" class="col-xs-2 grading"
+                                          rendered="#{!gradingController.hasBooleanGradeType(exam) or
+                                          gradingController.getStudentGrading(student, exam) == null}">
                                 <strong>#{exam.getName()}</strong><br />
-                                #{gradingController.getStudentGradings(student).get(exam.examId).grade.value}
+                                <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course) and
+                                    !gradingController.getStudentGrading(student, exam).corrector
+                                    .equals(userController.user)}">
+                                    <i class="fa fa-lock"></i>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{userController.isLecturer(gradingController.course) or
+                                    gradingController.getStudentGrading(student, exam).corrector
+                                    .equals(userController.user)}">
+                                    #{gradingController.getStudentGrading(student, exam).grade.value}
+                                </h:panelGroup>
+
                                 <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
                                                oncomplete="return exModal('gradeEditExam');"
-                                               update="gradeEditExamForm">
-                                    <i class="fa fa-pencil"></i>
+                                               update="gradeEditExamForm"><i
+                                        class="fa fa-pencil"></i>
                                 </p:commandLink>
-                            </div>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block" class="col-xs-2 grading"
+                                          rendered="#{gradingController.hasBooleanGradeType(exam) and
+                                          gradingController.getStudentGrading(student, exam) != null}">
+                                <strong>#{exam.getName()}</strong><br />
+                                <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course) and
+                                    !gradingController.getStudentGrading(student, exam).corrector
+                                    .equals(userController.user)}">
+                                    <i class="fa fa-lock"></i>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{userController.isLecturer(gradingController.course) or
+                                    gradingController.getStudentGrading(student, exam).corrector
+                                    .equals(userController.user)}" styleClass="boolean-grade-label">
+                                    <h:outputText value="#{msg['gradings.passed']}"
+                                                  rendered="#{gradingController.hasPassed(student, exam)}" />
+                                    <h:outputText value="#{msg['gradings.failed']}"
+                                                  rendered="#{!gradingController.hasPassed(student, exam)}" />
+                                </h:panelGroup>
+
+                                <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
+                                               oncomplete="return exModal('gradeEditExam');"
+                                               update="gradeEditExamForm"><i
+                                        class="fa fa-pencil"></i>
+                                </p:commandLink>
+                            </h:panelGroup>
                         </ui:repeat>
                     </div>
                 </p:rowExpansion>
@@ -94,6 +143,5 @@
         <ui:include src="/WEB-INF/modals/grading/insert.xhtml" />
         <ui:include src="/WEB-INF/modals/grading/editExam.xhtml" />
         <ui:include src="/WEB-INF/modals/grading/editFinal.xhtml" />
-        <ui:include src="/WEB-INF/modals/grading/calculateGrades.xhtml" />
     </ui:define>
 </ui:composition>

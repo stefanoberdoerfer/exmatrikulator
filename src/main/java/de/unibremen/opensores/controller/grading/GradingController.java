@@ -1,12 +1,15 @@
 package de.unibremen.opensores.controller.grading;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.GradeService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +22,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +44,12 @@ public class GradingController {
      * The course which exams get edited.
      */
     private Course course;
+
+    /**
+     * Currently logged in user.
+     */
+    private User user;
+
     /**
      * Student gradings. Stored here so it won't be loaded multiple times.
      */
@@ -57,10 +67,16 @@ public class GradingController {
     private CourseService courseService;
 
     /**
-     * CourseService for database transactions related to courses.
+     * GradingService for database transactions related to gradings.
      */
     @EJB
     private GradingService gradingService;
+
+    /**
+     * GradeService for database transactions related to grades.
+     */
+    @EJB
+    private GradeService gradeService;
 
     /**
      * Method called after initialisation.
@@ -109,6 +125,14 @@ public class GradingController {
                 return;
             }
         }
+        /*
+        Load the user
+         */
+        user = (User)FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("user");
     }
 
     /**
@@ -128,19 +152,22 @@ public class GradingController {
     public List<Student> getStudents() {
         if (searchValue != null && searchValue.trim().length() > 0) {
             log.debug("Search for " + searchValue);
-            return gradingService.getStudents(course, searchValue.trim());
+            return gradingService.getStudents(course, user, searchValue.trim());
         } else {
-            return gradingService.getStudents(course);
+            return gradingService.getStudents(course, user);
         }
     }
 
     /**
-     * Returns the student gradings for a student. Uses map because gradings
-     * are only stored for graded exams. But we want all exams to show up.
+     * Returns the grading of a single exam and student. Uses map because
+     * gradings are only stored for graded exams. But we want all exams to
+     * show up.
      * @param student Student whose gradings shall be loaded
+     * @param exam Exam to check
      * @return Map of exams with gradings
      */
-    public Map<Long, Grading> getStudentGradings(Student student) {
+    public Grading getStudentGrading(final Student student,
+                                                final Exam exam) {
         log.debug("load student gradings for student "
                 + student.getUser().getFirstName());
 
@@ -155,7 +182,7 @@ public class GradingController {
             studentGradings.put(student, gradings);
         }
 
-        return gradings;
+        return gradings.get(exam.getExamId());
     }
 
     public void setSearchValue(String search) {
@@ -172,25 +199,27 @@ public class GradingController {
      * @return List of groups or null
      */
     public List<Group> getGroups() {
-        return gradingService.getGroups(course);
+        return gradingService.getGroups(course, user);
+    }
+
+    public String getPaboGradeName(final String name) {
+        return gradeService.paboGradeDisplayName(name);
+    }
+
+    public boolean hasBooleanGradeType(final Exam exam) {
+        return (exam != null && exam.hasGradeType(GradeType.Boolean));
     }
 
     /**
-     * Returns the grade name of the PaboGrade enum instance identified by the
-     * given name. Returns a question mark if unknown.
-     * @param name Name of the instance
-     * @return Grade name or Question mark
+     * Returns if the given user passed the given boolean exam.
+     * @param student Student to check
+     * @param exam Exam to check
+     * @return true if the student passed
      */
-    public String getPaboGradeName(final String name) {
-        try {
-            PaboGrade paboGrade = PaboGrade.valueOf(name);
-            log.debug("Found pabo grade instance: " + name);
+    public boolean hasPassed(final Student student, final Exam exam) {
+        final Grading grading = getStudentGrading(student, exam);
 
-            return paboGrade.getGradeName();
-        } catch (IllegalArgumentException | NullPointerException e) {
-            log.debug("Pabo grade instance not found: " + name);
-
-            return "?";
-        }
+        return grading != null && GradeType.Boolean.hasPassed(grading
+                .getGrade().getValue());
     }
 }
