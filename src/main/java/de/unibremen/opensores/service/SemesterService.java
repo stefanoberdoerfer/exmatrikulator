@@ -15,6 +15,26 @@ import javax.ejb.Timer;
 @Stateless
 public class SemesterService extends GenericService<Semester> {
     /**
+     * Finds a semester.
+     *
+     * @param year Semester year.
+     * @param winter True if the semester should be a winter semester,
+     *     false otherwise.
+     * @return Semester with given parameters or false.
+     */
+    public Semester findSemester(int year, boolean winter) {
+        List<Semester> semesters = em.createQuery(
+                "SELECT DISTINCT s FROM Semester s "
+                + "WHERE s.semesterYear = :year "
+                + "AND s.isWinter = :winter", Semester.class)
+            .setParameter("year", year)
+            .setParameter("winter", winter)
+            .getResultList();
+
+        return (semesters.isEmpty()) ? null : semesters.get(0);
+    }
+
+    /**
      * Lists all semesters of the SEMESTER table.
      * @return A list of all semesters or an empty list if no semester was found.
      */

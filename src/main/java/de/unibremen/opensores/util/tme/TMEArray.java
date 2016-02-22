@@ -102,6 +102,8 @@ public class TMEArray {
         final Object obj = get(idx);
         if (obj instanceof String) {
             return (String) obj;
+        } else if (obj instanceof Number) {
+            return ((Number) obj).toString();
         }
 
         throw new NoSuchElementException();

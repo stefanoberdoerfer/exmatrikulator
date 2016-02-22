@@ -18,7 +18,7 @@
           <h1>#{settings.import}</h1>
           <div class="row">
             <div class="col-xs-6">
-              <p>#{msg['import.hint']}</p>
+              <p>#{msg['settings.import.hint']}</p>
               <br />
 
               <table class="table">
@@ -51,23 +51,7 @@
               <h:commandButton action="#{tmeController.importFiles()}"
                 class="btn btn-primary" value="#{msg['import.startUserImport']}" />
             </div>
-
-            <div class="col-xs-4">
-              <ui:repeat value="#{tmeController.importedUsers}" var="user">
-              <h1>#{user}</h1>
-              </ui:repeat>
-            </div>
           </div>
-
-          <hr />
-
-          <div class="row form-buttons">
-            <div class="col-xs-6">
-              <p:commandButton class="btn btn-default" action="#{tmeController.persistImports()}"
-                value="#{msg['common.submit']}" immediate="true" />
-            </div>
-          </div>
-
         </h:form>
   </ui:define>
 
