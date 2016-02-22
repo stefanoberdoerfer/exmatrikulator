@@ -149,6 +149,8 @@ public class GradingEditController {
             final Boolean overwrite = overwriting;
             overwriting = false;
 
+            log.debug("formGrading: " + formGrading);
+
             gradingService.storeGrade(course, user, exam, student,
                     formGrading, formPrivateComment, formPublicComment,
                     overwrite);
@@ -291,6 +293,8 @@ public class GradingEditController {
             this.formPrivateComment = "";
             this.formPublicComment = "";
         }
+
+        log.debug("formGrading: " + formGrading);
     }
 
     /**
