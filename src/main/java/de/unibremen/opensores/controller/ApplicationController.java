@@ -455,6 +455,7 @@ public class ApplicationController {
         exam4.setName("Übungsblatt 1");
         exam4.setShortcut("UEB1");
         exam4.setCourse(course);
+        exam4.setMaxPoints(new BigDecimal("15.0"));
         exam4.setGradeType(GradeType.Point.getId());
         course.getExams().add(exam4);
 

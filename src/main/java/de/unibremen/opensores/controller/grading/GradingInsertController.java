@@ -21,6 +21,7 @@ import javax.faces.context.FacesContext;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
@@ -139,6 +140,8 @@ public class GradingInsertController {
         /*
         Try to store the grade
          */
+        Exam exam = null;
+
         try {
             Group group = gradingService.getGroup(course, formGroup);
 
@@ -160,7 +163,7 @@ public class GradingInsertController {
                         paboGrade, formPrivateComment, formPublicComment,
                         overwrite);
             } else {
-                Exam exam = gradingService.getExam(course, formExam);
+                exam = gradingService.getExam(course, formExam);
 
                 if (exam == null) {
                     facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -186,9 +189,30 @@ public class GradingInsertController {
 
             return;
         } catch (InvalidGradeException | IllegalArgumentException e) {
+            String errorMessage = bundle.getString("gradings.invalidGrading");
+
+            if (exam != null) {
+                if (exam.hasGradeType(GradeType.Boolean)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.boolean");
+                } else if (exam.hasGradeType(GradeType.Numeric)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.numeric");
+                } else if (exam.hasGradeType(GradeType.Percent)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.percent");
+                } else if (exam.hasGradeType(GradeType.Point)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.point");
+
+                    errorMessage = MessageFormat.format(errorMessage,
+                            exam.getMaxPoints());
+                }
+            }
+
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("gradings.invalidGrading")));
+                    errorMessage));
             return;
         } catch (AlreadyGradedException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -229,6 +253,8 @@ public class GradingInsertController {
         /*
         Try to store the grade
          */
+        Exam exam = null;
+
         try {
             Student student = gradingService.findStudent(course,
                     formStudent);
@@ -251,7 +277,7 @@ public class GradingInsertController {
                         paboGrade, formPrivateComment, formPublicComment,
                         overwrite);
             } else {
-                Exam exam = gradingService.getExam(course, formExam);
+                exam = gradingService.getExam(course, formExam);
 
                 if (exam == null) {
                     facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -277,9 +303,30 @@ public class GradingInsertController {
 
             return;
         } catch (InvalidGradeException | IllegalArgumentException e) {
+            String errorMessage = bundle.getString("gradings.invalidGrading");
+
+            if (exam != null) {
+                if (exam.hasGradeType(GradeType.Boolean)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.boolean");
+                } else if (exam.hasGradeType(GradeType.Numeric)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.numeric");
+                } else if (exam.hasGradeType(GradeType.Percent)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.percent");
+                } else if (exam.hasGradeType(GradeType.Point)) {
+                    errorMessage += bundle.getString(
+                            "gradings.invalidGrading.point");
+
+                    errorMessage = MessageFormat.format(errorMessage,
+                            exam.getMaxPoints());
+                }
+            }
+
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
-                    bundle.getString("gradings.invalidGrading")));
+                    errorMessage));
             return;
         } catch (AlreadyGradedException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage

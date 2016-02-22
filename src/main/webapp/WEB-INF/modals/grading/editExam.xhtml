@@ -42,7 +42,8 @@
                                   rendered="#{gradingEditController.formGradeType != -1 and
                                   gradingEditController.formGradeType != 2}">
                         <h:inputText styleClass="form-control"
-                                     value="#{gradingEditController.formGrading}"/>
+                                     value="#{gradingEditController.formGrading}"
+                                     h5:autocomplete="off"/>
                     </h:panelGroup>
                     <h:panelGroup layout="block" class="col-xs-9"
                                   rendered="#{gradingEditController.formGradeType == 2}">

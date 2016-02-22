@@ -20,6 +20,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
@@ -167,12 +168,29 @@ public class GradingEditController {
 
             return;
         } catch (InvalidGradeException e) {
-            if (e.getMessage().equals("INVALID_GRADE")) {
-                facesContext.addMessage(null, new FacesMessage(FacesMessage
-                        .SEVERITY_FATAL, bundle.getString("common.error"),
-                        bundle.getString("gradings.invalidGrading")));
-                return;
+            String errorMessage = bundle.getString("gradings.invalidGrading");
+
+            if (exam.hasGradeType(GradeType.Boolean)) {
+                errorMessage += bundle.getString(
+                        "gradings.invalidGrading.boolean");
+            } else if (exam.hasGradeType(GradeType.Numeric)) {
+                errorMessage += bundle.getString(
+                        "gradings.invalidGrading.numeric");
+            } else if (exam.hasGradeType(GradeType.Percent)) {
+                errorMessage += bundle.getString(
+                        "gradings.invalidGrading.percent");
+            } else if (exam.hasGradeType(GradeType.Point)) {
+                errorMessage += bundle.getString(
+                        "gradings.invalidGrading.point");
+
+                errorMessage = MessageFormat.format(errorMessage,
+                        exam.getMaxPoints());
             }
+
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                    .SEVERITY_FATAL, bundle.getString("common.error"),
+                    errorMessage));
+            return;
         } catch (AlreadyGradedException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_WARN, bundle.getString("common.warning"),
@@ -240,7 +258,6 @@ public class GradingEditController {
 
             return;
         } catch (IllegalArgumentException e) {
-            log.debug("IllegalArgument: " + e.toString());
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
                     bundle.getString("gradings.invalidGrading")));
