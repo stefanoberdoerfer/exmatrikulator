@@ -13,13 +13,11 @@ import de.unibremen.opensores.util.tme.TMEObject;
 import de.unibremen.opensores.util.tme.TMEArray;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
-import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.CourseService;
-import de.unibremen.opensores.service.LecturerService;
 import de.unibremen.opensores.service.TutorialService;
 import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.PrivilegedUserService;
@@ -94,12 +92,6 @@ public class TmeController implements Serializable {
      */
     @EJB
     private transient PrivilegedUserService privilegedUserService;
-
-    /**
-     * Lecturer service for connecting to the database.
-     */
-    @EJB
-    private transient LecturerService lecturerService;
 
     /**
      * List of uploaded files by the user.
@@ -333,30 +325,22 @@ public class TmeController implements Serializable {
         tutorial.setName("jgradebook Tutorial " + node.getId());
 
         User user = createUser(tutorNode);
-        if (tutorNode.getBoolean("superuser")) {
-            Lecturer lecturer = new Lecturer();
-            lecturer.setCourse(course);
-            lecturer.setHidden(false);
-            lecturer.setDeleted(false);
-            lecturer.setIsCourseCreator(true);
-            lecturer.setUser(user);
+        PrivilegedUser tutor = privilegedUserService.findPrivUserInCourse(
+                user, course);
 
-            lecturerService.persist(lecturer);
-            course.getLecturers().add(lecturer);
-        } else {
-            PrivilegedUser tutor = new PrivilegedUser();
+        if (tutor == null) {
+            tutor = new PrivilegedUser();
             tutor.setCourse(course);
             tutor.setSecretary(false);
             tutor.setUser(user);
             tutor.setHidden(false);
             tutor.setDeleted(false);
-            tutor.getTutorials().add(tutorial);
-
             privilegedUserService.persist(tutor);
-            tutorial.getTutors().add(tutor);
         }
 
+        tutorial.getTutors().add(tutor);
         tutorialService.persist(tutorial);
+
         log.debug("Persisted tutorial " + tutorial.getName());
 
         return tutorial;
