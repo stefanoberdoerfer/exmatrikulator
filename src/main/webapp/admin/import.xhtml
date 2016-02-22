@@ -53,8 +53,23 @@
             </div>
 
             <div class="col-xs-4">
-              <ui:repeat value="#{tmeController.importedUsers}" var="user">
-              <h1>#{user}</h1>
+              <h1>Imported users:</h1>
+                <ui:repeat value="#{tmeController.importedUsers}" var="user">
+              <h3>#{user}</h3>
+              </ui:repeat>
+            </div>
+
+            <div class="col-xs-4">
+              <h1>Imported semesters:</h1>
+                <ui:repeat value="#{tmeController.importedSemesters}" var="semester">
+              <h3>#{semester}</h3>
+              </ui:repeat>
+            </div>
+
+            <div class="col-xs-4">
+              <h1>Imported courses:</h1>
+              <ui:repeat value="#{tmeController.importedCourses}" var="course">
+                <h3>#{course.name}</h3>
               </ui:repeat>
             </div>
           </div>

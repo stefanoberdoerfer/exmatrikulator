@@ -12,13 +12,17 @@ import de.unibremen.opensores.util.tme.Parser;
 import de.unibremen.opensores.util.tme.TMEObject;
 import de.unibremen.opensores.util.tme.TMEArray;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.exception.TmeException;
+import de.unibremen.opensores.exception.SemesterFormatException;
 
-import java.util.Random;
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
-import java.math.BigInteger;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -62,6 +66,18 @@ public class TmeController implements Serializable {
     private transient UserService userService;
 
     /**
+     * Course service for connecting to the database.
+     */
+    @EJB
+    private transient CourseService courseService;
+
+    /**
+     * Semester service for connecting to the database.
+     */
+    @EJB
+    private transient SemesterService semesterService;
+
+    /**
      * List of uploaded files by the user.
      */
     @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
@@ -76,6 +92,22 @@ public class TmeController implements Serializable {
             justification = "actually findbugs is right this needs to be "
             + "serializable but I am too lazy to fix it")
     private transient List<User> importedUsers = new ArrayList<>();
+
+    /**
+     * List of imported courses.
+     */
+    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
+            justification = "actually findbugs is right this needs to be "
+            + "serializable but I am too lazy to fix it")
+    private transient List<Course> importedCourses = new ArrayList<>();
+
+    /**
+     * List of imported semesters.
+     */
+    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
+            justification = "actually findbugs is right this needs to be "
+            + "serializable but I am too lazy to fix it")
+    private transient List<Semester> importedSemesters = new ArrayList<>();
 
     /**
      * Handles file upload events.
@@ -124,8 +156,26 @@ public class TmeController implements Serializable {
                 facesContext.getViewRoot().getLocale());
 
         for (User user : importedUsers) {
-            log.debug("Persisted " + user.toString());
+            if (userService.findByEmail(user.getEmail()) != null) {
+                continue;
+            }
+
+            log.debug("Persisted user " + user.toString());
             userService.persist(user);
+        }
+
+        for (Semester sem : importedSemesters) {
+            log.debug("Persisted semester " + sem.toString());
+            semesterService.persist(sem);
+        }
+
+        for (Course course : importedCourses) {
+            if (courseService.findCourseByName(course.getName()) != null) {
+                continue;
+            }
+
+            log.debug("Persisted course " + course.getName());
+            courseService.persist(course);
         }
 
         facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -202,10 +252,12 @@ public class TmeController implements Serializable {
             case "StudentData":
                 importUser(obj);
                 break;
+            case "Course":
+                importCourse(obj);
+                break;
             case "Student":
             case "Assignment":
             case "Category":
-            case "Course":
             case "Exam":
             case "ExamDate":
             case "StudentExam":
@@ -228,9 +280,9 @@ public class TmeController implements Serializable {
     }
 
     /**
-     * Imports a student data TME object.
+     * Imports a studentData TME object.
      *
-     * @param obj StudentData TME Object.
+     * @param obj StudentData TME object.
      */
     private void importUser(TMEObject obj) {
         User user = new User();
@@ -246,6 +298,52 @@ public class TmeController implements Serializable {
     }
 
     /**
+     * Imports a course TME object.
+     *
+     * @param obj Course TME object.
+     */
+    private void importCourse(TMEObject obj) {
+        Course course = new Course();
+        course.setName(obj.getString("name"));
+        course.setDefaultSws(obj.getString("wochenstunden"));
+        course.setDefaultCreditPoints(obj.getInt("cp"));
+        course.setRequiresConfirmation(false);
+        course.setStudentsCanSeeFormula(true);
+
+        Semester sem = null;
+        try {
+            sem = Semester.valueOf(obj.getString("zeitraum"));
+        } catch (SemesterFormatException e) {
+            log.error(e);
+            return;
+        }
+
+        Semester semester = semesterService.findSemester(
+                sem.getSemesterYear(), sem.isWinter());
+        if (semester == null) {
+            importedSemesters.add(sem);
+            course.setSemester(sem);
+        } else {
+            course.setSemester(semester);
+        }
+
+        List<String> vaks = new ArrayList<>();
+        vaks.add(obj.getString("nummer"));
+        course.setNumbers(vaks);
+
+        if (obj.getBoolean("finished")) {
+            course.setLastFinalization(new Date());
+        } else {
+            course.setLastFinalization(null);
+        }
+
+        course.setMinGroupSize(obj.getInt("minimaleGruppenGroesse"));
+        course.setMaxGroupSize(obj.getInt("maximaleGruppenGroesse"));
+
+        importedCourses.add(course);
+    }
+
+    /**
      * Converts a filesize from simple long to human readable display-value.
      *
      * @param fsize long value representing a filesize in bytes
@@ -253,6 +351,22 @@ public class TmeController implements Serializable {
      */
     public String getHumanReadableFileSize(long fsize) {
         return FileUtils.byteCountToDisplaySize(fsize);
+    }
+
+    public List<Semester> getImportedSemesters() {
+        return importedSemesters;
+    }
+
+    public void setImportedSemesters(List<Semester> importedSemesters) {
+        this.importedSemesters = importedSemesters;
+    }
+
+    public List<Course> getImportedCourses() {
+        return importedCourses;
+    }
+
+    public void setImportedCourses(List<Course> importedCourses) {
+        this.importedCourses = importedCourses;
     }
 
     public List<User> getImportedUsers() {

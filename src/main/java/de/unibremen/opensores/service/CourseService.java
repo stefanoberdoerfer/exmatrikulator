@@ -17,6 +17,22 @@ import java.util.List;
  */
 @Stateless
 public class CourseService extends GenericService<Course> {
+    /**
+     * Find course using the course name.
+     *
+     * @param name Name of the course.
+     * @return Associated course or null.
+     */
+    public Course findCourseByName(String name) {
+        List<Course> courses = em.createQuery(
+                "SELECT DISTINCT c "
+                + "FROM Course c "
+                + "WHERE c.name = :name", Course.class)
+            .setParameter("name", name)
+            .getResultList();
+
+        return (courses.isEmpty()) ? null : courses.get(0);
+    }
 
     /**
      * Find course using a string id.
