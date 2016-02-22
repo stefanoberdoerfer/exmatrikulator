@@ -63,6 +63,7 @@
                                   rendered="#{gradingInsertController.formGradeType == 2}">
                         <h:selectOneMenu value="#{gradingInsertController.formGrading}"
                                          styleClass="form-control">
+                            <f:selectItem itemValue="-1" itemLabel="- - #{msg['common.pleaseSelect']} - -" />
                             <f:selectItem itemValue="1.00" itemLabel="#{msg['gradings.passed']}" />
                             <f:selectItem itemValue="0.00" itemLabel="#{msg['gradings.failed']}" />
                         </h:selectOneMenu>
@@ -96,7 +97,7 @@
                     <p:commandButton value="#{msg['gradings.insert']}"
                                      styleClass="btn btn-primary" id="gradeInsertSubmit"
                                      rendered="#{!gradingInsertController.overwriting}">
-                        <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course)}"
+                        <f:ajax listener="#{gradingInsertController.storeStudentGrading()}"
                                 execute="@form"
                                 render="gradeInsertForm gradingForm"
                                 onevent="autofocusGradeInsert"
@@ -105,7 +106,7 @@
                     <p:commandButton value="#{msg['gradings.overwrite']}" type="button"
                                      styleClass="btn btn-danger"
                                      rendered="#{gradingInsertController.overwriting}">
-                        <f:ajax listener="#{gradingInsertController.storeStudentGrading(gradingController.course)}"
+                        <f:ajax listener="#{gradingInsertController.storeStudentGrading()}"
                                 execute="@form"
                                 render="gradeInsertForm gradingForm"
                                 onevent="autofocusGradeInsert"

@@ -46,6 +46,14 @@ public final class NoStudentsFilter implements Filter {
         HttpServletResponse hres = (HttpServletResponse) res;
         HttpServletRequest hreq = (HttpServletRequest) req;
 
+        // XXX this is _super_ insecure literally everyone can set this
+        // header and thereby render this filter absolutly useless.
+        String freq = hreq.getHeader("Faces-Request");
+        if (freq != null && freq.equals("partial/ajax")) {
+            filterChain.doFilter(req, res);
+            return;
+        }
+
         User user = (User) hreq.getSession().getAttribute("user");
 
         if (user == null) {

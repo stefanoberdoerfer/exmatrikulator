@@ -49,7 +49,7 @@ public class GradesController {
     private User user;
 
     /**
-     * Student object of currently logged in user
+     * Student object of currently logged in user.
      */
     private Student student;
 

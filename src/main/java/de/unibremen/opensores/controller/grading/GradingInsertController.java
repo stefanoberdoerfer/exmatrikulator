@@ -7,19 +7,23 @@ import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.servlet.http.HttpServletRequest;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
@@ -51,6 +55,16 @@ public class GradingInsertController {
     private Integer formGradeType = GradeType.Pabo.getId();
 
     /**
+     * Stores the currently logged in user.
+     */
+    private User user;
+
+    /**
+     * Stores the currently open course.
+     */
+    private Course course;
+
+    /**
      * CourseService for database transactions related to courses.
      */
     @EJB
@@ -67,6 +81,40 @@ public class GradingInsertController {
      */
     @EJB
     private GradingService gradingService;
+
+    /**
+     * Method called after initialisation.
+     */
+    @PostConstruct
+    public void init() {
+        log.debug("init() called");
+        HttpServletRequest httpReq
+                = (HttpServletRequest) FacesContext.getCurrentInstance()
+                .getExternalContext().getRequest();
+
+        log.debug("Request URI: " + httpReq.getRequestURI());
+        final String courseIdString = httpReq.getParameter(Constants.HTTP_PARAM_COURSE_ID);
+
+        log.debug("course-id: " + courseIdString);
+        long courseId = -1;
+        if (courseIdString != null) {
+            try {
+                courseId = Long.parseLong(courseIdString.trim());
+            } catch (NumberFormatException e) {
+                log.debug("NumberFormatException while parsing courseId");
+            }
+        }
+
+        course = courseService.find(Course.class, courseId);
+        /*
+        Store the logged in user
+         */
+        user = (User)FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("user");
+    }
 
     public PaboGrade[] getPaboGrades() {
         return PaboGrade.values();
@@ -122,21 +170,12 @@ public class GradingInsertController {
 
     /**
      * Stores the group grading for the given course.
-     * @param course Course that is related to the exam
      */
-    public void storeGroupGrading(Course course) {
+    public void storeGroupGrading() {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 facesContext.getViewRoot().getLocale());
-        /*
-        Load the user
-         */
-        User user = (User)FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getSessionMap()
-                .get("user");
         /*
         Try to store the grade
          */
@@ -235,21 +274,12 @@ public class GradingInsertController {
 
     /**
      * Stores the student grading for the given course.
-     * @param course Course that is related to the exam
      */
-    public void storeStudentGrading(Course course) {
+    public void storeStudentGrading() {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 facesContext.getViewRoot().getLocale());
-        /*
-        Load the user
-         */
-        User user = (User)FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getSessionMap()
-                .get("user");
         /*
         Try to store the grade
          */
