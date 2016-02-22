@@ -126,6 +126,22 @@ public class UserController {
     }
 
     /**
+     * Returns if the currently logged in user is a student in the
+     * given course.
+     * @param course Course to check
+     * @return true if he/she is a student
+     */
+    public boolean isStudent(Course course) {
+        Role role = courseRoles.get(course);
+
+        if (role == null) {
+            role = determineRole(course);
+        }
+
+        return role.equals(Role.STUDENT);
+    }
+
+    /**
      * Wrapper method for method with same signature of ApplicationController in order to
      * provide consistent call syntax in the corresponding xhtml-views.
      * @param courseId Id to specified the course which editors should be returned
