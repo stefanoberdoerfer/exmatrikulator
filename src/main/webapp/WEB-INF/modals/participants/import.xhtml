@@ -7,6 +7,7 @@
     <p:dialog header="#{msg['participants.import']}" appendTo="@(body)" widgetVar="participantsImport" modal="true">
         <h:form layout="block" enctype="multipart/form-data">
         <ui:include src="/WEB-INF/alerts.xhtml" />
+        <p:panel id="importDialogPanel">
         <div class="modal-body">
             <p>#{msg['import.hint']}</p>
             <br />
@@ -20,28 +21,59 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="vert-align-middle">
-                    <td>2015-09-12-StudIP.csv</td>
-                    <td>5.4 MB</td>
-                    <td>
-                        <h:commandLink class="btn btn-danger">
-                            <i class="fa fa-remove"></i>
-                        </h:commandLink>
-                    </td>
-                </tr>
+                <ui:repeat value="#{studentImportController.files}" var="file">
+                    <tr class="vert-align-middle">
+                        <td>#{file.fileName}</td>
+                        <td>#{studentImportController.getHumanReadableFileSize(file.getSize())}</td>
+                        <td>
+                            <p:commandLink class="btn btn-danger">
+                                <f:ajax listener="#{studentImportController.removeFile(file)}"
+                                        execute="@this"
+                                        render="@form"/>
+                                <i class="fa fa-remove"></i>
+                            </p:commandLink>
+                        </td>
+                    </tr>
+                </ui:repeat>
                 </tbody>
             </table>
+            <p:fileUpload fileUploadListener="#{studentImportController.handleFileUpload}"
+                          mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true"
+                          update="@form" uploadLabel="#{msg['import.upload']}"
+                          invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
+                          sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
 
-            <h:inputFile id="file" />
-            <h:commandButton value="#{msg['import.upload']}" class="btn btn-primary"/>
+            <p:commandButton class="btn btn-primary" value="#{msg['import.startUserImport']}"
+                update="@form">
+                <f:actionListener binding="#{studentImportController.executeImport()}"/>
+            </p:commandButton>
+
+            <h3>#{msg['import.toBeImported']}</h3>
+            <p:dataTable var="student" value="#{studentImportController.studentsToBeAdded}" scrollable="true"
+                         scrollHeight="200" styleClass="table table-condensed">
+                <p:column headerText="#{msg['common.name']}">
+                    <h:outputText value="#{student.user}" />
+                </p:column>
+                <p:column headerText="#{msg['common.email']}">
+                    <h:outputText value="#{student.user.email}" />
+                </p:column>
+                <p:column headerText="#{msg['import.alreadyUser']}">
+                    <h:outputText value="#{studentImportController.isStudentWithExistingAccount(student)}" />
+                </p:column>
+            </p:dataTable>
         </div>
         <div class="modal-footer">
             <div class="btn-group">
                 <p:commandButton value="#{msg['common.cancel']}" type="button"
                                  onclick="return exModal(':participantsImport');" styleClass="btn btn-default" />
-                <h:link outcome="/course/overview" class="btn btn-primary" value="#{msg['participants.import']}" />
+                <p:commandButton styleClass="btn btn-default" value="#{msg['participants.import']}"
+                                 action="#{studentImportController.saveStudents()}"
+                                 onsuccess="return exModal(':participantsImport');"
+                                 id="importButton" update="@all"/>
             </div>
         </div>
+        </p:panel>
+        <p:blockUI block="importDialogPanel" trigger="importButton"/>
         </h:form>
     </p:dialog>
 </ui:composition>

@@ -83,7 +83,11 @@
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li><h:link value="#{msg['common.myProfile']}" outcome="/profile/show" /></li>
                     <li role="separator" class="divider"></li>
-                    <li><h:commandLink value="#{msg['common.logout']}" action="#{navigation.logout}"/></li>
+                    <li><h:commandLink value="#{msg['common.logout']}" action="#{navigation.logout}">
+                        <c:if test="${param[EXcons.HTTP_PARAM_COURSE_ID] != null}">
+                            <f:param name="course-id" value="#{param[EXcons.HTTP_PARAM_COURSE_ID]}"/>
+                        </c:if>
+                    </h:commandLink></li>
                 </ul>
             </h:form>
         </div>
@@ -202,9 +206,9 @@
             </ui:repeat>
         </h:form>
     </div>
-    <div id="main">
+    <h:panelGroup layout="block" id="main">
         <ui:insert name="content"></ui:insert>
-    </div>
+    </h:panelGroup>
 </h:body>
 </f:view>
 </html>

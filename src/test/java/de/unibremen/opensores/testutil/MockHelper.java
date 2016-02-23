@@ -66,6 +66,7 @@ public final class MockHelper {
         CourseService courseServiceMock = mock(CourseService.class);
         when(courseServiceMock.find(Course.class, DataHelper.COURSE_ID)).thenReturn(course);
         when(courseServiceMock.update(course)).thenReturn(course);
+        when(courseServiceMock.findCourseById(""+DataHelper.COURSE_ID)).thenReturn(course);
         return courseServiceMock;
     }
 

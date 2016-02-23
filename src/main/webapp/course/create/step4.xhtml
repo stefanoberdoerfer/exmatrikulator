@@ -48,13 +48,13 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <ui:repeat value="#{studentImportController.files}" var="file">
+                        <ui:repeat value="#{step4.studentImportController.files}" var="file">
                             <tr class="vert-align-middle">
                                 <td>#{file.fileName}</td>
-                                <td>#{studentImportController.getHumanReadableFileSize(file.getSize())}</td>
+                                <td>#{step4.studentImportController.getHumanReadableFileSize(file.getSize())}</td>
                                 <td>
                                     <h:commandLink class="btn btn-danger">
-                                        <f:ajax listener="#{studentImportController.removeFile(file)}"
+                                        <f:ajax listener="#{step4.studentImportController.removeFile(file)}"
                                                 execute="@this"
                                                 render="@form"/>
                                         <i class="fa fa-remove"></i>
@@ -64,36 +64,30 @@
                         </ui:repeat>
                         </tbody>
                     </table>
-                    <p:fileUpload fileUploadListener="#{studentImportController.handleFileUpload}"
+                    <p:fileUpload fileUploadListener="#{step4.studentImportController.handleFileUpload}"
                                   mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true"
                                   update="@form" uploadLabel="#{msg['import.upload']}"
                                   invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
                                   sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
-                    <h:commandButton class="btn btn-primary" action="#{studentImportController.executeImport()}"
+                    <h:commandButton class="btn btn-primary" action="#{step4.studentImportController.executeImport()}"
                                      value="#{msg['import.startUserImport']}">
                     </h:commandButton>
                 </div>
 
                 <div class="col-xs-6">
                     <h3>#{msg['import.importedParticipants']}</h3>
-                    <table class="table table-condensed">
-                        <thead>
-                        <tr>
-                            <th>#{msg['common.name']}</th>
-                            <th class="table-examination-identifier">#{msg['common.email']}</th>
-                            <th class="table-examination-grade">#{msg['import.alreadyUser']}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <ui:repeat value="#{studentImportController.course.students}" var="student">
-                            <tr>
-                                <td>#{student.user}</td>
-                                <td>#{student.user.email}</td>
-                                <td>#{studentImportController.isStudentWithExistingAccount(student)}</td>
-                            </tr>
-                        </ui:repeat>
-                        </tbody>
-                    </table>
+                    <p:dataTable var="student" value="#{step4.studentImportController.course.students}" scrollable="true"
+                                 scrollHeight="200" styleClass="table table-condensed">
+                        <p:column headerText="#{msg['common.name']}">
+                            <h:outputText value="#{student.user}" />
+                        </p:column>
+                        <p:column headerText="#{msg['common.email']}">
+                            <h:outputText value="#{student.user.email}" />
+                        </p:column>
+                        <p:column headerText="#{msg['import.alreadyUser']}">
+                            <h:outputText value="#{step4.studentImportController.isStudentWithExistingAccount(student)}" />
+                        </p:column>
+                    </p:dataTable>
                 </div>
             </div>
 
@@ -109,12 +103,16 @@
                                          value="#{msg['common.back']}" />
                         <p:commandButton class="btn btn-primary" action="#{courseCreateFlowController.saveCourse()}"
                                          value="#{msg['courses.create.finish']}"
-                                         onsuccess="return exModal('courseCreateSuccess');">
+                                         onsuccess="return exModal('courseCreateSuccess');"
+                                         id="finishButton">
                             <f:actionListener binding="#{courseCreateFlowController.setStepFinished(4)}"/>
                         </p:commandButton>
                     </div>
                 </div>
             </div>
+        <p:blockUI block=":main" trigger="finishButton">
+            LOADING
+        </p:blockUI>
         </h:form>
         <ui:include src="/WEB-INF/modals/course/create/success.xhtml" />
     </ui:define>
