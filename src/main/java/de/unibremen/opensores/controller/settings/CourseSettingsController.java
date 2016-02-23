@@ -1,7 +1,10 @@
 package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.util.Constants;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,7 +34,6 @@ public class CourseSettingsController {
      */
     private static final String HTTP_PARAM_COURSE_ID = "course-id";
 
-
     /**
      * The log4j logger.
      */
@@ -44,9 +46,20 @@ public class CourseSettingsController {
     private CourseService courseService;
 
     /**
+     * UserService for database transactions related to users.
+     */
+    @EJB
+    private UserService userService;
+
+    /**
      * The course for which the overview page gets accessed.
      */
     private Course course;
+
+    /**
+     * The user currently logged in.
+     */
+    private User user;
 
     /**
      * Method called when the bean is initialised.
@@ -91,6 +104,24 @@ public class CourseSettingsController {
                 log.fatal("Could not redirect to " + PATH_TO_COURSE_OVERVIEW);
                 return;
             }
+        }
+
+        user = (User) FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get(Constants.SESSION_MAP_KEY_USER);
+    }
+
+    /**
+     * Wether the user is allowed to print or not.
+     *
+     * @return boolean true if yes
+     */
+    public boolean mayPrint() {
+        if (user == null) {
+            return false;
+        } else {
+            return userService.hasCourseRole(user, "LECTURER", course);
         }
     }
 

@@ -113,6 +113,45 @@ public class CourseService extends GenericService<Course> {
     }
 
     /**
+     * Find student of this course using a unique id.
+     *
+     * @param course Course to look at.
+     * @param studentId id associated with this student.
+     * @return Student with this id or null.
+     */
+    public Student findStudentById(Course course, String studentId) {
+        List<Student> students = em.createQuery(
+                "SELECT DISTINCT s FROM Student s"
+                + " JOIN s.course AS c"
+                + " WITH c.courseId = :courseId"
+                + " WHERE s.studentId = :studentId", Student.class)
+            .setParameter("courseId", course.getCourseId())
+            .setParameter("studentId", Long.parseLong(studentId))
+            .getResultList();
+
+        return (students.isEmpty()) ? null : students.get(0);
+    }
+
+    /**
+     * Get a list of students who are member of a particular coursen,
+     * who have paboData.
+     *
+     * @param course Course to look at.
+     * @return List of students with or null.
+     */
+    public List<Student> getStudentList(Course course) {
+        List<Student> students = em.createQuery(
+                "SELECT DISTINCT s FROM Student s"
+                + " JOIN s.course AS c"
+                + " WITH c.courseId = :courseId"
+                + " WHERE s.paboData IS NOT NULL", Student.class)
+            .setParameter("courseId", course.getCourseId())
+            .getResultList();
+
+        return (students.isEmpty()) ? null : students;
+    }
+
+    /**
      * Find tutor of this course using an email.
      *
      * @param course Course to look at.

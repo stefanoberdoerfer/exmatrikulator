@@ -93,6 +93,25 @@ public class UserService extends GenericService<User> {
     }
 
     /**
+     * Returns true if the given user is a lecturer in the given course.
+     *
+     * @param user User to check.
+     * @param course Course to check.
+     * @return The lecturer if found, else null.
+     */
+    public Lecturer getLecturer(User user, Course course) {
+        List<Lecturer> lecturers = em.createQuery(
+                "SELECT DISTINCT l FROM Lecturer l "
+                + "JOIN l.user    AS u WITH u.userId = :uid "
+                + "JOIN l.course  AS c WITH c.courseId = :cid", Lecturer.class)
+            .setParameter("uid", user.getUserId())
+            .setParameter("cid", course.getCourseId())
+            .getResultList();
+
+        return (lecturers.isEmpty()) ? null : lecturers.get(0);
+    }
+
+    /**
      * Returns true if the given user is a privileged user in the given course.
      *
      * @param user User to check.

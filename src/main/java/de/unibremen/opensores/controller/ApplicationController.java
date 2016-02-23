@@ -1,5 +1,7 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.model.PaboData;
+import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GlobalRole;
@@ -273,7 +275,6 @@ public class ApplicationController {
         unconfirmedUser.setMatriculationNumber("113742");
         unconfirmedUser.addRole(GlobalRole.USER);
 
-
         userService.persist(notInCourse);
         log.debug("Inserted User with id: " + notInCourse.getUserId());
         userService.persist(newUser);
@@ -332,6 +333,7 @@ public class ApplicationController {
         student.setUser(newUser);
         student.setHidden(false);
         student.setPaboGrade("GRADE_1_3");
+        student.setPaboData(new PaboData());
 
         course.getStudents().add(student);
         student.setCourse(course);

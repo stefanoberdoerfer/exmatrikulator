@@ -59,10 +59,21 @@ public final class Constants {
     public static final String HTTP_PARAM_COURSE_ID = "course-id";
 
     /**
+     * The http parameter key by which the student id gets passed.
+     */
+    public static final String HTTP_PARAM_STUDENT_ID = "student-id";
+
+    /**
      * The path to the course overview site.
      */
     public static final String PATH_TO_COURSE_OVERVIEW =
             "/course/overview.xhtml?faces-redirect=true";
+
+    /**
+     * The path to the certificate template.
+     */
+    public static final String PATH_TO_CERTIFICATE_TEMPLATE =
+            "/certificate/printview.xhtml";
 
     /**
      * The key of the logged in user in the session map.

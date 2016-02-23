@@ -1,5 +1,7 @@
 package de.unibremen.opensores.model;
 
+import de.unibremen.opensores.model.PaboData;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +47,10 @@ public class Student {
 
     @Column
     private String privateComment;
+
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "paboDataId")
+    private PaboData paboData;
 
     @OneToMany(mappedBy = "student")
     private List<Grading> gradings = new ArrayList<>();
@@ -218,5 +225,13 @@ public class Student {
 
     public void setPrivateComment(String privateComment) {
         this.privateComment = privateComment;
+    }
+
+    public PaboData getPaboData() {
+        return paboData;
+    }
+
+    public void setPaboData(PaboData paboData) {
+        this.paboData = paboData;
     }
 }
