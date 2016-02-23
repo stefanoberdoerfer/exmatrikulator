@@ -111,7 +111,7 @@
                     <h:outputText value="#{participantsController.getPaboGradeName(student.paboGrade)}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.actions']}"
-                          styleClass="table-common-options-two text-right">
+                          styleClass="table-common-options-three text-right">
                     <p:commandLink oncomplete="return exModal('participantEdit');"
                                    h5:data-toggle="tooltip" update=":editUserDialog"
                                    h5:data-placement="top" title="#{msg['course.student.edit']}"
@@ -128,6 +128,11 @@
                         <i class="fa fa-remove"></i>
                         <f:actionListener binding="#{participantsController.onDeleteStudentDialogCalled(student)}" />
                     </p:commandLink>
+                    <h:link outcome="/certificate/printview" styleClass="btn btn-default" rendered="#{participantsController.mayPrint()}">
+                        <f:param name="course-id" value="#{student.course.courseId}"/>
+                        <f:param name="student-id" value="#{student.studentId}"/>
+			            <i class="fa fa-print"></i>
+                    </h:link>
                 </p:column>
             </p:dataTable>
         </h:form>

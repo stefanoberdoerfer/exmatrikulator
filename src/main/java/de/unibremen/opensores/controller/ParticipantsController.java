@@ -294,6 +294,19 @@ public class ParticipantsController {
 
 
     /**
+     * Wether the user is allowed to print or not.
+     *
+     * @return boolean true if yes
+     */
+    public boolean mayPrint() {
+        if (loggedInUser == null) {
+            return false;
+        } else {
+            return userService.hasCourseRole(loggedInUser, "LECTURER", course);
+        }
+    }
+
+    /**
      * Method called when the user creation dialog gets opened.
      */
     public void onCreateUserDialogCalled() {
