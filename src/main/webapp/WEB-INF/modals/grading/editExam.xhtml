@@ -49,6 +49,7 @@
                                   rendered="#{gradingEditController.formGradeType == 2}">
                         <h:selectOneMenu value="#{gradingEditController.formGrading}"
                                          styleClass="form-control">
+                            <f:selectItem itemValue="-1" itemLabel="- - #{msg['common.pleaseSelect']} - -" />
                             <f:selectItem itemValue="1.00" itemLabel="#{msg['gradings.passed']}" />
                             <f:selectItem itemValue="0.00" itemLabel="#{msg['gradings.failed']}" />
                         </h:selectOneMenu>
@@ -82,7 +83,7 @@
                     <p:commandButton value="#{msg['common.saveChanges']}"
                                      styleClass="btn btn-primary" id="gradeEditSubmit"
                                      rendered="#{!gradingEditController.overwriting}">
-                        <f:ajax listener="#{gradingEditController.updateExamGrading(gradingController.course)}"
+                        <f:ajax listener="#{gradingEditController.updateExamGrading()}"
                                 execute="@form"
                                 render="gradeEditExamForm gradingForm"
                                 />
@@ -90,7 +91,7 @@
                     <p:commandButton value="#{msg['gradings.overwrite']}" type="button"
                                      styleClass="btn btn-danger"
                                      rendered="#{gradingEditController.overwriting}">
-                        <f:ajax listener="#{gradingEditController.updateExamGrading(gradingController.course)}"
+                        <f:ajax listener="#{gradingEditController.updateExamGrading()}"
                                 execute="@form"
                                 render="gradeEditExamForm gradingForm"
                                 />

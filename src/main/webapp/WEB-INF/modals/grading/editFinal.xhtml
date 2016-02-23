@@ -66,7 +66,7 @@
                     <p:commandButton value="#{msg['common.saveChanges']}"
                                      styleClass="btn btn-primary" id="gradeEditFinalSubmit"
                                      rendered="#{!gradingEditController.overwriting}">
-                        <f:ajax listener="#{gradingEditController.updateFinalGrading(gradingController.course)}"
+                        <f:ajax listener="#{gradingEditController.updateFinalGrading()}"
                                 execute="@form"
                                 render="gradeEditFinalForm gradingForm"
                                 />
@@ -74,7 +74,7 @@
                     <p:commandButton value="#{msg['gradings.overwrite']}" type="button"
                                      styleClass="btn btn-danger"
                                      rendered="#{gradingEditController.overwriting}">
-                        <f:ajax listener="#{gradingEditController.updateFinalGrading(gradingController.course)}"
+                        <f:ajax listener="#{gradingEditController.updateFinalGrading()}"
                                 execute="@form"
                                 render="gradeEditFinalForm gradingForm"
                                 />

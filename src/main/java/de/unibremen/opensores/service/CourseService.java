@@ -15,6 +15,7 @@ import java.util.List;
  * @todo JPA Course search
  *
  * @author Stefan Oberdörfer
+ * @author Matthias Reichmann
  */
 @Stateless
 public class CourseService extends GenericService<Course> {
@@ -71,6 +72,26 @@ public class CourseService extends GenericService<Course> {
         }
 
         return course;
+    }
+
+    /**
+     * Find student of this course using the user object.
+     *
+     * @param course Course to look at.
+     * @param user User object to look at
+     * @return Student with this email or null.
+     */
+    public Student findStudent(Course course, User user) {
+        List<Student> students = em.createQuery(
+                "SELECT DISTINCT s FROM Student s"
+                        + " JOIN s.course AS c"
+                        + " WITH c.courseId = :courseId"
+                        + " WHERE s.user.userId = :userId", Student.class)
+                .setParameter("courseId", course.getCourseId())
+                .setParameter("userId", user.getUserId())
+                .getResultList();
+
+        return (students.isEmpty()) ? null : students.get(0);
     }
 
     /**

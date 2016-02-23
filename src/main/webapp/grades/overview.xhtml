@@ -1,0 +1,62 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['courses.grading.my']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li>#{gradingController.course.name}</li>
+        <li class="active">#{msg['courses.grading.my']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <h1>#{msg['courses.grading.my']}</h1>
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th class="table-examination-name">
+                    #{msg['common.course.exam']}
+                </th>
+                <th class="table-examination-grade">
+                    #{msg['common.result']}
+                </th>
+                <th>
+                    #{msg['gradings.comment']}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="vert-align-middle">
+                <td>
+                    <strong>#{msg['gradeType.paboGrade']}</strong>
+                </td>
+                <td>
+                    <strong>#{gradesController.getPaboGradeName(gradesController.student.paboGrade)}</strong>
+                </td>
+                <td>
+                    #{gradesController.student.publicComment}
+                </td>
+            </tr>
+            <ui:repeat value="#{gradesController.course.exams}" var="exam">
+                <tr class="vert-align-middle">
+                    <td>#{exam.name}</td>
+                    <td>#{gradesController.studentGradings.get(exam.examId).grade.value}</td>
+                    <td>#{gradesController.studentGradings.get(exam.examId).publicComment}</td>
+                </tr>
+            </ui:repeat>
+            </tbody>
+        </table>
+
+        <h:panelGroup rendered="#{gradesController.course.studentsCanSeeFormula}">
+            <h2>#{msg['common.course.gradingFormula']}</h2>
+            <pre>#{gradesController.student.participationType.latestFormula.formula}</pre>
+        </h:panelGroup>
+    </ui:define>
+</ui:composition>

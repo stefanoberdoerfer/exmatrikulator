@@ -7,19 +7,26 @@ import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -46,6 +53,48 @@ public class GradingEditController {
     private String formPublicComment;
     private boolean overwriting = false;
     private Integer formGradeType;
+
+    /**
+     * Stores if the currently logged in user is lecturer.
+     */
+    private boolean isLecturer = false;
+
+    /**
+     * Stores the currently logged in user.
+     */
+    private User user;
+
+    /**
+     * Stores the currently open course.
+     */
+    private Course course;
+
+    /**
+     * Method called after initialisation.
+     */
+    @PostConstruct
+    public void init() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext exContext = facesContext.getExternalContext();
+
+        HttpServletRequest req = (HttpServletRequest) exContext.getRequest();
+        HttpServletResponse res = (HttpServletResponse) exContext.getResponse();
+
+        user = (User) exContext.getSessionMap().get("user");
+        course = courseService.findCourseById(req.getParameter("course-id"));
+        if (course == null || user == null) {
+            try {
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            } catch (IOException e) {
+                log.fatal(e);
+            }
+            return;
+        }
+        /*
+        Check if he is a lecturer
+         */
+        isLecturer = userService.hasCourseRole(user, Role.LECTURER, course);
+    }
 
     /**
      * CourseService for database transactions related to courses.
@@ -103,22 +152,13 @@ public class GradingEditController {
 
     /**
      * Stores the grading for the given course.
-     * @param course Course that is related to the exam
      */
-    public void updateExamGrading(Course course) {
+    public void updateExamGrading() {
         log.debug("Updating exam grading");
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 facesContext.getViewRoot().getLocale());
-        /*
-        Load the user
-         */
-        User user = (User)FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getSessionMap()
-                .get("user");
         /*
         Check student
          */
@@ -208,21 +248,12 @@ public class GradingEditController {
 
     /**
      * Updates the final grading of a single student.
-     * @param course Course the student participates
      */
-    public void updateFinalGrading(Course course) {
+    public void updateFinalGrading() {
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 facesContext.getViewRoot().getLocale());
-        /*
-        Load the user
-         */
-        User user = (User)FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getSessionMap()
-                .get("user");
         /*
         Check student
          */
@@ -301,7 +332,8 @@ public class GradingEditController {
 
         log.debug("Already graded? " + (grading != null ? "yes" : "no"));
 
-        if (grading != null) {
+        if (grading != null && (isLecturer
+                || user.equals(grading.getCorrector()))) {
             this.formGrading = grading.getGrade().getValue().toString();
             this.formPrivateComment = grading.getPrivateComment();
             this.formPublicComment = grading.getPublicComment();
