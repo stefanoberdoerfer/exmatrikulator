@@ -2,6 +2,7 @@ package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Course;
 
@@ -28,6 +29,26 @@ public class CourseService extends GenericService<Course> {
                 "SELECT DISTINCT c "
                 + "FROM Course c "
                 + "WHERE c.name = :name", Course.class)
+            .setParameter("name", name)
+            .getResultList();
+
+        return (courses.isEmpty()) ? null : courses.get(0);
+    }
+
+    /**
+     * Find course using the course name in the given semester.
+     *
+     * @param name Name of the course.
+     * @param semester Semester the course is located in.
+     * @return Associated course or null.
+     */
+    public Course findCourseByName(String name, Semester semester) {
+        List<Course> courses = em.createQuery(
+                "SELECT DISTINCT c FROM Course c "
+                + "JOIN c.semester AS s "
+                + "WITH s.semesterYear = :year "
+                + "WHERE c.name = :name", Course.class)
+            .setParameter("year", semester.getSemesterYear())
             .setParameter("name", name)
             .getResultList();
 

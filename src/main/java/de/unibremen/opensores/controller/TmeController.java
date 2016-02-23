@@ -12,20 +12,25 @@ import de.unibremen.opensores.util.tme.Parser;
 import de.unibremen.opensores.util.tme.TMEObject;
 import de.unibremen.opensores.util.tme.TMEArray;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Course;
-import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.service.GroupService;
 import de.unibremen.opensores.service.CourseService;
-import de.unibremen.opensores.service.LecturerService;
+import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.TutorialService;
 import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.exception.TmeException;
 import de.unibremen.opensores.exception.SemesterFormatException;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -96,10 +101,21 @@ public class TmeController implements Serializable {
     private transient PrivilegedUserService privilegedUserService;
 
     /**
-     * Lecturer service for connecting to the database.
+     * Student service for connecting to the database.
      */
     @EJB
-    private transient LecturerService lecturerService;
+    private transient StudentService studentService;
+
+    /**
+     * Group service for connecting to the database.
+     */
+    @EJB
+    private transient GroupService groupService;
+
+    /**
+     * Maps jgradebook tutorial ids to exmartikulator tutorial entities.
+     */
+    private Map<Integer, Long> tutorialMap = new HashMap<>();
 
     /**
      * List of uploaded files by the user.
@@ -223,7 +239,8 @@ public class TmeController implements Serializable {
      */
     private void importCourse(TMEObject obj) throws TmeException {
         String name = obj.getString("name");
-        if (courseService.findCourseByName(name) != null) {
+        Semester semester = createSemester(obj.getString("zeitraum"));
+        if (courseService.findCourseByName(name, semester) != null) {
             return;
         }
 
@@ -234,7 +251,16 @@ public class TmeController implements Serializable {
         course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
 
-        Semester semester = createSemester(obj.getString("zeitraum"));
+        ParticipationType type = new ParticipationType();
+        type.setName(obj.getString("studyArea"));
+        type.setGroupPerformance(obj.getBoolean("groupPerformance"));
+        type.setRestricted(false);
+        type.setSws(null);
+        type.setCreditPoints(null);
+        type.setIsDefaultParttype(true);
+        type.setCourse(course);
+
+        course.getParticipationTypes().add(type);
         course.setSemester(semester);
 
         List<String> vaks = new ArrayList<>();
@@ -251,9 +277,9 @@ public class TmeController implements Serializable {
         course.setMaxGroupSize(obj.getInt("maximaleGruppenGroesse"));
 
         courseService.persist(course);
-        List<Tutorial> tutorials = createTutorials(
-                obj.getArray("tutorials"), course);
-        course.setTutorials(tutorials);
+        createTutorials(obj.getArray("tutorials"), course);
+
+        createGroups(obj.getArray("groups"), course);
 
         course = courseService.update(course);
         log.debug("Persisted course " + course.getName());
@@ -287,6 +313,147 @@ public class TmeController implements Serializable {
     }
 
     /**
+     * Creates all groups from the given TMEArray.
+     *
+     * @param array TMEArray to create groups from.
+     * @param course Course tho groups belong to.
+     * @return List of created group entities.
+     * @throws TmeException On a failed creation.
+     */
+    private List<Group> createGroups(TMEArray array, Course course)
+            throws TmeException {
+        List<Group> groups = new ArrayList<>();
+        for (int i = 0; i < array.size(); i++) {
+            int id = array.getInt(i);
+
+            TMEObject node = findNode("jgradebook.data.Group", id);
+            if (node == null) {
+                throw new TmeException("non-existend group " + id);
+            }
+
+            Group group = createGroup(node, course);
+            groups.add(group);
+        }
+
+        return groups;
+    }
+
+    /**
+     * Creates a group from the given TME object in the given course.
+     *
+     * @param node TME group object.
+     * @param course Course the group belongs to.
+     * @return Created group entity.
+     * @throws TmeException On a failed creation.
+     */
+    private Group createGroup(TMEObject node, Course course)
+            throws TmeException {
+        int tutorialId = node.getInt("tutorial");
+        Tutorial tutorial = tutorialService.find(Tutorial.class,
+                tutorialMap.get(tutorialId));
+        if (tutorial == null) {
+            throw new TmeException("non-existend tutorial " + tutorialId);
+        }
+
+        Group group = new Group();
+        group.setName(node.getString("name"));
+        group.setCourse(course);
+        group.setTutorial(tutorial);
+
+        tutorial.getGroups().add(group);
+        course.getGroups().add(group);
+
+        List<Student> students = createStudents(node.getArray("students"), group);
+        group.setStudents(students);
+
+        course.getStudents().addAll(students);
+        log.debug("Created group " + group.getName());
+
+        return group;
+    }
+
+    /**
+     * Creates all students from the given TMEArray.
+     *
+     * @param array TMEArray to create students from.
+     * @param group Group the students belong to.
+     * @return List of created student entities.
+     * @throws TmeException On a failed creation.
+     */
+    private List<Student> createStudents(TMEArray array, Group group)
+            throws TmeException {
+        List<Student> students = new ArrayList<>();
+        for (int i = 0; i < array.size(); i++) {
+            int id = array.getInt(i);
+
+            TMEObject node = findNode("jgradebook.data.Student", id);
+            if (node == null) {
+                throw new TmeException("non-existend student " + id);
+            }
+
+            Student student = createStudent(node, group);
+            students.add(student);
+        }
+
+        return students;
+    }
+
+    /**
+     * Creates a student from the given TME object in the given group.
+     *
+     * @param node TME student object.
+     * @param group Group the student belongs to.
+     * @return Created Student entity.
+     * @throws TmeException On a failed creation.
+     */
+    private Student createStudent(TMEObject node, Group group)
+            throws TmeException {
+        int id = node.getInt("studentData");
+        TMEObject studentData = findNode("jgradebook.data.StudentData", id);
+        if (studentData == null) {
+            throw new TmeException("non-existend studentData " + id);
+        }
+
+        User user = createUser(studentData);
+        Student student = studentService.findStudentInCourse(user,
+                group.getCourse());
+        if (student != null) {
+            return student;
+        }
+
+        student = new Student();
+        student.setGroup(group);
+        student.setCourse(group.getCourse());
+        student.setTutorial(group.getTutorial());
+
+        student.setUser(user);
+        student.setDeleted(false);
+        student.setHidden(false);
+        student.setTries(0);
+
+        if (node.getString("status") == "CONFIRMED") {
+            student.setAcceptedInvitation(true);
+            student.setConfirmed(true);
+        } else {
+            student.setAcceptedInvitation(false);
+            student.setConfirmed(false);
+        }
+
+        student.setPaboGrade(null);
+        student.setPublicComment(null);
+
+        if (node.has("comment")) {
+            student.setPrivateComment(node.getString("comment"));
+        } else {
+            student.setPrivateComment(null);
+        }
+
+        log.debug("Persisted student " + student.getUser());
+
+        return student;
+    }
+
+    /**
      * Creates all tutorials from the given TMEArray.
      *
      * @param array TMEArray to create tutorials from.
@@ -313,7 +480,7 @@ public class TmeController implements Serializable {
     }
 
     /**
-     * Creates a tutorial with the given id in the TME objects array.
+     * Creates a tutorial from the given TME object in the given course.
      *
      * @param node TME tutorial object.
      * @param course Course the tutorial belongs to.
@@ -333,30 +500,27 @@ public class TmeController implements Serializable {
         tutorial.setName("jgradebook Tutorial " + node.getId());
 
         User user = createUser(tutorNode);
-        if (tutorNode.getBoolean("superuser")) {
-            Lecturer lecturer = new Lecturer();
-            lecturer.setCourse(course);
-            lecturer.setHidden(false);
-            lecturer.setDeleted(false);
-            lecturer.setIsCourseCreator(true);
-            lecturer.setUser(user);
+        PrivilegedUser tutor = privilegedUserService.findPrivUserInCourse(
+                user, course);
 
-            lecturerService.persist(lecturer);
-            course.getLecturers().add(lecturer);
-        } else {
-            PrivilegedUser tutor = new PrivilegedUser();
+        if (tutor == null) {
+            tutor = new PrivilegedUser();
             tutor.setCourse(course);
             tutor.setSecretary(false);
             tutor.setUser(user);
             tutor.setHidden(false);
             tutor.setDeleted(false);
-            tutor.getTutorials().add(tutorial);
 
+            course.getTutors().add(tutor);
+            tutor.getTutorials().add(tutorial);
             privilegedUserService.persist(tutor);
-            tutorial.getTutors().add(tutor);
         }
 
+        course.getTutorials().add(tutorial);
+        tutorial.getTutors().add(tutor);
         tutorialService.persist(tutorial);
+
+        tutorialMap.put(node.getId(), tutorial.getTutorialId());
         log.debug("Persisted tutorial " + tutorial.getName());
 
         return tutorial;
