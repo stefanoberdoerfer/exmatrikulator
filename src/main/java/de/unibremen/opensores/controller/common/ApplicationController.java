@@ -108,9 +108,6 @@ public class ApplicationController {
      */
     @PostConstruct
     public void init() {
-        initSemesters();
-        initDummyData();
-
         //initialize map used to determine the current login status of users
         //with writing rights in all the different courses of the Exmatrikulator system
         sessionRegister = new ConcurrentHashMap<>();

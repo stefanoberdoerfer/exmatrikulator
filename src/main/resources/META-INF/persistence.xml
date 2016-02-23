@@ -11,7 +11,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <!-- JTA Datasource -->
-        <jta-data-source>java:app/jdbc/exmatrikulator</jta-data-source>
+        <jta-data-source>jdbc/exmatrikulator</jta-data-source>
 
         <!-- All classes which should be mapped must be declared here -->
         <class>de.unibremen.opensores.model.User</class>
@@ -33,14 +33,7 @@
             <!-- SQL Dialect for Derby -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
 
-            <!-- Printing SQL statements in the terminal, true for development -->
-            <property name="hibernate.show_sql" value="false" />
-
-            <!-- Formatting the SQL Statements, truein development -->
-            <property name="hibernate.format_sql" value="false" />
-
-            <!-- Drops the Database schema and recreates it every deployment, true for development -->
-            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
 
             <!-- Loads a database initialisation script for populating the database with data for development -->
             <!-- TODO Add database prepoulation script when the data model is advanced enough-->
