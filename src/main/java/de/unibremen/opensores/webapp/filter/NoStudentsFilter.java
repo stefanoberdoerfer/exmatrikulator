@@ -1,6 +1,5 @@
 package de.unibremen.opensores.webapp.filter;
 
-import com.sun.scenario.effect.FilterContext;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
