@@ -20,11 +20,14 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -87,33 +90,22 @@ public class GradingInsertController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
-        HttpServletRequest httpReq
-                = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext().getRequest();
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext exContext = facesContext.getExternalContext();
 
-        log.debug("Request URI: " + httpReq.getRequestURI());
-        final String courseIdString = httpReq.getParameter(Constants.HTTP_PARAM_COURSE_ID);
+        HttpServletRequest req = (HttpServletRequest) exContext.getRequest();
+        HttpServletResponse res = (HttpServletResponse) exContext.getResponse();
 
-        log.debug("course-id: " + courseIdString);
-        long courseId = -1;
-        if (courseIdString != null) {
+        user = (User) exContext.getSessionMap().get("user");
+        course = courseService.findCourseById(req.getParameter("course-id"));
+        if (course == null || user == null) {
             try {
-                courseId = Long.parseLong(courseIdString.trim());
-            } catch (NumberFormatException e) {
-                log.debug("NumberFormatException while parsing courseId");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            } catch (IOException e) {
+                log.fatal(e);
             }
+            return;
         }
-
-        course = courseService.find(Course.class, courseId);
-        /*
-        Store the logged in user
-         */
-        user = (User)FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getSessionMap()
-                .get("user");
     }
 
     public PaboGrade[] getPaboGrades() {
