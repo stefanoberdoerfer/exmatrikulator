@@ -239,7 +239,8 @@ public class TmeController implements Serializable {
      */
     private void importCourse(TMEObject obj) throws TmeException {
         String name = obj.getString("name");
-        if (courseService.findCourseByName(name) != null) {
+        Semester semester = createSemester(obj.getString("zeitraum"));
+        if (courseService.findCourseByName(name, semester) != null) {
             return;
         }
 
@@ -258,9 +259,8 @@ public class TmeController implements Serializable {
         type.setCreditPoints(null);
         type.setIsDefaultParttype(true);
         type.setCourse(course);
-        course.getParticipationTypes().add(type);
 
-        Semester semester = createSemester(obj.getString("zeitraum"));
+        course.getParticipationTypes().add(type);
         course.setSemester(semester);
 
         List<String> vaks = new ArrayList<>();
