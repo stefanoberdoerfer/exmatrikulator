@@ -10,8 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -72,14 +70,12 @@ public class BackupController {
 
     /**
      * Creates a backup to the path specified in config.properties.
-     *
-     * @param name the name of the Backup.
      */
-    public void createBackup(String name) {
+    public void createBackup() {
         Backup backup = null;
-
+        log.debug("createBackup called");
         try {
-            backup = backupService.runBackup("name");
+            backup = backupService.runBackup("Manual Backup");
         } catch (PersistenceException | IOException e) {
             log.fatal(e);
         }
@@ -90,16 +86,21 @@ public class BackupController {
     /**
      * Deletes a backup from disk and database.
      *
-     * @param id of the backup to be deleted.
+     * @param backup to be deleted.
      */
-    public void deleteBackup(String id) {
-        Backup b = backupService.findById(Long.parseLong(id));
-        String path = b.getPath();
-        backupService.remove(b);
+    public void deleteBackup(Backup backup) {
+        if (backup == null) {
+            log.debug("Backup is null, nothing to delete");
+            return;
+        }
+
+        String path = backup.getPath();
+        backupService.remove(backup);
 
         try {
             File file = new File(path);
             backupService.deleteFolder(file);
+            log.debug("Deleted Backup " + backup.getName());
         } catch (IOException | SecurityException e) {
             log.error(e);
         }
@@ -110,34 +111,22 @@ public class BackupController {
      *
      * @return HashMap of all backups with name and id.
      */
-    public Map<String, String> listBackups() {
-        Map<String, String> map = new HashMap<>();
-        List<Backup> list = backupService.listBackups();
-
-        for (Backup b : list) {
-            String name = b.getName() + "_" + dateForm.format(b.getDate());
-            String id = String.valueOf(b.getBackupId());
-            map.put(name, id);
-        }
-
-        return map;
+    public List<Backup> listBackups() {
+        return backupService.listBackups();
     }
 
     /**
-     * Returns a Map of all backups with the name...
+     * Converts the backups date to a string.
      *
-     * @return HashMap of backups with name and id.
+     * @param backup Backup of which the date is needed.
+     *
+     * @return the backups date as a string.
      */
-    public Map<String, String> listBackupsByName(String name) {
-        Map<String, String> map = new HashMap<>();
-        List<Backup> list = backupService.listBackupsByName(name);
-
-        for (Backup b : list) {
-            name = b.getName() + "_" + dateForm.format(b.getDate());
-            String id = String.valueOf(b.getBackupId());
-            map.put(name, id);
+    public String dateToString(Backup backup) {
+        if (backup == null) {
+            return "";
         }
 
-        return map;
+        return dateForm.format(backup.getDate());
     }
 }
