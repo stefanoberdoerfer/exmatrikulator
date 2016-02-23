@@ -218,7 +218,6 @@ public class TutorialEventController {
 
     }
 
-
     /*
      * Getters and Setters
      */
