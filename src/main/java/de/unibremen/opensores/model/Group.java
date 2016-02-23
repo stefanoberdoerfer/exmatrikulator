@@ -35,7 +35,7 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = CascadeType.MERGE)
     private List<Student> students = new ArrayList<>();
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 

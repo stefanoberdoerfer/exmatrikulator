@@ -13,7 +13,9 @@ import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.service.GroupService;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.TutorialService;
 
 import java.util.List;
@@ -75,6 +77,18 @@ public class TutorialController implements Serializable {
      */
     @EJB
     private transient TutorialService tutorialService;
+
+    /**
+     * The group service for connection to the database.
+     */
+    @EJB
+    private transient GroupService groupService;
+
+    /**
+     * The student service for connection to the database.
+     */
+    @EJB
+    private transient StudentService studentService;
 
     /**
      * Course for this tutorial.
@@ -187,6 +201,8 @@ public class TutorialController implements Serializable {
      * @param tutorial Tutorial to switch to.
      */
     public void changeCurrentTutorial(@NotNull Tutorial tutorial) {
+        log.debug("Switch to tutorial " + tutorial.getName());
+
         this.newTutorialName = null;
         this.removalConformation = null;
 
@@ -212,6 +228,8 @@ public class TutorialController implements Serializable {
      * @param group Group to switch to.
      */
     public void changeCurrentGroup(@NotNull Group group) {
+        log.debug("Switch to group " + group.getName());
+
         changeCurrentTutorial(group.getTutorial());
 
         this.group = group;
@@ -319,10 +337,20 @@ public class TutorialController implements Serializable {
      * Remove the current group from the current tutorial.
      */
     public void removeGroup() {
+        // TODO move remove stuff into a single transaction.
+        List<Student> students = group.getStudents();
+        if (students != null) {
+            for (Student student : group.getStudents()) {
+                student.setGroup(null);
+                studentService.update(student);
+            }
+        }
+
         course.getGroups().remove(group);
         tutorial.getGroups().remove(group);
         tutorial = tutorialService.update(tutorial);
 
+        groupService.remove(group);
         log.debug(String.format("Removed group %s from tutorial %s",
             group.getName(), tutorial.getName()));
 
@@ -356,6 +384,8 @@ public class TutorialController implements Serializable {
      * @param student Student to switch to.
      */
     public void changeCurrentStudent(@NotNull Student student) {
+        log.debug("Switch to student " + student.getUser());
+
         this.student = student;
         changeCurrentTutorial(student.getTutorial());
     }
@@ -376,11 +406,14 @@ public class TutorialController implements Serializable {
      * Removes the current student from the current tutorial.
      */
     public void removeStudent() {
-        student.setTutorial(null);
-        student.setGroup(null);
+        // TODO remove group if it has 0 members afterwards.
 
         tutorial.getStudents().remove(student);
         tutorial = tutorialService.update(tutorial);
+
+        student.setGroup(null);
+        student.setTutorial(null);
+        student = studentService.update(student);
     }
 
     /**
@@ -399,6 +432,7 @@ public class TutorialController implements Serializable {
      * @return List of tutorials or null if non exist.
      */
     public List<Tutorial> getTutorials() {
+        log.debug("GROUP SIZE " + course.getTutorials().get(0).getGroups().size());
         if (userService.hasCourseRole(user, Role.LECTURER, course)) {
             return course.getTutorials();
         }
