@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog id="addExistingDialog" header="#{msg['users.link']}" appendTo="@(body)" widgetVar="userAdd" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form>
+            <p:panel id="addExistingDlgPnl">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="addUserFirstname" class="col-xs-3 control-label">#{msg['common.name']}</label>
+                    <div class="col-xs-4">
+                        <h:inputText styleClass="form-control" id="addUserFirstname"
+                                     h5:placeholder="#{msg['common.firstName']}" autofocus="autofocus"
+                                     value="#{participantsController.selectedUser.firstName}">
+                            <f:validateLength minimum="#{EXcons.MIN_NAME_LENGTH}"
+                                              maximum="#{EXcons.MAX_NAME_LENGTH}"/>
+                        </h:inputText>
+                    </div>
+                    <div class="col-xs-4">
+                        <h:inputText styleClass="form-control" id="addUserLastname"
+                                     h5:placeholder="#{msg['common.lastName']}"
+                                     value="#{participantsController.selectedUser.lastName}">
+                            <f:validateLength minimum="#{EXcons.MIN_NAME_LENGTH}"
+                                              maximum="#{EXcons.MAX_NAME_LENGTH}"/>
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="addUserEmail" class="col-xs-3 control-label">#{msg['common.email']}</label>
+                    <div class="col-xs-8">
+                        <h:inputText styleClass="form-control" id="addUserEmail"
+                                     value="#{participantsController.selectedUser.email}"
+                                     validator="#{participantsController.validateEmail}"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="addUserMatriculation" class="col-xs-3 control-label">#{msg['common.studentNumber']}</label>
+                    <div class="col-xs-8">
+                        <h:inputText styleClass="form-control" id="addUserMatriculation"
+                                     value="#{participantsController.selectedUser.matriculationNumber}"/>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-group">
+                    <label for="addUserType" class="col-xs-3 control-label">#{msg['common.type']}</label>
+                    <div class="col-xs-8">
+                        <h:selectOneMenu styleClass="form-control" id="addUserType" value="#{participantsController.selectedRoleId}">
+                            <f:selectItem itemValue="#{Role.STUDENT.id}" itemLabel="#{msg['common.student']}" />
+                            <f:selectItem itemValue="#{Role.PRIVILEGED_USER.id}" itemLabel="#{msg['common.tutor']}" />
+                            <f:ajax process="@this" render="@form"/>
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="form-group" id="participationTypes">
+                    <h:panelGroup rendered="#{participantsController.selectedRoleId eq Role.STUDENT.id}">
+                        <label for="editParticipationType" class="col-xs-3 control-label">#{msg['common.participationType']}</label>
+                        <div class="col-xs-8">
+                            <h:selectOneMenu class="form-control" id="editParticipationType"
+                                             value="#{participantsController.selectedParticipationTypeId}">
+                                <f:selectItems value="#{participantsController.course.participationTypes}"
+                                               var="participationType" itemLabel="#{participationType.name}"
+                                               itemValue="#{participationType.partTypeId}"/>
+                            </h:selectOneMenu>
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <div class="form-group" id="issecretary">
+                    <h:panelGroup rendered="#{participantsController.selectedRoleId eq Role.PRIVILEGED_USER.id}">
+                        <label class="col-xs-3 control-label">#{msg['participants.create.secretary']}</label>
+                        <div class="checkbox">
+                            <h:selectBooleanCheckbox id="checkboxIsSecretary" value="#{participantsController.privilegedUserSecretary}" />
+                            <h:outputLabel value="#{msg['participants.create.secretaryText']}"
+                                           for="checkboxIsSecretary" />
+                        </div>
+                    </h:panelGroup>
+                </div>
+                <div class="form-group" id="priviliges">
+                    <h:panelGroup rendered="#{participantsController.selectedRoleId eq Role.PRIVILEGED_USER.id}">
+                        <label class="col-xs-3 control-label">#{msg['participants.additionalRights']}</label>
+                        <div class="col-xs-8">
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="addAdditionalFormula"
+                                                         value="#{participantsController.privilegeFormula}" />
+                                <h:outputLabel value="#{msg['participants.additionalRights.formula']}"
+                                               for="addAdditionalFormula" />
+                            </div>
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="addAdditionalExams"
+                                                         value="#{participantsController.privilegeExams}"/>
+                                <h:outputLabel value="#{msg['participants.additionalRights.exams']}"
+                                               for="addAdditionalExams" />
+                            </div>
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="addAdditionalStudents"
+                                                         value="#{participantsController.privilegeStudents}"/>
+                                <h:outputLabel value="#{msg['participants.additionalRights.students']}"
+                                               for="addAdditionalStudents" />
+                            </div>
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="addAdditionalExport"
+                                                         value="#{participantsController.privilegeExportData}"/>
+                                <h:outputLabel value="#{msg['participants.additionalRights.export']}"
+                                               for="addAdditionalExport" />
+                            </div>
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="addAdditionalTutorials"
+                                                         value="#{participantsController.privilegeTutorials}"/>
+                                <h:outputLabel value="#{msg['participants.additionalRights.tutorials']}"
+                                               for="addAdditionalTutorials" />
+                            </div>
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="addGenerateCredits"
+                                                         value="#{participantsController.privilegeGenerateCredits}" />
+                                <h:outputLabel value="#{msg['participants.additionalRights.credits']}"
+                                               for="addGenerateCredits" />
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group">
+                    <p:button value="#{msg['common.close']}" type="button" onclick="return exModal(':userAdd');"
+                              styleClass="btn btn-default" />
+                    <p:commandLink action="#{participantsController.createNewUser}"
+                                   id="addUserButton"
+                                   class="btn btn-primary" value="#{msg['common.add']}"
+                                   update=":participantForm:participantTbl"
+                                   oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userAdd')" />
+                </div>
+            </div>
+            </p:panel>
+            <p:blockUI block="addExistingDlgPnl" trigger="addUserButton"/>
+        </h:form>
+    </p:dialog>
+</ui:composition>

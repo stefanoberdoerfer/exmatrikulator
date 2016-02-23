@@ -69,7 +69,7 @@
                 <p:commandButton styleClass="btn btn-default" value="#{msg['participants.import']}"
                                  action="#{studentImportController.saveStudents()}"
                                  onsuccess="return exModal(':participantsImport');"
-                                 id="importButton" update="@all"/>
+                                 id="importButton" update=":participantForm"/>
             </div>
         </div>
         </p:panel>

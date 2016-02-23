@@ -55,6 +55,11 @@
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
+            <li>
+                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}">
+                    <f:param name="course-id" value="#{participantsController.course.courseId}"/>
+                </h:link>
+            </li>
         </ul>
 
         <h:form id="participantForm">
@@ -98,6 +103,7 @@
         <ui:include src="/WEB-INF/modals/participants/edit.xhtml" />
         <ui:include src="/WEB-INF/modals/participants/remove.xhtml" />
         <ui:include src="/WEB-INF/modals/participants/import.xhtml" />
+        <ui:include src="/WEB-INF/modals/participants/addExisting.xhtml" />
         <ui:include src="/WEB-INF/modals/participants/link/search.xhtml" />
         <ui:include src="/WEB-INF/modals/participants/link/participationType.xhtml" />
     </ui:define>

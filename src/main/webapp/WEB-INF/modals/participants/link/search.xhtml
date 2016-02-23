@@ -45,9 +45,9 @@
                                 <div class="col-xs-4 text-right">
                                     <p:commandButton
                                             oncomplete="PF('userLinkSearch').hide();
-                                                        return exModal('userCreate')"
+                                                        return exModal('userAdd')"
                                             class="btn btn-success"
-                                            update=":createUserDialog"
+                                            update=":addExistingDialog"
                                             value="#{msg['common.add']}">
                                         <f:actionListener binding="#{participantsController.onAddExistingUserCalled(user)}"/>
                                     </p:commandButton>

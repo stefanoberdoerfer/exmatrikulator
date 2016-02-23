@@ -188,6 +188,16 @@ public class ParticipantsController {
     private List<Student> filteredStudents;
 
     /**
+     * List of filtered deleted students for PrimeFaces filtering.
+     */
+    private List<Student> filteredDeletedStudents;
+
+    /**
+     * List of filtered deleted privilegedusers for PrimeFaces filtering.
+     */
+    private List<Student> filteredDeletedPrivUsers;
+
+    /**
      * List of filtered unconfirmed students for PrimeFaces filtering.
      */
     private List<Student> filteredUnconfirmedStudents;
@@ -427,9 +437,8 @@ public class ParticipantsController {
                     .initPasswordReset(selectedUser, RESET_TOKEN_EXPIRATION);
             selectedUser.setToken(passwordReset);
             userService.persist(selectedUser);
-        } else {
-            selectedUser = userService.update(selectedUser);
         }
+
         course = courseService.update(course);
 
         if (newToSystem) {
@@ -525,6 +534,34 @@ public class ParticipantsController {
         userSearchResultList.addAll(rawUserSearchResults.stream()
             .filter(user -> !course.containsUser(user))
             .collect(Collectors.toList()));
+    }
+
+    /**
+     * Restores a deleted student to undeleted status. His data will be equal
+     * to the state before deletion.
+     * @param student deleted student to be restored
+     */
+    public void restoreStudent(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student can't be null");
+        }
+        log.debug("restoreStudent called: " + student.getUser());
+        student.setDeleted(false);
+        course = courseService.update(course);
+    }
+
+    /**
+     * Restores a deleted privileged User to undeleted status. His data will be equal
+     * to the state before deletion.
+     * @param privUser deleted privileged User to be restored
+     */
+    public void restorePrivilegedUser(PrivilegedUser privUser) {
+        if (privUser == null) {
+            throw new IllegalArgumentException("Privileged User can't be null");
+        }
+        log.debug("restorePrivilegedUser called: " + privUser.getUser());
+        privUser.setDeleted(false);
+        course = courseService.update(course);
     }
 
 
@@ -883,6 +920,19 @@ public class ParticipantsController {
                 + " the course " + course.getName() + " as priviliged user.");
     }
 
+    private void logStudentRestored(Student student) {
+        logAction("The user " + student.getUser() + " has been restored in"
+                + " the course " + course.getName() + " as Student"
+                + " with participation type " + student.getParticipationType().getName()
+                + ". He/She has been in the course before.");
+    }
+
+    private void logPrivilegedUserRestored(PrivilegedUser privilegedUser) {
+        logAction("The user " + privilegedUser.getUser() + " has been restored in"
+                + " the course " + course.getName() + " as priviliged user."
+                + " He/She has been in the course before.");
+    }
+
     private void logOnEditStudent(Student student) {
         logAction("The values of the student"
                 + student.getUser() + " have been changed "
@@ -1159,5 +1209,21 @@ public class ParticipantsController {
 
     public void setPrivilegeGenerateCredits(boolean privilegeGenerateCredits) {
         this.privilegeGenerateCredits = privilegeGenerateCredits;
+    }
+
+    public List<Student> getFilteredDeletedStudents() {
+        return filteredDeletedStudents;
+    }
+
+    public void setFilteredDeletedStudents(List<Student> filteredDeletedStudents) {
+        this.filteredDeletedStudents = filteredDeletedStudents;
+    }
+
+    public List<Student> getFilteredDeletedPrivUsers() {
+        return filteredDeletedPrivUsers;
+    }
+
+    public void setFilteredDeletedPrivUsers(List<Student> filteredDeletedPrivUsers) {
+        this.filteredDeletedPrivUsers = filteredDeletedPrivUsers;
     }
 }

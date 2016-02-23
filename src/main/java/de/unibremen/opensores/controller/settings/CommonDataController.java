@@ -299,7 +299,7 @@ public class CommonDataController {
      * Small save method needed to save changes in the courseNumbers when the controller
      * is used from the settings page.
      */
-    public void saveCourseNumbers(){
+    public void saveCourseNumbers() {
         checkCourseIsNull();
         updateCourseNumbers();
     }
