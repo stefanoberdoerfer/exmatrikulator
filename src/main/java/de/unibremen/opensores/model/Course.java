@@ -206,6 +206,16 @@ public class Course {
     }
 
     /**
+     * Gets the students which are marked as deleted in course.
+     * @return The list of deleted students.
+     */
+    public List<Student> getDeletedStudents() {
+        return students.stream()
+                .filter(Student::isDeleted)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Gets the lecturers which are not hidden in this course.
      * @return The unhidden lecturers of this course.
      */
@@ -222,6 +232,16 @@ public class Course {
     public List<PrivilegedUser> getUndeletedTutors() {
         return tutors.stream()
                 .filter(tutor -> !tutor.isDeleted())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the deleted tutors of this course.
+     * @return The deleted tutors of this course.
+     */
+    public List<PrivilegedUser> getDeletedTutors() {
+        return tutors.stream()
+                .filter(PrivilegedUser::isDeleted)
                 .collect(Collectors.toList());
     }
 

@@ -4,6 +4,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.ParticipationType;
+import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
@@ -14,12 +15,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.flow.FlowScoped;
 import javax.inject.Named;
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * The Controller for the course creation wizard.
@@ -37,6 +44,16 @@ public class CourseCreateFlowController implements Serializable {
     private static final long serialVersionUID = 4242275867511550487L;
 
     private static transient Logger log = LogManager.getLogger(CourseCreateFlowController.class);
+
+    /**
+     * The expiration duration of a reset token of the newly created user.
+     */
+    private static final int RESET_TOKEN_EXPIRATION = 14 * 24;
+
+    /**
+     * Boolean if sending Mails produces errors only once.
+     */
+    private boolean mailError;
 
     /**
      * Boolean flags for completion status of the 4 different wizard steps.
@@ -63,6 +80,11 @@ public class CourseCreateFlowController implements Serializable {
      */
     private transient List<User> usersToBeCreated;
 
+    /**
+     * Messages ResourceBundle for localised text.
+     */
+    private transient ResourceBundle bundle;
+
     @EJB
     private transient LogService logService;
 
@@ -83,6 +105,8 @@ public class CourseCreateFlowController implements Serializable {
         course = new Course();
         user = (User) FacesContext.getCurrentInstance().getExternalContext()
                 .getSessionMap().get("user");
+        bundle = ResourceBundle.getBundle("messages",
+                FacesContext.getCurrentInstance().getViewRoot().getLocale());
 
         Lecturer lecturerCreator = new Lecturer();
         lecturerCreator.setUser(user);
@@ -123,7 +147,7 @@ public class CourseCreateFlowController implements Serializable {
             logDebugData();
 
             //persist new users
-            usersToBeCreated.stream().forEach(userService::persist);
+            usersToBeCreated.stream().forEach(this::createNewUser);
 
             //set default ParticipationType for all students
             ParticipationType defaultParttype = course.getDefaultParticipationType();
@@ -138,13 +162,42 @@ public class CourseCreateFlowController implements Serializable {
             log.debug("Created new Course: " + course.getName() + " with id: "
                     + course.getCourseId());
 
-            logService.persist(Log.from(user,course.getCourseId(),
-                    "Course has been created."));
+            //Domain logging
+            logCourseWasCreated();
+
+            for (User newUser : usersToBeCreated) {
+                if (!mailError) {
+                    logUserRegisteredToSystem(newUser);
+                } else {
+                    logUserRegisteredAndMailFailed(newUser);
+                }
+            }
+
+            course.getStudents().stream().forEach(this::logStudentCreated);
 
             courseWasSaved = true;
             return null;
         } else {
             return getReturnValue();
+        }
+    }
+
+    private void createNewUser(User newUser) {
+        PasswordReset passwordReset = userService
+                .initPasswordReset(newUser, RESET_TOKEN_EXPIRATION);
+        newUser.setToken(passwordReset);
+        userService.persist(newUser);
+        try {
+            sendRegistrationMail(newUser);
+        } catch (IOException | MessagingException ex) {
+            if (!mailError) {
+                log.error(ex);
+                FacesContext.getCurrentInstance()
+                        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL,
+                                bundle.getString("common.error"),
+                                bundle.getString("passwordReset.mailFail")));
+                mailError = true;
+            }
         }
     }
 
@@ -154,6 +207,24 @@ public class CourseCreateFlowController implements Serializable {
      */
     public String getReturnValue() {
         return "return-node";
+    }
+
+    /**
+     * Sends a newly registered user an email that they are registered now.
+     */
+    private void sendRegistrationMail(User newUser) throws MessagingException, IOException {
+        HttpServletRequest request = (HttpServletRequest)
+                FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String url = userService.getPasswordResetURL(request, newUser,
+                newUser.getToken());
+
+        String registratorName = user.toString();
+        String fmt = bundle.getString("registration.mailByLecturer");
+        String text = new MessageFormat(fmt).format(new Object[]{
+                newUser.getFirstName(), registratorName,
+                course.getName(), url});
+        String subject = bundle.getString("passwordReset.mailSubject");
+        newUser.sendEmail(subject, text);
     }
 
     private void logDebugData() {
@@ -192,6 +263,42 @@ public class CourseCreateFlowController implements Serializable {
     public boolean isStepFinished(int step) {
         int index = step - 1;
         return !(index < 0 || index >= stepFinished.length) && stepFinished[index];
+    }
+
+    /*
+     * Exmatrikulator logging
+     */
+
+    /**
+     * Small wrapper method to persist logs with LogService.
+     * Logs the participation actions with the logService, knowing that the
+     * logged in User and the course stay the same.
+     * @pre course has to be persisted first in order to have an id
+     * @param description The description of the action, not null.
+     */
+    private void logAction(String description) {
+        logService.persist(Log.from(user, course.getCourseId(), description));
+    }
+
+    private void logCourseWasCreated() {
+        logAction("Course has been created.");
+    }
+
+    private void logUserRegisteredToSystem(User newUser) {
+        logAction("The user " + newUser + " has been registered in Exmatrikulator."
+                + " An email was send to him/her to set the password.");
+    }
+
+    private void logUserRegisteredAndMailFailed(User newUser) {
+        logAction("The user " + newUser + " has been registered in Exmatrikulator."
+                + " An email could not be send to him/her.");
+    }
+
+    private void logStudentCreated(Student student) {
+        logAction("The user " + student.getUser() + " has been added to"
+                + " the course " + course.getName() + " as Student"
+                + " with participation type " + student.getParticipationType().getName()
+                + ".");
     }
 
     public List<User> getUsersToBeCreated() {

@@ -4,6 +4,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Field;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.User;
@@ -238,43 +239,69 @@ public class CommonDataController {
 
         log.debug("addAsLecturer called with user: " + user);
 
-        //check if not already a lecturer
-        for (Lecturer l : course.getLecturers()) {
-            if (l.getUser().getUserId().equals(user.getUserId())) {
-                return;
-            }
+        //check if not already a lecturer or already a deleted lecturer + PrivUser
+        Lecturer alreadyLec = course.getLecturerFromUser(user);
+        PrivilegedUser alreadyPriv = course.getPrivilegedUserFromUser(user);
+
+        if (alreadyLec != null) {
+            alreadyLec.setDeleted(false);
+            log.debug("Already a lecturer - setting deleted to false");
+        } else {
+            Lecturer lec = new Lecturer();
+            lec.setUser(user);
+            lec.setHidden(false);
+            lec.setCourse(course);
+            lec.setIsCourseCreator(false);
+            course.getLecturers().add(lec);
+            log.debug("Created new lecturer");
         }
 
-        Lecturer lec = new Lecturer();
-        lec.setUser(user);
-        lec.setHidden(false);
-        lec.setCourse(course);
-        lec.setIsCourseCreator(false);
-        course.getLecturers().add(lec);
-
-        PrivilegedUser privUser = new PrivilegedUser();
-        privUser.setUser(user);
-        privUser.setHidden(false);
-        privUser.setSecretary(false);
-        privUser.setCourse(course);
-        course.getTutors().add(privUser);
+        if (alreadyPriv != null) {
+            alreadyPriv.setDeleted(false);
+            log.debug("Already a Tutor - setting deleted to false");
+        } else {
+            PrivilegedUser privUser = new PrivilegedUser();
+            privUser.setUser(user);
+            privUser.setHidden(false);
+            privUser.setSecretary(false);
+            privUser.setCourse(course);
+            course.getTutors().add(privUser);
+            log.debug("Already new Tutor");
+        }
 
         searchResultList.remove(user);
     }
 
     /**
      * Removes one Lecturer from the courses list of lecturers and also removes him as
-     * a Privileged User. Indexed looping is used to avoid ConcurrentModificationException.
+     * a Privileged User.
      */
     public void removeLecturer(Lecturer lecturer) {
+        log.debug("Remove Lecturer: " + lecturer.getUser());
         checkCourseIsNull();
-        course.getLecturers().remove(lecturer);
-        List<PrivilegedUser> tutors = course.getTutors();
-        for (int i = 0; i < tutors.size(); i++) {
-            if (tutors.get(i).getUser().getUserId().equals(lecturer.getUser().getUserId())) {
-                tutors.remove(i);
+        lecturer.setDeleted(true);
+
+        PrivilegedUser pu = course.getPrivilegedUserFromUser(lecturer.getUser());
+        if (pu != null) {
+            pu.setDeleted(true);
+        }
+
+        if (calledFromWizard) {
+            log.debug("Real removal (not only deleted = true)");
+            course.getLecturers().remove(lecturer);
+            if (pu != null) {
+                course.getTutors().remove(pu);
             }
         }
+    }
+
+    /**
+     * Small save method needed to save changes in the courseNumbers when the controller
+     * is used from the settings page.
+     */
+    public void saveCourseNumbers() {
+        checkCourseIsNull();
+        updateCourseNumbers();
     }
 
     /**

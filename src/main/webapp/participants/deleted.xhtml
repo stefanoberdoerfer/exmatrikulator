@@ -35,7 +35,7 @@
         </div>
 
         <ul class="nav nav-tabs inverted" role="tablist">
-            <li class="active">
+            <li>
                 <h:link outcome="/participants/students" value="#{msg['common.students']}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
@@ -55,7 +55,7 @@
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
-            <li>
+            <li class="active">
                 <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
@@ -64,11 +64,12 @@
 
         <h:form id="participantForm"
                 rendered="#{participantsController.loggedInUserCanManageStudents}">
-            <p:dataTable id="participantTbl" widgetVar="studentsTblWidget"
-                     var="student"
-                     value="#{participantsController.course.confirmedUndeletedStudents}"
-                     filteredValue="#{participantsController.filteredStudents}"
-                     emptyMessage="#{msg['participants.noStudents']}">
+            <h2>#{msg['common.students']}</h2>
+            <p:dataTable id="participantTbl" widgetVar="deletedStudentsTblWidget"
+                         var="student"
+                         value="#{participantsController.course.deletedStudents}"
+                         filteredValue="#{participantsController.filteredDeletedStudents}"
+                         emptyMessage="#{msg['participants.noDeletedStudents']}">
                 <p:column headerText="#{msg['common.lastName']}"
                           sortBy="#{student.user.lastName}"
                           filterBy="#{student.user.lastName}"
@@ -95,38 +96,63 @@
                           filterBy="#{student.user.matriculationNumber}"
                           filterMatchMode="contains"
                           styleClass="table-users-matriculation-nr text-center">
-                    <h:outputText value="#{student.user.matriculationNumber}" />
+                    <h:outputText value="#{student.user.matriculationNumber}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.participationType']}"
                           sortBy="#{student.participationType.name}"
                           filterBy="#{student.participationType.name}"
                           filterMatchMode="contains">
-                        <h:outputText value="#{student.participationType.name}"/>
-                </p:column>
-                <p:column headerText="#{msg['gradeType.paboGrade']}"
-                          sortBy="#{student.paboGrade}"
-                          filterBy="#{student.paboGrade}"
-                          filterMatchMode="contains"
-                          styleClass="table-grades-grade text-center">
-                    <h:outputText value="#{participantsController.getPaboGradeName(student.paboGrade)}"/>
+                    <h:outputText value="#{student.participationType.name}"/>
                 </p:column>
                 <p:column headerText="#{msg['common.actions']}"
-                          styleClass="table-common-options-two text-right">
-                    <p:commandLink oncomplete="return exModal('participantEdit');"
-                                   h5:data-toggle="tooltip" update=":editUserDialog"
-                                   h5:data-placement="top" title="#{msg['course.student.edit']}"
+                          styleClass="table-common-options-one text-right">
+                    <p:commandLink h5:data-toggle="tooltip"
+                                   update="participantTbl"
                                    class="btn btn-default"
+                                   h5:data-placement="top" title="#{msg['common.restoreParticipant']}" styleClass="btn btn-success"
                                    rendered="#{participantsController.loggedInUserCanManageStudents}">
-                        <i class="fa fa-pencil"></i>
-                        <f:actionListener binding="#{participantsController.onEditStudentDialogCalled(student)}" />
+                        <i class="fa fa-undo"/>
+                        <f:actionListener binding="#{participantsController.restoreStudent(student)}"/>
                     </p:commandLink>
-                    <p:commandLink oncomplete="return exModal('participantRemove');"
-                                   update=":participantRemoveDialog" h5:data-toggle="tooltip"
-                                   h5:data-placement="top" title="#{msg['course.student.remove']}"
-                                   class="btn btn-danger"
-                                   rendered="#{participantsController.loggedInUserCanManageStudents}">
-                        <i class="fa fa-remove"></i>
-                        <f:actionListener binding="#{participantsController.onDeleteStudentDialogCalled(student)}" />
+                </p:column>
+            </p:dataTable>
+            <h2>#{msg['common.tutors']}</h2>
+            <p:dataTable id="participantTbl2" widgetVar="deletedtutorsTblWidget"
+                         var="tutor"
+                         value="#{participantsController.course.deletedTutors}"
+                         filteredValue="#{participantsController.filteredDeletedPrivUsers}"
+                         emptyMessage="#{msg['participants.noDeletedPrivilegedUsers']}">
+                <p:column headerText="#{msg['common.lastName']}"
+                          sortBy="#{tutor.user.lastName}"
+                          filterBy="#{tutor.user.lastName}"
+                          filterMatchMode="contains"
+                          styleClass="table-users-lastname">
+                    <h:outputText value="#{tutor.user.lastName}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.firstName']}"
+                          sortBy="#{tutor.user.firstName}"
+                          filterBy="#{tutor.user.firstName}"
+                          filterMatchMode="contains"
+                          styleClass="table-users-firstname">
+                    <h:outputText value="#{tutor.user.firstName}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.email']}"
+                          sortBy="#{tutor.user.email}"
+                          filterBy="#{tutor.user.email}"
+                          filterMatchMode="contains"
+                          styleClass="table-common-email">
+                    <h:outputText value="#{tutor.user.email}"/>
+                </p:column>
+                <p:column headerText="#{msg['common.actions']}"
+                          styleClass="table-common-options-one text-right">
+                    <p:commandLink update="participantTbl2"
+                                   h5:data-toggle="tooltip"
+                                   h5:data-placement="top" title="#{msg['common.restoreParticipant']}"
+                                   class="btn btn-default"
+                                   rendered="#{participantsController.loggedInUserCanManageTutors
+                                       and participantsController.course.getLecturerFromUser(tutor.user) == null}">
+                        <f:actionListener binding="#{participantsController.restorePrivilegedUser(tutor)}"/>
+                        <i class="fa fa-undo"></i>
                     </p:commandLink>
                 </p:column>
             </p:dataTable>

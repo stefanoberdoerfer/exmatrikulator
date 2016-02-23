@@ -28,10 +28,12 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -186,6 +188,16 @@ public class ParticipantsController {
     private List<Student> filteredStudents;
 
     /**
+     * List of filtered deleted students for PrimeFaces filtering.
+     */
+    private List<Student> filteredDeletedStudents;
+
+    /**
+     * List of filtered deleted privilegedusers for PrimeFaces filtering.
+     */
+    private List<Student> filteredDeletedPrivUsers;
+
+    /**
      * List of filtered unconfirmed students for PrimeFaces filtering.
      */
     private List<Student> filteredUnconfirmedStudents;
@@ -230,50 +242,28 @@ public class ParticipantsController {
         selectedRoleId = Role.STUDENT.getId();
         userSearchResultList = new ArrayList<>();
         log.debug("init() called");
-        HttpServletRequest httpReq
-                = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext().getRequest();
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext exContext = facesContext.getExternalContext();
 
-        log.debug("Request URI: " + httpReq.getRequestURI());
-        final String courseIdString = httpReq.getParameter(Constants.HTTP_PARAM_COURSE_ID);
+        HttpServletRequest req = (HttpServletRequest) exContext.getRequest();
+        HttpServletResponse res = (HttpServletResponse) exContext.getResponse();
 
-        log.debug("course-id: " + courseIdString);
-        long courseId = -1;
-        if (courseIdString != null) {
+        loggedInUser = (User) exContext.getSessionMap().get("user");
+        course = courseService.findCourseById(req.getParameter("course-id"));
+        if (course == null || loggedInUser == null) {
             try {
-                courseId = Long.parseLong(courseIdString.trim());
-            } catch (NumberFormatException e) {
-                log.debug("NumberFormatException while parsing courseId");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            } catch (IOException e) {
+                log.fatal(e);
             }
+            return;
         }
-
-        if (courseId != -1) {
-            course = courseService.find(Course.class, courseId);
-        }
-
-        Object userObj = FacesContext.getCurrentInstance()
-                .getExternalContext().getSessionMap().get("user");
 
         log.debug("Loaded course object: " + course);
 
-        if (course == null || !(userObj instanceof User)) {
-            log.debug("trying to redirect to /course/overview");
-            try {
-                FacesContext.getCurrentInstance()
-                        .getExternalContext().redirect(FacesContext
-                        .getCurrentInstance().getExternalContext()
-                        .getApplicationContextPath() + Constants.PATH_TO_COURSE_OVERVIEW);
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.fatal("Could not redirect to " + Constants.PATH_TO_COURSE_OVERVIEW);
-                return;
-            }
-        }
         bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
 
-        loggedInUser = (User) userObj;
         selectedParticipationTypeId = course.getDefaultParticipationType().getPartTypeId();
 
         loggedInUserCanManageTutors = course.getLecturerFromUser(loggedInUser) != null;
@@ -447,9 +437,8 @@ public class ParticipantsController {
                     .initPasswordReset(selectedUser, RESET_TOKEN_EXPIRATION);
             selectedUser.setToken(passwordReset);
             userService.persist(selectedUser);
-        } else {
-            selectedUser = userService.update(selectedUser);
         }
+
         course = courseService.update(course);
 
         if (newToSystem) {
@@ -545,6 +534,34 @@ public class ParticipantsController {
         userSearchResultList.addAll(rawUserSearchResults.stream()
             .filter(user -> !course.containsUser(user))
             .collect(Collectors.toList()));
+    }
+
+    /**
+     * Restores a deleted student to undeleted status. His data will be equal
+     * to the state before deletion.
+     * @param student deleted student to be restored
+     */
+    public void restoreStudent(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student can't be null");
+        }
+        log.debug("restoreStudent called: " + student.getUser());
+        student.setDeleted(false);
+        course = courseService.update(course);
+    }
+
+    /**
+     * Restores a deleted privileged User to undeleted status. His data will be equal
+     * to the state before deletion.
+     * @param privUser deleted privileged User to be restored
+     */
+    public void restorePrivilegedUser(PrivilegedUser privUser) {
+        if (privUser == null) {
+            throw new IllegalArgumentException("Privileged User can't be null");
+        }
+        log.debug("restorePrivilegedUser called: " + privUser.getUser());
+        privUser.setDeleted(false);
+        course = courseService.update(course);
     }
 
 
@@ -903,6 +920,19 @@ public class ParticipantsController {
                 + " the course " + course.getName() + " as priviliged user.");
     }
 
+    private void logStudentRestored(Student student) {
+        logAction("The user " + student.getUser() + " has been restored in"
+                + " the course " + course.getName() + " as Student"
+                + " with participation type " + student.getParticipationType().getName()
+                + ". He/She has been in the course before.");
+    }
+
+    private void logPrivilegedUserRestored(PrivilegedUser privilegedUser) {
+        logAction("The user " + privilegedUser.getUser() + " has been restored in"
+                + " the course " + course.getName() + " as priviliged user."
+                + " He/She has been in the course before.");
+    }
+
     private void logOnEditStudent(Student student) {
         logAction("The values of the student"
                 + student.getUser() + " have been changed "
@@ -1179,5 +1209,21 @@ public class ParticipantsController {
 
     public void setPrivilegeGenerateCredits(boolean privilegeGenerateCredits) {
         this.privilegeGenerateCredits = privilegeGenerateCredits;
+    }
+
+    public List<Student> getFilteredDeletedStudents() {
+        return filteredDeletedStudents;
+    }
+
+    public void setFilteredDeletedStudents(List<Student> filteredDeletedStudents) {
+        this.filteredDeletedStudents = filteredDeletedStudents;
+    }
+
+    public List<Student> getFilteredDeletedPrivUsers() {
+        return filteredDeletedPrivUsers;
+    }
+
+    public void setFilteredDeletedPrivUsers(List<Student> filteredDeletedPrivUsers) {
+        this.filteredDeletedPrivUsers = filteredDeletedPrivUsers;
     }
 }

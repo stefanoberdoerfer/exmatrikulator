@@ -23,7 +23,6 @@
                     <h:form>
                     <p:commandLink styleClass="btn btn-primary" value="#{msg['settings.saveAndGoBack']}"
                                    action="/settings/overview">
-                        <f:ajax execute=":commonDataForm"/>
                         <f:param name="course-id" value="#{commonDataController.course.courseId}"/>
                     </p:commandLink>
                     </h:form>
@@ -57,9 +56,17 @@
                         </h:panelGroup>
                     </div>
                     <div class="form-group">
-                        <div class="col-xs-9 col-xs-offset-3">
+                        <div class="col-xs-2 col-xs-offset-3">
                             <h:commandButton value="#{msg['courses.create.moreVAK']}" class="btn btn-default">
                                 <f:ajax listener="#{commonDataController.addCourseNumber}"
+                                        execute="@form" render="@form"
+                                />
+                            </h:commandButton>
+                        </div>
+                        <div class="col-xs-2 col-xs-offset-2">
+                            <h:commandButton value="#{msg['courses.create.saveVAK']}" class="btn btn-default"
+                                rendered="#{!commonDataController.calledFromWizard}">
+                                <f:ajax listener="#{commonDataController.saveCourseNumbers()}"
                                         execute="@form" render="@form"
                                 />
                             </h:commandButton>
@@ -148,7 +155,7 @@
                         <h:outputLabel class="col-xs-3 control-label text-left" value="#{msg['common.lecturers']}" />
                         <div class="col-xs-9" >
                             <ui:repeat value="#{commonDataController.course.lecturers}" var="lecturer">
-                                <div class="form-control-static">
+                                <h:panelGroup layout="block" styleClass="form-control-static" rendered="#{!lecturer.isDeleted()}">
                                     #{lecturer.user}
                                     <h:commandLink class="btn btn-danger col-xs-offset-3"
                                                    rendered="#{!lecturer.isCourseCreator()}">
@@ -157,7 +164,7 @@
                                                 execute="@form" render="@form" immediate="true"
                                         />
                                     </h:commandLink>
-                                </div>
+                                </h:panelGroup>
                             </ui:repeat>
                         </div>
                     </h:panelGroup>
