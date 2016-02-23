@@ -14,8 +14,6 @@ import java.util.Date;
 public class TutorialEvent extends DefaultEvent {
 
     @ManyToOne
-    @JoinColumn(name = "TUTORIAL_ID")
-    @Column(nullable = false)
     private Tutorial tutorial;
 
     public TutorialEvent() {

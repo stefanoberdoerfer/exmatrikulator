@@ -47,6 +47,21 @@ public class Tutorial {
             inverseJoinColumns = {@JoinColumn(name = "privUserId")})
     private List<PrivilegedUser> tutors = new ArrayList<>();
 
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Tutorial && (tutorialId != null)
+                ? tutorialId.equals(((Tutorial) object).tutorialId)
+                : (object == this);
+    }
+
+    @Override
+    public int hashCode() {
+        return tutorialId != null
+                ? this.getClass().hashCode() + tutorialId.hashCode()
+                : super.hashCode();
+    }
+    
     public Long getTutorialId() {
         return tutorialId;
     }

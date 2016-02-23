@@ -87,8 +87,16 @@ public class TutorialService extends GenericService<Tutorial> {
         if (tutorial == null || user == null) {
             throw new IllegalArgumentException("The tutorial and user cant be null");
         }
-        //TODO
-        return null;
+        List<PrivilegedUser> tutors = em.createQuery(
+                "SELECT DISTINCT tutor FROM PrivilegedUser tutor "
+                        + "JOIN tutor.tutorials AS tutorial "
+                        + "WHERE tutorial.tutorialId = :tutId "
+                        + "AND tutor.user.userId = :userId "
+                        + "AND tutor.isDeleted = false ", PrivilegedUser.class)
+                .setParameter("tutId", tutorial.getTutorialId())
+                .setParameter("userId", user.getUserId())
+                .getResultList();
+        return tutors.isEmpty() ? null : tutors.get(0);
     }
 
     /**
@@ -104,7 +112,9 @@ public class TutorialService extends GenericService<Tutorial> {
         List<Student> students = em.createQuery(
                 "SELECT s FROM Student s "
                         + "JOIN s.tutorial AS t WITH t.tutorialId = :tutId "
-                        + "WHERE s.user.id = :userId",Student.class)
+                        + "WHERE s.user.id = :userId "
+                        + "AND s.deleted = false "
+                        + "AND s.user.isConfirmed = true",Student.class)
                 .setParameter("tutId", tutorial.getTutorialId())
                 .setParameter("userId", user.getUserId())
                 .getResultList();

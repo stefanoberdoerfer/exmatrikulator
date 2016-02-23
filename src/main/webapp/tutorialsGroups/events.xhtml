@@ -1,0 +1,44 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['courses.tutorialsGroups']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li>#{tutorialEventController.course.name}</li>
+        <li class="active">#{msg['courses.tutorialsGroups']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <p:growl id="messages" showDetail="true" />
+        <h:form id="tutorForm" rendered="#{tutorialEventController.userTutor}">
+            <div class="form-group">
+                <p:schedule id="tutorSchedule"
+                            value="#{tutorialEventController.tutorialEventModel}"
+                            widgetVar="tutorSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}">
+                            <!-- TODO Locale -->
+                    <p:ajax event="dateSelect" listener="#{tutorialEventController.onDateSelect}" />
+                    <p:ajax event="eventSelect" listener="#{tutorialEventController.onEventSelect}" />
+                    <p:ajax event="eventMove" listener="#{tutorialEventController.onEventMove}" update="messages" />
+                    <p:ajax event="eventResize" listener="#{tutorialEventController.onEventResize}" update="messages" />
+                </p:schedule>
+            </div>
+        </h:form>
+
+        <h:form id="studentForm" rendered="#{not tutorialEventController.userTutor}">
+            <div class="form-group">
+                <p:schedule id="studentSchedule"
+                            value="#{tutorialEventController.tutorialEventModel}"
+                            widgetVar="studentSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}"
+                            draggable="false">
+                    <!-- TODO Locale -->
+                    <p:ajax event="eventSelect" listener="#{tutorialEventController.onEventSelect}" />
+                </p:schedule>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

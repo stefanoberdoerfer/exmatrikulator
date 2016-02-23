@@ -103,25 +103,40 @@ public class TutorialEventController {
      */
     @PostConstruct
     public void init() {
+        log.debug("init() called");
         if (tutorialEventModel == null) {
             tutorialEventModel = new DefaultScheduleModel();
         }
         HttpServletRequest req =
                 (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext().getRequest();
+                        .getExternalContext().getRequest();
         course = courseService.findCourseById(
                 req.getParameter(Constants.HTTP_PARAM_COURSE_ID));
         tutorial = tutorialService.findTutorialById(
                 req.getParameter(Constants.HTTP_PARAM_TUTORIAL_ID));
+        log.debug("Course: " + course);
+        log.debug("Tutorial: " + tutorial);
 
         boolean validationPassed = false;
-        if (course != null && tutorial != null && course.getTutorials().contains(tutorial)) {
+        try {
+            loggedInUser = (User) FacesContext.getCurrentInstance()
+                    .getExternalContext().getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
+        } catch (ClassCastException e) {
+            log.error(e);
+        }
+        log.debug("Logged in User: " + loggedInUser);
+        if (course != null && tutorial != null && loggedInUser != null
+               && course.getTutorials().contains(tutorial)) {
+            log.debug("Checking if user is tutor");
             isUserTutor = tutorialService.getTutorOf(tutorial, loggedInUser) != null;
+            log.debug("User is tutor: " + isUserTutor);
             validationPassed = isUserTutor
                     || tutorialService.getStudentOf(tutorial, loggedInUser) != null;
+
         }
 
         if (!validationPassed) {
+            log.debug("Validation hasn't passed");
             try {
                 FacesContext.getCurrentInstance()
                         .getExternalContext().redirect(FacesContext
@@ -211,8 +226,8 @@ public class TutorialEventController {
      */
     private List<User> getMailList() {
         return Stream.concat(
-                    tutorial.getStudents().stream().map(student -> student.getUser()),
-                    tutorial.getTutors().stream().map(tutor -> tutor.getUser()))
+                tutorial.getStudents().stream().map(student -> student.getUser()),
+                tutorial.getTutors().stream().map(tutor -> tutor.getUser()))
                 .filter(user -> !user.equals(loggedInUser))
                 .collect(Collectors.toList());
 
@@ -259,5 +274,9 @@ public class TutorialEventController {
 
     public boolean isUserTutor() {
         return isUserTutor;
+    }
+
+    public Course getCourse() {
+        return course;
     }
 }
