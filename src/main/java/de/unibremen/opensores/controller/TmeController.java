@@ -18,6 +18,7 @@ import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.GroupService;
 import de.unibremen.opensores.service.CourseService;
@@ -248,6 +249,16 @@ public class TmeController implements Serializable {
         course.setDefaultCreditPoints(obj.getInt("cp"));
         course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
+
+        ParticipationType type = new ParticipationType();
+        type.setName(obj.getString("studyArea"));
+        type.setGroupPerformance(obj.getBoolean("groupPerformance"));
+        type.setRestricted(false);
+        type.setSws(null);
+        type.setCreditPoints(null);
+        type.setIsDefaultParttype(true);
+        type.setCourse(course);
+        course.getParticipationTypes().add(type);
 
         Semester semester = createSemester(obj.getString("zeitraum"));
         course.setSemester(semester);
