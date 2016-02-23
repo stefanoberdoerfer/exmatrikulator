@@ -44,12 +44,15 @@
         <h:form id="gradingForm">
             <p:dataTable id="gradingTbl" var="group" value="#{gradingController.groups}"
                          styleClass="table table-hover table-courses-overview"
-                         paginatior="true" rows="15">
+                         paginator="true" rows="20"
+                         paginatorTemplate="{RowsPerPageDropdown}
+                             {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                             {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="20,50,100">
                 <p:column styleClass="table-common-options-one">
                     <p:rowToggler/>
                 </p:column>
-                <p:column>
-                    <f:facet name="header">#{msg['groups.name']}</f:facet>
+                <p:column headerText="#{msg['groups.name']}">
                     #{group.name}
                 </p:column>
 

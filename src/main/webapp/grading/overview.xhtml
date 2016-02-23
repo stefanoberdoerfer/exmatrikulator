@@ -56,20 +56,22 @@
         <h:form id="gradingForm">
             <p:dataTable id="gradingTbl" var="student" value="#{gradingController.students}"
                          styleClass="table table-hover table-courses-overview"
-                         paginatior="true" rows="15">
+                         paginator="true" rows="20"
+                         paginatorTemplate="{RowsPerPageDropdown}
+                             {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                             {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="20,50,100">
                 <p:column styleClass="table-common-options-one">
                     <p:rowToggler/>
                 </p:column>
-                <p:column styleClass="table-grades-name">
-                    <f:facet name="header">#{msg['common.student']}</f:facet>
+                <p:column styleClass="table-grades-name" headerText="#{msg['common.student']}">
                     #{student.user.firstName} <strong>#{student.user.lastName}</strong>
                     <div class="table-common-sub">#{student.user.email}</div>
                 </p:column>
-                <p:column>
-                    <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
+                <p:column headerText="#{msg['common.studentNumber']}">
+                    #{student.user.matriculationNumber}
                 </p:column>
-                <p:column styleClass="table-grades-grade text-center">
-                    <f:facet name="header">#{msg['gradeType.paboGrade']}</f:facet>
+                <p:column styleClass="table-grades-grade text-center" headerText="#{msg['gradeType.paboGrade']}">
                     <p:commandLink action="#{gradingEditController.setFinalGrading(student)}"
                                    oncomplete="return exModal('gradeEditFinal');" update="gradeEditFinalForm"
                                    styleClass="pull-right"
