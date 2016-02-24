@@ -225,6 +225,8 @@ public class TutorialController implements Serializable {
         this.tutorialStudents.setSource(courseService
             .studentsWithoutTutorial(course));
         this.tutorialStudents.setTarget(new ArrayList<>());
+
+        log.debug("Switched to tutorial " + tutorial.getName());
     }
 
     /**
@@ -239,6 +241,8 @@ public class TutorialController implements Serializable {
         this.group = grp;
         this.groupName = group.getName();
         this.groupMembers.setTarget(group.getStudents());
+
+        log.debug("Switched to group " + group.getName());
     }
 
     /**
@@ -423,6 +427,8 @@ public class TutorialController implements Serializable {
         List<Student> students = new ArrayList<>();
         for (Student student : newMembers) {
             student.setGroup(group);
+            studentService.update(student);
+
             log.debug(String.format("Added student with email %s to group %s",
                 student.getUser().getEmail(), group.getName()));
             students.add(student);
@@ -440,6 +446,8 @@ public class TutorialController implements Serializable {
     public void changeCurrentStudent(long id) {
         this.student = studentService.find(Student.class, id);
         changeCurrentTutorial(student.getTutorial().getTutorialId());
+
+        log.debug("Switched to student " + student.getUser());
     }
 
     /**
