@@ -84,7 +84,8 @@ public class UserService extends GenericService<User> {
         List<Lecturer> lecturers = em.createQuery(
                 "SELECT DISTINCT l FROM Lecturer l "
                 + "JOIN l.user    AS u WITH u.userId = :uid "
-                + "JOIN l.course  AS c WITH c.courseId = :cid", Lecturer.class)
+                + "JOIN l.course  AS c WITH c.courseId = :cid "
+                + "WHERE l.isDeleted = false", Lecturer.class)
             .setParameter("uid", user.getUserId())
             .setParameter("cid", course.getCourseId())
             .getResultList();
@@ -103,7 +104,8 @@ public class UserService extends GenericService<User> {
         List<Lecturer> lecturers = em.createQuery(
                 "SELECT DISTINCT l FROM Lecturer l "
                 + "JOIN l.user    AS u WITH u.userId = :uid "
-                + "JOIN l.course  AS c WITH c.courseId = :cid", Lecturer.class)
+                + "JOIN l.course  AS c WITH c.courseId = :cid "
+                + "WHERE l.isDeleted = false", Lecturer.class)
             .setParameter("uid", user.getUserId())
             .setParameter("cid", course.getCourseId())
             .getResultList();
@@ -122,7 +124,8 @@ public class UserService extends GenericService<User> {
         List<PrivilegedUser> privUsers = em.createQuery(
                 "SELECT DISTINCT p FROM PrivilegedUser p "
                 + "JOIN p.user    AS u WITH u.userId = :uid "
-                + "JOIN p.course  AS c WITH c.courseId = :cid", PrivilegedUser.class)
+                + "JOIN p.course  AS c WITH c.courseId = :cid "
+                + "WHERE p.isDeleted = false", PrivilegedUser.class)
             .setParameter("uid", user.getUserId())
             .setParameter("cid", course.getCourseId())
             .getResultList();
@@ -141,7 +144,8 @@ public class UserService extends GenericService<User> {
         List<Student> students = em.createQuery(
                 "SELECT DISTINCT s FROM Student s "
                 + "JOIN s.user    AS u WITH u.userId = :uid "
-                + "JOIN s.course  AS c WITH c.courseId = :cid", Student.class)
+                + "JOIN s.course  AS c WITH c.courseId = :cid "
+                + "WHERE s.isDeleted = false", Student.class)
             .setParameter("uid", user.getUserId())
             .setParameter("cid", course.getCourseId())
             .getResultList();
@@ -186,7 +190,7 @@ public class UserService extends GenericService<User> {
      * Returns a list of courses this user takes part in.
      *
      * @param user User to lookup courses for.
-     * @param hidden Whether hidden courses should be included.
+     * @param hidden Whether hidden or unhidden courses should be in the list.
      * @return List of courses or null if none where found.
      */
     public List<Course> getCourses(final User user, boolean hidden) {
@@ -201,9 +205,9 @@ public class UserService extends GenericService<User> {
                 + " WITH t.user.userId = :id"
                 + " LEFT JOIN c.lecturers AS l"
                 + " WITH l.user.userId = :id"
-                + " WHERE s.isHidden = :hidden OR"
-                + " l.isHidden = :hidden OR"
-                + " t.isHidden = :hidden", Course.class)
+                + " WHERE (s.isHidden = :hidden and s.isDeleted = false) OR"
+                + " (l.isHidden = :hidden and l.isDeleted = false) OR"
+                + " (t.isHidden = :hidden and t.isDeleted = false)", Course.class)
             .setParameter("id", user.getUserId())
             .setParameter("hidden", hidden)
             .getResultList();
@@ -223,7 +227,7 @@ public class UserService extends GenericService<User> {
         List<Course> courses = em.createQuery(
                 "SELECT DISTINCT c FROM Course c"
                         + " LEFT JOIN c.lecturers AS l"
-                        + " WITH l.user.userId = :id", Course.class)
+                        + " WITH (l.user.userId = :id and l.isDeleted = false)", Course.class)
                 .setParameter("id", user.getUserId())
                 .getResultList();
 
