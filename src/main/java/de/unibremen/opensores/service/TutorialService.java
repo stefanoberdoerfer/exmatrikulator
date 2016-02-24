@@ -1,6 +1,7 @@
 package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Tutorial;
 
 import java.util.List;
@@ -26,5 +27,26 @@ public class TutorialService extends GenericService<Tutorial> {
             .getResultList();
 
         return students;
+    }
+
+    /**
+     * Returns a list that are not in the given tutorial.
+     *
+     * @param tutorial Tutorial to look in.
+     * @return List of Tutors that are not part of this tutorial.
+     */
+    public List<PrivilegedUser> tutorsNotInTutorial(Tutorial tutorial) {
+        List<PrivilegedUser> tutors = em.createQuery(
+            "SELECT DISTINCT p From PrivilegedUser p "
+            + "LEFT JOIN p.course AS c "
+            + "WITH c.courseId = :cid "
+            + "LEFT JOIN p.tutorials AS t "
+            + "WITH t.tutorialId != :tid "
+            + "WHERE t not member of p.tutorials", PrivilegedUser.class)
+            .setParameter("cid", tutorial.getCourse().getCourseId())
+            .setParameter("tid", tutorial.getTutorialId())
+            .getResultList();
+
+        return tutors;
     }
 }

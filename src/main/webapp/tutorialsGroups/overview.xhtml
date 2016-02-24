@@ -25,7 +25,7 @@
         </div>
 
         <h:panelGroup id="tutorialList">
-        <p:tabView value="#{tutorialController.tutorials}" var="tutorial" scrollable="true">
+        <p:tabView value="#{tutorialController.getTutorials()}" var="tutorial" scrollable="true">
             <p:tab title="#{tutorial.name}">
 
             <div class="row table-groups-header">
@@ -43,14 +43,14 @@
                     <p:commandLink update=":editTutorialForm"
                         oncomplete="return exModal('tutorialEdit');"
                         class="btn btn-default">
-                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                       <i class="fa fa-pencil"></i>
                     </p:commandLink>
 
                     <p:commandLink update=":removeTutorialForm"
                         oncomplete="return exModal('tutorialRemove');"
                         class="btn btn-danger">
-                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                      <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                       <i class="fa fa-remove"></i>
                     </p:commandLink>
                   </h:form>
@@ -81,7 +81,7 @@
                         <p:commandLink
                             oncomplete="return exModal('studentRemove');"
                             class="btn btn-danger">
-                          <f:actionListener binding="#{tutorialController.changeCurrentStudent(student)}" />
+                          <f:actionListener binding="#{tutorialController.changeCurrentStudent(student.studentId)}" />
                           <i class="fa fa-remove"></i>
                         </p:commandLink>
                       </h:form>
@@ -99,14 +99,14 @@
                         <p:commandLink update=":editGroupForm"
                             oncomplete="return exModal('groupEdit');"
                             class="btn btn-default">
-                          <f:actionListener binding="#{tutorialController.changeCurrentGroup(group)}" />
+                          <f:actionListener binding="#{tutorialController.changeCurrentGroup(group.groupId)}" />
                           <i class="fa fa-pencil"></i>
                         </p:commandLink>
 
                         <p:commandLink
                             oncomplete="return exModal('groupRemove');"
                             class="btn btn-danger">
-                          <f:actionListener binding="#{tutorialController.changeCurrentGroup(group)}" />
+                          <f:actionListener binding="#{tutorialController.changeCurrentGroup(group.groupId)}" />
                           <i class="fa fa-remove"></i>
                         </p:commandLink>
                       </h:form>
@@ -122,7 +122,7 @@
                         <p:commandLink
                             oncomplete="return exModal('studentRemove');"
                             class="btn btn-danger">
-                          <f:actionListener binding="#{tutorialController.changeCurrentStudent(student)}" />
+                          <f:actionListener binding="#{tutorialController.changeCurrentStudent(student.studentId)}" />
                           <i class="fa fa-remove"></i>
                         </p:commandLink>
                       </h:form>
@@ -140,14 +140,14 @@
                     oncomplete="return exModal('groupCreate');"
                     update=":createGroupForm"
                     class="btn btn-default">
-                  <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                  <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                 </p:commandLink>
 
                 <p:commandLink value="#{msg['students.add']}"
                     oncomplete="return exModal('studentAdd');"
                     update=":addStudentForm"
                     class="btn btn-default">
-                  <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial)}" />
+                  <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                 </p:commandLink>
               </h:form>
             </div>

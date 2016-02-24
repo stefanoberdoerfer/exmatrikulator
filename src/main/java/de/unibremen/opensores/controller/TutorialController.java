@@ -13,8 +13,11 @@ import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.service.GroupService;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.TutorialService;
+import de.unibremen.opensores.service.PrivilegedUserService;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +36,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
+import javax.validation.ValidationException;
 
 /**
  * Controller for managing tutorials.
@@ -75,6 +78,24 @@ public class TutorialController implements Serializable {
      */
     @EJB
     private transient TutorialService tutorialService;
+
+    /**
+     * The student service for connection to the database.
+     */
+    @EJB
+    private transient StudentService studentService;
+
+    /**
+     * The group service for connection to the database.
+     */
+    @EJB
+    private transient GroupService groupService;
+
+    /**
+     * The privileged user service for connection to the database.
+     */
+    @EJB
+    private transient PrivilegedUserService privilegedUserService;
 
     /**
      * Course for this tutorial.
@@ -178,57 +199,73 @@ public class TutorialController implements Serializable {
         course.getTutorials().add(tutorial);
         course = courseService.update(course);
 
+        this.tutorialName = null;
+        tutorialTutors = new DualListModel<>(course.getTutors(),
+            new ArrayList<>());
+
         log.debug("Created new tutorial " + tutorial.getName());
     }
 
     /**
      * Changes the current tutorial context.
      *
-     * @param tutorial Tutorial to switch to.
+     * @param id ID of the tutorial to swtich to.
      */
-    public void changeCurrentTutorial(@NotNull Tutorial tutorial) {
+    public void changeCurrentTutorial(long id) {
+        this.tutorial = tutorialService.find(Tutorial.class, id);
+        this.tutorialName = tutorial.getName();
+
         this.newTutorialName = null;
         this.removalConformation = null;
-
-        this.tutorial = tutorial;
-        this.tutorialName = tutorial.getName();
 
         this.group = null;
         this.groupName = null;
         this.groupMembers.setSource(studentsWithoutGroup(tutorial));
         this.groupMembers.setTarget(new ArrayList<>());
 
-        this.tutorialTutors.setSource(course.getTutors());
-        this.tutorialTutors.setTarget(new ArrayList<>());
+        this.tutorialTutors.setTarget(tutorial.getTutors());
+        this.tutorialTutors.setSource(tutorialService
+                .tutorsNotInTutorial(tutorial));
 
         this.tutorialStudents.setSource(courseService
             .studentsWithoutTutorial(course));
         this.tutorialStudents.setTarget(new ArrayList<>());
+
+        log.debug("Switched to tutorial " + tutorial.getName());
     }
 
     /**
      * Changes the current group context.
      *
-     * @param group Group to switch to.
+     * @param id ID of the group to switch to.
      */
-    public void changeCurrentGroup(@NotNull Group group) {
-        changeCurrentTutorial(group.getTutorial());
+    public void changeCurrentGroup(long id) {
+        Group grp = groupService.find(Group.class, id);
+        changeCurrentTutorial(grp.getTutorial().getTutorialId());
 
-        this.group = group;
+        this.group = grp;
         this.groupName = group.getName();
-
         this.groupMembers.setTarget(group.getStudents());
+
+        log.debug("Switched to group " + group.getName());
     }
 
     /**
      * Edits an existing tutorial.
      */
     public void editTutorial() {
+        final String oldName = tutorial.getName();
+
         tutorial.setName(newTutorialName);
-        this.newTutorialName = null;
+        tutorial = tutorialService.update(tutorial);
 
         tutorial = updateTutors(tutorial);
-        course = courseService.update(course);
+        tutorial = tutorialService.update(tutorial);
+
+        course = tutorial.getCourse();
+        log.debug(String.format("Changed tutorial name from %s to %s",
+            oldName, newTutorialName));
+        this.newTutorialName = null;
     }
 
     /**
@@ -254,6 +291,8 @@ public class TutorialController implements Serializable {
         }
 
         tutorialService.remove(tutorial);
+        course = tutorial.getCourse();
+
         log.debug(String.format("Removed tutorial %s from course %s",
                     name, course.getName()));
 
@@ -271,14 +310,11 @@ public class TutorialController implements Serializable {
     private Tutorial updateTutors(Tutorial tutorial) {
         List<PrivilegedUser> tutors = new ArrayList<>();
         for (PrivilegedUser tutor : tutorialTutors.getTarget()) {
-            if (!course.getTutors().contains(tutor)) {
-                course.getTutors().add(tutor);
-            }
-
             tutor.getTutorials().add(tutorial);
+            privilegedUserService.update(tutor);
+
             log.debug(String.format("Made user %s a tutor in course %s",
                 tutor.getUser().getEmail(), course.getName()));
-
             tutors.add(tutor);
         }
 
@@ -290,16 +326,27 @@ public class TutorialController implements Serializable {
      * Creates a new group in the current tutorial.
      */
     public void createGroup() {
-        group = updateMembers(new Group());
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        group = new Group();
         group.setName(groupName);
-        group.setCourse(course);
         group.setTutorial(tutorial);
+        groupService.persist(group);
 
-        course.getGroups().add(group);
+        try {
+            group = updateMembers(group);
+        } catch (ValidationException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), e.getMessage()));
+            return;
+        }
+
         tutorial.getGroups().add(group);
-        group.setTutorial(tutorial);
+        tutorial = tutorialService.update(tutorial);
 
-        course = courseService.update(course);
+        course = tutorial.getCourse();
         log.debug(String.format("Created new group %s in tutorial %s",
             group.getName(), tutorial.getName()));
     }
@@ -308,41 +355,88 @@ public class TutorialController implements Serializable {
      * Edits an existing group in the current tutorial.
      */
     public void editGroup() {
-        group.setName(newGroupName);
-        this.newGroupName = null;
+        final String oldName = group.getName();
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
 
-        group = updateMembers(group);
+        group.setName(newGroupName);
+        group = groupService.update(group);
+
+        try {
+            group = updateMembers(group);
+        } catch (ValidationException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), e.getMessage()));
+            return;
+        }
+
         tutorial = tutorialService.update(tutorial);
+        course = tutorial.getCourse();
+
+        log.debug(String.format("Change group name from %s to %s",
+            oldName, newGroupName));
+        this.newGroupName = null;
     }
 
     /**
      * Remove the current group from the current tutorial.
      */
     public void removeGroup() {
-        course.getGroups().remove(group);
+        if (group != null && group.getStudents() != null) {
+            for (Student student : group.getStudents()) {
+                student.setGroup(null);
+                studentService.update(student);
+            }
+        }
+
         tutorial.getGroups().remove(group);
         tutorial = tutorialService.update(tutorial);
 
+        course = tutorial.getCourse();
         log.debug(String.format("Removed group %s from tutorial %s",
-            group.getName(), tutorial.getName()));
+            groupName, tutorial.getName()));
 
         group = null;
         groupName = null;
     }
 
-    /**
+    /*
      * Updates group members for the given group in the current tutorial.
      *
      * @param group Group to update members for.
      * @return Updated group.
+     * @throws ValidationException If group size invariant is violated.
      */
     private Group updateMembers(Group group) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        Integer max = course.getMaxGroupSize();
+        Integer min = course.getMinGroupSize();
+
+        List<Student> newMembers = groupMembers.getTarget();
+        int members = newMembers.size();
+
+        if (min != null && members < min) {
+            throw new ValidationException(
+                    bundle.getString("courses.groupDeleteMinSize"));
+        } else if (max != null && members > max) {
+            throw new ValidationException(
+                    bundle.getString("courses.groupCreateMaxSize"));
+        } else if (members <= 0) {
+            throw new ValidationException(
+                    bundle.getString("courses.groupWouldBeEmpty"));
+        }
+
         List<Student> students = new ArrayList<>();
-        for (Student student : groupMembers.getTarget()) {
+        for (Student student : newMembers) {
             student.setGroup(group);
+            studentService.update(student);
+
             log.debug(String.format("Added student with email %s to group %s",
                 student.getUser().getEmail(), group.getName()));
-
             students.add(student);
         }
 
@@ -353,11 +447,13 @@ public class TutorialController implements Serializable {
     /**
      * Changes the current student context.
      *
-     * @param student Student to switch to.
+     * @param id ID of the student to switchc to.
      */
-    public void changeCurrentStudent(@NotNull Student student) {
-        this.student = student;
-        changeCurrentTutorial(student.getTutorial());
+    public void changeCurrentStudent(long id) {
+        this.student = studentService.find(Student.class, id);
+        changeCurrentTutorial(student.getTutorial().getTutorialId());
+
+        log.debug("Switched to student " + student.getUser());
     }
 
     /**
@@ -376,27 +472,40 @@ public class TutorialController implements Serializable {
      * Removes the current student from the current tutorial.
      */
     public void removeStudent() {
-        student.setTutorial(null);
-        student.setGroup(null);
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        String msg = null;
+        Group group = student.getGroup();
+        if (group != null) {
+            Integer min = course.getMinGroupSize();
+            int members = group.getStudents().size();
+            if (min != null && members <= min) {
+                msg = bundle.getString("courses.groupDeleteMinSize");
+            } else if (members <= 1) {
+                msg = bundle.getString("courses.groupWouldBeEmpty");
+            }
+        }
+
+        if (msg != null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+            return;
+        }
 
         tutorial.getStudents().remove(student);
         tutorial = tutorialService.update(tutorial);
+
+        student.setGroup(null);
+        student.setTutorial(null);
+        student = studentService.update(student);
     }
 
     /**
-     * Returns a list of all students without out a group.
+     * Returns a list of tutorials the current user can access.
      *
-     * @param tutorial Tutorial to apply this function to.
-     * @return List of students who are not a part of a group.
-     */
-    public List<Student> studentsWithoutGroup(@NotNull Tutorial tutorial) {
-        return tutorialService.studentsWithoutGroup(tutorial);
-    }
-
-    /**
-     * Returns a list of all tutorials for this course.
-     *
-     * @return List of tutorials or null if non exist.
+     * @return List of tutorials or null.
      */
     public List<Tutorial> getTutorials() {
         if (userService.hasCourseRole(user, Role.LECTURER, course)) {
@@ -427,6 +536,16 @@ public class TutorialController implements Serializable {
         }
 
         return list;
+    }
+
+    /**
+     * Returns a list of all students without out a group.
+     *
+     * @param tutorial Tutorial to apply this function to.
+     * @return List of students who are not a part of a group.
+     */
+    public List<Student> studentsWithoutGroup(Tutorial tutorial) {
+        return tutorialService.studentsWithoutGroup(tutorial);
     }
 
     /**

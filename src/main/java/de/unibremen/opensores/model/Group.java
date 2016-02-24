@@ -28,14 +28,10 @@ public class Group {
     @Column(nullable = false, length = 32)
     private String name;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "courseId")
-    private Course course;
-
     @OneToMany(mappedBy = "group", cascade = CascadeType.MERGE)
     private List<Student> students = new ArrayList<>();
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false, cascade = CascadeType.MERGE)
     @JoinColumn(name = "tutorialId")
     private Tutorial tutorial;
 
@@ -45,14 +41,6 @@ public class Group {
 
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
     }
 
     public List<Student> getStudents() {
