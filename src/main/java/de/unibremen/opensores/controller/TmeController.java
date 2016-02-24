@@ -115,11 +115,6 @@ public class TmeController implements Serializable {
     private transient GroupService groupService;
 
     /**
-     * Maps jgradebook tutorial ids to exmartikulator tutorial entities.
-     */
-    private Map<Integer, Long> tutorialMap = new HashMap<>();
-
-    /**
      * List of uploaded files by the user.
      */
     @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
@@ -286,8 +281,6 @@ public class TmeController implements Serializable {
         course.setMaxGroupSize(obj.getInt("maximaleGruppenGroesse"));
 
         courseService.persist(course);
-        createTutorials(obj.getArray("tutorials"), course);
-
         createGroups(obj.getArray("groups"), course);
 
         course = courseService.update(course);
@@ -358,12 +351,12 @@ public class TmeController implements Serializable {
     private Group createGroup(TMEObject node, Course course)
             throws TmeException {
         int tutorialId = node.getInt("tutorial");
-        Tutorial tutorial = tutorialService.find(Tutorial.class,
-                tutorialMap.get(tutorialId));
-        if (tutorial == null) {
+        TMEObject tutorialNode = findNode("jgradebook.data.Tutorial", tutorialId);
+        if (tutorialNode == null) {
             throw new TmeException("non-existend tutorial " + tutorialId);
         }
 
+        Tutorial tutorial = createTutorial(tutorialNode, course);
         Group group = new Group();
         group.setName(node.getString("name"));
         group.setTutorial(tutorial);
@@ -459,34 +452,7 @@ public class TmeController implements Serializable {
         }
 
         log.debug("Persisted student " + student.getUser());
-
         return student;
-    }
-
-    /**
-     * Creates all tutorials from the given TMEArray.
-     *
-     * @param array TMEArray to create tutorials from.
-     * @param course Course the tutorials belong to.
-     * @return List of created tutorials entities.
-     * @throws TmeException On a failed creation.
-     */
-    private List<Tutorial> createTutorials(TMEArray array, Course course)
-            throws TmeException {
-        List<Tutorial> tutorials = new ArrayList<>();
-        for (int i = 0; i < array.size(); i++) {
-            int id = array.getInt(i);
-
-            TMEObject node = findNode("jgradebook.data.Tutorial", id);
-            if (node == null) {
-                throw new TmeException("non-existend tutorial " + id);
-            }
-
-            Tutorial tutorial = createTutorial(node, course);
-            tutorials.add(tutorial);
-        }
-
-        return tutorials;
     }
 
     /**
@@ -530,9 +496,7 @@ public class TmeController implements Serializable {
         tutorial.getTutors().add(tutor);
         tutorialService.persist(tutorial);
 
-        tutorialMap.put(node.getId(), tutorial.getTutorialId());
         log.debug("Persisted tutorial " + tutorial.getName());
-
         return tutorial;
     }
 
