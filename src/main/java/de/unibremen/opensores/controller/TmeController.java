@@ -123,12 +123,9 @@ public class TmeController implements Serializable {
     private transient List<UploadedFile> files = new ArrayList<>();
 
     /**
-     * List of parsed TME objects.
+     * Maps TME ids to TME objects.
      */
-    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
-            justification = "actually findbugs is right this needs to be "
-            + "serializable but I am too lazy to fix it")
-    private transient List<TMEObject> parsedObjs = new ArrayList<>();
+    private HashMap<Integer, TMEObject> nodeMap = new HashMap<>();
 
     /**
      * Handles file upload events.
@@ -187,10 +184,11 @@ public class TmeController implements Serializable {
             return;
         }
 
+        List<TMEObject> objs = new ArrayList<>();
         for (File file : uploaded) {
             try {
                 String data = FileUtils.readFileToString(file);
-                parsedObjs.addAll(new Parser(data).getTMEObjects());
+                objs.addAll(new Parser(data).getTMEObjects());
             } catch (InterruptedException | IOException e) {
                 log.fatal(e);
                 return;
@@ -206,26 +204,36 @@ public class TmeController implements Serializable {
             }
         }
 
-        for (TMEObject obj : parsedObjs) {
-            try {
-                /* We only import courses directly everything else is imported
-                 * indirectly using the relations from the course node. */
-
-                if (obj.getName().equals("jgradebook.data.Course")) {
-                    importCourse(obj);
-                }
-            } catch (TmeException e) {
-                log.debug(e);
-                facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_ERROR, bundle.getString("common.error"),
-                    e.getMessage()));
-                continue;
-            }
+        try {
+            importObjects(objs);
+        } catch (TmeException e) {
+            log.debug(e);
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_ERROR, bundle.getString("common.error"),
+                e.getMessage()));
+            return;
         }
 
         facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_INFO, bundle.getString("common.success"),
                     bundle.getString("import.success")));
+    }
+
+    /**
+     * Imports the given list of TMEObjects.
+     *
+     * @param objs TMEObject to import.
+     * @throws TmeException On a failed import.
+     */
+    private void importObjects(List<TMEObject> objs)
+            throws TmeException {
+        objs.stream().forEach(o -> nodeMap.put(o.getId(), o));
+
+        for (TMEObject obj : objs) {
+            if (obj.getName().equals("jgradebook.data.Course")) {
+                importCourse(obj);
+            }
+        }
     }
 
     /**
@@ -545,15 +553,12 @@ public class TmeController implements Serializable {
      * @return Associated node or null.
      */
     private TMEObject findNode(String name, int id) {
-        for (TMEObject obj : parsedObjs) {
-            if (!obj.getName().equals(name)) {
-                continue;
-            } else if (obj.getId() == id) {
-                return obj;
-            }
+        TMEObject node = nodeMap.get(id);
+        if (node == null) {
+            return null;
         }
 
-        return null;
+        return (node.getName().equals(name)) ? node : null;
     }
 
     /**
