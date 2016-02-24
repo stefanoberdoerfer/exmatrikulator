@@ -250,7 +250,7 @@ public class TmeController implements Serializable {
             String key = splited[splited.length - 1];
             switch (key) {
                 case "Course":
-                    importCourse(obj);
+                    createCourse(obj);
                     break;
                 default:
                     log.debug("Didn't _directly_ recongize key " + key);
@@ -261,18 +261,20 @@ public class TmeController implements Serializable {
     /**
      * Imports a course and associated TME objects.
      *
-     * @param obj Course TME object.
+     * @param node Course TME object.
      * @throws TmeException On a failed import.
+     * @return Imported Course.
      */
-    private void importCourse(TMEObject obj) throws TmeException {
-        if (entityMap.containsKey(obj.getId())) {
-            return;
+    private Course createCourse(TMEObject node) throws TmeException {
+        Object obj = entityMap.get(node.getId());
+        if (obj != null) {
+            return (Course) obj;
         }
 
         Course course = new Course();
-        course.setName(obj.getString("name"));
-        course.setDefaultSws(obj.getString("wochenstunden"));
-        course.setDefaultCreditPoints(obj.getInt("cp"));
+        course.setName(node.getString("name"));
+        course.setDefaultSws(node.getString("wochenstunden"));
+        course.setDefaultCreditPoints(node.getInt("cp"));
         course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
 
@@ -284,8 +286,8 @@ public class TmeController implements Serializable {
         course.setIdentifier(randomIdentifier);
 
         ParticipationType type = new ParticipationType();
-        type.setName(obj.getString("studyArea"));
-        type.setGroupPerformance(obj.getBoolean("groupPerformance"));
+        type.setName(node.getString("studyArea"));
+        type.setGroupPerformance(node.getBoolean("groupPerformance"));
         type.setRestricted(false);
         type.setSws(null);
         type.setCreditPoints(null);
@@ -293,29 +295,30 @@ public class TmeController implements Serializable {
         type.setCourse(course);
         course.getParticipationTypes().add(type);
 
-        Semester semester = createSemester(obj.getString("zeitraum"));
+        Semester semester = createSemester(node.getString("zeitraum"));
         course.setSemester(semester);
 
         List<String> vaks = new ArrayList<>();
-        vaks.add(obj.getString("nummer"));
+        vaks.add(node.getString("nummer"));
         course.setNumbers(vaks);
 
-        if (obj.getBoolean("finished")) {
+        if (node.getBoolean("finished")) {
             course.setLastFinalization(new Date());
         } else {
             course.setLastFinalization(null);
         }
 
-        course.setMinGroupSize(obj.getInt("minimaleGruppenGroesse"));
-        course.setMaxGroupSize(obj.getInt("maximaleGruppenGroesse"));
+        course.setMinGroupSize(node.getInt("minimaleGruppenGroesse"));
+        course.setMaxGroupSize(node.getInt("maximaleGruppenGroesse"));
 
         courseService.persist(course);
-        createGroups(obj.getArray("groups"), course);
+        createGroups(node.getArray("groups"), course);
 
         course = courseService.update(course);
         log.debug("Persisted course " + course.getName());
 
-        entityMap.put(obj.getId(), course);
+        entityMap.put(node.getId(), course);
+        return course;
     }
 
     /**
