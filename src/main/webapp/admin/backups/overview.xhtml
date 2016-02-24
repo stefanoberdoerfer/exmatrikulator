@@ -7,38 +7,43 @@
                 xmlns:p="http://primefaces.org/ui">
     <!-- Define Params -->
     <ui:param name="pageTitle" value="#{msg['common.backups']}" />
+
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
         <li class="active">#{msg['common.backups']}</li>
     </ui:define>
+
     <!-- Page Content -->
     <ui:define name="content">
         <div class="headline">
             <h:panelGroup class="btn-group main-buttons pull-right" type="block">
-        <p:commandButton value="#{msg['backups.create']}" class="btn btn-primary" action="#{backupController.createBackup()}">
-        </p:commandButton>
+              <h:form id="backupCreateForm">
+                <p:commandButton value="#{msg['backups.create']}" class="btn btn-primary"
+                    action="#{backupController.createBackup()}" />
+              </h:form>
             </h:panelGroup>
             <h1>#{msg['common.backups']}</h1>
         </div>
 
-        <p:dataTable var="backup" value="#{backupController.listBackups()}">
-            <p:column headerText="#{msg['common.name']}"
-                      styleClass="table-backups-name">
-                <h:outputText value="#{b.name}"/>
-            </p:column>
-            <p:column headerText="#{msg['common.date']}"
-                      styleClass="table-backups-date">
-                <h:outputText value="#{backupController.dateToString(b)}"/>
-            </p:column>
-            <p:column headerText="#{msg['backups.filesize']}"
-                      styleClass="table-backups-filesize">
-                <h:outputText value="#{b.fileSize}"/>
-            </p:column>
-            <p:column styleClass="table-common-options-one">
-                    <p:commandButton class="btn btn-default" action="#{backupController.deleteBackup(b)}">
-                    <i class="fa fa-times"></i>
-                </p:commandButton>
-            </p:column>
-        </p:dataTable>
+        <h:form id="backupListForm">
+          <p:dataTable var="backup" value="#{backupController.listBackups()}">
+              <p:column headerText="#{msg['common.name']}"
+                        styleClass="table-backups-name">
+                  <h:outputText value="#{backup.name}"/>
+              </p:column>
+              <p:column headerText="#{msg['common.date']}"
+                        styleClass="table-backups-date">
+                  <h:outputText value="#{backupController.dateToString(backup)}"/>
+              </p:column>
+              <p:column headerText="#{msg['backups.filesize']}"
+                        styleClass="table-backups-filesize">
+                  <h:outputText value="#{backup.fileSize}"/>
+              </p:column>
+              <p:column styleClass="table-common-options-one">
+                <p:commandButton class="btn btn-danger" value="#{msg['common.remove']}"
+                    action="#{backupController.deleteBackup(backup)}" />
+              </p:column>
+          </p:dataTable>
+        </h:form>
     </ui:define>
 </ui:composition>
