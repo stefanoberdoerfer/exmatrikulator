@@ -42,6 +42,10 @@ public class UserController {
 
     private static Logger log = LogManager.getLogger(UserController.class);
 
+    private List<Course> hiddenCourses;
+
+    private List<Course> activeCourses;
+
     /**
      * Map containing the roles for each course.
      */
@@ -212,7 +216,7 @@ public class UserController {
      * @return List of hidden courses or null.
      */
     public List<Course> getHiddenCourses() {
-        return userService.getCourses(getUser(), true);
+        return hiddenCourses;
     }
 
     /**
@@ -223,10 +227,11 @@ public class UserController {
     public void updateUserCourses() {
         Map<Semester, List<Course>> map = new HashMap<>();
 
-        List<Course> courses = userService.getCourses(getUser(), false);
+        hiddenCourses = userService.getCourses(user,true);
+        activeCourses = userService.getCourses(getUser(), false);
 
-        if (courses != null) {
-            for (Course course : courses) {
+        if (activeCourses != null) {
+            for (Course course : activeCourses) {
                 //building map from semester to course
                 Semester se = course.getSemester();
                 List<Course> cs = map.get(se);
@@ -242,7 +247,7 @@ public class UserController {
             }
         }
 
-        log.debug("Updated Active User Couses");
+        log.debug("Updated Active User Courses");
 
         coursesBySemester = map;
     }

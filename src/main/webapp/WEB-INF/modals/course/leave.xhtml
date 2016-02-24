@@ -6,6 +6,7 @@
                 xmlns:p="http://primefaces.org/ui">
     <p:dialog header="#{msg['courses.leave']}" appendTo="@(body)" widgetVar="courseLeave" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form>
         <div class="modal-body">
             #{msg['courses.leave.question']}<br />
             <br />
@@ -13,11 +14,15 @@
         </div>
         <div class="modal-footer">
             <div class="btn-group">
-                <p:commandButton value="#{msg['common.close']}" type="button" onclick="return exModal(':courseLeave');"
-                                 styleClass="btn btn-default" />
-                <h:link outcome="/course/overview" class="btn btn-danger"
-                        value="#{msg['common.leave']}" />
+                <p:commandButton value="#{msg['common.close']}" type="button" onsuccess="return exModal(':courseLeave');"
+                                 styleClass="btn btn-default"
+                                 actionListener="#{courseOverviewController.setCourseToLeave(null)}" />
+                <p:commandButton action="/course/overview" class="btn btn-danger"
+                                 onsuccess="return exModal(':courseLeave');" value="#{msg['common.leave']}"
+                                 actionListener="#{courseOverviewController.leaveCourse()}"
+                                 update=":courseOverviewForm :navigationform"/>
             </div>
         </div>
+        </h:form>
     </p:dialog>
 </ui:composition>

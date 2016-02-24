@@ -141,7 +141,7 @@
             </ui:fragment>
         </ul>
 
-        <h:form>
+        <h:form id="navigationform">
             <ui:repeat value="#{userController.coursesBySemester.entrySet().toArray()}" var="semester">
                 <label>#{semester.key}</label>
                 <ul class="nav nav-pills nav-stacked semester-links">

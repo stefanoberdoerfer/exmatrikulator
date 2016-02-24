@@ -47,17 +47,17 @@
                 #{course.defaultCreditPoints}
             </h:column>
             <h:column>
-                <h:link onclick="return exModal('courseRemove');" h5:data-toggle="tooltip"
-                        h5:data-placement="top" title="#{msg['courses.remove']}" class="btn btn-danger"
-                        rendered="#{userController.isLecturer(course)}">
-                    <i class="fa fa-remove"></i>
-                </h:link>
-                <h:link onclick="return exModal('courseLeave');" h5:data-toggle="tooltip"
-                        h5:data-placement="top" title="#{msg['courses.leave']}" class="btn btn-default">
+                <p:commandLink onsuccess="return exModal('courseLeave');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="#{msg['courses.leave']}" class="btn btn-default"
+                        update=":courseOverviewForm :navigationform"
+                        action="#{courseOverviewController.setCourseToLeave(course)}">
                     <i class="fa fa-sign-out"></i>
-                </h:link>
-                <h:link styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
-                        title="#{msg['courses.hide']}"><i class="fa fa-eye-slash"></i></h:link>
+                </p:commandLink>
+                <p:commandLink styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
+                        title="#{msg['courses.hide']}" update=":courseOverviewForm :navigationform"
+                        action="#{courseOverviewController.setCourseHiddenStatus(course,true)}">
+                    <i class="fa fa-eye-slash"></i>
+                </p:commandLink>
             </h:column>
         </h:dataTable>
 
@@ -83,14 +83,17 @@
             </h:column>
             <h:column>
                 <f:facet name="header"></f:facet>
-                <!-- Todo: Entfernen und verlassen korrekt anzeigen -->
-                <h:commandLink onclick="return exModal('courseLeave');" h5:data-toggle="tooltip"
-                        h5:data-placement="top" title="#{msg['courses.leave']}" class="btn btn-default">
+                <p:commandLink onsuccess="return exModal('courseLeave');" h5:data-toggle="tooltip"
+                        h5:data-placement="top" title="#{msg['courses.leave']}" class="btn btn-default"
+                        update=":courseOverviewForm :navigationform"
+                        action="#{courseOverviewController.setCourseToLeave(course)}">
                     <i class="fa fa-sign-out"></i>
-                </h:commandLink>
-                <h:commandLink styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
-                        title="#{msg['courses.hide']}"><i class="fa fa-eye-slash"></i>
-                </h:commandLink>
+                </p:commandLink>
+                <p:commandLink styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
+                               title="#{msg['courses.show']}" update=":courseOverviewForm :navigationform"
+                               action="#{courseOverviewController.setCourseHiddenStatus(course,false)}">
+                    <i class="fa fa-eye-slash"></i>
+                </p:commandLink>
             </h:column>
         </h:dataTable>
         </h:form>

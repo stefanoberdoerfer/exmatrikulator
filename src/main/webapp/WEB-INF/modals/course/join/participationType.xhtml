@@ -26,8 +26,7 @@
                 <p:commandButton action="#{courseOverviewController.parttypeSelected()}" class="btn btn-primary"
                         value="#{msg['common.select']}"
                         onsuccess="return exModal(':courseJoinType');"
-                        update=":courseOverviewForm">
-                    <f:ajax listener="#{userController.updateUserCourses()}"/>
+                        update=":courseOverviewForm :navigationform">
                 </p:commandButton>
             </div>
         </div>
