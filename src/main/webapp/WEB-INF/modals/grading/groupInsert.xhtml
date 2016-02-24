@@ -92,24 +92,20 @@
                     <p:commandButton value="#{msg['common.cancel']}" type="button"
                                      onclick="return exModal(':gradeInsertGroup');"
                                      styleClass="btn btn-default" />
-                    <p:commandButton value="#{msg['gradings.insert']}"
-                                     styleClass="btn btn-primary" id="groupInsertSubmit"
-                                     rendered="#{!gradingInsertController.overwriting}">
-                        <f:ajax listener="#{gradingInsertController.storeGroupGrading()}"
-                                execute="@form"
-                                render="gradeInsertForm gradingForm"
-                                onevent="autofocusGradeGroupInsert"
-                                />
-                    </p:commandButton>
-                    <p:commandButton value="#{msg['gradings.overwrite']}" type="button"
-                                     styleClass="btn btn-danger"
-                                     rendered="#{gradingInsertController.overwriting}">
-                        <f:ajax listener="#{gradingInsertController.storeGroupGrading()}"
-                                execute="@form"
-                                render="gradeInsertForm gradingForm"
-                                onevent="autofocusGradeGroupInsert"
-                                />
-                    </p:commandButton>
+
+                    <p:commandLink action="#{gradingInsertController.storeGroupGrading()}"
+                                   id="groupInsertSubmit"
+                                   class="btn btn-primary" value="#{msg['gradings.insert']}"
+                                   update="gradeInsertForm gradingForm"
+                                   oncomplete="autofocusGradeGroupInsert()"
+                                   rendered="#{!gradingInsertController.overwriting}" />
+
+                    <p:commandLink action="#{gradingInsertController.storeGroupGrading()}"
+                                   class="btn btn-danger" value="#{msg['gradings.overwrite']}"
+                                   update="gradeInsertForm gradingForm"
+                                   oncomplete="autofocusGradeGroupInsert()"
+                                   rendered="#{gradingInsertController.overwriting}"
+                                   type="button" />
 
                     <p:defaultCommand target="groupInsertSubmit" />
                 </div>
