@@ -53,11 +53,6 @@ public class OverviewController {
     private User user;
 
     /**
-     * Storing all entries.
-     */
-    private List<RecordBookEntry> entries;
-
-    /**
      * Storing the filtered entries.
      */
     private List<RecordBookEntry> filteredEntries;
@@ -138,17 +133,18 @@ public class OverviewController {
      * @return List of record book entries.
      */
     public List<RecordBookEntry> getEntries() {
-        if (entries == null) {
-            if (!allowedToSeeOthers) {
-                entries = recordBookService.getEntries(course, user);
-                this.overallDuration = 0;
+        List<RecordBookEntry> entries;
 
-                for (RecordBookEntry entry : entries) {
-                    this.overallDuration += entry.getDuration();
-                }
-            } else {
-                entries = recordBookService.getEntries(course);
+        if (!allowedToSeeOthers) {
+            entries = recordBookService.getEntries(course, user);
+
+            this.overallDuration = 0;
+            
+            for (RecordBookEntry entry : entries) {
+                this.overallDuration += entry.getDuration();
             }
+        } else {
+            entries = recordBookService.getEntries(course);
         }
 
         return entries;

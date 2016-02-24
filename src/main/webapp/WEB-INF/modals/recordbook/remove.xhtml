@@ -18,14 +18,11 @@
                     <p:commandButton value="#{msg['common.cancel']}" type="button"
                                      onclick="return exModal(':recordBookRemove');"
                                      styleClass="btn btn-default" />
-                    <p:commandButton value="#{msg['common.remove']}"
-                                     styleClass="btn btn-danger" id="recordBookRemoveSubmit"
-                                     oncomplete="if (args &amp;&amp; !args.validationFailed){exModal(':recordBookRemove'); return location.reload()}">
-                        <f:ajax listener="#{recordbookRemove.remove()}"
-                                execute="@form"
-                                render="recordBookRemoveForm recordBookForm recordBookTbl"
-                                />
-                    </p:commandButton>
+
+                    <p:commandLink action="#{recordbookRemove.remove()}"
+                                   id="recordBookRemoveSubmit"
+                                   class="btn btn-danger" value="#{msg['common.remove']}"
+                                   update="recordBookRemoveForm recordBookForm" />
                 </div>
             </div>
         </h:form>

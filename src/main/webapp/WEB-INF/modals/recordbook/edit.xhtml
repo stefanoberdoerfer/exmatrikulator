@@ -56,13 +56,11 @@
                     <p:commandButton value="#{msg['common.cancel']}" type="button"
                                      onclick="return exModal(':recordBookEdit');"
                                      styleClass="btn btn-default" />
-                    <p:commandButton value="#{msg['common.saveChanges']}"
-                                     styleClass="btn btn-primary" id="recordBookEditSubmit">
-                        <f:ajax listener="#{recordbookEdit.store()}"
-                                execute="@form"
-                                render="recordBookEditForm recordBookForm recordBookTbl"
-                                />
-                    </p:commandButton>
+
+                    <p:commandLink action="#{recordbookEdit.store()}"
+                                   id="recordBookEditSubmit"
+                                   class="btn btn-primary" value="#{msg['common.saveChanges']}"
+                                   update="recordBookEditForm recordBookForm" />
 
                     <p:defaultCommand target="recordBookEditSubmit" />
                 </div>

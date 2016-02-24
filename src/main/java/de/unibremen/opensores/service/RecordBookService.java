@@ -86,13 +86,6 @@ public class RecordBookService extends GenericService<RecordBookEntry> {
             throw new IllegalArgumentException("INVALID_DURATION");
         }
         /*
-        Strip comment of html tags. Replaces all tags with
-         */
-        if (comment != null) {
-            comment = comment.replaceAll("<", "&lt;");
-            comment = comment.replaceAll(">", "&gt;");
-        }
-        /*
         Store the entry.
          */
         RecordBookEntry entry = new RecordBookEntry();
@@ -136,13 +129,6 @@ public class RecordBookService extends GenericService<RecordBookEntry> {
          */
         if (duration == null || duration < 0) {
             throw new IllegalArgumentException("INVALID_DURATION");
-        }
-        /*
-        Strip comment of html tags. Replaces all tags with
-         */
-        if (comment != null) {
-            comment = comment.replaceAll("<", "&lt;");
-            comment = comment.replaceAll(">", "&gt;");
         }
         /*
         Store the entry.
