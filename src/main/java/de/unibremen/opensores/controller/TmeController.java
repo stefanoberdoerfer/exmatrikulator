@@ -365,6 +365,8 @@ public class TmeController implements Serializable {
         group.setStudents(students);
 
         course.getStudents().addAll(students);
+
+        groupService.persist(group);
         log.debug("Created group " + group.getName());
 
         return group;

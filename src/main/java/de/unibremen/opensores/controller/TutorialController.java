@@ -249,7 +249,7 @@ public class TutorialController implements Serializable {
      * Edits an existing tutorial.
      */
     public void editTutorial() {
-        String oldName = tutorial.getName();
+        final String oldName = tutorial.getName();
 
         tutorial.setName(newTutorialName);
         tutorial = tutorialService.update(tutorial);
@@ -328,6 +328,7 @@ public class TutorialController implements Serializable {
         group = new Group();
         group.setName(groupName);
         group.setTutorial(tutorial);
+        groupService.persist(group);
 
         try {
             group = updateMembers(group);
@@ -349,7 +350,7 @@ public class TutorialController implements Serializable {
      * Edits an existing group in the current tutorial.
      */
     public void editGroup() {
-        String oldName = group.getName();
+        final String oldName = group.getName();
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
@@ -389,7 +390,7 @@ public class TutorialController implements Serializable {
 
         course = tutorial.getCourse();
         log.debug(String.format("Removed group %s from tutorial %s",
-            group.getName(), tutorial.getName()));
+            groupName, tutorial.getName()));
 
         group = null;
         groupName = null;
