@@ -1,5 +1,7 @@
 package de.unibremen.opensores.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.persistence.Column;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,18 +34,21 @@ public class ExamEvent extends DefaultEvent implements Serializable {
     /**
      * The examiner of the ExamEvent, can be the user of a privileged user.
      */
+    @SuppressFBWarnings(value = "SE_BAD_FIELD")
     @ManyToOne
     private PrivilegedUser examiner;
 
     /**
      * The exam in which the examination is done.
      */
+    @SuppressFBWarnings(value = "SE_BAD_FIELD")
     @ManyToOne
     private Exam exam;
 
     /**
      * The students whic get examined in this exam event.
      */
+    @SuppressFBWarnings(value = "SE_BAD_FIELD")
     @ManyToMany
     @JoinTable(name = "EXAM_EVENT_STUDENT",
             joinColumns = {@JoinColumn(name = "eventId")},
