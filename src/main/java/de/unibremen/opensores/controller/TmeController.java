@@ -357,13 +357,11 @@ public class TmeController implements Serializable {
 
         Group group = new Group();
         group.setName(node.getString("name"));
-        group.setCourse(course);
         group.setTutorial(tutorial);
 
         tutorial.getGroups().add(group);
-        course.getGroups().add(group);
-
-        List<Student> students = createStudents(node.getArray("students"), group);
+        List<Student> students = createStudents(node.getArray("students"),
+                group, course);
         group.setStudents(students);
 
         course.getStudents().addAll(students);
@@ -377,10 +375,11 @@ public class TmeController implements Serializable {
      *
      * @param array TMEArray to create students from.
      * @param group Group the students belong to.
+     * @param course Course the students belong to.
      * @return List of created student entities.
      * @throws TmeException On a failed creation.
      */
-    private List<Student> createStudents(TMEArray array, Group group)
+    private List<Student> createStudents(TMEArray array, Group group, Course course)
             throws TmeException {
         List<Student> students = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
@@ -391,7 +390,7 @@ public class TmeController implements Serializable {
                 throw new TmeException("non-existend student " + id);
             }
 
-            Student student = createStudent(node, group);
+            Student student = createStudent(node, group, course);
             students.add(student);
         }
 
@@ -403,10 +402,11 @@ public class TmeController implements Serializable {
      *
      * @param node TME student object.
      * @param group Group the student belongs to.
+     * @param course Course the student belongs to.
      * @return Created Student entity.
      * @throws TmeException On a failed creation.
      */
-    private Student createStudent(TMEObject node, Group group)
+    private Student createStudent(TMEObject node, Group group, Course course)
             throws TmeException {
         int id = node.getInt("studentData");
         TMEObject studentData = findNode("jgradebook.data.StudentData", id);
@@ -415,15 +415,14 @@ public class TmeController implements Serializable {
         }
 
         User user = createUser(studentData);
-        Student student = studentService.findStudentInCourse(user,
-                group.getCourse());
+        Student student = studentService.findStudentInCourse(user, course);
         if (student != null) {
             return student;
         }
 
         student = new Student();
         student.setGroup(group);
-        student.setCourse(group.getCourse());
+        student.setCourse(course);
         student.setTutorial(group.getTutorial());
 
         student.setUser(user);

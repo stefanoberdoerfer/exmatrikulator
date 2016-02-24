@@ -71,9 +71,6 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Student> students = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Group> groups = new ArrayList<>();
-
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Lecturer> lecturers = new ArrayList<>();
 
@@ -294,14 +291,6 @@ public class Course {
 
     public void setStudents(List<Student> students) {
         this.students = students;
-    }
-
-    public List<Group> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(List<Group> groups) {
-        this.groups = groups;
     }
 
     public void setCourseId(long id) {

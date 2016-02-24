@@ -236,21 +236,26 @@ public class TutorialController implements Serializable {
         course.getTutorials().add(tutorial);
         course = courseService.update(course);
 
+        this.tutorialName = null;
+        tutorialTutors = new DualListModel<>(course.getTutors(),
+            new ArrayList<>());
+
+        tutorials = userTutorials();
         log.debug("Created new tutorial " + tutorial.getName());
     }
 
     /**
      * Changes the current tutorial context.
      *
-     * @param tutorial Tutorial to switch to.
+     * @param tut Tutorial to switch to.
      */
-    public void changeCurrentTutorial(@NotNull Tutorial tutorial) {
-        log.debug("Switch to tutorial " + tutorial.getName());
+    public void changeCurrentTutorial(@NotNull Tutorial tut) {
+        log.debug("Switch to tutorial " + tut.getName());
 
         this.newTutorialName = null;
         this.removalConformation = null;
 
-        this.tutorial = tutorial;
+        this.tutorial = tutorialService.find(Tutorial.class, tut.getTutorialId());
         this.tutorialName = tutorial.getName();
 
         this.group = null;
@@ -269,17 +274,18 @@ public class TutorialController implements Serializable {
     /**
      * Changes the current group context.
      *
-     * @param group Group to switch to.
+     * @param grp Group to switch to.
      */
-    public void changeCurrentGroup(@NotNull Group group) {
-        log.debug("Switch to group " + group.getName());
+    public void changeCurrentGroup(@NotNull Group grp) {
+        log.debug("Switch to group " + grp.getName());
 
-        changeCurrentTutorial(group.getTutorial());
+        grp = groupService.find(Group.class, grp.getGroupId());
+        changeCurrentTutorial(grp.getTutorial());
 
-        this.group = group;
-        this.groupName = group.getName();
+        this.group = grp;
+        this.groupName = grp.getName();
 
-        this.groupMembers.setTarget(group.getStudents());
+        this.groupMembers.setTarget(grp.getStudents());
     }
 
     /**
@@ -316,6 +322,8 @@ public class TutorialController implements Serializable {
         }
 
         tutorialService.remove(tutorial);
+        tutorials = userTutorials();
+
         log.debug(String.format("Removed tutorial %s from course %s",
                     name, course.getName()));
 
@@ -358,13 +366,7 @@ public class TutorialController implements Serializable {
 
         group = new Group();
         group.setName(groupName);
-        group.setCourse(course);
         group.setTutorial(tutorial);
-        group = groupService.persist(group);
-
-        course.getGroups().add(group);
-        tutorial.getGroups().add(group);
-        course = courseService.update(course);
 
         try {
             group = updateMembers(group);
@@ -373,6 +375,12 @@ public class TutorialController implements Serializable {
                 .SEVERITY_FATAL, bundle.getString("common.error"), e.getMessage()));
             return;
         }
+
+        tutorial.getGroups().add(group);
+        tutorial = tutorialService.update(tutorial);
+
+        course = tutorial.getCourse();
+        tutorials = userTutorials();
 
         log.debug(String.format("Created new group %s in tutorial %s",
             group.getName(), tutorial.getName()));
@@ -406,13 +414,14 @@ public class TutorialController implements Serializable {
     public void removeGroup() {
         for (Student student : group.getStudents()) {
             student.setGroup(null);
+            studentService.update(student);
         }
-
-        course.getGroups().remove(group);
-        course = courseService.update(course);
 
         tutorial.getGroups().remove(group);
         tutorial = tutorialService.update(tutorial);
+
+        course = tutorial.getCourse();
+        tutorials = userTutorials();
 
         log.debug(String.format("Removed group %s from tutorial %s",
             group.getName(), tutorial.getName()));
@@ -450,27 +459,27 @@ public class TutorialController implements Serializable {
                     bundle.getString("courses.groupWouldBeEmpty"));
         }
 
+        List<Student> students = new ArrayList<>();
         for (Student student : newMembers) {
             student.setGroup(group);
             log.debug(String.format("Added student with email %s to group %s",
                 student.getUser().getEmail(), group.getName()));
+            students.add(student);
         }
 
-        group.setStudents(newMembers);
-        group = groupService.update(group);
-
+        group.setStudents(students);
         return group;
     }
 
     /**
      * Changes the current student context.
      *
-     * @param student Student to switch to.
+     * @param std Student to switch to.
      */
-    public void changeCurrentStudent(@NotNull Student student) {
-        log.debug("Switch to student " + student.getUser());
+    public void changeCurrentStudent(@NotNull Student std) {
+        log.debug("Switch to student " + std.getUser());
 
-        this.student = student;
+        this.student = studentService.find(Student.class, std.getStudentId());
         changeCurrentTutorial(student.getTutorial());
     }
 

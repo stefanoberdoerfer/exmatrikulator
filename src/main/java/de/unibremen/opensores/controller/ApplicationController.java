@@ -366,9 +366,7 @@ public class ApplicationController {
         //Group for course and tutorial
         Group group = new Group();
         group.setName("420 Blaze it");
-        group.setCourse(course);
         group.setTutorial(tutorial);
-        course.getGroups().add(group);
         tutorial.getGroups().add(group);
         group.setTutorial(tutorial);
         group.getStudents().add(student);
@@ -511,12 +509,6 @@ public class ApplicationController {
         if (course.getTutorials().size() > 0) {
             tutorial = course.getTutorials().get(0);
             log.debug("Tutoriallist of course is not empty");
-        }
-
-        if (course.getGroups().size() > 0) {
-            group = course.getGroups().get(0);
-            log.debug("Grouplist of course has " + course.getGroups().size() + " groups");
-            log.debug("First group has " + group.getStudents().size() + " students");
         }
 
         log.debug("Got Student out of Course with id: "
