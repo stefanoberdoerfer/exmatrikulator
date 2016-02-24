@@ -17,12 +17,12 @@ import de.unibremen.opensores.service.GroupService;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.TutorialService;
+import de.unibremen.opensores.service.PrivilegedUserService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -90,6 +90,12 @@ public class TutorialController implements Serializable {
      */
     @EJB
     private transient GroupService groupService;
+
+    /**
+     * The privileged user service for connection to the database.
+     */
+    @EJB
+    private transient PrivilegedUserService privilegedUserService;
 
     /**
      * Course for this tutorial.
@@ -217,10 +223,9 @@ public class TutorialController implements Serializable {
         this.groupMembers.setSource(studentsWithoutGroup(tutorial));
         this.groupMembers.setTarget(new ArrayList<>());
 
-        this.tutorialTutors.setTarget(course.getTutors());
-        this.tutorialTutors.setSource(course.getTutors().stream()
-                .filter(t -> !tutorialTutors.getTarget().contains(t))
-                .collect(Collectors.toList()));
+        this.tutorialTutors.setTarget(tutorial.getTutors());
+        this.tutorialTutors.setSource(tutorialService
+                .tutorsNotInTutorial(tutorial));
 
         this.tutorialStudents.setSource(courseService
             .studentsWithoutTutorial(course));
@@ -252,6 +257,9 @@ public class TutorialController implements Serializable {
         final String oldName = tutorial.getName();
 
         tutorial.setName(newTutorialName);
+        tutorial = tutorialService.update(tutorial);
+
+        tutorial = updateTutors(tutorial);
         tutorial = tutorialService.update(tutorial);
 
         course = tutorial.getCourse();
@@ -302,14 +310,11 @@ public class TutorialController implements Serializable {
     private Tutorial updateTutors(Tutorial tutorial) {
         List<PrivilegedUser> tutors = new ArrayList<>();
         for (PrivilegedUser tutor : tutorialTutors.getTarget()) {
-            if (!course.getTutors().contains(tutor)) {
-                course.getTutors().add(tutor);
-            }
-
             tutor.getTutorials().add(tutorial);
+            privilegedUserService.update(tutor);
+
             log.debug(String.format("Made user %s a tutor in course %s",
                 tutor.getUser().getEmail(), course.getName()));
-
             tutors.add(tutor);
         }
 
