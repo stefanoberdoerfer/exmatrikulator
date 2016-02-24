@@ -152,11 +152,6 @@ public class TutorialController implements Serializable {
     private DualListModel<Student> groupMembers;
 
     /**
-     * List of tutorials for the current course.
-     */
-    private List<Tutorial> tutorials;
-
-    /**
      * Method called on bean initialization.
      */
     @PostConstruct
@@ -184,44 +179,6 @@ public class TutorialController implements Serializable {
             new ArrayList<>());
         groupMembers = new DualListModel<>(course.getStudents(),
             new ArrayList<>());
-
-        tutorials = userTutorials();
-    }
-
-    /**
-     * Returns a list of tutorials the current user can access.
-     *
-     * @return List of tutorials or null.
-     */
-    private List<Tutorial> userTutorials() {
-        if (userService.hasCourseRole(user, Role.LECTURER, course)) {
-            return course.getTutorials();
-        }
-
-        List<Tutorial> list = new ArrayList<>();
-        if (userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
-            PrivilegedUser pu = courseService.findPrivileged(course, user.getEmail());
-            if (pu == null) {
-                return null; // Should never be the case
-            }
-
-            if (pu.hasPrivilege(Privilege.ManageTutorials)) {
-                return course.getTutorials();
-            } else {
-                list.addAll(pu.getTutorials());
-            }
-        }
-
-        if (userService.hasCourseRole(user, Role.STUDENT, course)) {
-            Student st = courseService.findStudent(course, user.getEmail());
-            if (st == null) {
-                return null; // Should never be the case
-            }
-
-            list.add(st.getTutorial());
-        }
-
-        return list;
     }
 
     /**
@@ -240,7 +197,6 @@ public class TutorialController implements Serializable {
         tutorialTutors = new DualListModel<>(course.getTutors(),
             new ArrayList<>());
 
-        tutorials = userTutorials();
         log.debug("Created new tutorial " + tutorial.getName());
     }
 
@@ -322,7 +278,7 @@ public class TutorialController implements Serializable {
         }
 
         tutorialService.remove(tutorial);
-        tutorials = userTutorials();
+        course = tutorial.getCourse();
 
         log.debug(String.format("Removed tutorial %s from course %s",
                     name, course.getName()));
@@ -380,8 +336,6 @@ public class TutorialController implements Serializable {
         tutorial = tutorialService.update(tutorial);
 
         course = tutorial.getCourse();
-        tutorials = userTutorials();
-
         log.debug(String.format("Created new group %s in tutorial %s",
             group.getName(), tutorial.getName()));
     }
@@ -421,8 +375,6 @@ public class TutorialController implements Serializable {
         tutorial = tutorialService.update(tutorial);
 
         course = tutorial.getCourse();
-        tutorials = userTutorials();
-
         log.debug(String.format("Removed group %s from tutorial %s",
             group.getName(), tutorial.getName()));
 
@@ -530,19 +482,39 @@ public class TutorialController implements Serializable {
     }
 
     /**
-     * Returns a list of tutorials for the current user.
+     * Returns a list of tutorials the current user can access.
+     *
+     * @return List of tutorials or null.
      */
     public List<Tutorial> getTutorials() {
-        return tutorials;
-    }
+        if (userService.hasCourseRole(user, Role.LECTURER, course)) {
+            return course.getTutorials();
+        }
 
-    /**
-     * Sets the list of tutorials for the current user.
-     *
-     * @param tutorials Tutorials for the current user.
-     */
-    public void setTutorials(List<Tutorial> tutorials) {
-        this.tutorials = tutorials;
+        List<Tutorial> list = new ArrayList<>();
+        if (userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
+            PrivilegedUser pu = courseService.findPrivileged(course, user.getEmail());
+            if (pu == null) {
+                return null; // Should never be the case
+            }
+
+            if (pu.hasPrivilege(Privilege.ManageTutorials)) {
+                return course.getTutorials();
+            } else {
+                list.addAll(pu.getTutorials());
+            }
+        }
+
+        if (userService.hasCourseRole(user, Role.STUDENT, course)) {
+            Student st = courseService.findStudent(course, user.getEmail());
+            if (st == null) {
+                return null; // Should never be the case
+            }
+
+            list.add(st.getTutorial());
+        }
+
+        return list;
     }
 
     /**

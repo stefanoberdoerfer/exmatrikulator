@@ -25,7 +25,7 @@
         </div>
 
         <h:panelGroup id="tutorialList">
-        <p:tabView value="#{tutorialController.tutorials}" var="tutorial" scrollable="true">
+        <p:tabView value="#{tutorialController.getTutorials()}" var="tutorial" scrollable="true">
             <p:tab title="#{tutorial.name}">
 
             <div class="row table-groups-header">
