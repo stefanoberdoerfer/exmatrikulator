@@ -169,20 +169,23 @@
                             </h:link>
                             <ui:fragment rendered='#{userController.isLecturer(course) or
                                         userController.isPrivilegedUser(course)}'>
-                            <ul class="nav nav-pills nav-stacked sub-pills">
-                                <li><h:link outcome="/participants/students" value="#{msg['common.course.participants']}">
-                                    <f:param name="course-id" value="#{course.courseId}"/>
-                                </h:link></li>
-                                <li><h:link outcome="/tutorialsGroups/overview" value="#{msg['courses.tutorialsGroups']}">
-                                    <f:param name="course-id" value="#{course.courseId}"/>
-                                </h:link></li>
-                                <li><h:link outcome="/grading/overview" value="#{msg['courses.grading']}">
-                                    <f:param name="course-id" value="#{course.courseId}"/>
-                                </h:link></li>
-                                <li><h:link outcome="/settings/overview" value="#{msg['common.settings']}">
-                                    <f:param name="course-id" value="#{course.courseId}"/>
-                                </h:link></li>
-                            </ul>
+                                <ul class="nav nav-pills nav-stacked sub-pills">
+                                    <li><h:link outcome="/participants/students" value="#{msg['common.course.participants']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                    <li><h:link outcome="/tutorialsGroups/overview" value="#{msg['courses.tutorialsGroups']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                    <li><h:link outcome="/grading/overview" value="#{msg['courses.grading']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                    <li><h:link outcome="/recordbook/overview" value="#{msg['recordbooks']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                    <li><h:link outcome="/settings/overview" value="#{msg['common.settings']}">
+                                        <f:param name="course-id" value="#{course.courseId}"/>
+                                    </h:link></li>
+                                </ul>
                             </ui:fragment>
                             <ui:fragment rendered='#{userController.isStudent(course)}'>
                                 <ul class="nav nav-pills nav-stacked sub-pills">

@@ -1,20 +1,14 @@
 package de.unibremen.opensores.controller.recordbook;
 
 import de.unibremen.opensores.model.Course;
-import de.unibremen.opensores.model.Exam;
-import de.unibremen.opensores.model.GradeType;
-import de.unibremen.opensores.model.Grading;
-import de.unibremen.opensores.model.Group;
+import de.unibremen.opensores.model.Privilege;
+import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.RecordBookEntry;
 import de.unibremen.opensores.model.Role;
-import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
-import de.unibremen.opensores.service.GradeService;
-import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.RecordBookService;
 import de.unibremen.opensores.service.UserService;
-import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,9 +21,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Controller to display the record book.
@@ -45,6 +37,12 @@ public class OverviewController {
     private static Logger log = LogManager.getLogger(OverviewController.class);
 
     /**
+     * Stores if the currently logged in user may see the record books of
+     * others.
+     */
+    private boolean allowedToSeeOthers = false;
+
+    /**
      * The course which exams get edited.
      */
     private Course course;
@@ -58,6 +56,16 @@ public class OverviewController {
      * Storing all entries.
      */
     private List<RecordBookEntry> entries;
+
+    /**
+     * Storing the filtered entries.
+     */
+    private List<RecordBookEntry> filteredEntries;
+
+    /**
+     * Storing the overall duration of the filtered entries.
+     */
+    private Integer overallDuration = 0;
 
     /**
      * CourseService for database transactions related to courses.
@@ -91,6 +99,7 @@ public class OverviewController {
 
         user = (User) exContext.getSessionMap().get("user");
         course = courseService.findCourseById(req.getParameter("course-id"));
+
         if (course == null || user == null) {
             try {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -98,6 +107,21 @@ public class OverviewController {
                 log.fatal(e);
             }
             return;
+        }
+        /*
+        Store if the currently logged in user may see the record books of
+        others.
+         */
+        allowedToSeeOthers = userService.hasCourseRole(user, Role.LECTURER,
+                course);
+
+        if (!allowedToSeeOthers && userService.hasCourseRole(user,
+                Role.PRIVILEGED_USER, course)) {
+            PrivilegedUser privilegedUser = course.getPrivilegedUserFromUser(
+                    user);
+
+            allowedToSeeOthers = privilegedUser.hasPrivilege(
+                    Privilege.ManageRecordBooks);
         }
     }
 
@@ -115,22 +139,46 @@ public class OverviewController {
      */
     public List<RecordBookEntry> getEntries() {
         if (entries == null) {
-            entries = recordBookService.getEntries(course, user);
+            if (!allowedToSeeOthers) {
+                entries = recordBookService.getEntries(course, user);
+                this.overallDuration = 0;
+
+                for (RecordBookEntry entry : entries) {
+                    this.overallDuration += entry.getDuration();
+                }
+            } else {
+                entries = recordBookService.getEntries(course);
+            }
         }
 
         return entries;
     }
 
-    /**
-     * Returns all entries of the given student.
-     * @param student Student whose entries shall be listed.
-     * @return List of record book entries.
-     */
-    public List<RecordBookEntry> getEntries(Student student) {
-        if (entries == null) {
-            entries = recordBookService.getEntries(course, student);
-        }
+    public boolean isAllowedToSeeOthers() {
+        return allowedToSeeOthers;
+    }
 
-        return entries;
+    public List<RecordBookEntry> getFilteredEntries() {
+        return filteredEntries;
+    }
+
+    /**
+     * Sets the filtered entries and also generates the overall count.
+     * @param filteredEntries Filtered entries to display
+     */
+    public void setFilteredEntries(List<RecordBookEntry> filteredEntries) {
+        this.filteredEntries = filteredEntries;
+
+        if (filteredEntries != null) {
+            this.overallDuration = 0;
+
+            for (RecordBookEntry entry : filteredEntries) {
+                this.overallDuration += entry.getDuration();
+            }
+        }
+    }
+
+    public Integer getOverallDuration() {
+        return overallDuration;
     }
 }

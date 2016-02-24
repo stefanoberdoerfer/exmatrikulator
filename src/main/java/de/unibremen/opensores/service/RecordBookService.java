@@ -19,8 +19,19 @@ import java.util.List;
  */
 @Stateless
 public class RecordBookService extends GenericService<RecordBookEntry> {
-    public List<RecordBookEntry> getEntries(Course course, Student student) {
-        return new ArrayList<>();
+    /**
+     * Returns all entries of a course.
+     * @param course Course to load entries from.
+     * @return List of entries
+     */
+    public List<RecordBookEntry> getEntries(Course course) {
+        return em.createQuery("SELECT DISTINCT e "
+                        + "FROM RecordBookEntry e "
+                        + "WHERE e.course.courseId = :cid "
+                        + "ORDER BY e.date ASC",
+                    RecordBookEntry.class)
+                .setParameter("cid", course.getCourseId())
+                .getResultList();
     }
 
     /**

@@ -4,51 +4,94 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
     <!-- Define Params -->
-    <ui:param name="pageTitle" value="#{msg['recordbook.my']}" />
+    <ui:param name="pageTitle" value="#{!recordbook.isAllowedToSeeOthers() ?
+        msg['recordbook.my'] : msg['recordbooks']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
         <li>#{recordbook.course.name}</li>
-        <li class="active">#{msg['recordbook.my']}</li>
+        <c:choose>
+            <c:when test="${!recordbook.allowedToSeeOthers}">
+                <li class="active">#{msg['recordbook.my']}</li>
+            </c:when>
+            <c:otherwise>
+                <li class="active">#{msg['recordbooks']}</li>
+            </c:otherwise>
+        </c:choose>
     </ui:define>
     <!-- Page Content -->
     <ui:define name="content">
-        <div class="headline">
-            <div class="btn-group main-buttons pull-right">
-                <h:link onclick="return exModal('recordBookInsert');" value="#{msg['recordbook.insert']}"
-                        class="btn btn-primary" />
-            </div>
-            <h1>#{msg['recordbook.my']}</h1>
-        </div>
-
+        <c:choose>
+            <c:when test="${recordbook.allowedToSeeOthers}">
+                <div class="headline">
+                    <h1>#{msg['recordbooks']}</h1>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div class="headline">
+                    <div class="btn-group main-buttons pull-right">
+                        <h:link onclick="return exModal('recordBookInsert');" value="#{msg['recordbook.insert']}"
+                                class="btn btn-primary" />
+                    </div>
+                    <h1>#{msg['recordbook.my']}</h1>
+                </div>
+            </c:otherwise>
+        </c:choose>
 
         <h:form id="recordBookForm">
             <p:dataTable id="recordBookTbl" var="entry" value="#{recordbook.entries}"
+                         widgetVar="entriesTable"
+                         filteredValue="#{recordbook.filteredEntries}"
                          styleClass="table table-hover table-courses-overview"
                          paginator="true" rows="20"
                          paginatorTemplate="{RowsPerPageDropdown}
                              {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
                              {NextPageLink} {LastPageLink}"
                          rowsPerPageTemplate="20,50,100">
-                <p:column styleClass="table-recordbook-exam" headerText="#{msg['common.course.exam']}">
+                <p:column styleClass="table-recordbook-exam" headerText="#{msg['common.course.exam']}"
+                          sortBy="#{entry.exam.name}">
                     #{entry.exam.name}
                 </p:column>
-                <p:column styleClass="table-recordbook-student" headerText="#{msg['common.student']}">
-                    #{entry.student.user.firstName}
-                    #{entry.student.user.lastName}
-                </p:column>
-                <p:column styleClass="table-recordbook-date" headerText="#{msg['common.date']}">
+                <c:if test="${recordbook.allowedToSeeOthers}">
+                    <p:column styleClass="table-recordbook-student"
+                              filterMatchMode="exact"
+                              filterBy="#{entry.student.studentId}">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('entriesTable').filter()">
+                                <f:selectItem itemLabel="#{msg['common.select']}" itemValue="#{null}"
+                                              noSelectionOption="true" />
+                                <f:selectItems value="#{recordbook.course.students}" var="student"
+                                               itemValue="#{student.studentId}"
+                                               itemLabel="#{student.user.firstName} #{student.user.lastName}" />
+                            </p:selectOneMenu>
+                        </f:facet>
+                        #{entry.student.user.firstName}
+                        #{entry.student.user.lastName}
+                    </p:column>
+                </c:if>
+                <p:column styleClass="table-recordbook-date" headerText="#{msg['common.date']}"
+                          sortBy="#{entry.date}">
                     <h:outputText value="#{entry.date}" >
                         <f:convertDateTime pattern="dd. MMM yyyy" />
                     </h:outputText>
                 </p:column>
-                <p:column styleClass="table-recordbook-duration" headerText="#{msg['recordbook.duration']}">
+                <p:column styleClass="table-recordbook-duration" headerText="#{msg['recordbook.duration']}"
+                          rendered="${recordbook.overallDuration le 0}"
+                          sortBy="#{entry.duration}">
+                    #{entry.duration}min
+                </p:column>
+                <p:column styleClass="table-recordbook-duration" headerText="#{msg['recordbook.duration']}"
+                          footerText="#{recordbook.overallDuration}min"
+                          rendered="${recordbook.overallDuration gt 0}"
+                          sortBy="#{entry.duration}">
                     #{entry.duration}min
                 </p:column>
                 <p:column styleClass="table-recordbook-comment" headerText="#{msg['common.comment']}">
                     #{entry.comment}
                 </p:column>
+                <c:if test="${!recordbook.allowedToSeeOthers}">
                 <p:column styleClass="table-common-options-two text-right">
                     <p:commandLink action="#{recordbookEdit.use(entry)}"
                                    oncomplete="return exModal('recordBookEdit');"
@@ -61,11 +104,14 @@
                         <i class="fa fa-times"></i>
                     </p:commandLink>
                 </p:column>
+                </c:if>
             </p:dataTable>
         </h:form>
 
-        <ui:include src="/WEB-INF/modals/recordbook/insert.xhtml" />
-        <ui:include src="/WEB-INF/modals/recordbook/edit.xhtml" />
-        <ui:include src="/WEB-INF/modals/recordbook/remove.xhtml" />
+        <c:if test="${!recordbook.allowedToSeeOthers}">
+            <ui:include src="/WEB-INF/modals/recordbook/insert.xhtml" />
+            <ui:include src="/WEB-INF/modals/recordbook/edit.xhtml" />
+            <ui:include src="/WEB-INF/modals/recordbook/remove.xhtml" />
+        </c:if>
     </ui:define>
 </ui:composition>
