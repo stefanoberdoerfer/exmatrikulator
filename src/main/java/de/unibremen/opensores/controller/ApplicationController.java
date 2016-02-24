@@ -467,10 +467,6 @@ public class ApplicationController {
         student = course.getStudents().get(0);
         exam = course.getExams().get(0);
 
-        RecordBookEntry rbe = RecordBookEntry.from(student,course,exam,
-                new Date(),60,"Alles komplett gelöst");
-        recordBookService.persist(rbe);
-
         //Testlogs
 
         //Grading
@@ -500,6 +496,21 @@ public class ApplicationController {
         student.getUploads().add(upload);
 
         uploadService.persist(upload);
+
+        // Recordbook
+        RecordBookEntry rbe = RecordBookEntry.from(student,course,exam,
+                new Date(),60,"Alles komplett gelöst");
+        recordBookService.persist(rbe);
+
+        RecordBookEntry entry = new RecordBookEntry();
+        entry.setStudent(student);
+        entry.setComment("Aufgabe 1");
+        entry.setCourse(course);
+        entry.setDate(new Date());
+        entry.setDuration(5);
+        entry.setExam(exam);
+
+        recordBookService.persist(entry);
 
         //Testlogs
 
