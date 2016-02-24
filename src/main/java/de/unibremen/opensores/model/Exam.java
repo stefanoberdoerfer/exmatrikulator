@@ -55,8 +55,15 @@ public class Exam {
     @Column
     private boolean uploadAssignment;
 
+    /**
+     * The deadline for the registration for events for this event if it is with
+     * attendance.
+     */
     @Column
     private Date deadline;
+
+    @Column
+    private boolean isWithAttendance;
 
     @ElementCollection
     @CollectionTable(name = "EXAM_ALLOWED_FILE_TYPES", joinColumns = @JoinColumn(name = "examId"))
@@ -201,5 +208,13 @@ public class Exam {
         }
 
         return false;
+    }
+
+    public boolean isWithAttendance() {
+        return isWithAttendance;
+    }
+
+    public void setWithAttendance(boolean withAttendance) {
+        isWithAttendance = withAttendance;
     }
 }

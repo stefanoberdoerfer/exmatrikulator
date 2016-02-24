@@ -41,6 +41,11 @@ public final class Constants {
      */
     public static final int MAX_UPLOADFILE_SIZE = 100000000; //100Mb
 
+
+    /**
+     * Maxmimum length of a tutorial event description.
+     */
+    public static final int MAX_TUT_EVENT_DESCR_LENGTH = 1000;
     /**
      * Email regex used for mail verification.
      *

@@ -113,8 +113,8 @@ public class TutorialService extends GenericService<Tutorial> {
                 "SELECT s FROM Student s "
                         + "JOIN s.tutorial AS t WITH t.tutorialId = :tutId "
                         + "WHERE s.user.id = :userId "
-                        + "AND s.deleted = false "
-                        + "AND s.user.isConfirmed = true",Student.class)
+                        + "AND s.isDeleted = false "
+                        + "AND s.isConfirmed = true",Student.class)
                 .setParameter("tutId", tutorial.getTutorialId())
                 .setParameter("userId", user.getUserId())
                 .getResultList();

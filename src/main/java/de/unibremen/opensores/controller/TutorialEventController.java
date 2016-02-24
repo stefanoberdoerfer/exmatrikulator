@@ -1,6 +1,7 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.TutorialEvent;
 import de.unibremen.opensores.model.User;
@@ -13,8 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
+import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
 import javax.annotation.PostConstruct;
@@ -22,14 +23,20 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.validator.ValidatorException;
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -85,7 +92,7 @@ public class TutorialEventController {
     /**
      * The currently selected tutorial event.
      */
-    private TutorialEvent selectedTutorialEvent;
+    private TutorialEvent event;
 
     /**
      * A list of users which get notified by mail that a tutorialEvent has changed.
@@ -97,6 +104,21 @@ public class TutorialEventController {
      * Boolean value whether the logged in user is a tutor in the tutorial.
      */
     private boolean isUserTutor;
+
+    /**
+     * The old start date of a selected event.
+     */
+    private Date oldEventStartDate;
+
+    /**
+     * The old end date of a selected event.
+     */
+    private Date oldEventEndDate;
+
+    /**
+     * Formates the dates of tutEvents to the timezone of the exmatrikulator.
+     */
+    private SimpleDateFormat dateFormatter;
 
     /**
      * Initialises the bean and gets the related tutorial.
@@ -151,6 +173,16 @@ public class TutorialEventController {
         }
 
         mailList = getMailList();
+
+        for (TutorialEvent event: tutorial.getEvents()) {
+            if (isUserTutor && loggedInUser.getUserId() == event.getCreatorId()) {
+                event.setEditable(true);
+            }
+            tutorialEventModel.addEvent(event);
+        }
+
+        dateFormatter = new SimpleDateFormat("dd.MM.yyyy' 'HH:mm");
+        dateFormatter.setTimeZone(TimeZone.getTimeZone(Constants.SYSTEM_TIMEZONE));
     }
 
     /**
@@ -159,13 +191,41 @@ public class TutorialEventController {
      */
     public void addEvent(ActionEvent actionEvent) {
         log.debug("addEvent called with " + actionEvent);
-        if (selectedTutorialEvent.getId() == null) {
-            tutorialEventModel.addEvent(selectedTutorialEvent);
+        if (event.getId() == null) {
+            tutorialEventModel.addEvent(event);
+            log.debug("Event gets added");
+            logEventCreated(event);
         } else {
-            tutorialEventModel.updateEvent(selectedTutorialEvent);
-
+            tutorialEventModel.updateEvent(event);
+            log.debug("Event gets updated");
+            if (event.getStartDate() != oldEventStartDate
+                    || event.getEndDate() != oldEventEndDate) {
+                log.debug("The event dates have changed");
+                logEventMoved(event);
+                mailEventMoved(event, oldEventStartDate, oldEventEndDate);
+            } else {
+                logEventUpdated(event);
+            }
         }
-        selectedTutorialEvent = new TutorialEvent();
+        updateTutorialEvents();
+        event = new TutorialEvent();
+    }
+
+    /**
+     * Adds a new event to the tutorial event.
+     * @param actionEvent The actionEvent triggered by the PrimeFaces scheduler.
+     */
+    public void removeEvent(ActionEvent actionEvent) {
+        log.debug("removeEvent called with " + actionEvent);
+        if (event.getId() == null) {
+            log.debug("The PrimeFaces string id of the event is null");
+        } else if (tutorialEventModel.getEvents().contains(event)) {
+            log.debug("Removing the event from the EventModel");
+            tutorialEventModel.deleteEvent(event);
+            logEventRemoved(event);
+        }
+        updateTutorialEvents();
+        event = new TutorialEvent();
     }
 
     /**
@@ -174,7 +234,9 @@ public class TutorialEventController {
      */
     public void onEventSelect(SelectEvent selectEvent) {
         log.debug("onEventSelect called with " + selectEvent);
-        selectedTutorialEvent = (TutorialEvent) selectEvent.getObject();
+        event = (TutorialEvent) selectEvent.getObject();
+        oldEventStartDate = event.getStartDate();
+        oldEventEndDate = event.getEndDate();
     }
 
     /**
@@ -183,42 +245,181 @@ public class TutorialEventController {
      */
     public void onDateSelect(SelectEvent selectEvent) {
         log.debug("onDateSelect called with " + selectEvent);
-        selectedTutorialEvent = new TutorialEvent(tutorial,
+        event = new TutorialEvent(tutorial,
+                loggedInUser.getUserId(),
                 (Date) selectEvent.getObject(),
                 (Date) selectEvent.getObject());
     }
 
-    /**
-     * Triggered when an event is moved.
-     * @param event The ScheduleEntryMoveEvent which is triggered by the PrimeFaces
-     *              scheduler.
+    /*
+     * Validations
      */
-    public void onEventMove(ScheduleEntryMoveEvent event) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                "Event moved", "Day delta:" + event.getDayDelta() + ","
-                + " Minute delta:" + event.getMinuteDelta());
-        log.debug(event.getScheduleEvent().getTitle());
-        addMessage(message);
+
+    /**
+     * Validates that the end date of the selected event is after the start date.
+     * @pre event Is not null and has a not null startDate
+     * @param context The FacesContext in which the validation is done.
+     * @param component The UIComponent for which the validation is done.
+     * @param value The value of the end date
+     * @throws ValidatorException If the input string doesnt match the First name followed
+     *                            by the last name of the user of the to be
+     *                            deleted participation class.
+     */
+    public void validateEndDateAfterStartDate(FacesContext context,
+                                          UIComponent component,
+                                          Object value)   {
+        log.debug("validateDeletionNameInput called: " + value);
+        List<FacesMessage> messages = new ArrayList<>();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        addFailMessage(bundle.getString("tutEvent.validatorMessageEndDate"));
+
+        if (!(value instanceof Date) || event.getStartDate() == null) {
+            //Let the start date validator handle the unvalid start date first
+            return;
+        }
+
+        Date endDate = (Date) value;
+        if (!endDate.after(event.getStartDate())) {
+            throw new ValidatorException(messages);
+        }
     }
 
     /**
-     * Triggered when an event time duration is resized.
-     * @param event The ScheduleEntryResizeEvent triggered by the PrimeFaces scheduler
+     * Gets the current locale string.
+     * @return The current locale string.
      */
-    public void onEventResize(ScheduleEntryResizeEvent event) {
-        log.debug("onEventResize called with " + event);
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event resized",
-                "Day delta:" + event.getDayDelta() + ", Minute delta:" + event.getMinuteDelta());
-        addMessage(message);
+    public String getLocaleCountry() {
+        String locale = FacesContext.getCurrentInstance().getViewRoot().getLocale().toLanguageTag();
+        log.debug("getLocaleCountry() return:" + locale);
+        return locale;
     }
 
     /*
      * Private Methods
      */
 
-    private void addMessage(FacesMessage message) {
-        FacesContext.getCurrentInstance().addMessage(null, message);
+    /**
+     * Mails to every associated user of the tutorial that an event has been moved.
+     * @param event The moved event.
+     */
+    private void mailEventMoved(TutorialEvent event, Date oldEventStartDate, Date oldEventEndDate) {
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        String emailFailMessage = bundle.getString("tutEvent.failMessageNoMail");
+        for (User user: mailList) {
+            try {
+                sendEventMoveEvent(user, oldEventStartDate,oldEventEndDate,
+                        event.getStartDate(), event.getEndDate());
+            } catch (MessagingException | IOException e) {
+                log.debug(e);
+                addFailMessage(emailFailMessage);
+                return;
+            }
+        }
     }
+
+
+    /**
+     * Sends a newly registered user an email that they are registered now.
+     */
+    private void sendEventMoveEvent(User user, Date oldStartDate, Date oldEndDate,
+                                    Date newStartDate, Date newEndDate)
+            throws MessagingException, IOException  {
+
+        String moverName = loggedInUser.getFirstName()
+                + loggedInUser.getLastName();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                FacesContext.getCurrentInstance().getViewRoot().getLocale());
+
+
+        String textFormat = bundle.getString("tutEvent.formatMailEventMoved");
+        String text = new MessageFormat(textFormat).format(new Object[]{
+                user.getFirstName(), moverName, tutorial.getName(), course.getName(),
+                dateFormatter.format(oldStartDate), dateFormatter.format(oldEndDate),
+                dateFormatter.format(newStartDate), dateFormatter.format(newEndDate)
+        });
+        String subjectFormat = bundle.getString("tutEvent.subjectMailEventMoved");
+        String subject = new MessageFormat(subjectFormat).format(new Object[] {
+                tutorial.getName(), course.getName()
+        });
+        loggedInUser.sendEmail(subject, text);
+    }
+
+    /**
+     * Logs that an tutorial event has been created.
+     * @param event The created event.
+     */
+    private void logEventCreated(TutorialEvent event) {
+        String descr = String.format("Has created a tutorial event from %s to "
+                + " %s for the tutorial %s in the course %s.",
+                event.getStartDate().toString(), event.getEndDate().toString(),
+                tutorial.getName(), course.getName());
+        logAction(descr);
+    }
+
+    /**
+     * Logs that an tutorial event has been removed.
+     * @param event The removed event.
+     */
+    private void logEventRemoved(TutorialEvent event) {
+        String descr = String.format("Has removed a tutorial event from %s to "
+                        + " %s for the tutorial %s in the course %s.",
+                event.getStartDate().toString(), event.getEndDate().toString(),
+                tutorial.getName(), course.getName());
+        logAction(descr);
+    }
+
+    /**
+     * Logs that an tutorial event has been updated, but the dates havent changed.
+     * @param event The removed event.
+     */
+    private void logEventUpdated(TutorialEvent event) {
+        String descr = String.format("Has updated a tutorial event in the tutorial"
+                + "%s of the course %s. The dates of the event haven't changed.",
+                tutorial.getName(), course.getName());
+        logAction(descr);
+    }
+
+
+    /**
+     * Logs that an tutorial event has been moved (the dates of the event have changed).
+     * @param event The removed event.
+     */
+    private void logEventMoved(TutorialEvent event) {
+        String descr = String.format("Has moved a tutorial event to the dates from %s to "
+                        + " %s for the tutorial %s of the course %s."
+                        + " The old dates were: From %s to %s",
+                        dateFormatter.format(event.getStartDate()),
+                        dateFormatter.format(event.getEndDate()),
+                        tutorial.getName(), course.getName(),
+                        dateFormatter.format(oldEventStartDate),
+                        dateFormatter.format(oldEventEndDate));
+        logAction(descr);
+    }
+
+    /**
+     * Adds a fail message to the FacesContext.
+     * @param message the message to be displayed.
+     */
+    private void addFailMessage(String message) {
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                FacesMessage.SEVERITY_FATAL,
+                bundle.getString("common.error"),
+                message));
+    }
+
+    /**
+     * Logs that an action has occured with the logged in user and the selected
+     * course.
+     * @param description The description of the action
+     */
+    private void logAction(String description) {
+        logService.persist(Log.from(loggedInUser, course.getCourseId(), description));
+    }
+
 
     /**
      * Gets a List of Users which are not the logged in user from the tutorial.
@@ -231,6 +432,37 @@ public class TutorialEventController {
                 .filter(user -> !user.equals(loggedInUser))
                 .collect(Collectors.toList());
 
+    }
+
+    /**
+     * Checks wheter the logged in user can edit the current event.
+     * The event can be edited if the user is a tutor and has the same user id
+     * as the creator id of the event.
+     * @return True if the user has
+     */
+    public boolean canUserEditEvent() {
+        boolean canUserEditEvents = event != null && isUserTutor
+                && (event.getId() == null
+                    || loggedInUser.getUserId() == event.getCreatorId());
+        log.debug("canUserEditEvent() called, returns: " + canUserEditEvents);
+        return canUserEditEvents;
+    }
+
+    /**
+     * Updates the events of the tutorial in the database.
+     */
+    private void updateTutorialEvents() {
+        tutorial.getEvents().clear();
+        for (ScheduleEvent event: tutorialEventModel.getEvents()) {
+            TutorialEvent tutEvent = (TutorialEvent) event;
+            tutEvent.setEditable(false);
+            tutorial.getEvents().add(tutEvent);
+        }
+        tutorial = tutorialService.update(tutorial);
+        for (ScheduleEvent event: tutorialEventModel.getEvents()) {
+            TutorialEvent tutEvent = (TutorialEvent) event;
+            tutEvent.setEditable(canUserEditEvent());
+        }
     }
 
     /*
@@ -279,4 +511,13 @@ public class TutorialEventController {
     public Course getCourse() {
         return course;
     }
+
+    public TutorialEvent getEvent() {
+        return event;
+    }
+
+    public void setEvent(TutorialEvent event) {
+        this.event = event;
+    }
+
 }

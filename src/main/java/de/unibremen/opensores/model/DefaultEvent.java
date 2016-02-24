@@ -1,5 +1,6 @@
 package de.unibremen.opensores.model;
 
+import de.unibremen.opensores.util.Constants;
 import org.primefaces.model.ScheduleEvent;
 
 
@@ -9,10 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -26,6 +24,9 @@ import java.util.Date;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class DefaultEvent implements ScheduleEvent, Serializable {
 
+    /**
+     * The primary key of a default event in our database.
+     */
     @Id
     @GeneratedValue
     private long eventId;
@@ -36,7 +37,7 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
     @Column
     private Date endDate;
 
-    @Column
+    @Column(length = Constants.MAX_TUT_EVENT_DESCR_LENGTH)
     private String description;
 
     @Column
@@ -48,8 +49,12 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
     @Column
     private Boolean isEditable;
 
+    /**
+     * The id used by the primefaces scheduler.
+     * Not used as primary key in our database.
+     */
     @Column
-    private String primeFacesId;
+    private String id;
 
     @Column
     private String title;
@@ -58,7 +63,14 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
     @Column
     private Object data;
 
-    public DefaultEvent() {}
+    /**
+     * Default constructor of a default event.
+     */
+    public DefaultEvent() {
+        this.description = "";
+        this.isAllDay = false;
+        this.isEditable = true;
+    }
 
 
     /**
@@ -68,9 +80,10 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
      * @param end The end date of the event
      */
     public DefaultEvent(String title, Date start, Date end) {
+        this();
         this.title = title;
-        this.startDate = start;
-        this.endDate = end;
+        this.startDate = new Date(start.getTime());
+        this.endDate = new Date(end.getTime());
     }
 
     /**
@@ -80,9 +93,7 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
      * @param end The end date of the event
      */
     public DefaultEvent(String title, Date start, Date end, boolean allDay) {
-        this.title = title;
-        this.startDate = start;
-        this.endDate = end;
+        this(title, start, end);
         this.isAllDay = allDay;
     }
 
@@ -94,9 +105,7 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
      * @param styleClass The styleClass of the event.
      */
     public DefaultEvent(String title, Date start, Date end, String styleClass) {
-        this.title = title;
-        this.startDate = start;
-        this.endDate = end;
+        this(title, start, end);
         this.styleClass = styleClass;
     }
 
@@ -108,20 +117,18 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
      * @param data The extra data object of the event.
      */
     public DefaultEvent(String title, Date start, Date end, Object data) {
-        this.title = title;
-        this.startDate = start;
-        this.endDate = end;
+        this(title, start, end);
         this.data = data;
     }
 
     @Override
     public String getId() {
-        return primeFacesId;
+        return id;
     }
 
     @Override
     public void setId(String primeFacesId) {
-        this.primeFacesId = primeFacesId;
+        this.id = primeFacesId;
     }
 
     @Override
@@ -149,6 +156,10 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
         return isAllDay;
     }
 
+    public void setIsAllDay(boolean isAllDay) {
+        this.isAllDay = isAllDay;
+    }
+
     @Override
     public String getStyleClass() {
         return styleClass;
@@ -164,6 +175,18 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
         return description;
     }
 
+    public void setEventId(long eventId) {
+        this.eventId = eventId;
+    }
+
+    public long getEventId() {
+        return eventId;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public void setEndDate(Date endDate) {
         this.endDate = new Date(endDate.getTime());
     }
@@ -171,4 +194,13 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
     public void setStartDate(Date startDate) {
         this.startDate = new Date(startDate.getTime());
     }
+
+    public void setEditable(boolean isEditable) {
+        this.isEditable = isEditable;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
 }

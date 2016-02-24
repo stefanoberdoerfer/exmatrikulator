@@ -1,28 +1,46 @@
 package de.unibremen.opensores.model;
 
-import javax.persistence.Entity;
 import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
+import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * The entity of a tutorial event.
  */
 @Entity
-public class TutorialEvent extends DefaultEvent {
+public class TutorialEvent extends DefaultEvent implements Serializable {
+
+    private static final long serialVersionUID = -4409860309037617938L;
 
     @ManyToOne
-    private Tutorial tutorial;
+    private transient Tutorial tutorial;
+
+    /**
+     * The user id of the creator of this tutorial event.
+     */
+    @Column(nullable = false)
+    private long creatorId;
 
     public TutorialEvent() {
         super();
     }
 
-    public TutorialEvent(Tutorial tutorial, Date startDate, Date endDate) {
+
+    /**
+     * Constructor for creating a tutorial event with all necessary data.
+     * @param tutorial The tutorial in which the event is located.
+     * @param creatorId The user id of the user which created the event.
+     * @param startDate The start date of the event.
+     * @param endDate The end date of the event.
+     */
+    public TutorialEvent(Tutorial tutorial, long creatorId, Date startDate, Date endDate) {
         this.tutorial = tutorial;
-        
+        this.creatorId = creatorId;
+        this.setStartDate(new Date(startDate.getTime()));
+        this.setEndDate(new Date(endDate.getTime()));
+
     }
 
     public Tutorial getTutorial() {
@@ -40,5 +58,13 @@ public class TutorialEvent extends DefaultEvent {
     @Override
     public String getTitle() {
         return (tutorial == null) ? "" : tutorial.getName();
+    }
+
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
     }
 }
