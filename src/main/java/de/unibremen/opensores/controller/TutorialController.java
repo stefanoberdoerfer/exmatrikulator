@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -216,8 +217,10 @@ public class TutorialController implements Serializable {
         this.groupMembers.setSource(studentsWithoutGroup(tutorial));
         this.groupMembers.setTarget(new ArrayList<>());
 
-        this.tutorialTutors.setSource(course.getTutors());
-        this.tutorialTutors.setTarget(new ArrayList<>());
+        this.tutorialTutors.setTarget(course.getTutors());
+        this.tutorialTutors.setSource(course.getTutors().stream()
+                .filter(t -> !tutorialTutors.getTarget().contains(t))
+                .collect(Collectors.toList()));
 
         this.tutorialStudents.setSource(courseService
             .studentsWithoutTutorial(course));
