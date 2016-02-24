@@ -438,7 +438,27 @@ public class TutorialController implements Serializable {
      * Removes the current student from the current tutorial.
      */
     public void removeStudent() {
-        // TODO remove group if it has 0 members afterwards.
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        String msg = null;
+        Group group = student.getGroup();
+        if (group != null) {
+            Integer min = course.getMinGroupSize();
+            int members = group.getStudents().size();
+            if (min != null && members <= min) {
+                msg = bundle.getString("courses.groupDeleteMinSize");
+            } else if (members <= 1) {
+                msg = bundle.getString("courses.groupWouldBeEmpty");
+            }
+        }
+
+        if (msg != null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+            return;
+        }
 
         tutorial.getStudents().remove(student);
         tutorial = tutorialService.update(tutorial);
