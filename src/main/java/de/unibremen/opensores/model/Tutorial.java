@@ -38,12 +38,30 @@ public class Tutorial {
     @OneToMany(mappedBy = "tutorial", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Group> groups = new ArrayList<>();
 
+    @OneToMany(mappedBy = "tutorial", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TutorialEvent> events = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(name = "TUTORIAL_PRIVUSER",
             joinColumns = {@JoinColumn(name = "tutorialId")},
             inverseJoinColumns = {@JoinColumn(name = "privUserId")})
     private List<PrivilegedUser> tutors = new ArrayList<>();
 
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Tutorial && (tutorialId != null)
+                ? tutorialId.equals(((Tutorial) object).tutorialId)
+                : (object == this);
+    }
+
+    @Override
+    public int hashCode() {
+        return tutorialId != null
+                ? this.getClass().hashCode() + tutorialId.hashCode()
+                : super.hashCode();
+    }
+    
     public Long getTutorialId() {
         return tutorialId;
     }
@@ -86,5 +104,13 @@ public class Tutorial {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<TutorialEvent> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<TutorialEvent> events) {
+        this.events = events;
     }
 }

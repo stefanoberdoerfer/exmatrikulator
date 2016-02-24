@@ -215,7 +215,6 @@ public class GradeScriptController {
     /**
      * GradeService for database transactions related to grades.
      */
-    @EJB
     private GradeService gradeService;
 
     /**
@@ -605,7 +604,7 @@ public class GradeScriptController {
             throw new IllegalArgumentException("The participationType can't be null");
         }
         gradedStudents.put(participationType,
-                new ArrayList(studentService.update((gradedStudents.get(participationType)))));
+                new ArrayList<>(studentService.update((gradedStudents.get(participationType)))));
         logStudentsGraded(participationType);
         addInfoMessage(bundle.getString("gradingFormula.messageStudentPaboSaved"));
     }
@@ -1116,6 +1115,11 @@ public class GradeScriptController {
     @EJB
     public void setStudentService(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    @EJB
+    public void setGradeService(GradeService gradeService) {
+        this.gradeService = gradeService;
     }
 
     public void setPythonInterpreter(PythonInterpreter pyInterpreter) {

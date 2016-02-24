@@ -80,7 +80,6 @@ public class ExamController {
      */
     private LogService logService;
 
-
     /**
      * The course which exams get edited.
      */
@@ -110,11 +109,6 @@ public class ExamController {
      * List for filtered exams for PrimeFaces filtering.
      */
     private List<Exam> filteredExams;
-
-    /**
-     * The selected file endings for an upload.
-     */
-    private String allowedFileEndings;
 
     /**
      * The logged in user.
@@ -204,7 +198,6 @@ public class ExamController {
         log.debug("onAddExamDialogCalled() called");
 
         selectedExam = new Exam();
-        allowedFileEndings = "";
     }
 
     /**
@@ -219,7 +212,6 @@ public class ExamController {
         }
         selectedExam = exam;
         logExamOpenToEdit(exam);
-        allowedFileEndings = getAllowedFileEndingsString(selectedExam.getAllowedFileEndings());
         oldSelectedGradeTypeId = exam.getGradeType();
     }
 
@@ -251,11 +243,8 @@ public class ExamController {
             selectedExam.setMaxPoints(null);
         }
 
-        if (!selectedExam.isUploadAssignment()) {
+        if (!selectedExam.isWithAttendance()) {
             selectedExam.setDeadline(null);
-            selectedExam.setMaxFileSizeMB(null);
-        } else if (!allowedFileEndings.isEmpty()) {
-            selectedExam.setAllowedFileEndings(getAllowedFileEndingList());
         }
 
         selectedExam.setCourse(course);
@@ -438,11 +427,10 @@ public class ExamController {
     }
 
     /**
-     * Validates the new mime type which should be added to the allowed file endings
-     * of the upload of the exam.
+     * Validates the deadline for exam events.
      * @param ctx The FacesContext for which the validation occurs.
      * @param comp The corresponding ui component.
-     * @param value The value of the input (the user input).
+     * @param value The value of the deadline (the user input).
      */
     public void validateDeadline(FacesContext ctx, UIComponent comp, Object value) {
         List<FacesMessage> msgs = new ArrayList<FacesMessage>();
@@ -479,42 +467,6 @@ public class ExamController {
     /*
      * Private Methods
      */
-
-    /**
-     * Gets a list of allowed file endings given the input text with the comma
-     * seperated file endings.
-     * @Pre The allowed file endings string is validated.
-     * @return A list of allowed file endings.
-     */
-    private List<String> getAllowedFileEndingList() {
-        List<String> fileEndings = new ArrayList<>();
-        for (String fileEnding: allowedFileEndings.split(",")) {
-            fileEndings.add(fileEnding);
-        }
-        return fileEndings;
-    }
-
-    /**
-     * Sets the selected file endings string given a list of file endings.
-     * @param fileEndings The list of file endings.
-     */
-    private String getAllowedFileEndingsString(List<String> fileEndings) {
-        log.debug("setAllowedFileEndingsString()");
-        StringBuffer buffer = new StringBuffer();
-
-        for (String fileEnding: fileEndings) {
-            log.debug("File ending: " + fileEnding);
-            buffer.append(fileEnding + ",");
-        }
-
-        String filesString = buffer.toString();
-        if (!filesString.isEmpty()) {
-            filesString = filesString.substring(0, filesString.length() - 1);
-        }
-
-        log.debug("allowedFileEndings: " + filesString);
-        return filesString;
-    }
 
 
     /*
@@ -656,13 +608,6 @@ public class ExamController {
         this.filteredExams = filteredExams;
     }
 
-    public String getAllowedFileEndings() {
-        return allowedFileEndings;
-    }
-
-    public void setAllowedFileEndings(String allowedFileEndings) {
-        this.allowedFileEndings = allowedFileEndings;
-    }
 
     public void setCalledFromWizard(boolean calledFromWizard) {
         this.calledFromWizard = calledFromWizard;

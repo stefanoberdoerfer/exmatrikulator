@@ -73,62 +73,33 @@
                         </h:panelGroup>
                     </h:panelGroup>
                     <hr />
-
                     <div class="form-group">
-                        <h:outputLabel for="editExamUpload" class="col-xs-3 control-label text-left"
-                                       value="#{msg['examination.uploadAssignment']}"/>
+                        <h:outputLabel for="editExamHasEvents" class="col-xs-3 control-label text-left"
+                                       value="#{msg['examination.hasEvents']}"/>
                         <div class="col-xs-8">
                             <div class="checkbox">
-                                <h:selectBooleanCheckbox id="editExamUpload" required="true" binding="#{editUploadCheckBox}"
-                                                         value="#{examController.selectedExam.uploadAssignment}">
-                                    <f:ajax render=":editExamForm:editUploadDeadlineGroup" />
+                                <h:selectBooleanCheckbox id="editExamHasEvents" required="true"
+                                                         binding="#{examEditEventCheckBox}"
+                                                         value="#{examController.selectedExam.withAttendance}">
+                                    <f:ajax render=":editExamForm:editDeadlineGroup" />
                                 </h:selectBooleanCheckbox>
-                                <h:outputLabel value="#{msg['examination.examHasUploadText']}" for="editExamUpload" />
+                                <h:outputLabel value="#{msg['examination.examHasEvents']}" for="editExamHasEvents" />
                             </div>
                         </div>
                     </div>
-                    <h:panelGroup id="editUploadDeadlineGroup" layout="block">
+                    <h:panelGroup id="editDeadlineGroup" layout="block">
                         <h:panelGroup styleClass="form-group" layout="block">
-                            <p:outputLabel for="uploadDeadLineCal"
+                            <p:outputLabel for="examDeadline"
                                            class="col-xs-3 control-label"
-                                           rendered="#{editUploadCheckBox.value}"
-                                           value="#{msg['examination.deadlineUpload']}" />
-                            <h:panelGroup id="editUploadDeadLine" styleClass="col-xs-8"
+                                           rendered="#{examEditEventCheckBox.value}"
+                                           value="#{msg['examEvent.deadline']}" />
+                            <h:panelGroup id="examDeadline" styleClass="col-xs-8"
                                           layout="block"
-                                          rendered="#{editUploadCheckBox.value}">
-                                <p:calendar id="uploadDeadLineCal"
+                                          rendered="#{examEditEventCheckBox.value}">
+                                <p:calendar id="deadLineCal"
                                             value="#{examController.selectedExam.deadline}"
                                             validator="#{examController.validateDeadline}"
                                             pattern="MM/dd/yyyy HH:mm:ss" />
-                            </h:panelGroup>
-                        </h:panelGroup>
-                        <h:panelGroup styleClass="form-group" layout="block">
-                            <p:outputLabel for="editUploadMaxFileSize" value="#{msg['examination.maxFileSizeMB']}"
-                                           class="col-xs-3 control-label"
-                                           rendered="#{editUploadCheckBox.value}"/>
-                            <h:panelGroup id="editUploadMaxFileSize" styleClass="col-xs-8"
-                                          layout="block"
-                                          rendered="#{editUploadCheckBox.value}">
-                                <h:inputText id="uploadFileSize" class="form-control"
-                                             value="#{examController.selectedExam.maxFileSizeMB}" required="true"
-                                             converter="javax.faces.Long" validatorMessage="#{msg['examination.messageMaxFileSize']}">
-                                    <f:validateLongRange minimum="1" maximum="100" />
-                                </h:inputText>
-                            </h:panelGroup>
-                        </h:panelGroup>
-                        <h:panelGroup styleClass="form-group" layout="block" >
-                            <p:outputLabel for="editAllowedFileEndings" value="#{msg['examination.mimeType']}"
-                                           class="col-xs-3 control-label"
-                                           rendered="#{editUploadCheckBox.value}"/>
-                            <h:panelGroup id="fileEndingsGroup" styleClass="col-xs-8"
-                                          layout="block"
-                                          rendered="#{editUploadCheckBox.value}">
-                                <h:outputText value="#{msg['examination.textFileEndings']}" escape="false"/>
-                                <h:inputText id="editAllowedFileEndings" class="form-control"
-                                             value="#{examController.allowedFileEndings}"
-                                             validator="#{examController.validateFileEndings}"
-                                             validatorMessage="#{msg['examination.notValidFileEndings']}">
-                                </h:inputText>
                             </h:panelGroup>
                         </h:panelGroup>
                     </h:panelGroup>

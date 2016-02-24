@@ -3,6 +3,7 @@ package de.unibremen.opensores.model;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -11,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -40,6 +42,12 @@ public class Exam {
     @Column
     private BigDecimal maxPoints;
 
+    /**
+     * The examination with attendance events of an exam.
+     */
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.MERGE)
+    private List<ExamEvent> events = new ArrayList<>();
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
     @NotFound(action = NotFoundAction.IGNORE)
@@ -49,20 +57,16 @@ public class Exam {
     //http://stackoverflow.com/questions/13539050/entitynotfoundexception-in-hibernate-many-to-one-mapping-however-data-exist
     private Course course = new Course();
 
-    /**
-     * Boolean value to indicate if the exam has an upload to it.
-     */
-    @Column
-    private boolean uploadAssignment;
 
+    /**
+     * The deadline for the registration for events for this event if it is with
+     * attendance.
+     */
     @Column
     private Date deadline;
 
-    @ElementCollection
-    @CollectionTable(name = "EXAM_ALLOWED_FILE_TYPES", joinColumns = @JoinColumn(name = "examId"))
     @Column
-    private List<String> allowedFileEndings = new ArrayList<>();
-
+    private boolean isWithAttendance;
 
     @Override
     public boolean equals(Object object) {
@@ -78,11 +82,6 @@ public class Exam {
                 : super.hashCode();
     }
 
-    /**
-     * The maximal file size in MegaByte.
-     */
-    @Column
-    private Long maxFileSizeMB;
 
     @Column
     private boolean gradableByTutors;
@@ -121,14 +120,6 @@ public class Exam {
             new Date(deadline.getTime());
     }
 
-    public Long getMaxFileSizeMB() {
-        return maxFileSizeMB;
-    }
-
-    public void setMaxFileSizeMB(Long maxFileSizeMB) {
-        this.maxFileSizeMB = maxFileSizeMB;
-    }
-
     public Long getExamId() {
         return examId;
     }
@@ -165,21 +156,6 @@ public class Exam {
         this.gradableByTutors = gradableByTutors;
     }
 
-    public boolean isUploadAssignment() {
-        return uploadAssignment;
-    }
-
-    public void setUploadAssignment(boolean uploadAssignment) {
-        this.uploadAssignment = uploadAssignment;
-    }
-
-    public List<String> getAllowedFileEndings() {
-        return allowedFileEndings;
-    }
-
-    public void setAllowedFileEndings(List<String> allowedFileEndings) {
-        this.allowedFileEndings = allowedFileEndings;
-    }
 
     /**
      * Returns if the given grading value is valid.
@@ -201,5 +177,21 @@ public class Exam {
         }
 
         return false;
+    }
+
+    public boolean isWithAttendance() {
+        return isWithAttendance;
+    }
+
+    public void setWithAttendance(boolean withAttendance) {
+        isWithAttendance = withAttendance;
+    }
+
+    public List<ExamEvent> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<ExamEvent> events) {
+        this.events = events;
     }
 }

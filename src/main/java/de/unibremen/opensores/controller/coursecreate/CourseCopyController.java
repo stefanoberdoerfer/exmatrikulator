@@ -282,10 +282,9 @@ public class CourseCopyController implements Serializable {
             ex.setName(e.getName());
             ex.setGradeType(e.getGradeType());
             ex.setGradableByTutors(e.isGradableByTutors());
-            ex.setUploadAssignment(e.isUploadAssignment());
-            ex.setAllowedFileEndings(e.getAllowedFileEndings());
+            ex.setWithAttendance(e.isWithAttendance());
             ex.setDeadline(e.getDeadline());
-            ex.setMaxFileSizeMB(e.getMaxFileSizeMB());
+            ex.setEvents(e.getEvents());
             ex.setMaxPoints(e.getMaxPoints());
             ex.setShortcut(e.getShortcut());
             ex.setCourse(course);

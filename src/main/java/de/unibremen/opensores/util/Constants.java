@@ -41,6 +41,11 @@ public final class Constants {
      */
     public static final int MAX_UPLOADFILE_SIZE = 100000000; //100Mb
 
+
+    /**
+     * Maxmimum length of a tutorial event description.
+     */
+    public static final int MAX_TUT_EVENT_DESCR_LENGTH = 1000;
     /**
      * Email regex used for mail verification.
      *
@@ -62,6 +67,16 @@ public final class Constants {
      * The http parameter key by which the student id gets passed.
      */
     public static final String HTTP_PARAM_STUDENT_ID = "student-id";
+
+    /**
+     * The http parameter key by which the tutorial id gets passed.
+     */
+    public static final String HTTP_PARAM_TUTORIAL_ID = "tutorial-id";
+
+    /**
+     * The http parameter key by which the exam id gets passed.
+     */
+    public static final String HTTP_PARAM_EXAM_ID = "exam-id";
 
     /**
      * The path to the course overview site.

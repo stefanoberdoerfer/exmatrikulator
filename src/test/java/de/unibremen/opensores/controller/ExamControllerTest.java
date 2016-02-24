@@ -133,13 +133,7 @@ public class ExamControllerTest {
         exam.setShortcut("TE");
         exam.setCourse(course);
         exam.setGradeType(GradeType.Percent.getId());
-        List<String> fileEndings = new ArrayList<>();
         exam.setDeadline(new Date());
-        exam.setMaxFileSizeMB((long)50);
-        fileEndings.add("pdf");
-        fileEndings.add("zip");
-        fileEndings.add("tex");
-        exam.setAllowedFileEndings(fileEndings);
         course.getExams().add(exam);
         course.setCourseId(DataHelper.getNewObjectId());
 
@@ -189,8 +183,6 @@ public class ExamControllerTest {
         assertNullOrEmpty(examController.getSelectedExam().getName());
         assertNullOrEmpty(examController.getSelectedExam().getShortcut());
         assertNull(examController.getSelectedExam().getDeadline());
-        assertNull(examController.getSelectedExam().getMaxFileSizeMB());
-        assertTrue(examController.getAllowedFileEndings().isEmpty());
     }
 
     /**
@@ -201,7 +193,6 @@ public class ExamControllerTest {
     public void testOnEditExamDialogCalled() {
         examController.onEditExamDialogCalled(course.getExams().get(0));
         assertSame(examController.getSelectedExam(), course.getExams().get(0));
-        assertEquals("pdf,zip,tex", examController.getAllowedFileEndings());
     }
 
     /**
@@ -241,7 +232,7 @@ public class ExamControllerTest {
     public void testAddExam() {
         Exam toBeAdded = new Exam();
         assertFalse(course.getExams().contains(toBeAdded));
-        toBeAdded.setUploadAssignment(false);
+        toBeAdded.setWithAttendance(false);
         toBeAdded.setDeadline(new Date());
         toBeAdded.setMaxPoints(new BigDecimal("1"));
         toBeAdded.setGradeType(GradeType.Percent.getId());
@@ -251,8 +242,6 @@ public class ExamControllerTest {
         assertTrue(course.getExams().contains(toBeAdded));
         assertNull(toBeAdded.getMaxPoints());
         assertNull(toBeAdded.getDeadline());
-        assertNull(toBeAdded.getMaxFileSizeMB());
-        assertNullOrEmpty(toBeAdded.getAllowedFileEndings());
 
 
         Exam uploadExam = new Exam();
@@ -260,18 +249,11 @@ public class ExamControllerTest {
         examController.setSelectedExam(uploadExam);
         uploadExam.setGradeType(GradeType.Point.getId());
         uploadExam.setMaxPoints(new BigDecimal("1"));
-        uploadExam.setUploadAssignment(true);
+        uploadExam.setWithAttendance(true);
         uploadExam.setDeadline(new Date());
-        uploadExam.setMaxFileSizeMB((long)1);
-        List<String> allowedFileEndings = new ArrayList<>();
-        allowedFileEndings.add("mp3");
-        allowedFileEndings.add("txt");
-        allowedFileEndings.add("zip");
-        examController.setAllowedFileEndings("mp3,txt,zip");
+
         examController.addExam();
         assertNotNull(uploadExam.getDeadline());
-        assertNotNull(uploadExam.getMaxFileSizeMB());
-        assertEquals(allowedFileEndings, uploadExam.getAllowedFileEndings());
         assertTrue(course.getExams().contains(uploadExam));
     }
 

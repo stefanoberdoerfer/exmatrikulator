@@ -1,0 +1,134 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['courses.tutorialsGroups']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li>#{tutorialEventController.course.name}</li>
+        <li class="active">#{msg['courses.tutorialsGroups']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form id="eventForm" >
+            <h:panelGroup rendered="#{tutorialEventController.userTutor}">
+                <p:schedule id="tutorSchedule"
+                            value="#{tutorialEventController.tutorialEventModel}"
+                            widgetVar="tutorSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}"
+                            draggable="false" resizable="false"
+                            locale="#{tutorialEventController.getLocaleCountry()}">
+                    <p:ajax event="dateSelect" listener="#{tutorialEventController.onDateSelect}"
+                            update="eventDialog" oncomplete="PF('tutEventDialog').show();"/>
+                    <p:ajax event="eventSelect" listener="#{tutorialEventController.onEventSelect}"
+                            update="eventDialog" oncomplete="PF('tutEventDialog').show();"/>
+                    <p:ajax event="eventMove" listener="#{tutorialEventController.onEventMove}" />
+                    <p:ajax event="eventResize" listener="#{tutorialEventController.onEventResize}" />
+                </p:schedule>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{not tutorialEventController.userTutor}">
+                <p:schedule id="studentSchedule"
+                            value="#{tutorialEventController.tutorialEventModel}"
+                            widgetVar="studentSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}" resizable="false"
+                            draggable="false" locale="#{tutorialEventController.getLocaleCountry()}">
+                    <p:ajax event="eventSelect" listener="#{tutorialEventController.onEventSelect}"
+                            update="eventDialog" oncomplete="PF('tutEventDialog').show();"/>/>
+                </p:schedule>
+            </h:panelGroup>
+            <p:dialog id="eventDialog" widgetVar="tutEventDialog" header="#{msg['tutEvent.details']}">
+                <ui:include src="/WEB-INF/alerts.xhtml" />
+                <div class="modal-body">
+                    <div class="form-group" >
+                        <h:panelGroup rendered="#{not tutorialEventController.canUserEditEvent()}" layout="block">
+
+                            <p:outputLabel for="fromStudentText" value="#{msg['common.from']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+                            <div class="col-xs-8">
+                                <h:outputText styleClass="form-control" id="fromStudentText" value="#{tutorialEventController.event.startDate}">
+                                    <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                </h:outputText>
+                            </div>
+                            <br/>
+
+                            <p:outputLabel for="toStudentTxt" value="#{msg['common.to']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+                            <div class="col-xs-8">
+                                <h:outputText styleClass="form-control" id="toStudentTxt" value="#{tutorialEventController.event.endDate}">
+                                    <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                </h:outputText>
+                            </div>
+                            <br/>
+                            <p:outputLabel for="studentDescr" value="#{msg['common.description']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+                            <div class="col-xs-8">
+                                <p:inputTextarea id="studentDescr" value="#{tutorialEventController.event.description}"
+                                                 maxlength="#{EXcons.MAX_TUT_EVENT_DESCR_LENGTH}"
+                                                 autoResize="true"
+                                                 rows="8" cols="30"
+                                                 readonly="true"/>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{tutorialEventController.canUserEditEvent()}">
+                            <p:outputLabel for="fromTutorCal" value="#{msg['common.from']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+                            <div class="col-xs-8">
+                                <p:calendar id="fromTutorCal" value="#{tutorialEventController.event.startDate}"
+                                            locale="#{tutorialEventController.getLocaleCountry()}"
+                                            required="true" validatorMessage="#{msg['tutEvent.validatorMessageStartDate']}"
+                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                            </div>
+
+                            <p:outputLabel for="toTutorCal" value="#{msg['common.to']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+                            <div class="col-xs-8">
+                                <p:calendar id="toTutorCal" value="#{tutorialEventController.event.endDate}"
+                                            locale="#{tutorialEventController.getLocaleCountry()}"
+                                            required="true"
+                                            validator="#{tutorialEventController.validateEndDateAfterStartDate}"
+                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                            </div>
+
+                            <p:outputLabel for="tutorDescr" value="#{msg['common.description']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+                            <div class="col-xs-8">
+                                <p:inputTextarea id="tutorDescr" value="#{tutorialEventController.event.description}"
+                                                 maxlength="#{EXcons.MAX_TUT_EVENT_DESCR_LENGTH}"
+                                                 autoResize="true"
+                                                 rows="8" cols="30"
+                                                 counter="descrCharCounter"
+                                                 counterTemplate="#{msg['tutEvent.counterTemplate']}"/>
+                                <br/>
+                                <h:outputText id="descrCharCounter"/>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group pull-left">
+                        <p:commandLink value="#{msg['common.cancel']}" styleClass="btn btn-default"
+                                       oncomplete="PF('tutEventDialog').hide();" process="@this"/>
+                        <p:commandLink value="#{msg['common.remove']}" styleClass="btn btn-danger"
+                                       rendered="#{tutorialEventController.canUserEditEvent()
+                                               and examEventController.event.id != null}"
+                                       actionListener="#{tutorialEventController.removeEvent}"
+                                       oncomplete="PF('tutorSchedule').update();
+                                                       PF('tutEventDialog').hide();"/>
+                        <p:commandLink id="addButton" styleClass="btn btn-success"
+                                       value="#{msg['common.saveChanges']}"
+                                       rendered="#{tutorialEventController.canUserEditEvent()}"
+                                       actionListener="#{tutorialEventController.addEvent}"
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) {
+                                                       PF('tutorSchedule').update();
+                                                       PF('tutEventDialog').hide();
+                                                }" />
+                    </div>
+                </div>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

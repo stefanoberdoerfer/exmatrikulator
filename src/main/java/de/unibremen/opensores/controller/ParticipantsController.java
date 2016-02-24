@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  */
 @ManagedBean
 @ViewScoped
-public class ParticipantsController {
+public class  ParticipantsController {
 
     /**
      * The log4j logger.
@@ -153,9 +153,20 @@ public class ParticipantsController {
     private boolean privilegeGenerateCredits;
 
     /**
+     * Boolean if a selected privileged user can create exam events.
+     */
+    private boolean isPrivilegeCreateExamEvents;
+
+    /**
+     * Boolean if a selected privileged user can manage record books.
+     */
+    private boolean isPrivilegeManageRecordBooks;
+
+    /**
      * Boolean if a selected privileged user is a secretary.
      */
     private boolean isPrivilegedUserSecretary;
+
 
     /**
      * A text input from the user for the context (e.g. search for a user,
@@ -844,6 +855,12 @@ public class ParticipantsController {
         if (privilegeGenerateCredits) {
             privilegeIds.add(Privilege.GenerateCredits.getId());
         }
+        if (isPrivilegeCreateExamEvents) {
+            privilegeIds.add(Privilege.CreateExamEvents.getId());
+        }
+        if (isPrivilegeManageRecordBooks) {
+            privilegeIds.add(Privilege.ManageRecordBooks.getId());
+        }
         return privilegeIds;
     }
 
@@ -871,6 +888,10 @@ public class ParticipantsController {
         privilegeStudents = privilegedUser.hasPrivilege(Privilege.ManageStudents.name());
         privilegeExportData = privilegedUser.hasPrivilege(Privilege.ExportData.name());
         privilegeGenerateCredits = privilegedUser.hasPrivilege(Privilege.ExportData.name());
+        isPrivilegeCreateExamEvents = privilegedUser.hasPrivilege(
+                Privilege.CreateExamEvents.name());
+        isPrivilegeManageRecordBooks = privilegedUser.hasPrivilege(
+                Privilege.ManageRecordBooks.name());
 
         isPrivilegedUserSecretary = privilegedUser.isSecretary();
     }
@@ -1238,5 +1259,21 @@ public class ParticipantsController {
 
     public void setFilteredDeletedPrivUsers(List<Student> filteredDeletedPrivUsers) {
         this.filteredDeletedPrivUsers = filteredDeletedPrivUsers;
+    }
+
+    public boolean isPrivilegeCreateExamEvents() {
+        return isPrivilegeCreateExamEvents;
+    }
+
+    public void setPrivilegeCreateExamEvents(boolean privilegeCreateExamEvents) {
+        isPrivilegeCreateExamEvents = privilegeCreateExamEvents;
+    }
+
+    public boolean isPrivilegeManageRecordBooks() {
+        return isPrivilegeManageRecordBooks;
+    }
+
+    public void setPrivilegeManageRecordBooks(boolean privilegeManageRecordBooks) {
+        isPrivilegeManageRecordBooks = privilegeManageRecordBooks;
     }
 }

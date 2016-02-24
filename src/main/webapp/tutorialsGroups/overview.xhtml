@@ -40,6 +40,13 @@
               <div class="col-xs-4 text-right">
                 <div class="btn-group">
                   <h:form>
+                      <h:link styleClass="btn btn-default"
+                              outcome="/tutorialsGroups/events">
+                          <f:param name="course-id" value="#{tutorialController.course.courseId}"/>
+                          <f:param name="tutorial-id" value="#{tutorial.tutorialId}"/>
+                          <i class="fa fa-calendar"/>
+                      </h:link>
+
                     <p:commandLink update=":editTutorialForm"
                         oncomplete="return exModal('tutorialEdit');"
                         class="btn btn-default">
