@@ -1,0 +1,70 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['recordbook.insert']}" appendTo="@(body)" widgetVar="recordBookInsert" modal="true">
+        <h:form id="recordBookInsertForm">
+            <ui:include src="/WEB-INF/alerts.xhtml" />
+            <h:panelGroup layout="block" styleClass="modal-body">
+                <div class="form-group">
+                    <label class="col-xs-3 control-label">
+                        #{msg['common.course.exam']}
+                    </label>
+                    <div class="col-xs-9">
+                        <h:selectOneMenu value="#{recordbookInsert.formExam}"
+                                         styleClass="form-control">
+                            <f:selectItems value="#{recordbookInsert.course.exams}" var="exam"
+                                           itemLabel="#{exam.name}" itemValue="#{exam.examId}" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-3 control-label">
+                        #{msg['common.date']}
+                    </label>
+                    <div class="col-xs-9">
+                        <p:calendar value="#{recordbookInsert.formDate}" navigator="true"
+                                    pattern="dd-MMM-yyyy" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-3 control-label">
+                        #{msg['recordbook.duration']}
+                    </label>
+                    <div class="col-xs-9">
+                        <h:inputText value="#{recordbookInsert.formDuration}"
+                                     h5:placeholder="#{msg['recordbook.duration.placeholder']}"
+                                     converterMessage="#{msg['recordbook.duration.invalid']}"
+                                     styleClass="form-control" h5:type="number"
+                                     h5:min="0" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-3 control-label">
+                        #{msg['common.comment']}
+                    </label>
+                    <div class="col-xs-9">
+                        <h:inputTextarea value="#{recordbookInsert.formComment}"
+                                     styleClass="form-control" rows="5" />
+                    </div>
+                </div>
+            </h:panelGroup>
+            <div class="modal-footer">
+                <div class="btn-group" id="recordBookInsertButtons">
+                    <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                     onclick="return exModal(':recordBookInsert');"
+                                     styleClass="btn btn-default" />
+
+                    <p:commandLink action="#{recordbookInsert.store()}"
+                                   id="recordBookInsertSubmit"
+                                   class="btn btn-primary" value="#{msg['recordbook.insert']}"
+                                   update="recordBookInsertForm recordBookForm" />
+
+                    <p:defaultCommand target="recordBookInsertSubmit" />
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>

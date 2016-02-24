@@ -233,6 +233,15 @@ public class ApplicationController {
         newUser.setLanguage("de");
         newUser.addRole(GlobalRole.USER);
 
+        final User secondUser = new User();
+        secondUser.setEmail("user2@uni-bremen.de");
+        secondUser.setPassword(BCrypt.hashpw("user2",BCrypt.gensalt()));
+        secondUser.setFirstName("Chuck");
+        secondUser.setLastName("Norris");
+        secondUser.setMatriculationNumber("hat keine");
+        secondUser.setLanguage("de");
+        secondUser.addRole(GlobalRole.USER);
+
         final User newLecturer = new User();
         newLecturer.setEmail("lecturer@uni-bremen.de");
         newLecturer.setPassword(BCrypt.hashpw("lecturer",BCrypt.gensalt()));
@@ -279,6 +288,8 @@ public class ApplicationController {
         log.debug("Inserted User with id: " + notInCourse.getUserId());
         userService.persist(newUser);
         log.debug("Inserted User with id: " + newUser.getUserId());
+        userService.persist(secondUser);
+        log.debug("Inserted User with id: " + secondUser.getUserId());
         userService.persist(unconfirmedUser);
         log.debug("Inserted User with id: " + unconfirmedUser.getUserId());
         userService.persist(newLecturer);
@@ -324,7 +335,7 @@ public class ApplicationController {
         mail.setCourse(course);
         course.setEmailTemplate(mail);
 
-        //Student for course
+        //Students for course
         Student student = new Student();
         student.setAcceptedInvitation(true);
         student.setConfirmed(true);
@@ -332,11 +343,23 @@ public class ApplicationController {
         student.setDeleted(false);
         student.setUser(newUser);
         student.setHidden(false);
-        student.setPaboGrade("GRADE_1_3");
+        student.setPaboGrade("GRADE_4_0");
         student.setPaboData(new PaboData());
 
         course.getStudents().add(student);
         student.setCourse(course);
+
+        Student student2 = new Student();
+        student2.setAcceptedInvitation(true);
+        student2.setConfirmed(true);
+        student2.setTries(0);
+        student2.setDeleted(false);
+        student2.setUser(secondUser);
+        student2.setHidden(false);
+        student2.setPaboGrade("GRADE_1_0");
+
+        course.getStudents().add(student2);
+        student2.setCourse(course);
 
         //Lecturer for course
         Lecturer lecturer = new Lecturer();
@@ -465,11 +488,8 @@ public class ApplicationController {
         course = courseService.update(course);
 
         student = course.getStudents().get(0);
+        student2 = course.getStudents().get(1);
         exam = course.getExams().get(0);
-
-        RecordBookEntry rbe = RecordBookEntry.from(student,course,exam,
-                new Date(),60,"Alles komplett gelöst");
-        recordBookService.persist(rbe);
 
         //Testlogs
 
@@ -500,6 +520,21 @@ public class ApplicationController {
         student.getUploads().add(upload);
 
         uploadService.persist(upload);
+
+        // Recordbook
+        RecordBookEntry rbe = RecordBookEntry.from(student2,course,exam,
+                new Date(),60,"Alles komplett gelöst");
+        recordBookService.persist(rbe);
+
+        RecordBookEntry entry = new RecordBookEntry();
+        entry.setStudent(student);
+        entry.setComment("Aufgabe 1");
+        entry.setCourse(course);
+        entry.setDate(new Date());
+        entry.setDuration(5);
+        entry.setExam(exam);
+
+        recordBookService.persist(entry);
 
         //Testlogs
 

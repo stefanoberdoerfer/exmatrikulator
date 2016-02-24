@@ -5,7 +5,7 @@ package de.unibremen.opensores.model;
  */
 public enum Privilege {
     EditFormulas(0), EditExams(1), ManageStudents(2), ExportData(3), ManageTutorials(4),
-    GenerateCredits(5);
+    GenerateCredits(5), CreateExamEvents(6), ManageRecordBooks(7);
 
     private Integer id;
 

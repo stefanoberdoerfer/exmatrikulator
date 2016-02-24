@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['recordbook.remove']}" appendTo="@(body)" widgetVar="recordBookRemove" modal="true">
+        <h:form id="recordBookRemoveForm">
+            <ui:include src="/WEB-INF/alerts.xhtml" />
+            <h:panelGroup layout="block" styleClass="modal-body">
+                <h:outputFormat value="#{msg['recordbook.remove.confirmation']}">
+                    <f:param value="#{recordbookRemove.entry.date}" />
+                    <f:param value="#{recordbookRemove.entry.exam.name}" />
+                </h:outputFormat>
+            </h:panelGroup>
+            <div class="modal-footer">
+                <div class="btn-group" id="recordBookRemoveButtons">
+                    <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                     onclick="return exModal(':recordBookRemove');"
+                                     styleClass="btn btn-default" />
+
+                    <p:commandLink action="#{recordbookRemove.remove()}"
+                                   id="recordBookRemoveSubmit"
+                                   class="btn btn-danger" value="#{msg['common.remove']}"
+                                   update="recordBookRemoveForm recordBookForm" />
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>

@@ -89,6 +89,11 @@
 
   <filter-mapping>
     <filter-name>LoginFilter</filter-name>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>LoginFilter</filter-name>
     <url-pattern>/course/*</url-pattern>
   </filter-mapping>
 
@@ -115,6 +120,11 @@
   <filter-mapping>
     <filter-name>LoginFilter</filter-name>
     <url-pattern>/unregistered/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>LoginFilter</filter-name>
+    <url-pattern>/recordbook/*</url-pattern>
   </filter-mapping>
 
   <filter-mapping>
@@ -160,4 +170,9 @@
     <error-code>500</error-code>
     <location>/WEB-INF/errorpages/500.xhtml</location>
   </error-page>
+
+  <context-param>
+    <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+    <param-value>true</param-value>
+  </context-param>
 </web-app>
