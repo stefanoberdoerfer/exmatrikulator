@@ -15,26 +15,29 @@
     <ui:define name="content">
         <div class="headline">
             <h:panelGroup class="btn-group main-buttons pull-right" type="block">
-                <h:link value="#{msg['backups.create']}" class="btn btn-primary" />
+        <p:commandButton value="#{msg['backups.create']}" class="btn btn-primary" action="#{backupController.createBackup()}">
+        </p:commandButton>
             </h:panelGroup>
             <h1>#{msg['common.backups']}</h1>
         </div>
 
-        <p:dataTable var="backup" value="#{backupController.listBackups().keySet().toArray()}">
+        <p:dataTable var="backup" value="#{backupController.listBackups()}">
             <p:column headerText="#{msg['common.name']}"
                       styleClass="table-backups-name">
-                <h:outputText value="#{backup}"/>
+                <h:outputText value="#{b.name}"/>
             </p:column>
             <p:column headerText="#{msg['common.date']}"
                       styleClass="table-backups-date">
+                <h:outputText value="#{backupController.dateToString(b)}"/>
             </p:column>
             <p:column headerText="#{msg['backups.filesize']}"
                       styleClass="table-backups-filesize">
+                <h:outputText value="#{b.fileSize}"/>
             </p:column>
             <p:column styleClass="table-common-options-one">
-                <p:commandLink class="btn btn-default">
-                    <i class="fa fa-download"></i>
-                </p:commandLink>
+                    <p:commandButton class="btn btn-default" action="#{backupController.deleteBackup(b)}">
+                    <i class="fa fa-times"></i>
+                </p:commandButton>
             </p:column>
         </p:dataTable>
     </ui:define>

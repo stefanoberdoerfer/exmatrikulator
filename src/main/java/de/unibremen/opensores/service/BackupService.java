@@ -61,6 +61,7 @@ public class BackupService extends GenericService<Backup> {
                 ParameterMode.IN);
         query.setParameter(1, path);
         query.execute();
+        log.debug("Backup query executed!");
 
         Backup backup =  generateBackup(name, path, date, getDirectorySize(new File(path)));
 
@@ -143,11 +144,11 @@ public class BackupService extends GenericService<Backup> {
         try {
             Backup backup = runBackup("ScheduledBackup");
             em.persist(backup);
+            log.debug("Scheduled backup executed successfully.");
         } catch (PersistenceException | IOException e) {
             log.error(e);
         }
 
-        log.debug("Scheduled backup executed successfully.");
     }
 
     /**
