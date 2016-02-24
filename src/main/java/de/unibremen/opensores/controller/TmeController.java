@@ -19,6 +19,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Semester;
+import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.service.UserService;
@@ -252,6 +253,10 @@ public class TmeController implements Serializable {
                 case "Course":
                     createCourse(obj);
                     break;
+                case "Teacher":
+                case "StudentData":
+                    createUser(obj);
+                    break;
                 default:
                     log.debug("Didn't _directly_ recongize key " + key);
             }
@@ -262,8 +267,8 @@ public class TmeController implements Serializable {
      * Imports a course and associated TME objects.
      *
      * @param node Course TME object.
-     * @throws TmeException On a failed import.
      * @return Imported Course.
+     * @throws TmeException On a failed import.
      */
     private Course createCourse(TMEObject node) throws TmeException {
         Object obj = entityMap.get(node.getId());
@@ -587,6 +592,11 @@ public class TmeController implements Serializable {
 
         String plainPasswd = node.getString("password");
         newUser.setPassword(BCrypt.hashpw(plainPasswd, BCrypt.gensalt()));
+
+        newUser.addRole(GlobalRole.USER);
+        if (node.has("superuser") && node.getBoolean("superuser")) {
+            newUser.addRole(GlobalRole.ADMIN);
+        }
 
         userService.persist(newUser);
         log.debug(String.format("Persisted new user '%s' (%s)",
