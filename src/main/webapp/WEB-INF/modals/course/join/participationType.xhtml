@@ -6,14 +6,16 @@
                 xmlns:p="http://primefaces.org/ui">
     <p:dialog header="#{msg['courses.join']}" appendTo="@(body)" widgetVar="courseJoinType" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form id="partTypeModalForm">
         <div class="modal-body">
             <p>#{msg['courses.join.select']}</p>
             <div class="form-group">
                 <div class="col-xs-12">
-                    <select class="form-control">
-                        <option>Informatik/Digitale Medien</option>
-                        <option>General Studies</option>
-                    </select>
+                    <h:selectOneMenu value="#{courseOverviewController.chosenPartTypeId}"
+                                     styleClass="form-control" id="parttypeSelectOne">
+                        <f:selectItems value="#{courseOverviewController.selectedCourse.participationTypes}"
+                                       var="pt" itemValue="#{pt.partTypeId}" itemLabel="#{pt.name}" />
+                    </h:selectOneMenu>
                 </div>
             </div>
         </div>
@@ -21,11 +23,14 @@
             <div class="btn-group">
                 <p:commandButton value="#{msg['common.close']}" type="button"
                                  onclick="return exModal(':courseJoinType');" styleClass="btn btn-default" />
-                <h:link outcome="/course/overview" class="btn btn-default"
-                        value="#{msg['common.skip']}" />
-                <h:link outcome="/course/overview" class="btn btn-primary"
-                        value="#{msg['common.select']}" />
+                <p:commandButton action="#{courseOverviewController.parttypeSelected()}" class="btn btn-primary"
+                        value="#{msg['common.select']}"
+                        onsuccess="return exModal(':courseJoinType');"
+                        update=":courseOverviewForm">
+                    <f:ajax listener="#{userController.updateUserCourses()}"/>
+                </p:commandButton>
             </div>
         </div>
+        </h:form>
     </p:dialog>
 </ui:composition>

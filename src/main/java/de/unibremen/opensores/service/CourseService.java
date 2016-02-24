@@ -8,6 +8,7 @@ import de.unibremen.opensores.model.Course;
 
 
 import javax.ejb.Stateless;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -221,4 +222,25 @@ public class CourseService extends GenericService<Course> {
         return courseList;
     }
 
+    /**
+     * Searches for courses by their name or numbers.
+     * One of these options should be passed as searchInput parameter string.
+     * @param searchInput The search input, representing only the
+     *                    courses name or one of its numbers.
+     * @return A list of courses which match the search input. An empty list if
+     *         the searchInput is null or empty.
+     */
+    public List<Course> searchForCourses(String searchInput) {
+        if (searchInput == null || searchInput.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        final String trimSearchInput = searchInput.trim().toLowerCase();
+
+        return em.createQuery(
+                "SELECT DISTINCT c FROM Course c WHERE "
+                        + "TRIM(LOWER(c.name)) LIKE :searchInput OR"
+                        + ":searchInput IN elements(c.numbers) ", Course.class)
+                .setParameter("searchInput", "%" + trimSearchInput + "%")
+                .getResultList();
+    }
 }

@@ -1,29 +1,51 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:c="http://java.sun.com/jsp/jstl/core">
     <p:dialog header="#{msg['courses.join']}" appendTo="@(body)" widgetVar="courseJoinSearch" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form>
         <div class="modal-body">
             <div class="form-group">
-                <div class="col-xs-12">
-                    <h:inputText type="text" class="form-control" h5:placeholder="#{msg['courses.search']}"
-                                 h5:autofocus="autofocus" />
+                <div class="col-xs-10">
+                    <p:inputText type="text" id="searchCourse" class="form-control"
+                                 h5:placeholder="#{msg['courses.search']}"
+                                 h5:autofocus="autofocus"
+                                 value="#{courseOverviewController.courseSearchInput}">
+                    </p:inputText>
+                </div>
+                <div class="col-xs-1">
+                    <p:defaultCommand target="searchCourses"/>
+                    <p:commandLink styleClass="btn btn-default" id="searchCourses" process="searchCourse">
+                        <f:ajax listener="#{courseOverviewController.searchForCourses()}"
+                                render="coursesSearchOutput" />
+                        <i class="fa fa-search"></i>
+                    </p:commandLink>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-xs-8">
-                    Software-Projekt 2
-                    <div class="table-common-sub">Wintersemester 2015/2016, VAK 03-BA-901.02</div>
-                </div>
-                <div class="col-xs-4 text-right">
-                    <h:link onclick="return exModal(':courseJoinSearch', 'courseJoinType');"
-                            class="btn btn-success">
-                        <i class="fa fa-plus"></i>
-                    </h:link>
-                </div>
+                <h:dataTable id="coursesSearchOutput" value="#{courseOverviewController.searchResultList}"
+                             var="course" styleClass="table"
+                             columnClasses="responsive, responsive, table-common-options-one">
+                    <h:column>
+                        #{course.name}<br></br>
+                        #{course.semester}
+                    </h:column>
+                    <h:column>
+                        <ui:repeat value="#{course.numbers}" var="vak">
+                            <h:outputText value="#{vak}"/> <c:if test="#{course.numbers.size > 1}"><br></br></c:if>
+                        </ui:repeat>
+                    </h:column>
+                    <h:column>
+                        <p:commandLink class="btn btn-default" action="#{courseOverviewController.courseSelected(course)}"
+                            onsuccess="return exModal(':courseJoinSearch', 'courseJoinType');"
+                            update=":partTypeModalForm">
+                            <i class="fa fa-plus"></i>
+                        </p:commandLink>
+                    </h:column>
+                </h:dataTable>
             </div>
         </div>
         <div class="modal-footer">
@@ -32,5 +54,6 @@
                                  onclick="return exModal(':courseJoinSearch');" styleClass="btn btn-default" />
             </div>
         </div>
+        </h:form>
     </p:dialog>
 </ui:composition>

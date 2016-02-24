@@ -14,7 +14,9 @@
                 <p:commandButton value="#{msg['common.close']}"
                                  oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':courseCreateSuccess');"
                                  styleClass="btn btn-default"
-                                 action="#{courseCreateFlowController.getReturnValue()}"/>
+                                 action="#{courseCreateFlowController.getReturnValue()}">
+                    <f:ajax listener="#{userController.updateUserCourses()}"/>
+                </p:commandButton>
             </div>
         </div>
     </p:dialog>
