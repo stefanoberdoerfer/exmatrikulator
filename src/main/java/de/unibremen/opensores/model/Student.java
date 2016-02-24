@@ -81,6 +81,28 @@ public class Student {
     @ManyToMany(mappedBy = "uploaders")
     private List<Upload> uploads;
 
+    @ManyToMany(mappedBy = "examinedStudents")
+    private List<ExamEvent> examEvents = new ArrayList<>();
+
+
+    /*
+     * Public methods
+     */
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Student && ( studentId != null)
+                ? this.studentId.equals(((Student) object).studentId)
+                : (object == this);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.studentId != null
+                ? this.getClass().hashCode() + this.studentId.hashCode()
+                : super.hashCode();
+    }
+
     /**
      * Gets the grading of the student given the exam.
      * @param exam The exam of which the grading of the student should be returned.
@@ -233,5 +255,13 @@ public class Student {
 
     public void setPaboData(PaboData paboData) {
         this.paboData = paboData;
+    }
+
+    public List<ExamEvent> getExamEvents() {
+        return examEvents;
+    }
+
+    public void setExamEvents(List<ExamEvent> examEvents) {
+        this.examEvents = examEvents;
     }
 }

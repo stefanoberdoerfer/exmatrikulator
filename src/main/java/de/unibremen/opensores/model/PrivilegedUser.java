@@ -1,5 +1,6 @@
 package de.unibremen.opensores.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,6 +55,9 @@ public class PrivilegedUser {
 
     @ManyToMany(mappedBy = "tutors")
     private List<Tutorial> tutorials = new ArrayList<>();
+
+    @OneToMany(mappedBy = "examiner", cascade = CascadeType.MERGE)
+    private List<ExamEvent> examEvents = new ArrayList<>();
 
     public boolean hasPrivilege(Privilege priv) {
         return privileges.contains(priv.getId());
@@ -124,5 +129,13 @@ public class PrivilegedUser {
 
     public void setDeleted(boolean deleted) {
         this.isDeleted = deleted;
+    }
+
+    public List<ExamEvent> getExamEvents() {
+        return examEvents;
+    }
+
+    public void setExamEvents(List<ExamEvent> examEvents) {
+        this.examEvents = examEvents;
     }
 }

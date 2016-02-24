@@ -29,7 +29,7 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
      */
     @Id
     @GeneratedValue
-    private long eventId;
+    private Long eventId;
 
     @Column(nullable = false)
     private Date startDate;
@@ -179,7 +179,7 @@ public class DefaultEvent implements ScheduleEvent, Serializable {
         this.eventId = eventId;
     }
 
-    public long getEventId() {
+    public Long getEventId() {
         return eventId;
     }
 

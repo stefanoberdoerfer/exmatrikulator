@@ -2,12 +2,14 @@ package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.TutorialEvent;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.TutorialService;
+import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,7 +87,12 @@ public class TutorialEventController {
     private CourseService courseService;
 
     /**
-     * The schedule model used by PrimeFaces for managing tutorials.
+     * The UserService for database transactions related to users.
+     */
+    private UserService userService;
+
+    /**
+     * The schedule model used by PrimeFaces for managing tutorial events.
      */
     private ScheduleModel tutorialEventModel;
 
@@ -106,6 +113,11 @@ public class TutorialEventController {
     private boolean isUserTutor;
 
     /**
+     * Boolean value whether the loged in user is a lecturer in the tutorial.
+     */
+    private boolean isUserLecturer;
+
+    /**
      * The old start date of a selected event.
      */
     private Date oldEventStartDate;
@@ -116,9 +128,10 @@ public class TutorialEventController {
     private Date oldEventEndDate;
 
     /**
-     * Formates the dates of tutEvents to the timezone of the exmatrikulator.
+     * Formats the dates of tutEvents to the timezone of the exmatrikulator.
      */
     private SimpleDateFormat dateFormatter;
+
 
     /**
      * Initialises the bean and gets the related tutorial.
@@ -149,10 +162,12 @@ public class TutorialEventController {
         log.debug("Logged in User: " + loggedInUser);
         if (course != null && tutorial != null && loggedInUser != null
                && course.getTutorials().contains(tutorial)) {
+            isUserLecturer = userService.hasCourseRole(loggedInUser,
+                    Role.LECTURER.name(), course);
             log.debug("Checking if user is tutor");
             isUserTutor = tutorialService.getTutorOf(tutorial, loggedInUser) != null;
             log.debug("User is tutor: " + isUserTutor);
-            validationPassed = isUserTutor
+            validationPassed = isUserLecturer || isUserTutor
                     || tutorialService.getStudentOf(tutorial, loggedInUser) != null;
 
         }
@@ -212,7 +227,7 @@ public class TutorialEventController {
     }
 
     /**
-     * Adds a new event to the tutorial event.
+     * Removes the selected tutorial event.
      * @param actionEvent The actionEvent triggered by the PrimeFaces scheduler.
      */
     public void removeEvent(ActionEvent actionEvent) {
@@ -285,15 +300,9 @@ public class TutorialEventController {
         }
     }
 
-    /**
-     * Gets the current locale string.
-     * @return The current locale string.
-     */
-    public String getLocaleCountry() {
-        String locale = FacesContext.getCurrentInstance().getViewRoot().getLocale().toLanguageTag();
-        log.debug("getLocaleCountry() return:" + locale);
-        return locale;
-    }
+
+
+
 
     /*
      * Private Methods
@@ -343,7 +352,7 @@ public class TutorialEventController {
         String subject = new MessageFormat(subjectFormat).format(new Object[] {
                 tutorial.getName(), course.getName()
         });
-        loggedInUser.sendEmail(subject, text);
+        user.sendEmail(subject, text);
     }
 
     /**
@@ -435,15 +444,27 @@ public class TutorialEventController {
     }
 
     /**
-     * Checks wheter the logged in user can edit the current event.
+     * Checks whether the logged in user can edit the current event.
      * The event can be edited if the user is a tutor and has the same user id
      * as the creator id of the event.
-     * @return True if the user has
+     * @return True if the user has the rights to edit the tutorial, false otherwise.
      */
     public boolean canUserEditEvent() {
-        boolean canUserEditEvents = event != null && isUserTutor
+        return canUserEditEvent(event);
+    }
+
+    /**
+     * Checks whether the logged in user can edit the current event.
+     * The event can be edited if the user is a tutor and has the same user id
+     * as the creator id of the event.
+     * @param event The tutorial event which should be checked for.
+     * @return True if the user has the rights to edit the tutorial, false otherwise.
+     */
+    public boolean canUserEditEvent(TutorialEvent event) {
+        boolean canUserEditEvents = event != null && (isUserTutor || isUserLecturer)
+                //TODO Change here if lecturer can also edit other events
                 && (event.getId() == null
-                    || loggedInUser.getUserId() == event.getCreatorId());
+                || loggedInUser.getUserId() == event.getCreatorId());
         log.debug("canUserEditEvent() called, returns: " + canUserEditEvents);
         return canUserEditEvents;
     }
@@ -459,9 +480,9 @@ public class TutorialEventController {
             tutorial.getEvents().add(tutEvent);
         }
         tutorial = tutorialService.update(tutorial);
-        for (ScheduleEvent event: tutorialEventModel.getEvents()) {
-            TutorialEvent tutEvent = (TutorialEvent) event;
-            tutEvent.setEditable(canUserEditEvent());
+        for (ScheduleEvent scheduleEvent: tutorialEventModel.getEvents()) {
+            TutorialEvent tutEvent = (TutorialEvent) scheduleEvent;
+            tutEvent.setEditable(canUserEditEvent(tutEvent));
         }
     }
 
@@ -482,6 +503,11 @@ public class TutorialEventController {
     @EJB
     public void setCourseService(CourseService courseService) {
         this.courseService = courseService;
+    }
+
+    @EJB
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public ScheduleModel getTutorialEventModel() {

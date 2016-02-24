@@ -3,6 +3,7 @@ package de.unibremen.opensores.model;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -11,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -40,6 +42,12 @@ public class Exam {
     @Column
     private BigDecimal maxPoints;
 
+    /**
+     * The examination with attendance events of an exam
+     */
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.MERGE)
+    private List<ExamEvent> events = new ArrayList<>();
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
     @NotFound(action = NotFoundAction.IGNORE)
@@ -64,6 +72,7 @@ public class Exam {
 
     @Column
     private boolean isWithAttendance;
+
 
     @ElementCollection
     @CollectionTable(name = "EXAM_ALLOWED_FILE_TYPES", joinColumns = @JoinColumn(name = "examId"))
@@ -216,5 +225,13 @@ public class Exam {
 
     public void setWithAttendance(boolean withAttendance) {
         isWithAttendance = withAttendance;
+    }
+
+    public List<ExamEvent> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<ExamEvent> events) {
+        this.events = events;
     }
 }
