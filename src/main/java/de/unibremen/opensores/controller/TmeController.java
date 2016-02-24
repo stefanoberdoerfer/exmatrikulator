@@ -123,6 +123,11 @@ public class TmeController implements Serializable {
     private transient List<UploadedFile> files = new ArrayList<>();
 
     /**
+     * Maps TME ids to JPA entities.
+     */
+    private HashMap<Integer, Object> entityMap = new HashMap<>();
+
+    /**
      * Maps TME ids to TME objects.
      */
     private HashMap<Integer, TMEObject> nodeMap = new HashMap<>();
@@ -193,7 +198,7 @@ public class TmeController implements Serializable {
                 log.fatal(e);
                 return;
             } catch (ParseException e) {
-                log.debug(e);
+                log.error(e);
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_ERROR, bundle.getString("common.error"),
                     e.getMessage()));
@@ -207,7 +212,7 @@ public class TmeController implements Serializable {
         try {
             importObjects(objs);
         } catch (TmeException e) {
-            log.debug(e);
+            log.error(e);
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_ERROR, bundle.getString("common.error"),
                 e.getMessage()));
@@ -227,11 +232,28 @@ public class TmeController implements Serializable {
      */
     private void importObjects(List<TMEObject> objs)
             throws TmeException {
-        objs.stream().forEach(o -> nodeMap.put(o.getId(), o));
+        for (TMEObject obj : objs) {
+            int id = obj.getId();
+            if (nodeMap.containsKey(id)) {
+                throw new TmeException("Duplicated id " + id);
+            } else {
+                nodeMap.put(id, obj);
+            }
+        }
 
         for (TMEObject obj : objs) {
-            if (obj.getName().equals("jgradebook.data.Course")) {
-                importCourse(obj);
+            String[] splited = obj.getName().split("\\.");
+            if (splited.length <= 0) {
+                throw new TmeException("Invalid node key");
+            }
+
+            String key = splited[splited.length - 1];
+            switch (key) {
+                case "Course":
+                    importCourse(obj);
+                    break;
+                default:
+                    log.debug("Didn't _directly_ recongize key " + key);
             }
         }
     }
@@ -243,14 +265,12 @@ public class TmeController implements Serializable {
      * @throws TmeException On a failed import.
      */
     private void importCourse(TMEObject obj) throws TmeException {
-        String name = obj.getString("name");
-        Semester semester = createSemester(obj.getString("zeitraum"));
-        if (courseService.findCourseByName(name, semester) != null) {
+        if (entityMap.containsKey(obj.getId())) {
             return;
         }
 
         Course course = new Course();
-        course.setName(name);
+        course.setName(obj.getString("name"));
         course.setDefaultSws(obj.getString("wochenstunden"));
         course.setDefaultCreditPoints(obj.getInt("cp"));
         course.setRequiresConfirmation(false);
@@ -271,8 +291,9 @@ public class TmeController implements Serializable {
         type.setCreditPoints(null);
         type.setIsDefaultParttype(true);
         type.setCourse(course);
-
         course.getParticipationTypes().add(type);
+
+        Semester semester = createSemester(obj.getString("zeitraum"));
         course.setSemester(semester);
 
         List<String> vaks = new ArrayList<>();
@@ -293,6 +314,8 @@ public class TmeController implements Serializable {
 
         course = courseService.update(course);
         log.debug("Persisted course " + course.getName());
+
+        entityMap.put(obj.getId(), course);
     }
 
     /**
@@ -358,6 +381,11 @@ public class TmeController implements Serializable {
      */
     private Group createGroup(TMEObject node, Course course)
             throws TmeException {
+        Object obj = entityMap.get(node.getId());
+        if (obj != null) {
+            return (Group) obj;
+        }
+
         int tutorialId = node.getInt("tutorial");
         TMEObject tutorialNode = findNode("jgradebook.data.Tutorial", tutorialId);
         if (tutorialNode == null) {
@@ -368,6 +396,7 @@ public class TmeController implements Serializable {
         Group group = new Group();
         group.setName(node.getString("name"));
         group.setTutorial(tutorial);
+        groupService.persist(group);
 
         tutorial.getGroups().add(group);
         List<Student> students = createStudents(node.getArray("students"),
@@ -375,10 +404,12 @@ public class TmeController implements Serializable {
         group.setStudents(students);
 
         course.getStudents().addAll(students);
+        course = courseService.update(course);
 
-        groupService.persist(group);
+        group = groupService.update(group);
         log.debug("Created group " + group.getName());
 
+        entityMap.put(node.getId(), group);
         return group;
     }
 
@@ -420,6 +451,11 @@ public class TmeController implements Serializable {
      */
     private Student createStudent(TMEObject node, Group group, Course course)
             throws TmeException {
+        Object obj = entityMap.get(node.getId());
+        if (obj != null) {
+            return (Student) obj;
+        }
+
         int id = node.getInt("studentData");
         TMEObject studentData = findNode("jgradebook.data.StudentData", id);
         if (studentData == null) {
@@ -427,12 +463,7 @@ public class TmeController implements Serializable {
         }
 
         User user = createUser(studentData);
-        Student student = studentService.findStudentInCourse(user, course);
-        if (student != null) {
-            return student;
-        }
-
-        student = new Student();
+        Student student = new Student();
         student.setGroup(group);
         student.setCourse(course);
         student.setTutorial(group.getTutorial());
@@ -459,7 +490,10 @@ public class TmeController implements Serializable {
             student.setPrivateComment(null);
         }
 
+        studentService.persist(student);
         log.debug("Persisted student " + student.getUser());
+
+        entityMap.put(node.getId(), student);
         return student;
     }
 
@@ -473,6 +507,11 @@ public class TmeController implements Serializable {
      */
     private Tutorial createTutorial(TMEObject node, Course course)
             throws TmeException {
+        Object obj = entityMap.get(node.getId());
+        if (obj != null) {
+            return (Tutorial) obj;
+        }
+
         int tutorId = node.getInt("tutor");
         TMEObject tutorNode = findNode("jgradebook.data.Teacher", tutorId);
         if (tutorNode == null) {
@@ -504,44 +543,53 @@ public class TmeController implements Serializable {
         tutorial.getTutors().add(tutor);
         tutorialService.persist(tutorial);
 
+        course = courseService.update(course);
         log.debug("Persisted tutorial " + tutorial.getName());
+
+        entityMap.put(node.getId(), tutorial);
         return tutorial;
     }
 
     /**
      * Returns a user entity from the given TME object.
      *
-     * @param obj StudentData TME object.
+     * @param node StudentData or Teacher TME object.
      * @return User entity.
      */
-    private User createUser(TMEObject obj) {
-        String email = obj.getString("email");
+    private User createUser(TMEObject node) {
+        Object obj = entityMap.get(node.getId());
+        if (obj != null) {
+            return (User) obj;
+        }
+
+        String email = node.getString("email");
         User user = userService.findByEmail(email);
         if (user != null) {
+            entityMap.put(node.getId(), user);
             return user;
         }
 
         User newUser = new User();
         newUser.setEmail(email);
-        newUser.setFirstName(obj.getString("firstname"));
-        newUser.setLastName(obj.getString("lastname"));
+        newUser.setFirstName(node.getString("firstname"));
+        newUser.setLastName(node.getString("lastname"));
         newUser.setLastActivity(DateUtil.getDateTime());
 
-
         // Teachers don't have a marticulation number
-        if (obj.has("matriculationNumber")) {
-            newUser.setMatriculationNumber(obj.getString("matriculationNumber"));
+        if (node.has("matriculationNumber")) {
+            newUser.setMatriculationNumber(node.getString("matriculationNumber"));
         } else {
             newUser.setMatriculationNumber(null);
         }
 
-        String plainPasswd = obj.getString("password");
+        String plainPasswd = node.getString("password");
         newUser.setPassword(BCrypt.hashpw(plainPasswd, BCrypt.gensalt()));
 
         userService.persist(newUser);
         log.debug(String.format("Persisted new user '%s' (%s)",
                     newUser.toString(), newUser.getEmail()));
 
+        entityMap.put(node.getId(), newUser);
         return newUser;
     }
 
