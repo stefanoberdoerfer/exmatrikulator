@@ -13,7 +13,6 @@ import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
-import de.unibremen.opensores.service.GroupService;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.TutorialService;
@@ -77,12 +76,6 @@ public class TutorialController implements Serializable {
      */
     @EJB
     private transient TutorialService tutorialService;
-
-    /**
-     * The group service for connection to the database.
-     */
-    @EJB
-    private transient GroupService groupService;
 
     /**
      * The student service for connection to the database.
@@ -151,6 +144,11 @@ public class TutorialController implements Serializable {
     private DualListModel<Student> groupMembers;
 
     /**
+     * List of tutorials for the current course.
+     */
+    private List<Tutorial> tutorials;
+
+    /**
      * Method called on bean initialization.
      */
     @PostConstruct
@@ -178,6 +176,44 @@ public class TutorialController implements Serializable {
             new ArrayList<>());
         groupMembers = new DualListModel<>(course.getStudents(),
             new ArrayList<>());
+
+        tutorials = userTutorials();
+    }
+
+    /**
+     * Returns a list of tutorials the current user can access.
+     *
+     * @return List of tutorials or null.
+     */
+    private List<Tutorial> userTutorials() {
+        if (userService.hasCourseRole(user, Role.LECTURER, course)) {
+            return course.getTutorials();
+        }
+
+        List<Tutorial> list = new ArrayList<>();
+        if (userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
+            PrivilegedUser pu = courseService.findPrivileged(course, user.getEmail());
+            if (pu == null) {
+                return null; // Should never be the case
+            }
+
+            if (pu.hasPrivilege(Privilege.ManageTutorials)) {
+                return course.getTutorials();
+            } else {
+                list.addAll(pu.getTutorials());
+            }
+        }
+
+        if (userService.hasCourseRole(user, Role.STUDENT, course)) {
+            Student st = courseService.findStudent(course, user.getEmail());
+            if (st == null) {
+                return null; // Should never be the case
+            }
+
+            list.add(st.getTutorial());
+        }
+
+        return list;
     }
 
     /**
@@ -337,20 +373,16 @@ public class TutorialController implements Serializable {
      * Remove the current group from the current tutorial.
      */
     public void removeGroup() {
-        // TODO move remove stuff into a single transaction.
-        List<Student> students = group.getStudents();
-        if (students != null) {
-            for (Student student : group.getStudents()) {
-                student.setGroup(null);
-                studentService.update(student);
-            }
+        for (Student student : group.getStudents()) {
+            student.setGroup(null);
         }
 
         course.getGroups().remove(group);
+        course = courseService.update(course);
+
         tutorial.getGroups().remove(group);
         tutorial = tutorialService.update(tutorial);
 
-        groupService.remove(group);
         log.debug(String.format("Removed group %s from tutorial %s",
             group.getName(), tutorial.getName()));
 
@@ -417,6 +449,22 @@ public class TutorialController implements Serializable {
     }
 
     /**
+     * Returns a list of tutorials for the current user.
+     */
+    public List<Tutorial> getTutorials() {
+        return tutorials;
+    }
+
+    /**
+     * Sets the list of tutorials for the current user.
+     *
+     * @param tutorials Tutorials for the current user.
+     */
+    public void setTutorials(List<Tutorial> tutorials) {
+        this.tutorials = tutorials;
+    }
+
+    /**
      * Returns a list of all students without out a group.
      *
      * @param tutorial Tutorial to apply this function to.
@@ -424,43 +472,6 @@ public class TutorialController implements Serializable {
      */
     public List<Student> studentsWithoutGroup(@NotNull Tutorial tutorial) {
         return tutorialService.studentsWithoutGroup(tutorial);
-    }
-
-    /**
-     * Returns a list of all tutorials for this course.
-     *
-     * @return List of tutorials or null if non exist.
-     */
-    public List<Tutorial> getTutorials() {
-        log.debug("GROUP SIZE " + course.getTutorials().get(0).getGroups().size());
-        if (userService.hasCourseRole(user, Role.LECTURER, course)) {
-            return course.getTutorials();
-        }
-
-        List<Tutorial> list = new ArrayList<>();
-        if (userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
-            PrivilegedUser pu = courseService.findPrivileged(course, user.getEmail());
-            if (pu == null) {
-                return null; // Should never be the case
-            }
-
-            if (pu.hasPrivilege(Privilege.ManageTutorials)) {
-                return course.getTutorials();
-            } else {
-                list.addAll(pu.getTutorials());
-            }
-        }
-
-        if (userService.hasCourseRole(user, Role.STUDENT, course)) {
-            Student st = courseService.findStudent(course, user.getEmail());
-            if (st == null) {
-                return null; // Should never be the case
-            }
-
-            list.add(st.getTutorial());
-        }
-
-        return list;
     }
 
     /**
