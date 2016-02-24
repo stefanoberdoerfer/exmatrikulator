@@ -13,6 +13,7 @@ import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.service.GroupService;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.TutorialService;
@@ -35,6 +36,7 @@ import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
+import javax.validation.ValidationException;
 
 /**
  * Controller for managing tutorials.
@@ -82,6 +84,12 @@ public class TutorialController implements Serializable {
      */
     @EJB
     private transient StudentService studentService;
+
+    /**
+     * The group service for connection to the database.
+     */
+    @EJB
+    private transient GroupService groupService;
 
     /**
      * Course for this tutorial.
@@ -344,16 +352,28 @@ public class TutorialController implements Serializable {
      * Creates a new group in the current tutorial.
      */
     public void createGroup() {
-        group = updateMembers(new Group());
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        group = new Group();
         group.setName(groupName);
         group.setCourse(course);
         group.setTutorial(tutorial);
+        group = groupService.persist(group);
 
         course.getGroups().add(group);
         tutorial.getGroups().add(group);
-        group.setTutorial(tutorial);
-
         course = courseService.update(course);
+
+        try {
+            group = updateMembers(group);
+        } catch (ValidationException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), e.getMessage()));
+            return;
+        }
+
         log.debug(String.format("Created new group %s in tutorial %s",
             group.getName(), tutorial.getName()));
     }
@@ -362,10 +382,21 @@ public class TutorialController implements Serializable {
      * Edits an existing group in the current tutorial.
      */
     public void editGroup() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        try {
+            group = updateMembers(group);
+        } catch (ValidationException e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), e.getMessage()));
+            return;
+        }
+
         group.setName(newGroupName);
         this.newGroupName = null;
 
-        group = updateMembers(group);
         tutorial = tutorialService.update(tutorial);
     }
 
@@ -390,23 +421,44 @@ public class TutorialController implements Serializable {
         groupName = null;
     }
 
-    /**
+    /*
      * Updates group members for the given group in the current tutorial.
      *
      * @param group Group to update members for.
      * @return Updated group.
+     * @throws ValidationException If group size invariant is violated.
      */
     private Group updateMembers(Group group) {
-        List<Student> students = new ArrayList<>();
-        for (Student student : groupMembers.getTarget()) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        Integer max = course.getMaxGroupSize();
+        Integer min = course.getMinGroupSize();
+
+        List<Student> newMembers = groupMembers.getTarget();
+        int members = newMembers.size();
+
+        if (min != null && members < min) {
+            throw new ValidationException(
+                    bundle.getString("courses.groupDeleteMinSize"));
+        } else if (max != null && members > max) {
+            throw new ValidationException(
+                    bundle.getString("courses.groupCreateMaxSize"));
+        } else if (members <= 0) {
+            throw new ValidationException(
+                    bundle.getString("courses.groupWouldBeEmpty"));
+        }
+
+        for (Student student : newMembers) {
             student.setGroup(group);
             log.debug(String.format("Added student with email %s to group %s",
                 student.getUser().getEmail(), group.getName()));
-
-            students.add(student);
         }
 
-        group.setStudents(students);
+        group.setStudents(newMembers);
+        group = groupService.update(group);
+
         return group;
     }
 
