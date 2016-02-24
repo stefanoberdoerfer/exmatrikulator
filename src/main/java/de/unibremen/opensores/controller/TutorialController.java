@@ -35,7 +35,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
 import javax.validation.ValidationException;
 
 /**
@@ -203,16 +202,14 @@ public class TutorialController implements Serializable {
     /**
      * Changes the current tutorial context.
      *
-     * @param tut Tutorial to switch to.
+     * @param id ID of the tutorial to swtich to.
      */
-    public void changeCurrentTutorial(@NotNull Tutorial tut) {
-        log.debug("Switch to tutorial " + tut.getName());
+    public void changeCurrentTutorial(long id) {
+        this.tutorial = tutorialService.find(Tutorial.class, id);
+        this.tutorialName = tutorial.getName();
 
         this.newTutorialName = null;
         this.removalConformation = null;
-
-        this.tutorial = tutorialService.find(Tutorial.class, tut.getTutorialId());
-        this.tutorialName = tutorial.getName();
 
         this.group = null;
         this.groupName = null;
@@ -230,29 +227,30 @@ public class TutorialController implements Serializable {
     /**
      * Changes the current group context.
      *
-     * @param grp Group to switch to.
+     * @param id ID of the group to switch to.
      */
-    public void changeCurrentGroup(@NotNull Group grp) {
-        log.debug("Switch to group " + grp.getName());
-
-        grp = groupService.find(Group.class, grp.getGroupId());
-        changeCurrentTutorial(grp.getTutorial());
+    public void changeCurrentGroup(long id) {
+        Group grp = groupService.find(Group.class, id);
+        changeCurrentTutorial(grp.getTutorial().getTutorialId());
 
         this.group = grp;
-        this.groupName = grp.getName();
-
-        this.groupMembers.setTarget(grp.getStudents());
+        this.groupName = group.getName();
+        this.groupMembers.setTarget(group.getStudents());
     }
 
     /**
      * Edits an existing tutorial.
      */
     public void editTutorial() {
-        tutorial.setName(newTutorialName);
-        this.newTutorialName = null;
+        String oldName = tutorial.getName();
 
-        tutorial = updateTutors(tutorial);
-        course = courseService.update(course);
+        tutorial.setName(newTutorialName);
+        tutorial = tutorialService.update(tutorial);
+
+        course = tutorial.getCourse();
+        log.debug(String.format("Changed tutorial name from %s to %s",
+            oldName, newTutorialName));
+        this.newTutorialName = null;
     }
 
     /**
@@ -344,9 +342,13 @@ public class TutorialController implements Serializable {
      * Edits an existing group in the current tutorial.
      */
     public void editGroup() {
+        String oldName = group.getName();
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
+
+        group.setName(newGroupName);
+        group = groupService.update(group);
 
         try {
             group = updateMembers(group);
@@ -356,19 +358,23 @@ public class TutorialController implements Serializable {
             return;
         }
 
-        group.setName(newGroupName);
-        this.newGroupName = null;
-
         tutorial = tutorialService.update(tutorial);
+        course = tutorial.getCourse();
+
+        log.debug(String.format("Change group name from %s to %s",
+            oldName, newGroupName));
+        this.newGroupName = null;
     }
 
     /**
      * Remove the current group from the current tutorial.
      */
     public void removeGroup() {
-        for (Student student : group.getStudents()) {
-            student.setGroup(null);
-            studentService.update(student);
+        if (group != null && group.getStudents() != null) {
+            for (Student student : group.getStudents()) {
+                student.setGroup(null);
+                studentService.update(student);
+            }
         }
 
         tutorial.getGroups().remove(group);
@@ -426,13 +432,11 @@ public class TutorialController implements Serializable {
     /**
      * Changes the current student context.
      *
-     * @param std Student to switch to.
+     * @param id ID of the student to switchc to.
      */
-    public void changeCurrentStudent(@NotNull Student std) {
-        log.debug("Switch to student " + std.getUser());
-
-        this.student = studentService.find(Student.class, std.getStudentId());
-        changeCurrentTutorial(student.getTutorial());
+    public void changeCurrentStudent(long id) {
+        this.student = studentService.find(Student.class, id);
+        changeCurrentTutorial(student.getTutorial().getTutorialId());
     }
 
     /**
@@ -523,7 +527,7 @@ public class TutorialController implements Serializable {
      * @param tutorial Tutorial to apply this function to.
      * @return List of students who are not a part of a group.
      */
-    public List<Student> studentsWithoutGroup(@NotNull Tutorial tutorial) {
+    public List<Student> studentsWithoutGroup(Tutorial tutorial) {
         return tutorialService.studentsWithoutGroup(tutorial);
     }
 
