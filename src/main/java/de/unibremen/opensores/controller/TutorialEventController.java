@@ -266,6 +266,14 @@ public class TutorialEventController {
                 (Date) selectEvent.getObject());
     }
 
+    /**
+     * Gets the current locale string.
+     * @return The current locale string.
+     */
+    public String getLocaleCountry() {
+        return FacesContext.getCurrentInstance().getViewRoot().getLocale().toLanguageTag();
+    }
+
     /*
      * Validations
      */

@@ -78,6 +78,7 @@ public class ExamEvent extends DefaultEvent implements Serializable {
      * @param endDate The end date of the exam event.
      */
     public ExamEvent(Exam exam, Date startDate, Date endDate) {
+        this();
         this.exam = exam;
         this.setStartDate(new Date(startDate.getTime()));
         this.setEndDate(new Date(endDate.getTime()));

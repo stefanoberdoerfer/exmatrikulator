@@ -70,6 +70,13 @@
 
                 <p:column headerText="#{msg['common.actions']}">
                     <div class="btn-group">
+                        <h:link styleClass="btn btn-default"
+                                outcome="/settings/exams/events"
+                                rendered="#{exam.withAttendance}">
+                            <f:param name="course-id" value="#{examController.course.courseId}"/>
+                            <f:param name="exam-id" value="#{exam.examId}"/>
+                            <i class="fa fa-calendar"/>
+                        </h:link>
                         <p:commandLink oncomplete="return exModal('examEdit');"
                                        update="examEditDialog"
                                        class="btn btn-default" h5:data-toggle="tooltip"

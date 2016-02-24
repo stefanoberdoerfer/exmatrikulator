@@ -59,6 +59,21 @@ public class PrivilegedUser {
     @OneToMany(mappedBy = "examiner", cascade = CascadeType.MERGE)
     private List<ExamEvent> examEvents = new ArrayList<>();
 
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof PrivilegedUser && (privUserId != null)
+                ? privUserId.equals(((PrivilegedUser) object).privUserId)
+                : (object == this);
+    }
+
+    @Override
+    public int hashCode() {
+        return privUserId != null
+                ? this.getClass().hashCode() + privUserId.hashCode()
+                : super.hashCode();
+    }
+
+
     public boolean hasPrivilege(Privilege priv) {
         return privileges.contains(priv.getId());
     }

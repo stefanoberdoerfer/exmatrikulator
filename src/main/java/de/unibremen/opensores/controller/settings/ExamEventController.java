@@ -60,7 +60,6 @@ public class ExamEventController {
      */
     private static Logger log = LogManager.getLogger(ExamEventController.class);
 
-
     /**
      * The currently selected exam event.
      */
@@ -189,6 +188,7 @@ public class ExamEventController {
         if (loggedInUser != null && course != null && exam != null
                 && course.getExams().contains(exam)) {
             isUserLecturer = userService.hasCourseRole(loggedInUser, Role.LECTURER, course);
+
             log.debug("User is lecturer: " + isUserLecturer);
             if (!isUserLecturer) {
                 log.debug("User is not a lecturer");
@@ -197,12 +197,15 @@ public class ExamEventController {
                 log.debug("Found privilegedUser: " + privilegedUser);
                 isUserPrivUser = privilegedUser != null && privilegedUser
                         .hasPrivilege(Privilege.CreateExamEvents);
-            }
-            log.debug("User is privileged user");
-            if (!isUserPrivUser) {
-                studentUser = courseService.findStudent(course, loggedInUser.getEmail());
-                log.debug("Found student in course: " + studentUser);
-                validationPassed = isUserStudent = studentUser != null;
+                log.debug("User is privileged user: " + isUserPrivUser);
+
+                if (!isUserPrivUser) {
+                    studentUser = courseService.findStudent(course, loggedInUser.getEmail());
+                    log.debug("Found student in course: " + studentUser);
+                    validationPassed = isUserStudent = studentUser != null;
+                } else {
+                    validationPassed = true;
+                }
             } else {
                 validationPassed = true;
             }
@@ -217,13 +220,14 @@ public class ExamEventController {
                         .getApplicationContextPath() + Constants.PATH_TO_COURSE_OVERVIEW);
                 return;
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e);
                 log.fatal("Could not redirect to " + Constants.PATH_TO_COURSE_OVERVIEW);
                 return;
             }
         }
 
-        if (examEventModel != null) {
+        if (examEventModel == null) {
+            log.debug("examEventModel gets created");
             examEventModel = new DefaultScheduleModel();
         }
         for (ExamEvent examEvent: exam.getEvents()) {
@@ -383,7 +387,6 @@ public class ExamEventController {
                 //TODO Change here if lecturer can also edit other events
                 && (event.getId() == null
                 || loggedInUser.equals(event.getExaminer().getUser()));
-        log.debug("canUserEditEvent() called, returns: " + canUserEditEvents);
         return canUserEditEvents;
     }
 
@@ -400,22 +403,27 @@ public class ExamEventController {
     public void validateEndDateAfterStartDate(FacesContext context,
                                               UIComponent component,
                                               Object value) {
-        log.debug("validateDeletionNameInput called: " + value);
+
+        log.debug("validateEndDateAfterStartDate called with : " + value);
+
         List<FacesMessage> messages = new ArrayList<>();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
         addFailMessage(bundle.getString("tutEvent.validatorMessageEndDate"));
 
         if (!(value instanceof Date) || event.getStartDate() == null) {
-            //Let the start date validator handle the unvalid start date first
+            log.debug("Returning.. value instance of Date? " + (value instanceof Date)
+                    + " is start date null? " + event.getStartDate());
             return;
         }
 
         Date endDate = (Date) value;
+        log.debug("End Date: " + endDate);
+        log.debug("Start Date: " + event.getStartDate());
         if (!endDate.after(event.getStartDate())) {
             throw new ValidatorException(messages);
         }
-
+        log.debug("Date is valid");
     }
 
     /**
@@ -432,15 +440,35 @@ public class ExamEventController {
      */
     public String getLocaleCountry() {
         String locale = FacesContext.getCurrentInstance().getViewRoot().getLocale().toLanguageTag();
-        log.debug("getLocaleCountry() return:" + locale);
         return locale;
     }
 
+
+    /**
+     * Gets a list of students of the current course which have no events in this exam.
+     * @return The list of students with no events.
+     */
+    public List<Student> getStudentsWithoutEvents() {
+        return course.getStudents().stream().filter(
+            student ->
+            {
+                for (ExamEvent event : student.getExamEvents()) {
+                    if (event.getExam().equals(exam)) {
+                        return false;
+                    }
+                }
+                return true;
+            }).collect(Collectors.toList());
+    }
 
     /*
      * Private methods
      */
 
+    /**
+     * Creates an exam event with the current exam as exam property.
+     * @return The created exam.
+     */
     private ExamEvent createDefaultEvent() {
         ExamEvent event = new ExamEvent();
         event.setExam(exam);
@@ -508,9 +536,12 @@ public class ExamEventController {
      * Updates the events of the exam in the database.
      */
     private void updateExamEvents() {
+        log.debug("updateExamEvents() called");
         exam.getEvents().clear();
         for (ScheduleEvent scheduleEvent: examEventModel.getEvents()) {
             ExamEvent examEvent = (ExamEvent) scheduleEvent;
+            log.debug("Exam event with start date: " + examEvent.getStartDate()
+                    + " and end date: " + examEvent.getEndDate());
             examEvent.setEditable(false);
             exam.getEvents().add(examEvent);
         }
@@ -681,4 +712,9 @@ public class ExamEventController {
     public void setExamEvent(ExamEvent event) {
         this.event = event;
     }
+
+    public Course getCourse() {
+        return course;
+    }
+
 }

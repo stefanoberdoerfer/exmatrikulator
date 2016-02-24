@@ -1,5 +1,7 @@
 package de.unibremen.opensores.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -14,13 +16,14 @@ public class TutorialEvent extends DefaultEvent implements Serializable {
 
     private static final long serialVersionUID = -4409860309037617938L;
 
+    @SuppressFBWarnings(value = "SE_BAD_FIELD")
     @ManyToOne
-    private transient Tutorial tutorial;
+    private Tutorial tutorial;
 
     /**
      * The user id of the creator of this tutorial event.
      */
-    @Column(nullable = false)
+    @Column
     private long creatorId;
 
     public TutorialEvent() {

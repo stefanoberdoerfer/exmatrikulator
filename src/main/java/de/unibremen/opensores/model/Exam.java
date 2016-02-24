@@ -43,7 +43,7 @@ public class Exam {
     private BigDecimal maxPoints;
 
     /**
-     * The examination with attendance events of an exam
+     * The examination with attendance events of an exam.
      */
     @OneToMany(mappedBy = "exam", cascade = CascadeType.MERGE)
     private List<ExamEvent> events = new ArrayList<>();
@@ -57,11 +57,6 @@ public class Exam {
     //http://stackoverflow.com/questions/13539050/entitynotfoundexception-in-hibernate-many-to-one-mapping-however-data-exist
     private Course course = new Course();
 
-    /**
-     * Boolean value to indicate if the exam has an upload to it.
-     */
-    @Column
-    private boolean uploadAssignment;
 
     /**
      * The deadline for the registration for events for this event if it is with
@@ -72,13 +67,6 @@ public class Exam {
 
     @Column
     private boolean isWithAttendance;
-
-
-    @ElementCollection
-    @CollectionTable(name = "EXAM_ALLOWED_FILE_TYPES", joinColumns = @JoinColumn(name = "examId"))
-    @Column
-    private List<String> allowedFileEndings = new ArrayList<>();
-
 
     @Override
     public boolean equals(Object object) {
@@ -94,11 +82,6 @@ public class Exam {
                 : super.hashCode();
     }
 
-    /**
-     * The maximal file size in MegaByte.
-     */
-    @Column
-    private Long maxFileSizeMB;
 
     @Column
     private boolean gradableByTutors;
@@ -137,14 +120,6 @@ public class Exam {
             new Date(deadline.getTime());
     }
 
-    public Long getMaxFileSizeMB() {
-        return maxFileSizeMB;
-    }
-
-    public void setMaxFileSizeMB(Long maxFileSizeMB) {
-        this.maxFileSizeMB = maxFileSizeMB;
-    }
-
     public Long getExamId() {
         return examId;
     }
@@ -181,21 +156,6 @@ public class Exam {
         this.gradableByTutors = gradableByTutors;
     }
 
-    public boolean isUploadAssignment() {
-        return uploadAssignment;
-    }
-
-    public void setUploadAssignment(boolean uploadAssignment) {
-        this.uploadAssignment = uploadAssignment;
-    }
-
-    public List<String> getAllowedFileEndings() {
-        return allowedFileEndings;
-    }
-
-    public void setAllowedFileEndings(List<String> allowedFileEndings) {
-        this.allowedFileEndings = allowedFileEndings;
-    }
 
     /**
      * Returns if the given grading value is valid.

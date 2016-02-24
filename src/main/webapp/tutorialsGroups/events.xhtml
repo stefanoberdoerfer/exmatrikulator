@@ -21,7 +21,7 @@
                             value="#{tutorialEventController.tutorialEventModel}"
                             widgetVar="tutorSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}"
                             draggable="false" resizable="false"
-                            locale="#{tutorialEventController.localeCountry}">
+                            locale="#{tutorialEventController.getLocaleCountry()}">
                     <p:ajax event="dateSelect" listener="#{tutorialEventController.onDateSelect}"
                             update="eventDialog" oncomplete="PF('tutEventDialog').show();"/>
                     <p:ajax event="eventSelect" listener="#{tutorialEventController.onEventSelect}"
@@ -34,7 +34,7 @@
                 <p:schedule id="studentSchedule"
                             value="#{tutorialEventController.tutorialEventModel}"
                             widgetVar="studentSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}" resizable="false"
-                            draggable="false" locale="#{tutorialEventController.localeCountry}">
+                            draggable="false" locale="#{tutorialEventController.getLocaleCountry()}">
                     <p:ajax event="eventSelect" listener="#{tutorialEventController.onEventSelect}"
                             update="eventDialog" oncomplete="PF('tutEventDialog').show();"/>/>
                 </p:schedule>
@@ -78,7 +78,7 @@
                                            styleClass="col-xs-3 control-label text-left"/>
                             <div class="col-xs-8">
                                 <p:calendar id="fromTutorCal" value="#{tutorialEventController.event.startDate}"
-                                            locale="#{tutorialEventController.localeCountry}"
+                                            locale="#{tutorialEventController.getLocaleCountry()}"
                                             required="true" validatorMessage="#{msg['tutEvent.validatorMessageStartDate']}"
                                             timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
                             </div>
@@ -87,7 +87,7 @@
                                            styleClass="col-xs-3 control-label text-left"/>
                             <div class="col-xs-8">
                                 <p:calendar id="toTutorCal" value="#{tutorialEventController.event.endDate}"
-                                            locale="#{tutorialEventController.localeCountry}"
+                                            locale="#{tutorialEventController.getLocaleCountry()}"
                                             required="true"
                                             validator="#{tutorialEventController.validateEndDateAfterStartDate}"
                                             timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
@@ -111,9 +111,10 @@
                 <div class="modal-footer">
                     <div class="btn-group pull-left">
                         <p:commandLink value="#{msg['common.cancel']}" styleClass="btn btn-default"
-                                       oncomplete="PF('tutEventDialog').hide();"/>
+                                       oncomplete="PF('tutEventDialog').hide();" process="@this"/>
                         <p:commandLink value="#{msg['common.remove']}" styleClass="btn btn-danger"
-                                       rendered="#{tutorialEventController.canUserEditEvent()}"
+                                       rendered="#{tutorialEventController.canUserEditEvent()
+                                               and examEventController.event.id != null}"
                                        actionListener="#{tutorialEventController.removeEvent}"
                                        oncomplete="PF('tutorSchedule').update();
                                                        PF('tutEventDialog').hide();"/>
