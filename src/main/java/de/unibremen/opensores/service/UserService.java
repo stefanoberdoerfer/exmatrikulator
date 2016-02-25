@@ -319,7 +319,7 @@ public class UserService extends GenericService<User> {
             final String[] names = trimSearchInput.split(" ");
             return em.createQuery(
                     "SELECT DISTINCT u FROM User u WHERE "
-                            + GlobalRole.LECTURER + " IN elements(u.roles) AND"
+                            + GlobalRole.LECTURER.getId() + " IN elements(u.roles) AND"
                             + "((TRIM(LOWER(u.firstName)) LIKE :firstNameSplit "
                             + "AND TRIM(LOWER(u.lastName)) LIKE :lastNameSplit) "
                             + "OR TRIM(LOWER(u.firstName)) LIKE :searchInput "
@@ -332,10 +332,11 @@ public class UserService extends GenericService<User> {
         } else {
             return em.createQuery(
                     "SELECT DISTINCT u FROM User u WHERE "
-                            + "TRIM(LOWER(u.email)) LIKE :searchInput "
+                            + GlobalRole.LECTURER.getId() + " IN elements(u.roles) AND"
+                            + "(TRIM(LOWER(u.email)) LIKE :searchInput "
                             + "OR TRIM(LOWER(u.firstName)) LIKE :searchInput "
                             + "OR TRIM(LOWER(u.lastName)) LIKE :searchInput "
-                            + "OR TRIM(LOWER(u.email)) LIKE :searchInput ", User.class)
+                            + "OR TRIM(LOWER(u.email)) LIKE :searchInput)", User.class)
                     .setParameter("searchInput", trimSearchInput + "%")
                     .getResultList();
         }
