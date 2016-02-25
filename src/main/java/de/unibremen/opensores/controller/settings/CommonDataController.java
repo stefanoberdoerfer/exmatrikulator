@@ -4,7 +4,6 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Field;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Log;
-import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.User;
@@ -24,6 +23,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.context.PartialViewContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
@@ -333,13 +333,16 @@ public class CommonDataController {
         log.debug("validIdentifier() called");
 
         //skips partial updates of the same page
-        if (FacesContext.getCurrentInstance().isPostback()) {
+        if (isAjaxRequest()) {
             return;
         }
 
         List<FacesMessage> msgs = new ArrayList<>();
         if (!(value instanceof String) || ((String)value).trim().isEmpty()) {
-            msgs.add(new FacesMessage(bundle.getString("courses.create.messageInputIdentifier")));
+            FacesMessage msg = new FacesMessage(
+                    bundle.getString("courses.create.messageInputIdentifier"));
+            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            msgs.add(msg);
             throw new ValidatorException(msgs);
         }
 
@@ -350,19 +353,29 @@ public class CommonDataController {
 
         if (otherCourse != null) {
             log.debug("Failing validation for identifier (already taken): " + stringValue);
-            msgs.add(new FacesMessage(
-                    bundle.getString("courses.create.messageIdentifierTaken")));
+            FacesMessage msg = new FacesMessage(
+                    bundle.getString("courses.create.messageIdentifierTaken"));
+            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            msgs.add(msg);
             throw new ValidatorException(msgs);
         }
 
         for (char c: stringValue.toCharArray()) {
             if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
                 log.debug("Failing validation for shortcut(characters): " + stringValue);
-                msgs.add(new FacesMessage(
-                        bundle.getString("courses.create.messageInvalidChar")));
+                FacesMessage msg = new FacesMessage(
+                        bundle.getString("courses.create.messageInvalidChar"));
+                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                msgs.add(msg);
                 throw new ValidatorException(msgs);
             }
         }
+    }
+
+    private boolean isAjaxRequest() {
+        PartialViewContext partialViewContext =
+                FacesContext.getCurrentInstance().getPartialViewContext();
+        return null != partialViewContext && partialViewContext.isAjaxRequest();
     }
 
     /**

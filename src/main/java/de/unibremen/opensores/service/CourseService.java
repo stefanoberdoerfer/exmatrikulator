@@ -66,7 +66,8 @@ public class CourseService extends GenericService<Course> {
     public Course findCourseByIdentifier(String identifier) {
         List<Course> courses = em.createQuery(
                 "SELECT DISTINCT c FROM Course c "
-                        + "WHERE c.identifier = :identifier", Course.class)
+                        + "WHERE trim(lower(c.identifier)) "
+                        + "= trim(lower(:identifier))", Course.class)
                 .setParameter("identifier", identifier)
                 .getResultList();
 
