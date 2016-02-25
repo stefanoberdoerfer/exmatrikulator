@@ -58,6 +58,22 @@ public class CourseService extends GenericService<Course> {
     }
 
     /**
+     * Find course using the course identifier attribute.
+     *
+     * @param identifier identifier attribute of the course.
+     * @return Associated course or null.
+     */
+    public Course findCourseByIdentifier(String identifier) {
+        List<Course> courses = em.createQuery(
+                "SELECT DISTINCT c FROM Course c "
+                        + "WHERE c.identifier = :identifier", Course.class)
+                .setParameter("identifier", identifier)
+                .getResultList();
+
+        return (courses.isEmpty()) ? null : courses.get(0);
+    }
+
+    /**
      * Find course using a string id.
      *
      * @param idStr Course id to use for lookup.

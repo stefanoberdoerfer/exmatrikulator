@@ -35,6 +35,9 @@ public class Course {
     @GeneratedValue
     private Long courseId;
 
+    @Column(nullable = false, unique = true)
+    private String identifier;
+
     @Column(nullable = false)
     private String name;
 
@@ -391,6 +394,14 @@ public class Course {
 
     public void setMaxGroupSize(Integer maxGroupSize) {
         this.maxGroupSize = maxGroupSize;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     /**

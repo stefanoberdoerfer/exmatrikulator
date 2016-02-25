@@ -19,15 +19,19 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
@@ -104,6 +108,11 @@ public class CommonDataController {
     private FacesContext context;
 
     /**
+     * The ResourceBundle to get internationalised messages from.
+     */
+    private ResourceBundle bundle;
+
+    /**
      * Initialisation method to get semesters from semesterService and
      * add the courseNumber input fields to the UI.
      */
@@ -113,6 +122,9 @@ public class CommonDataController {
         context = FacesContext.getCurrentInstance();
         HttpServletRequest req = (HttpServletRequest)
                 context.getExternalContext().getRequest();
+
+        bundle = ResourceBundle.getBundle("messages",
+                context.getViewRoot().getLocale());
 
         course = courseService.findCourseById(req.getParameter("course-id"));
         log.debug("Loaded course object: " + course);
@@ -302,6 +314,55 @@ public class CommonDataController {
     public void saveCourseNumbers() {
         checkCourseIsNull();
         updateCourseNumbers();
+    }
+
+    /**
+     * Validates if a shortcut input is valid for a exam.
+     * The shortcut of the exam can only contain characters and numerical
+     * values and must be at least one character long.
+     * It must also be unique in the course, if an other exam has the exact
+     * same shortcut, the new shortcut is not valid.
+     *
+     * @param ctx The FacesContext for which the validation occurs.
+     * @param comp The corresponding ui component.
+     * @param value The value of the input (the shortcut).
+     */
+    public void validIdentifier(FacesContext ctx,
+                                 UIComponent comp,
+                                 Object value) {
+        log.debug("validIdentifier() called");
+
+        //skips partial updates of the same page
+        if (FacesContext.getCurrentInstance().isPostback()) {
+            return;
+        }
+
+        List<FacesMessage> msgs = new ArrayList<>();
+        if (!(value instanceof String) || ((String)value).trim().isEmpty()) {
+            msgs.add(new FacesMessage(bundle.getString("courses.create.messageInputIdentifier")));
+            throw new ValidatorException(msgs);
+        }
+
+        final String stringValue = (String) value;
+        log.debug("Input identifier value: " + stringValue);
+
+        Course otherCourse = courseService.findCourseByIdentifier(stringValue);
+
+        if (otherCourse != null) {
+            log.debug("Failing validation for identifier (already taken): " + stringValue);
+            msgs.add(new FacesMessage(
+                    bundle.getString("courses.create.messageIdentifierTaken")));
+            throw new ValidatorException(msgs);
+        }
+
+        for (char c: stringValue.toCharArray()) {
+            if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
+                log.debug("Failing validation for shortcut(characters): " + stringValue);
+                msgs.add(new FacesMessage(
+                        bundle.getString("courses.create.messageInvalidChar")));
+                throw new ValidatorException(msgs);
+            }
+        }
     }
 
     /**

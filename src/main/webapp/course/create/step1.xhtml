@@ -49,6 +49,17 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <h:outputLabel for="courseIdentifier" class="col-xs-3 control-label text-left"
+                                       value="#{msg['common.identifier']}"/>
+                        <div class="col-xs-9" >
+                            <h:inputText type="text" class="form-control" id="courseIdentifier"
+                                         value="#{step1.commonDataController.course.identifier}"
+                                         required="#{not empty param['commonDataForm:continueButton']}"
+                                         label="#{msg['common.identifier']}"
+                                         validator="#{step1.commonDataController.validIdentifier}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <h:outputLabel for="courseNumber" class="col-xs-3 control-label text-left"
                                        value="#{msg['courses.vak']}"/>
                         <h:panelGroup styleClass="col-xs-9" id="courseNumber">
@@ -167,7 +178,7 @@
                                              valueChangeListener="#{step1.commonDataController.searchForLecturers}">
                                     <f:ajax execute="searchLecturer" render="lecturerOutput" event="blur" />
                                 </p:inputText>
-                                <h:commandLink type="button" styleClass="btn btn-default">
+                                <h:commandLink type="button" styleClass="btn btn-default" immediate="true">
                                     <i class="fa fa-search"></i>
                                 </h:commandLink>
                             </div>

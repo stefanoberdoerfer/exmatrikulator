@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.commons.io.FileUtils;
@@ -250,6 +251,13 @@ public class TmeController implements Serializable {
         course.setDefaultCreditPoints(obj.getInt("cp"));
         course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
+
+        //super safe identifier collisionhandling
+        String randomIdentifier;
+        do {
+            randomIdentifier = RandomStringUtils.randomAlphabetic(4);
+        } while (courseService.findCourseByIdentifier(randomIdentifier) != null);
+        course.setIdentifier(randomIdentifier);
 
         ParticipationType type = new ParticipationType();
         type.setName(obj.getString("studyArea"));
