@@ -15,7 +15,12 @@
     <!-- Page Content -->
     <ui:define name="content">
         <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="headline">
+            <h1>#{msg['tutEvents.eventsOfTut'].concat(' ').concat(tutorialEventController.tutorial.name)}</h1>
+        </div>
         <h:form id="eventForm" >
+
+
             <h:panelGroup rendered="#{tutorialEventController.userTutor}">
                 <p:schedule id="tutorSchedule"
                             value="#{tutorialEventController.tutorialEventModel}"
@@ -25,9 +30,7 @@
                     <p:ajax event="dateSelect" listener="#{tutorialEventController.onDateSelect}"
                             update="eventDialog" oncomplete="PF('tutEventDialog').show();"/>
                     <p:ajax event="eventSelect" listener="#{tutorialEventController.onEventSelect}"
-                            update="eventDialog" oncomplete="PF('tutEventDialog').show();"/>
-                    <p:ajax event="eventMove" listener="#{tutorialEventController.onEventMove}" />
-                    <p:ajax event="eventResize" listener="#{tutorialEventController.onEventResize}" />
+                            update="tutorSchedule eventDialog" oncomplete="PF('tutEventDialog').show();"/>
                 </p:schedule>
             </h:panelGroup>
             <h:panelGroup rendered="#{not tutorialEventController.userTutor}">
@@ -40,6 +43,7 @@
                 </p:schedule>
             </h:panelGroup>
             <p:dialog id="eventDialog" widgetVar="tutEventDialog" header="#{msg['tutEvent.details']}">
+                <p:panel id="dialogPnl">
                 <ui:include src="/WEB-INF/alerts.xhtml" />
                 <div class="modal-body">
                     <div class="form-group" >
@@ -112,13 +116,14 @@
                     <div class="btn-group pull-left">
                         <p:commandLink value="#{msg['common.cancel']}" styleClass="btn btn-default"
                                        oncomplete="PF('tutEventDialog').hide();" process="@this"/>
-                        <p:commandLink value="#{msg['common.remove']}" styleClass="btn btn-danger"
+                        <p:commandLink id="removeBtn"
+                                       value="#{msg['common.remove']}" styleClass="btn btn-danger"
                                        rendered="#{tutorialEventController.canUserEditEvent()
-                                               and examEventController.event.id != null}"
+                                               and tutorialEventController.event.id != null}"
                                        actionListener="#{tutorialEventController.removeEvent}"
                                        oncomplete="PF('tutorSchedule').update();
                                                        PF('tutEventDialog').hide();"/>
-                        <p:commandLink id="addButton" styleClass="btn btn-success"
+                        <p:commandLink id="addBtn" styleClass="btn btn-success"
                                        value="#{msg['common.saveChanges']}"
                                        rendered="#{tutorialEventController.canUserEditEvent()}"
                                        actionListener="#{tutorialEventController.addEvent}"
@@ -128,6 +133,8 @@
                                                 }" />
                     </div>
                 </div>
+                </p:panel>
+                <p:blockUI block="dialogPnl" trigger="removeBtn addBtn"/>
             </p:dialog>
         </h:form>
     </ui:define>

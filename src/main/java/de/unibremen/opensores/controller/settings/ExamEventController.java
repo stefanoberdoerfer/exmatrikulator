@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleModel;
+import org.primefaces.model.DualListModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
@@ -156,6 +157,11 @@ public class ExamEventController {
      */
     private SimpleDateFormat dateFormatter;
 
+    /**
+     * A dual list for picking not already registered students for this exam to
+     * an exam event. Used by the PrimeFaces pickList;
+     */
+    private DualListModel<Student> studentDualList;
     /*
      * Public methods
      */
@@ -244,8 +250,11 @@ public class ExamEventController {
         event = (ExamEvent) selectEvent.getObject();
         oldEventStartDate = event.getStartDate();
         oldEventEndDate = event.getEndDate();
-    }
 
+        if (canUserEditEvent()) {
+
+        }
+    }
 
 
     /**
@@ -259,6 +268,12 @@ public class ExamEventController {
                 (Date) selectEvent.getObject());
     }
 
+    /**
+     * Updates the exam with its new deadline.
+     */
+    public void updateDealine() {
+        exam = examService.update(exam);
+    }
 
     /**
      * Adds a new event to the exam event.
@@ -442,6 +457,8 @@ public class ExamEventController {
         String locale = FacesContext.getCurrentInstance().getViewRoot().getLocale().toLanguageTag();
         return locale;
     }
+
+
 
 
     /**
@@ -715,6 +732,10 @@ public class ExamEventController {
 
     public Course getCourse() {
         return course;
+    }
+
+    public Exam getExam() {
+        return exam;
     }
 
 }

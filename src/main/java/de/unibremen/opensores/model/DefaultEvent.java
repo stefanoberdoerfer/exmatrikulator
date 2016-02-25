@@ -21,7 +21,7 @@ import java.util.Date;
  * http://grepcode.com/file/repository.primefaces.org/org.primefaces/primefaces/2.1/org/primefaces/model/DefaultScheduleEvent.java
  */
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class DefaultEvent implements ScheduleEvent, Serializable {
 
     /**

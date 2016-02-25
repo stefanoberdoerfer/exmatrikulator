@@ -22,6 +22,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -151,7 +152,6 @@ public class ExamController {
         log.debug("Loaded course object: " + course);
 
 
-        /*
         if (course == null) {
             log.debug("trying to redirect to /course/overview");
             try {
@@ -168,7 +168,7 @@ public class ExamController {
         }
 
         log.debug("Course exam list size: " + course.getExams().size());
-        */
+
 
 
         gradeTypeLabels = new HashMap<>();
@@ -426,27 +426,7 @@ public class ExamController {
         }
     }
 
-    /**
-     * Validates the deadline for exam events.
-     * @param ctx The FacesContext for which the validation occurs.
-     * @param comp The corresponding ui component.
-     * @param value The value of the deadline (the user input).
-     */
-    public void validateDeadline(FacesContext ctx, UIComponent comp, Object value) {
-        List<FacesMessage> msgs = new ArrayList<FacesMessage>();
-        if (!(value instanceof Date)) {
-            msgs.add(new FacesMessage(bundle.getString("examination.messageGiveDate")));
-            throw new ValidatorException(msgs);
-        }
 
-        Date deadline = (Date) value;
-
-        if (deadline.before(new Date())) {
-            log.debug("Deadline before current date" + deadline);
-            msgs.add(new FacesMessage(bundle.getString("examination.messageDatePassed")));
-            throw new ValidatorException(msgs);
-        }
-    }
 
 
     /*
