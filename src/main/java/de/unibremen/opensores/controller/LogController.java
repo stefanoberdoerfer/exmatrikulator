@@ -162,15 +162,14 @@ public class LogController {
      * Deletes the logs in the currently selected range.
      */
     public void deleteLogRange() {
-        ListIterator<Log> it = null;
-        if (filteredLogs != null) {
-            it = filteredLogs.listIterator();
-        } else {
-            it = logs.listIterator();
-        }
-
+        ListIterator<Log> it = logs.listIterator();
         while (it.hasNext()) {
-            logService.remove(it.next());
+            Log cl = it.next();
+            log.debug("Removing log with id " + cl.getLogId());
+
+            rawLogs.remove(cl);
+            logService.remove(cl);
+
             it.remove();
         }
 
