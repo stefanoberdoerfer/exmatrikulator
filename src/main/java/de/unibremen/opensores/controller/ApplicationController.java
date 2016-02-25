@@ -316,6 +316,7 @@ public class ApplicationController {
         course.setDefaultSws("2+2");
         course.setDefaultCreditPoints(1337);
         course.setName("TestVeranstaltung");
+        course.setIdentifier("TV2016");
         course.getNumbers().add("VAK-Nummer123");
         course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
