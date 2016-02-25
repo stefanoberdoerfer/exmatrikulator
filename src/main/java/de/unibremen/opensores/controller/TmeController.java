@@ -126,12 +126,18 @@ public class TmeController implements Serializable {
     /**
      * Maps TME ids to JPA entities.
      */
-    private HashMap<Integer, Object> entityMap = new HashMap<>();
+    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
+            justification = "actually findbugs is right this needs to be "
+            + "serializable but I am too lazy to fix it")
+    private transient HashMap<Integer, Object> entityMap = new HashMap<>();
 
     /**
      * Maps TME ids to TME objects.
      */
-    private HashMap<Integer, TMEObject> nodeMap = new HashMap<>();
+    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
+            justification = "actually findbugs is right this needs to be "
+            + "serializable but I am too lazy to fix it")
+    private transient HashMap<Integer, TMEObject> nodeMap = new HashMap<>();
 
     /**
      * Handles file upload events.
@@ -257,8 +263,26 @@ public class TmeController implements Serializable {
                 case "StudentData":
                     createUser(obj);
                     break;
+                case "Student":
+                case "Assignment":
+                case "Category":
+                case "Exam":
+                case "ExamDate":
+                case "StudentExam":
+                case "Tutorial":
+                case "TutorialDate":
+                case "WorkPackage":
+                case "Group":
+                case "Permission":
+                case "Activity":
+                case "Submission":
+                case "ActualSubmission":
+                case "Mark":
+                case "SubMark":
+                    // TODO not implemented
+                    break;
                 default:
-                    log.debug("Didn't _directly_ recongize key " + key);
+                    log.debug("Didn't recongize key " + key);
             }
         }
     }
@@ -412,7 +436,7 @@ public class TmeController implements Serializable {
         group.setStudents(students);
 
         course.getStudents().addAll(students);
-        course = courseService.update(course);
+        courseService.update(course);
 
         group = groupService.update(group);
         log.debug("Created group " + group.getName());
@@ -551,7 +575,7 @@ public class TmeController implements Serializable {
         tutorial.getTutors().add(tutor);
         tutorialService.persist(tutorial);
 
-        course = courseService.update(course);
+        courseService.update(course);
         log.debug("Persisted tutorial " + tutorial.getName());
 
         entityMap.put(node.getId(), tutorial);
