@@ -52,9 +52,9 @@ public class LiveSearchController {
      * Method invoked by the view on every string change event.
      * @param event Event fired by the view on every keyUp
      */
-    public void searchForUsers(AjaxBehaviorEvent event) {
+    public void searchForUsers(AjaxBehaviorEvent event){
         log.debug("searchForUsers: " + searchString);
-        if (searchString.length() >= 3) {
+        if (searchString.length() >= Constants.LIVE_SEARCH_THRESHOLD) {
             userResultList = userService.searchForUsers(searchString);
         }
     }

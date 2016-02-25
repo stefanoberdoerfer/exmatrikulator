@@ -7,10 +7,12 @@ import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
-import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.LecturerService;
 import de.unibremen.opensores.service.LogService;
+import de.unibremen.opensores.service.PrivilegedUserService;
+import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -24,6 +26,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +65,8 @@ public class UserOverviewController {
     private boolean globalRoleLecturer;
     private boolean globalRoleUser;
 
+    private String searchString;
+
     /**
      * User ResourceBundle for internationalisation information.
      */
@@ -76,6 +81,13 @@ public class UserOverviewController {
      * CourseService for database transactions related to courses.
      */
     private CourseService courseService;
+
+    /**
+     * Services for database transactions for user->course relations.
+     */
+    private LecturerService lecturerService;
+    private PrivilegedUserService privilegedUserService;
+    private StudentService studentService;
 
     /**
      * The LogService for creating Exmatrikulator business domain logs.
@@ -116,6 +128,8 @@ public class UserOverviewController {
         globalRoleAdmin = user.hasGlobalRole(GlobalRole.ADMIN);
         globalRoleLecturer = user.hasGlobalRole(GlobalRole.LECTURER);
         globalRoleUser = user.hasGlobalRole(GlobalRole.USER);
+        log.debug("Admin: " + globalRoleAdmin + " Lecturer: " + globalRoleLecturer
+            + " User: " + globalRoleUser);
     }
 
     /**
@@ -196,19 +210,89 @@ public class UserOverviewController {
     }
 
     /**
-     * Deletes a user by overwriting all of his/her attributes.
-     * This is beneficial for not destroying many relations by deleting this
+     * Deletes a user by overwriting all of his/her attributes and setting all
+     * relations to courses to 'deleted'.
+     * This is beneficial to not destroy many relations by deleting the
      * user completely.
      */
     public void deleteUser() {
+
+        for (Course c : userService.getAllCourses(selectedUser)) {
+            Lecturer lec = c.getLecturerFromUser(selectedUser);
+            PrivilegedUser priv = c.getPrivilegedUserFromUser(selectedUser);
+            Student stud = c.getStudentFromUser(selectedUser);
+
+            if (lec != null) {
+                lec.setDeleted(true);
+            }
+            if (priv != null) {
+                priv.setDeleted(true);
+            }
+            if (stud != null) {
+                stud.setDeleted(true);
+            }
+
+            courseService.update(c);
+        }
+
         selectedUser.setFirstName("Deleted");
         selectedUser.setLastName("User");
-        selectedUser.setEmail("nomail@no.tld");
+        selectedUser.setEmail(RandomStringUtils.randomAlphanumeric(10));
         selectedUser.setMatriculationNumber("XXXXXX");
         selectedUser.setProfileInfo("");
         selectedUser.setPassword(RandomStringUtils.randomAlphanumeric(10));
         userService.update(selectedUser);
         clearFields();
+    }
+
+    /**
+     * Method which tries to merge the currently selected User with the user given
+     * as a parameter. The User object of the selected User will be kept and all
+     * relations of the user toBeMerged will be updated to the selected user.
+     * An error will be shown if the users participate in the same courses and nothing
+     * will be merged.
+     * @param toBeMerged User which technically will be replaced.
+     */
+    public void mergeUser(User toBeMerged) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        log.debug("User " + selectedUser + " should be merged with " + toBeMerged);
+
+        List<Course> coursesOfOtherUser = userService.getAllCourses(toBeMerged);
+
+        //check if the users have common courses to throw an error
+        for (Course c : coursesOfOtherUser) {
+            if (c.containsUser(selectedUser)) {
+                context.addMessage(null, new FacesMessage(FacesMessage
+                        .SEVERITY_FATAL, bundle.getString("common.error"),
+                        bundle.getString("common.error")));
+                return;
+            }
+        }
+
+        for (Course c : coursesOfOtherUser) {
+            Lecturer lec = c.getLecturerFromUser(toBeMerged);
+            PrivilegedUser priv = c.getPrivilegedUserFromUser(toBeMerged);
+            Student stud = c.getStudentFromUser(toBeMerged);
+
+            if (lec != null) {
+                lec.setUser(selectedUser);
+                lecturerService.update(lec);
+            }
+            if (priv != null) {
+                priv.setUser(selectedUser);
+                privilegedUserService.update(priv);
+            }
+            if (stud != null) {
+                stud.setUser(selectedUser);
+                studentService.update(stud);
+            }
+        }
+
+        //TODO: merge logs, gradings and gradeformulas
+
+        //delete other user
+        selectedUser = toBeMerged;
+        deleteUser();
     }
 
     /**
@@ -259,6 +343,7 @@ public class UserOverviewController {
         selectedUser.sendEmail(subject, text);
     }
 
+
     /**
      * Validates the email of the selected user.
      * The email must match a standard email REGEX pattern.
@@ -291,10 +376,13 @@ public class UserOverviewController {
 
         final String emailInput = (String) value;
 
-        if (userService.isEmailRegistered(emailInput)) {
+        if (selectedUser != null && selectedUser.getUserId() != null
+                && selectedUser.equals(userService.findByEmail(emailInput))) {
+            // In this case, the selected User gets edited and the email adress was
+            // not changed -> pass.
+        } else if (userService.isEmailRegistered(emailInput)) {
             messages.add(new FacesMessage(bundle
                     .getString("registration.alreadyRegistered")));
-            log.debug("Value is not a string or is empty string, throwing exception");
             throw new ValidatorException(messages);
         }
     }
@@ -377,6 +465,33 @@ public class UserOverviewController {
     @EJB
     public void setCourseService(CourseService courseService) {
         this.courseService = courseService;
+    }
+
+    /**
+     * Injects the studentService.
+     * @param studentService The course service to be injected.
+     */
+    @EJB
+    public void setStudentService(StudentService studentService) {
+        this.studentService = studentService;
+    }
+
+    /**
+     * Injects the privilegedUserService.
+     * @param privilegedUserService The course service to be injected.
+     */
+    @EJB
+    public void setPrivilegedUserService(PrivilegedUserService privilegedUserService) {
+        this.privilegedUserService = privilegedUserService;
+    }
+
+    /**
+     * Injects the lecturerService.
+     * @param lecturerService The course service to be injected.
+     */
+    @EJB
+    public void setLecturerService(LecturerService lecturerService) {
+        this.lecturerService = lecturerService;
     }
 
     public void setUsers(List<User> users) {

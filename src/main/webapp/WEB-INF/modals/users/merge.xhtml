@@ -10,10 +10,32 @@
             <div class="modal-body">
                 <div class="form-group">
                     <div class="col-xs-12">
-                        <div class="alert alert-info">Hier dann den anzeigen bei dem man auf das Merge Icon geklickt hat gelle?</div>
+                        <div class="alert alert-info">
+                            <strong><h:outputText value="#{userOverviewController.selectedUser}
+                                #{msg['users.mergeWith']} #{liveSearchController.selectedUser}"/></strong>
+                        </div>
                         <h:outputText value="#{msg['users.merge.hint']}" />
-                        <h:inputText type="text" class="form-control" h5:placeholder="#{msg['users.search']}"
-                                     h5:autofocus="autofocus" />
+                        <p:inputText id="searchUser" h5:placeholder="#{msg['users.search']}" class="form-control"
+                                     h5:autofocus="autofocus" value="#{liveSearchController.searchString}" >
+                            <p:ajax event="keyup" listener="#{liveSearchController.searchForUsers}" process="@this"
+                                    update="resultList"/>
+                        </p:inputText>
+                        <p:defaultCommand target="searchUser"/>
+                        <h:dataTable id="resultList" value="#{liveSearchController.userResultList}"
+                                     var="foundUser" styleClass="table"
+                                     columnClasses="responsive, table-common-options-one">
+                            <h:column>
+                                #{foundUser}
+                            </h:column>
+                            <h:column>
+                                <h:commandLink class="btn btn-default">
+                                    <i class="fa fa-dot-circle-o"></i>
+                                    <f:ajax listener="#{liveSearchController.selectUser(foundUser)}"
+                                            execute="@form" render="@form"
+                                    />
+                                </h:commandLink>
+                            </h:column>
+                        </h:dataTable>
                     </div>
                 </div>
             </div>
@@ -21,10 +43,10 @@
                 <div class="btn-group">
                     <p:commandButton value="#{msg['common.cancel']}" type="button"
                                      onclick="return exModal(':userMerge');" styleClass="btn btn-default" />
-                    <p:commandLink action="#{userController.mergeUser}"
-                                   id="mergeUserButton"
-                                   class="btn btn-primary" value="#{msg['users.merge']}"
-                                   oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userMerge')" />
+                    <p:commandLink action="#{userOverviewController.mergeUser(liveSearchController.selectedUser)}"
+                                   id="mergeUserButton" class="btn btn-primary" value="#{msg['users.merge']}"
+                                   oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userMerge')"
+                                   update=":usersform" />
                 </div>
             </div>
         </h:form>

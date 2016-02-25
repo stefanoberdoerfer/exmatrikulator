@@ -166,8 +166,14 @@ public class User {
         this.userId = userId;
     }
 
+    /**
+     * Adds a role to the list of GlobalRole IDs if not already in there.
+     * @param role Role to be added
+     */
     public void addRole(GlobalRole role) {
-        roles.add(role.getId());
+        if (!roles.contains(role.getId())) {
+            roles.add(role.getId());
+        }
     }
 
     public void setRoles(List<Integer> roles) {
