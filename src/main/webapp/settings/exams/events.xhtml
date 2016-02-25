@@ -21,9 +21,8 @@
         <h:form id="eventForm" >
             <h:panelGroup rendered="#{examEventController.userPrivUser
                         or examEventController.userLecturer}">
-                <p:panel id="deadlinePnl" layout="block">
-                    <p>#{msg['examEvent.deadlineExplanation']}</p>
-                    <h:panelGroup styleClass="form-group" layout="block">
+                <h:panelGroup id="deadlinePnl" styleClass="form-group">
+                    <h:panelGroup layout="block">
                         <p:outputLabel for="examDeadline"
                                        class="col-xs-3 control-label"
                                        value="#{msg['examEvent.deadline']}" />
@@ -44,9 +43,9 @@
                             </p:commandLink>
                         </h:panelGroup>
                     </h:panelGroup>
-                </p:panel>
+                </h:panelGroup>
                 <p:blockUI block="deadlinePnl" trigger="updateDeadlineBtn"/>
-
+                <br/>
                 <p:schedule id="editSchedule"
                             value="#{examEventController.examEventModel}"
                             widgetVar="editSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}"
@@ -178,6 +177,18 @@
                                     <f:convertNumber integerOnly="true"/>
                                     <f:validateLongRange minimum="1" maximum="100000"/>
                                 </p:inputText>
+                            </div>
+
+                            <p:outputLabel for="editStudents" value="#{msg['examEvent.examinedStudents']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+
+                            <div class="col-xs-8">
+                                <p:pickList id="editStudents" value="#{examEventController.studentDualList}"
+                                            var="student" itemLabel="#{student.user}"
+                                            itemValue="#{student}" converter="#{studentConverter}"
+                                            responsive="true" validator="#{examEventController.validateStudentSize}">
+                                    <f:attribute name="course" value="#{examEventController.course}" />
+                                </p:pickList>
                             </div>
                         </h:panelGroup>
                     </div>

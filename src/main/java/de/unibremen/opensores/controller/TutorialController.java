@@ -404,7 +404,7 @@ public class TutorialController implements Serializable {
         groupName = null;
     }
 
-    /*
+    /**
      * Updates group members for the given group in the current tutorial.
      *
      * @param group Group to update members for.
@@ -635,7 +635,6 @@ public class TutorialController implements Serializable {
     /**
      * Returns the new name for the current group.
      *
-     * @param New or current group name.
      */
     public String getNewGroupName() {
         return (newGroupName == null) ? groupName : newGroupName;
