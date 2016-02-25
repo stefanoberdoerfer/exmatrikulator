@@ -58,6 +58,9 @@ public class User {
     @Column(nullable = true)
     private String matriculationNumber;
 
+    @Column(nullable = true)
+    private String salution;
+
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
     @CollectionTable(joinColumns = @JoinColumn(name = "userId"))
     @Column
@@ -181,6 +184,14 @@ public class User {
 
     public void setToken(PasswordReset resetToken) {
         this.resetToken = resetToken;
+    }
+
+    public String getSalution() {
+        return salution;
+    }
+
+    public void setSalution(String salution) {
+        this.salution = salution;
     }
 
     @Override

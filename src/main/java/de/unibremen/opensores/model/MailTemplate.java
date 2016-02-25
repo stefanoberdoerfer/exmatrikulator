@@ -22,7 +22,7 @@ public class MailTemplate {
     @GeneratedValue
     private Long mailTemplateId;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "courseId")
     private Course course;
 
@@ -35,6 +35,12 @@ public class MailTemplate {
     @Column(nullable = false)
     private String locale;
 
+    @Column(nullable = true)
+    private String name;
+
+    @Column(nullable = true)
+    private Boolean isDefault;
+
     public String getSubject() {
         return subject;
     }
@@ -45,6 +51,14 @@ public class MailTemplate {
 
     public String getLocale() {
         return locale;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Long getMailTemplateId() {
+        return mailTemplateId;
     }
 
     public void setSubject(String subject) {
@@ -59,11 +73,27 @@ public class MailTemplate {
         this.locale = locale;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Course getCourse() {
         return course;
     }
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public void setMailTemplateId(Long mailTemplateId) {
+        this.mailTemplateId = mailTemplateId;
+    }
+
+    public Boolean getIsDefault() {
+        return isDefault;
+    }
+
+    public void setIsDefault(Boolean isDefault) {
+        this.isDefault = isDefault;
     }
 }

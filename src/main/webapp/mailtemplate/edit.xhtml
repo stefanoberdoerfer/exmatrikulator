@@ -1,0 +1,36 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.mailtemplates']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li class="active">#{msg['common.mailtemplates']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <h:form>
+            <label>#{msg['mailtemplates.name']}</label>
+            <h:inputText id="name" value="#{mailTemplateController.templateName}" p:placeholder="mailTemplateController.templateName" /><br></br>
+            <label>#{msg['mailtemplates.subject']}</label>
+            <h:inputText id="subject" value="#{mailTemplateController.templateSubject}" p:placeholder="mailTemplateController.templateSubject" /><br></br>
+            <label>#{msg['mailtemplates.text']}</label>
+            <h:inputText id="text" value="#{mailTemplateController.templateText}" p:placeholder="#{mailTemplateController.templateText}" /><br></br>
+            <label>#{msg['mailtemplates.locale']}</label>
+            <h:inputText id="locale" value="#{mailTemplateController.templateLocale}" p:placeholder="#{mailTemplateController.templateLocale}" /><br></br>
+            <h:commandButton value="#{msg['mailtemplates.save']}" action="#{mailTemplateController.saveMailTemplate()}" /><br></br>
+        </h:form>
+        #{msg['mailtemplates.firstname']} = {{firstName}} <br></br>
+        #{msg['mailtemplates.lastname']} =  {{lastName}} <br></br>
+        #{msg['mailtemplates.salution']} = {{salution}} <br></br>
+        #{msg['mailtemplates.pabograde']} = {{paboGrade}} <br></br>
+        #{msg['mailtemplates.comment']} = {{comment}} <br></br>
+        #{msg['mailtemplates.semester']} = {{semester}} <br></br>
+        #{msg['mailtemplates.coursename']} = {{courseName}} <br></br>
+        #{msg['mailtemplates.grades']} = {{#grades}} {{.}} {{/grades}} <br></br>
+    </ui:define>
+</ui:composition>
