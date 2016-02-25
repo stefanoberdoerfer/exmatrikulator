@@ -12,15 +12,13 @@
                 <div class="modal-body">
                     #{msg['users.remove.question']}<br />
                     <strong>
-                        #{userController.selectedUser.firstName
-                                .concat(' ')
-                                .concat(userController.selectedUser.lastName)}
+                        #{userOverviewController.selectedUser}
                     </strong>
                     <br />
                     #{msg['users.remove.confirm']}<br />
                     <h:inputText type="text" id="userNameInput" class="form-control"
                                  required="true"
-                                 validator="#{userController.validateDeletionNameInput}"/>
+                                 validator="#{userOverviewController.validateDeletionNameInput}"/>
                     <h:message for="userNameInput"/>
                     <br />
                     #{msg['users.remove.hint']}
@@ -30,9 +28,10 @@
                         <p:commandButton value="#{msg['common.cancel']}" type="button"
                                          onclick="return exModal(':userRemove');" styleClass="btn btn-default" />
                         <p:commandLink id="removeBtn"
-                                       action="#{userController.deleteUser}"
+                                       action="#{userOverviewController.deleteUser()}"
                                        class="btn btn-danger" value="#{msg['common.remove']}"
-                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userRemove')" />
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userRemove')"
+                                    />
 
                     </div>
                 </div>

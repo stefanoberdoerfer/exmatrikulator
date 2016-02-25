@@ -58,13 +58,6 @@ public class UserController {
     @ManagedProperty(value = "#{applicationController}")
     private ApplicationController applicationController;
 
-    private List<User> users = new ArrayList<>();
-
-    /**
-     * String to search for in the students overview.
-     */
-    private String searchValue;
-
     /**
      * The currently selected user for editing the values.
      */
@@ -266,26 +259,6 @@ public class UserController {
 
     public void setApplicationController(ApplicationController applicationController) {
         this.applicationController = applicationController;
-    }
-
-    /**
-     * Loads all users from the database.
-     * @return List of users
-     */
-    public List<User> getUsers() {
-        if (users.isEmpty()) {
-            users = userService.getUsers();
-        }
-
-        return users;
-    }
-
-    public String getSearchValue() {
-        return searchValue;
-    }
-
-    public void setSearchValue(String searchValue) {
-        this.searchValue = searchValue;
     }
 
     public User getSelectedUser() {

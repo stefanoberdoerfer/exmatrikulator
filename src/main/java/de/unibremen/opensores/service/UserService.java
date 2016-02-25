@@ -216,6 +216,30 @@ public class UserService extends GenericService<User> {
     }
 
     /**
+     * Returns a list of all courses (hidden/shown/deleted) this user takes part in.
+     *
+     * @param user User to lookup courses for.
+     * @return List of courses or null if none where found.
+     */
+    public List<Course> getAllCourses(final User user) {
+        // We need to use the userId here instead of the user object
+        // Known Bug: https://hibernate.atlassian.net/browse/HHH-2772
+
+        List<Course> courses = em.createQuery(
+                "SELECT DISTINCT c FROM Course c"
+                        + " LEFT JOIN c.students AS s"
+                        + " WITH s.user.userId = :id"
+                        + " LEFT JOIN c.tutors AS t"
+                        + " WITH t.user.userId = :id"
+                        + " LEFT JOIN c.lecturers AS l"
+                        + " WITH l.user.userId = :id", Course.class)
+                .setParameter("id", user.getUserId())
+                .getResultList();
+
+        return (courses.isEmpty()) ? null : courses;
+    }
+
+    /**
      * Returns a list of courses this user is a lecturer of.
      *
      * @param user User to lookup courses for.
