@@ -117,7 +117,7 @@ public class CourseSettingsController {
      *
      * @return boolean true if yes
      */
-    public boolean mayPrint() {
+    public boolean isLecturer() {
         if (user == null) {
             return false;
         } else {

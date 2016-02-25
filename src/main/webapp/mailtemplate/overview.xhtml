@@ -1,0 +1,49 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.mailtemplates']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li class="active">#{msg['common.mailtemplates']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <h:panelGroup class="btn-group main-buttons pull-right" type="block">
+                <h:link outcome="/mailtemplate/new" value="#{msg['mailtemplates.create']}" class="btn btn-primary">
+                    <f:param name="course-id" value="#{mailTemplateController.getCourseId()}"/>
+                </h:link>
+            </h:panelGroup>
+            <h1>#{msg['common.mailtemplates']}</h1>
+        </div>
+
+    	<p:dataTable var="template" value="#{mailTemplateController.getMailTemplateList()}">
+            <p:column headerText="#{msg['common.name']}">
+                #{template.name}
+            </p:column>
+            <p:column headerText="#{msg['mailtemplates.default']}">
+                #{template.isDefault}
+            </p:column>
+            <p:column styleClass="table-common-options-one">
+                <h:link outcome="/mailtemplate/edit" class="btn btn-default">
+                    <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
+                    <f:param name="mailtemplate-id" value="#{template.mailTemplateId}"/>
+                    <i class="fa fa-pencil"></i>
+                </h:link>
+                <p:commandButton action="#{mailTemplateController.remove(template)}"
+                        class="btn btn-default">
+                    <i class="icon-remove-sign"></i>
+                </p:commandButton>
+                <p:commandButton action="#{mailTemplateController.setDefaultTemplate(template)}"
+                        class="btn btn-default">
+                    <i class="icon-ok-sign"></i>
+                </p:commandButton>
+            </p:column>
+        </p:dataTable>
+    </ui:define>
+</ui:composition>

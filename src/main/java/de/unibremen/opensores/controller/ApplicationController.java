@@ -23,6 +23,7 @@ import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Upload;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
@@ -33,6 +34,8 @@ import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UploadService;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.service.MailTemplateService;
+import de.unibremen.opensores.controller.MailTemplateController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
@@ -231,6 +234,7 @@ public class ApplicationController {
         newUser.setLastName("User");
         newUser.setMatriculationNumber("123456");
         newUser.setLanguage("de");
+        newUser.setSalution("Frau Prof. Dr.");
         newUser.addRole(GlobalRole.USER);
 
         final User secondUser = new User();
@@ -330,11 +334,17 @@ public class ApplicationController {
 
         // Mail template for course
         MailTemplate mail = new MailTemplate();
+        mail.setName("Test Template");
         mail.setSubject("Durchgefallen");
-        mail.setText("ihr seid durchgefallen");
+        mail.setText("Test : {{salution}} {{firstName}} {{lastName}}"
+                + " {{paboGrade}} {{semester}} {{courseName}}"
+                + " {{#grades}} {{.}} {{/grades}}");
         mail.setLocale("de");
         mail.setCourse(course);
-        course.setEmailTemplate(mail);
+        mail.setIsDefault(true);
+        List<MailTemplate> templates = course.getEmailTemplates();
+        templates.add(mail);
+        course.setEmailTemplates(templates);
 
         //Students for course
         Student student = new Student();

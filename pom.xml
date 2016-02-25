@@ -23,6 +23,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.github.spullara.mustache.java</groupId>
+      <artifactId>compiler</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
       <version>5.3</version>

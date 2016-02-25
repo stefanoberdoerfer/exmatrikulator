@@ -79,6 +79,11 @@ public final class Constants {
     public static final String HTTP_PARAM_EXAM_ID = "exam-id";
 
     /**
+     * The http parameter key by which the mail template id gets passed.
+     */
+    public static final String HTTP_PARAM_MAILTEMPLATE_ID = "mailtemplate-id";
+
+    /**
      * The path to the course overview site.
      */
     public static final String PATH_TO_COURSE_OVERVIEW =

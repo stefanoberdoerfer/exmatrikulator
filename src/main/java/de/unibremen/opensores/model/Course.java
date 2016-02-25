@@ -62,9 +62,6 @@ public class Course {
     @Type(type = "date")
     private Date lastFinalization;
 
-    @OneToOne(mappedBy = "course", cascade = CascadeType.MERGE)
-    private MailTemplate emailTemplate;
-
     @Column
     private Integer minGroupSize;
 
@@ -88,6 +85,9 @@ public class Course {
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Exam> exams = new ArrayList<>();
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.MERGE, orphanRemoval = true)
+    private List<MailTemplate> emailTemplates = new ArrayList<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "semesterId")
@@ -340,12 +340,12 @@ public class Course {
         this.participationTypes = participationTypes;
     }
 
-    public MailTemplate getEmailTemplate() {
-        return emailTemplate;
+    public List<MailTemplate> getEmailTemplates() {
+        return emailTemplates;
     }
 
-    public void setEmailTemplate(MailTemplate emailTemplate) {
-        this.emailTemplate = emailTemplate;
+    public void setEmailTemplates(List<MailTemplate> emailTemplates) {
+        this.emailTemplates = emailTemplates;
     }
 
     public List<Exam> getExams() {
