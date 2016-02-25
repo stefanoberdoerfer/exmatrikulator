@@ -4,7 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog id="editUserDialog" header="#{msg['participants.edit']}" appendTo="@(body)" widgetVar="participantEdit" modal="true">
+    <p:dialog id="editUserDialog" header="#{msg['users.edit']}" appendTo="@(body)" widgetVar="userEdit" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
         <h:form>
             <p:panel id="editDlgPnl">
@@ -14,14 +14,14 @@
                         <div class="col-xs-4">
                             <h:inputText styleClass="form-control" id="editUserFirstname"
                                          h5:placeholder="#{msg['common.firstName']}" autofocus="autofocus"
-                                         value="#{userController.selectedUser.firstName}">
+                                         value="#{userOverviewController.selectedUser.firstName}">
                                 <f:validateLength minimum="#{EXcons.MIN_NAME_LENGTH}" maximum="#{EXcons.MAX_NAME_LENGTH}"/>
                             </h:inputText>
                         </div>
                         <div class="col-xs-4">
                             <h:inputText styleClass="form-control" id="editUserLastname"
                                          h5:placeholder="#{msg['common.lastName']}"
-                                         value="#{userController.selectedUser.lastName}">
+                                         value="#{userOverviewController.selectedUser.lastName}">
                                 <f:validateLength minimum="#{EXcons.MIN_NAME_LENGTH}" maximum="#{EXcons.MAX_NAME_LENGTH}"/>
                             </h:inputText>
                         </div>
@@ -30,8 +30,8 @@
                         <label for="editUserEmail" class="col-xs-3 control-label">#{msg['common.email']}</label>
                         <div class="col-xs-8">
                             <h:inputText styleClass="form-control" id="editUserEmail"
-                                         value="#{userController.selectedUser.email}"
-                                         validator="#{userController.validateEmail}"/>
+                                         value="#{userOverviewController.selectedUser.email}"
+                                         validator="#{userOverviewController.validateEmail}"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -43,18 +43,39 @@
                     </div>
                     <div class="form-group">
                         <label for="editUserRoles" class="col-xs-3 control-label">#{msg['common.globalRoles']}</label>
-                        <div class="col-xs-8">
+                        <div class="col-xs-8" id="editUserRoles">
+                            <div>
+                                <h:selectBooleanCheckbox
+                                        id="adminRole"
+                                        value="#{userOverviewController.globalRoleAdmin}"/>
+                                <h:outputLabel value="#{msg['common.admin']}"
+                                               for="adminRole" styleClass="col-xs-offset-1"/>
+                            </div>
+                            <div>
+                                <h:selectBooleanCheckbox
+                                        id="lecturerRole"
+                                        value="#{userOverviewController.globalRoleAdmin}"/>
+                                <h:outputLabel value="#{msg['common.lecturer']}"
+                                               for="lecturerRole" styleClass="col-xs-offset-1"/>
+                            </div>
+                            <div>
+                                <h:selectBooleanCheckbox
+                                        id="userRole"
+                                        value="#{userOverviewController.globalRoleAdmin}"/>
+                                <h:outputLabel value="#{msg['common.user']}"
+                                               for="userRole" styleClass="col-xs-offset-1"/>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">
-                        <p:button value="#{msg['common.close']}" type="button" onclick="return exModal(':participantEdit');"
+                        <p:button value="#{msg['common.close']}" type="button" onclick="return exModal(':userEdit');"
                                   styleClass="btn btn-default" />
                         <p:commandLink id="editUserButton"
-                                       action="#{userController.saveEditChanges}"
+                                       action="#{userOverviewController.saveEditChanges}"
                                        class="btn btn-primary" value="#{msg['common.saveChanges']}"
-                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':participantEdit')" />
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userEdit')" />
                     </div>
                 </div>
             </p:panel>

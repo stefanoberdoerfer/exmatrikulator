@@ -79,7 +79,7 @@ public class Student {
     private ParticipationType participationType;
 
     @ManyToMany(mappedBy = "uploaders")
-    private List<Upload> uploads;
+    private List<Upload> uploads = new ArrayList<>();
 
     @ManyToMany(mappedBy = "examinedStudents")
     private List<ExamEvent> examEvents = new ArrayList<>();

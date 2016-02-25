@@ -4,7 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-    <p:dialog header="#{msg['users.merge']}" appendTo="@(body)" widgetVar="userMerge" modal="true">
+    <p:dialog id="mergeUserDialog" header="#{msg['users.merge']}" appendTo="@(body)" widgetVar="userMerge" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
         <h:form>
             <div class="modal-body">
