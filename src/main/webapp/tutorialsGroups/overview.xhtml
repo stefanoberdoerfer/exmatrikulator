@@ -47,14 +47,16 @@
                           <i class="fa fa-calendar"/>
                       </h:link>
 
-                    <p:commandLink update=":editTutorialForm"
+                      <p:commandLink process="@this"
+                        update=":editTutorialForm"
                         oncomplete="return exModal('tutorialEdit');"
                         class="btn btn-default">
                       <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                       <i class="fa fa-pencil"></i>
                     </p:commandLink>
 
-                    <p:commandLink update=":removeTutorialForm"
+                    <p:commandLink process="@this"
+                        update=":removeTutorialForm"
                         oncomplete="return exModal('tutorialRemove');"
                         class="btn btn-danger">
                       <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
@@ -85,7 +87,7 @@
                   <td class="text-right">
                     <div class="btn-group">
                       <h:form>
-                        <p:commandLink
+                        <p:commandLink process="@this"
                             oncomplete="return exModal('studentRemove');"
                             class="btn btn-danger">
                           <f:actionListener binding="#{tutorialController.changeCurrentStudent(student.studentId)}" />
@@ -103,14 +105,15 @@
                     <strong>#{group.name}</strong>
                     <div class="btn-group pull-right">
                       <h:form>
-                        <p:commandLink update=":editGroupForm"
+                        <p:commandLink process="@this"
+                            update=":editGroupForm"
                             oncomplete="return exModal('groupEdit');"
                             class="btn btn-default">
                           <f:actionListener binding="#{tutorialController.changeCurrentGroup(group.groupId)}" />
                           <i class="fa fa-pencil"></i>
                         </p:commandLink>
 
-                        <p:commandLink
+                        <p:commandLink process="@this"
                             oncomplete="return exModal('groupRemove');"
                             class="btn btn-danger">
                           <f:actionListener binding="#{tutorialController.changeCurrentGroup(group.groupId)}" />
@@ -126,7 +129,7 @@
                   <td class="text-right">
                     <div class="btn-group">
                       <h:form>
-                        <p:commandLink
+                        <p:commandLink process="@this"
                             oncomplete="return exModal('studentRemove');"
                             class="btn btn-danger">
                           <f:actionListener binding="#{tutorialController.changeCurrentStudent(student.studentId)}" />
@@ -143,14 +146,16 @@
 
             <div class="table-groups-buttons btn-group">
               <h:form>
-                <p:commandLink value="#{msg['groups.add']}"
+                <p:commandLink process="@this"
+                    value="#{msg['groups.add']}"
                     oncomplete="return exModal('groupCreate');"
                     update=":createGroupForm"
                     class="btn btn-default">
                   <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                 </p:commandLink>
 
-                <p:commandLink value="#{msg['students.add']}"
+                <p:commandLink process="@this"
+                    value="#{msg['students.add']}"
                     oncomplete="return exModal('studentAdd');"
                     update=":addStudentForm"
                     class="btn btn-default">
