@@ -111,7 +111,7 @@
                                 <p:commandLink id="unregisterBtn"
                                                rendered="#{not examEventController.isDeadlineDue()}"
                                                value="#{msg['examEvent.unregister']}"
-                                               update="currentExamEventPnl studentSchedule"
+                                               update="@form"
                                                styleClass="btn btn-danger">
                                     <f:actionListener binding="#{examEventController.unregisterFromExamEvent()}"/>
                                 </p:commandLink>

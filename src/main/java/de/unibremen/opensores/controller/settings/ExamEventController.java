@@ -138,6 +138,7 @@ public class ExamEventController {
      */
     private boolean isUserLecturer;
 
+
     /**
      * The Student object of the logged in user if the user is a student.
      */
@@ -421,8 +422,8 @@ public class ExamEventController {
             studentUser = studentService.update(studentUser);
             studentExamEvent = examEventService.update(studentExamEvent);
             logStudentUnregisteredFromEvent(studentExamEvent);
+            examEventModel.updateEvent(studentExamEvent);
             studentExamEvent = null;
-
         } else {
             log.error("Called unregisterFromExamEvent() even though student is"
                     + " not registered.\nDoing nothing");
@@ -549,7 +550,6 @@ public class ExamEventController {
         log.debug("Max number of students int: " + event.getMaxNumStudents());
 
         if (value instanceof DualListModel<?>) {
-            log.debug("Value is instance of DualListModel: " + (value instanceof DualListModel<?>));
             ResourceBundle bundle = ResourceBundle.getBundle("messages",
                     FacesContext.getCurrentInstance().getViewRoot().getLocale());
 
