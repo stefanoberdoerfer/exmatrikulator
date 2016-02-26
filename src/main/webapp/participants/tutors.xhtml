@@ -67,7 +67,12 @@
                          var="tutor"
                          value="#{participantsController.course.undeletedTutors}"
                          filteredValue="#{participantsController.filteredPrivUsers}"
-                         emptyMessage="#{msg['participants.noPrivilegedUsers']}">
+                         emptyMessage="#{msg['participants.noPrivilegedUsers']}"
+                         paginator="true"
+                         paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="20,50,100">
                 <p:column headerText="#{msg['common.lastName']}"
                           sortBy="#{tutor.user.lastName}"
                           filterBy="#{tutor.user.lastName}"

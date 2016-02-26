@@ -26,7 +26,12 @@
         </div>
 
         <h:form id="backupListForm">
-          <p:dataTable var="backup" value="#{backupController.listBackups()}">
+          <p:dataTable var="backup" value="#{backupController.listBackups()}"
+                       paginator="true"
+                       paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                       rowsPerPageTemplate="20,50,100">
               <p:column headerText="#{msg['common.name']}"
                         styleClass="table-backups-name">
                   <h:outputText value="#{backup.name}"/>

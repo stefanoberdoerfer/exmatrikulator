@@ -68,7 +68,12 @@
                          var="student"
                          value="#{participantsController.course.unconfirmedAndUndeletedStudents}"
                          filteredValue="#{participantsController.filteredUnconfirmedStudents}"
-                         emptyMessage="#{msg['participants.noUnconfirmedStudents']}">
+                         emptyMessage="#{msg['participants.noUnconfirmedStudents']}"
+                         paginator="true"
+                         paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="20,50,100">
                 <p:column headerText="#{msg['common.lastName']}"
                           sortBy="#{student.user.lastName}"
                           filterBy="#{student.user.lastName}"

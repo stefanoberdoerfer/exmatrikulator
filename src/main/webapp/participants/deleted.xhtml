@@ -69,7 +69,12 @@
                          var="student"
                          value="#{participantsController.course.deletedStudents}"
                          filteredValue="#{participantsController.filteredDeletedStudents}"
-                         emptyMessage="#{msg['participants.noDeletedStudents']}">
+                         emptyMessage="#{msg['participants.noDeletedStudents']}"
+                         paginator="true"
+                         paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="20,50,100">
                 <p:column headerText="#{msg['common.lastName']}"
                           sortBy="#{student.user.lastName}"
                           filterBy="#{student.user.lastName}"
@@ -121,7 +126,12 @@
                          var="tutor"
                          value="#{participantsController.course.deletedTutors}"
                          filteredValue="#{participantsController.filteredDeletedPrivUsers}"
-                         emptyMessage="#{msg['participants.noDeletedPrivilegedUsers']}">
+                         emptyMessage="#{msg['participants.noDeletedPrivilegedUsers']}"
+                         paginator="true"
+                         paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="20,50,100">
                 <p:column headerText="#{msg['common.lastName']}"
                           sortBy="#{tutor.user.lastName}"
                           filterBy="#{tutor.user.lastName}"
