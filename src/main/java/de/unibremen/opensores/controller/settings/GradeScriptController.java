@@ -513,6 +513,7 @@ public class GradeScriptController {
                 allValidPaboGradesSet = false;
             } else {
                 entry.getKey().setPaboGrade(((PaboGrade) paboGradeObj).name());
+                entry.getKey().setPaboGradeFormula(script);
             }
         }
 
