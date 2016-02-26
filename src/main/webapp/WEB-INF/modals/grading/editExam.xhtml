@@ -3,7 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
     <p:dialog header="#{msg['gradings.edit']}" appendTo="@(body)" widgetVar="gradeEditExam" modal="true">
         <h:form id="gradeEditExamForm">
             <ui:include src="/WEB-INF/alerts.xhtml" />
@@ -89,13 +90,19 @@
                                    rendered="#{!gradingEditController.overwriting}" />
 
                     <p:commandLink action="#{gradingEditController.updateExamGrading()}"
+                                   id="gradeEditSubmitConfirm"
                                    class="btn btn-danger" value="#{msg['gradings.overwrite']}"
                                    update="gradeEditExamForm gradingForm"
                                    oncomplete="autofocusGradeInsert()"
                                    rendered="#{gradingEditController.overwriting}"
                                    type="button" />
 
-                    <p:defaultCommand target="gradeEditSubmit" />
+                    <c:if test="#{!gradingInsertController.overwriting}">
+                        <p:defaultCommand target="gradeEditSubmit" />
+                    </c:if>
+                    <c:if test="#{gradingInsertController.overwriting}">
+                        <p:defaultCommand target="gradeEditSubmitConfirm" />
+                    </c:if>
                 </div>
             </div>
         </h:form>

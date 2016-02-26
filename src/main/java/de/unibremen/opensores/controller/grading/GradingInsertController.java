@@ -51,6 +51,7 @@ public class GradingInsertController {
     private Long formExam;
     private Long formGroup;
     private String formStudent;
+    private String prevStudent;
     private String formGrading;
     private String formPrivateComment;
     private String formPublicComment;
@@ -401,9 +402,19 @@ public class GradingInsertController {
         log.debug("New grade type: " + formGradeType);
     }
 
+    /**
+     * Called whenever the user selection changes. Resets the overwriting flag
+     * only if the name really changed.
+     */
     public void userSelectionChanged() {
+        if (prevStudent != null && prevStudent.equals(formStudent)) {
+            log.debug("User selection did not really change");
+            return;
+        }
+
         log.debug("User selection changed");
         overwriting = false;
+        prevStudent = formStudent;
     }
 
     public void groupSelectionChanged() {
