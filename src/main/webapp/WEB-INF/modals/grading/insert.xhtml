@@ -16,7 +16,9 @@
                     <div class="col-xs-9" id="gradeExamination">
                         <h:selectOneMenu value="#{gradingInsertController.formExam}"
                                          styleClass="form-control">
-                            <f:selectItem itemValue="-1" itemLabel="#{msg['gradeType.paboGrade']}" />
+                            <c:if test="#{userController.isLecturer(gradingController.course)}">
+                                <f:selectItem itemValue="-1" itemLabel="#{msg['gradeType.paboGrade']}" />
+                            </c:if>
                             <f:selectItem itemValue="0" itemLabel="- - #{msg['common.pleaseSelect']} - -" />
                             <f:selectItems value="#{gradingController.course.exams}" var="exam"
                                            itemLabel="#{exam.name}" itemValue="#{exam.examId}" />
