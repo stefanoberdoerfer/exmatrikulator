@@ -15,6 +15,7 @@
                                 #{msg['users.mergeWith']} #{liveSearchController.selectedUser}"/></strong>
                         </div>
                         <h:outputText value="#{msg['users.merge.hint']}" />
+                        <br></br>
                         <p:inputText id="searchUser" h5:placeholder="#{msg['users.search']}" class="form-control"
                                      h5:autofocus="autofocus" value="#{liveSearchController.searchString}" >
                             <p:ajax event="keyup" listener="#{liveSearchController.searchForUsers}" process="@this"
@@ -49,6 +50,7 @@
                                    update=":usersform" />
                 </div>
             </div>
+            <p:blockUI block=":mergeUserDialog" trigger="mergeUserButton"/>
         </h:form>
     </p:dialog>
 </ui:composition>

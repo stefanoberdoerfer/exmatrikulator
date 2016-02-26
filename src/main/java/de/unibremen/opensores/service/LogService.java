@@ -2,6 +2,7 @@ package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.model.User;
 
 import javax.ejb.Stateless;
 import java.util.List;
@@ -31,6 +32,28 @@ public class LogService extends GenericService<Log> {
                + "l.courseId = :id "
                + "ORDER BY l.date DESC", Log.class)
                 .setParameter("id", course.getCourseId())
+                .getResultList();
+    }
+
+    /**
+     * Gets all the logs related to a user.
+     * @param user The user from which all logs should be queried.
+     * @return A list of all logs of the user, sorted by newest date.
+     *         The list is empty if the user has created no logs.
+     * @throws IllegalArgumentException If the user is null or has no user id.
+     *
+     */
+    public List<Log> getLogFromUser(User user) {
+        if (user == null || user.getUserId() == null) {
+            throw new IllegalArgumentException(
+                    "The user can't be null and must have a valid user id");
+        }
+        return em.createQuery(
+                "SELECT l "
+                        + "FROM Log l WHERE "
+                        + "l.loggedInUser.id = :id "
+                        + "ORDER BY l.date DESC", Log.class)
+                .setParameter("id", user.getUserId())
                 .getResultList();
     }
 

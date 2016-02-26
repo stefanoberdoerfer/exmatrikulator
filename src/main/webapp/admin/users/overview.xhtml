@@ -60,7 +60,7 @@
                 <h:outputText value="#{user.matriculationNumber}"/>
             </p:column>
             <p:column headerText="#{msg['common.roles']}" styleClass="table-users-type">
-                <h:outputText value="#{user.roles}"/>
+                <h:outputText value="#{userOverviewController.getNamesOfGlobalRoles(user.roles)}"/>
             </p:column>
             <p:column styleClass="table-common-options-four text-right">
                 <p:commandLink oncomplete="return exModal('userEdit');"

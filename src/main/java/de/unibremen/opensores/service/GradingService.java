@@ -643,6 +643,24 @@ public class GradingService extends GenericService<Grading> {
     }
 
     /**
+     * Returns a List of Gradings where the given user is corrector of.
+     * @param corrector User whose created gradings should be queried
+     * @return List of gradings with the given user as creator or empty list
+     */
+    public List<Grading> getGradingsByCorrector(User corrector) {
+        if (corrector == null || corrector.getUserId() == null) {
+            throw new IllegalArgumentException(
+                    "The corrector can't be null and must have a valid user id");
+        }
+        return em.createQuery("SELECT DISTINCT g "
+                        + "FROM Grading g "
+                        + "WHERE g.corrector.id = :uid",
+                Grading.class)
+                .setParameter("uid", corrector.getUserId())
+                .getResultList();
+    }
+
+    /**
      * Returns if a tutor may grade a student.
      * @param tutor Tutor who grades
      * @param student Student who should be graded

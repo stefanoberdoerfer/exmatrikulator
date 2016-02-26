@@ -2,6 +2,8 @@ package de.unibremen.opensores.controller.admin;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.GlobalRole;
+import de.unibremen.opensores.model.GradeFormula;
+import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.PasswordReset;
@@ -9,6 +11,8 @@ import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.GradeFormulaService;
+import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.LecturerService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.PrivilegedUserService;
@@ -29,13 +33,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 import javax.mail.MessagingException;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.annotation.XmlElementDecl;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The Backing Bean of the admin user overview of all system users.
@@ -88,6 +95,12 @@ public class UserOverviewController {
     private LecturerService lecturerService;
     private PrivilegedUserService privilegedUserService;
     private StudentService studentService;
+
+    /**
+     * Other Services needed for user merging.
+     */
+    private GradingService gradingService;
+    private GradeFormulaService gradeFormulaService;
 
     /**
      * The LogService for creating Exmatrikulator business domain logs.
@@ -238,6 +251,7 @@ public class UserOverviewController {
         selectedUser.setFirstName("Deleted");
         selectedUser.setLastName("User");
         selectedUser.setEmail(RandomStringUtils.randomAlphanumeric(10));
+        selectedUser.setPassword(null);
         selectedUser.setMatriculationNumber("XXXXXX");
         selectedUser.setProfileInfo("");
         selectedUser.setPassword(RandomStringUtils.randomAlphanumeric(10));
@@ -264,11 +278,12 @@ public class UserOverviewController {
             if (c.containsUser(selectedUser)) {
                 context.addMessage(null, new FacesMessage(FacesMessage
                         .SEVERITY_FATAL, bundle.getString("common.error"),
-                        bundle.getString("common.error")));
+                        bundle.getString("users.mergeError")));
                 return;
             }
         }
 
+        //Course-relations
         for (Course c : coursesOfOtherUser) {
             Lecturer lec = c.getLecturerFromUser(toBeMerged);
             PrivilegedUser priv = c.getPrivilegedUserFromUser(toBeMerged);
@@ -288,11 +303,52 @@ public class UserOverviewController {
             }
         }
 
-        //TODO: merge logs, gradings and gradeformulas
+        //gradings
+        for (Grading g : gradingService.getGradingsByCorrector(toBeMerged)) {
+            g.setCorrector(selectedUser);
+            gradingService.update(g);
+        }
+
+        //gradeformulas
+        for (GradeFormula g : gradeFormulaService.getFormulasByEditor(toBeMerged)) {
+            g.setEditor(selectedUser);
+            gradeFormulaService.update(g);
+        }
+
+        //logs
+        for (Log l : logService.getLogFromUser(toBeMerged)) {
+            l.setLoggedInUser(selectedUser);
+            logService.update(l);
+        }
 
         //delete other user
         selectedUser = toBeMerged;
         deleteUser();
+    }
+
+    /**
+     * Prints the localised list of the users globalRoles with given ids
+     * @param ids ID numbers of the users globalroles
+     * @return localised string version of that given roles list.
+     *         Can contain localised 'undefined' elements if a
+     *         roleID element is not defined
+     */
+    public String getNamesOfGlobalRoles(List<Integer> ids) {
+        return ids.stream()
+                .map(this::getNameOfGlobalRole)
+                .collect(Collectors.joining(", "));
+    }
+
+    private String getNameOfGlobalRole(int id) {
+        if (id == GlobalRole.ADMIN.getId()) {
+            return bundle.getString("common.admin");
+        } else if (id == GlobalRole.LECTURER.getId()) {
+            return bundle.getString("common.lecturer");
+        } else if (id == GlobalRole.USER.getId()) {
+            return bundle.getString("common.user");
+        } else {
+            return bundle.getString("common.undefined");
+        }
     }
 
     /**
@@ -378,8 +434,8 @@ public class UserOverviewController {
 
         if (selectedUser != null && selectedUser.getUserId() != null
                 && selectedUser.equals(userService.findByEmail(emailInput))) {
-            // In this case, the selected User gets edited and the email adress was
-            // not changed -> pass.
+            // In this case, the selected User gets edited and the email adress is
+            // not taken -> pass.
         } else if (userService.isEmailRegistered(emailInput)) {
             messages.add(new FacesMessage(bundle
                     .getString("registration.alreadyRegistered")));
@@ -474,6 +530,24 @@ public class UserOverviewController {
     @EJB
     public void setStudentService(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    /**
+     * Injects the gradingService.
+     * @param gradingService The gradingService to be injected.
+     */
+    @EJB
+    public void setGradingService(GradingService gradingService) {
+        this.gradingService = gradingService;
+    }
+
+    /**
+     * Injects the gradeFormulaService.
+     * @param gradeFormulaService The gradeFormulaService to be injected.
+     */
+    @EJB
+    public void setGradeFormulaService(GradeFormulaService gradeFormulaService) {
+        this.gradeFormulaService = gradeFormulaService;
     }
 
     /**
