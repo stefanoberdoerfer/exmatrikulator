@@ -2,12 +2,15 @@ package de.unibremen.opensores.model;
 
 import de.unibremen.opensores.model.PaboData;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -73,6 +76,14 @@ public class Student {
     @ManyToOne(optional = true)
     @JoinColumn(name = "groupId")
     private Group group;
+
+    /**
+     * The string of the grade formula which got used to set the pabo grade.
+     */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "CLOB")
+    private String paboGradeFormula;
 
     @ManyToOne
     @JoinColumn(name = "parttypeId")
@@ -263,5 +274,13 @@ public class Student {
 
     public void setExamEvents(List<ExamEvent> examEvents) {
         this.examEvents = examEvents;
+    }
+
+    public String getPaboGradeFormula() {
+        return paboGradeFormula;
+    }
+
+    public void setPaboGradeFormula(String paboGradeFormula) {
+        this.paboGradeFormula = paboGradeFormula;
     }
 }
