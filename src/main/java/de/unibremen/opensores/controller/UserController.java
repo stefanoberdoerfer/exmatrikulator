@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 /**
  * This class implements the Controller for managing the logged in user.
  *
+ * @author Sören Tempel
  * @author Stefan Oberdörfer
  * @author Kevin Scheck
  * @author Matthias Reichmann
@@ -98,7 +99,6 @@ public class UserController {
      */
     public boolean isPrivilegedUser(Course course) {
         Role role = courseRoles.get(course);
-
         if (role == null) {
             role = determineRole(course);
         }
@@ -114,7 +114,6 @@ public class UserController {
      */
     public boolean isLecturer(Course course) {
         Role role = courseRoles.get(course);
-
         if (role == null) {
             role = determineRole(course);
         }
@@ -130,7 +129,6 @@ public class UserController {
      */
     public boolean isStudent(Course course) {
         Role role = courseRoles.get(course);
-
         if (role == null) {
             role = determineRole(course);
         }
@@ -175,7 +173,7 @@ public class UserController {
      */
     public String saveUser() {
         user = userService.update(user);
-        return "profile.xhtml";
+        return "/profile/show.xhtml?faces-redirect=true";
     }
 
     /**

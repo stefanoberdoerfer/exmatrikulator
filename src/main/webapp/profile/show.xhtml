@@ -5,7 +5,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
   <!-- Define Params -->
-  <ui:param name="pageTitle" value="Veranstaltungsübersicht" />
+  <ui:param name="pageTitle" value="#{msg['common.myProfile']}" />
   <!-- Breadcrumbs -->
   <ui:define name="breadcrumbs">
     <li class="active">"#{msg['settings.myData']}"</li>
@@ -16,20 +16,16 @@
         <div class="btn-group main-buttons pull-right">
           <h:link value="#{msg['settings.edit']}" outcome="/profile/edit" class="btn btn-default" />
         </div>
-        <h1>#{userController.user.firstName} #{userController.user.lastName}</h1>
+        <h1>#{userController.user}</h1>
     </div>
 
-    <dl class="dl-horizontal">
-        <dt>#{msg['common.studentNumber']}</dt>
-        <dd>TODO</dd>
-    </dl>
     <dl class="dl-horizontal">
         <dt>#{msg['common.email']}</dt>
         <dd>#{userController.user.email}</dd>
     </dl>
     <dl class="dl-horizontal">
-      <dt>#{msg['common.phone']}</dt>
-        <dd>TODO</dd>
+        <dt>#{msg['common.phone']}</dt>
+        <dd>#{userController.user.phoneNumber}</dd>
     </dl>
     <dl class="dl-horizontal">
         <dt>#{msg['common.description']}</dt>
