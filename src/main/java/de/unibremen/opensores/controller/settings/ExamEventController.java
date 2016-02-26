@@ -246,6 +246,8 @@ public class ExamEventController {
             }
         }
 
+
+        log.debug("Student user is: " + studentUser);
         if (studentUser != null) {
             studentExamEvent = getExamEventFromStudent(studentUser);
         }
@@ -378,6 +380,7 @@ public class ExamEventController {
      * registered to an event of the exam yet.
      */
     public void registerToExamEvent() {
+        log.debug("registerToExamEvent() called ");
         if (!isUserStudent()) {
             log.error("RegisterToExamEvent called but user is not a student.\n Doing nothing.");
             return;
@@ -391,14 +394,12 @@ public class ExamEventController {
                     + "registered to an event of this exam. \n Doing nothing.");
             return;
         }
-
         event.getExaminedStudents().add(studentUser);
         studentUser.getExamEvents().add(event);
-        updateExamEvents();
         studentUser = studentService.update(studentUser);
+        event = examEventService.update(event);
         studentExamEvent = event;
         logStudentRegisteredToEvent(event);
-        event = createDefaultEvent();
     }
 
     /**
@@ -407,18 +408,21 @@ public class ExamEventController {
      * to the selected event.
      */
     public void unregisterFromExamEvent() {
-        if (!isUserStudent()) {
-            log.error("RegisterToExamEvent called but user is not a student.\nDoing nothing.");
+        log.debug("unregisterFromExamEvent() called");
+        if (!isUserStudent() || studentExamEvent == null) {
+            log.error("RegisterToExamEvent called but user is not a student "
+                    + "or studentExam is null.\nDoing nothing.");
             return;
         }
-        if (event.getExaminedStudents().contains(studentUser)) {
-            event.getExaminedStudents().remove(studentUser);
-            studentUser.getExamEvents().remove(event);
-            updateExamEvents();
+        if (studentExamEvent.getExaminedStudents().contains(studentUser)) {
+            log.debug("studentExamEvent descr: " + studentExamEvent.getDescription());
+            studentExamEvent.getExaminedStudents().remove(studentUser);
+            studentUser.getExamEvents().remove(studentExamEvent);
             studentUser = studentService.update(studentUser);
+            studentExamEvent = examEventService.update(studentExamEvent);
+            logStudentUnregisteredFromEvent(studentExamEvent);
             studentExamEvent = null;
-            logStudentUnregisteredFromEvent(event);
-            event = createDefaultEvent();
+
         } else {
             log.error("Called unregisterFromExamEvent() even though student is"
                     + " not registered.\nDoing nothing");

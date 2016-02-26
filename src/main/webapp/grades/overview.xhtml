@@ -30,6 +30,9 @@
                 <th>
                     #{msg['common.comment']}
                 </th>
+                <th>
+                    #{msg['examEvent.events']}
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -43,13 +46,26 @@
                 <td>
                     #{gradesController.student.publicComment}
                 </td>
+                <td>
+
+                </td>
             </tr>
             <ui:repeat value="#{gradesController.course.exams}" var="exam">
                 <tr class="vert-align-middle">
                     <td>#{exam.name}</td>
                     <td>#{gradesController.studentGradings.get(exam.examId).grade.value}</td>
                     <td>#{gradesController.studentGradings.get(exam.examId).publicComment}</td>
+                    <td>
+                        <h:link styleClass="btn btn-default"
+                                outcome="/settings/exams/events"
+                                rendered="#{exam.withAttendance}">
+                            <f:param name="course-id" value="#{gradesController.course.courseId}"/>
+                            <f:param name="exam-id" value="#{exam.examId}"/>
+                            <i class="fa fa-calendar"/>
+                        </h:link>
+                    </td>
                 </tr>
+
             </ui:repeat>
             </tbody>
         </table>
