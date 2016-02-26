@@ -73,6 +73,13 @@ public class PrivilegedUser {
                 : super.hashCode();
     }
 
+    public Long getPrivUserId() {
+        return privUserId;
+    }
+
+    public void setPrivUserId(Long privUserId) {
+        this.privUserId = privUserId;
+    }
 
     public boolean hasPrivilege(Privilege priv) {
         return privileges.contains(priv.getId());
