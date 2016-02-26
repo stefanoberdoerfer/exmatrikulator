@@ -148,11 +148,6 @@ public class ExamEventController {
      */
     private ExamEvent studentExamEvent;
 
-    /**
-     * Boolean value which checks if a student is registered to any examEvent
-     * of this exam. Is not used when the logged in user is not a student.
-     */
-    private boolean studentRegisteredToExam;
 
     /**
      * The old start date of a selected event.
@@ -249,6 +244,10 @@ public class ExamEventController {
                 log.fatal("Could not redirect to " + Constants.PATH_TO_COURSE_OVERVIEW);
                 return;
             }
+        }
+
+        if (studentUser != null) {
+            studentExamEvent = getExamEventFromStudent(studentUser);
         }
 
         if (examEventModel == null) {
@@ -387,7 +386,7 @@ public class ExamEventController {
             log.error("RegisterToExamEvent called but the event is full. \n Doing nothing.");
             return;
         }
-        if (studentRegisteredToExam) {
+        if (studentExamEvent != null) {
             log.error("RegisterToExamEvent called but student is already "
                     + "registered to an event of this exam. \n Doing nothing.");
             return;
@@ -397,7 +396,7 @@ public class ExamEventController {
         studentUser.getExamEvents().add(event);
         updateExamEvents();
         studentUser = studentService.update(studentUser);
-        studentRegisteredToExam = true;
+        studentExamEvent = event;
         logStudentRegisteredToEvent(event);
         event = createDefaultEvent();
     }
@@ -417,7 +416,7 @@ public class ExamEventController {
             studentUser.getExamEvents().remove(event);
             updateExamEvents();
             studentUser = studentService.update(studentUser);
-            studentRegisteredToExam = false;
+            studentExamEvent = null;
             logStudentUnregisteredFromEvent(event);
             event = createDefaultEvent();
         } else {
@@ -447,6 +446,15 @@ public class ExamEventController {
                 && (event.getId() == null
                 || loggedInUser.equals(event.getExaminer().getUser()));
         return canUserEditEvents;
+    }
+
+    /**
+     * Boolean whether the currently logged in user is logged is registered to
+     * the current exam.
+     * @return True if the student user is registered to an exam, false otherwise.
+     */
+    public boolean isStudentRegisteredToExam() {
+        return studentUser != null && studentExamEvent != null;
     }
 
     /**
@@ -510,19 +518,19 @@ public class ExamEventController {
     public List<Student> getStudentsWithoutEvents() {
         log.debug("getStudentsWithoutEvents() has been called");
         return course.getStudents().stream().filter(
-                student ->
-                {
-                    for (ExamEvent event : student.getExamEvents()) {
-                        if (event.getExam().equals(exam)) {
-                            log.debug("Student is " + student.getUser()
-                                    + " is registered to an exam event");
-                            return false;
-                        }
+            student ->
+            {
+                for (ExamEvent event : student.getExamEvents()) {
+                    if (event.getExam().equals(exam)) {
+                        log.debug("Student is " + student.getUser()
+                                + " is registered to an exam event");
+                        return false;
                     }
-                    log.debug("Student is " + student.getUser()
-                            + " is not registered to an exam event");
-                    return true;
-                }).collect(Collectors.toList());
+                }
+                log.debug("Student is " + student.getUser()
+                        + " is not registered to an exam event");
+                return true;
+            }).collect(Collectors.toList());
     }
 
     /**
@@ -680,7 +688,18 @@ public class ExamEventController {
         }
     }
 
-    //TODO private Method Student registered?
+    /**
+     * Gets the examEvent of the current exam to which the user is registered.
+     */
+    private ExamEvent getExamEventFromStudent(Student student) {
+        for (ExamEvent examEvent: exam.getEvents()) {
+            if (examEvent.getExaminedStudents().contains(student)) {
+                return examEvent;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Adds a fail message to the FacesContext.

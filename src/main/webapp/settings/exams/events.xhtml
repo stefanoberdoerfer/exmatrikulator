@@ -230,6 +230,7 @@
                     <div class="btn-group pull-left">
                         <p:commandLink value="#{msg['common.cancel']}" styleClass="btn btn-default"
                                        process="@this" oncomplete="PF('examEventDialog').hide();"/>
+
                         <p:commandLink id="removeBtn" value="#{msg['common.remove']}" styleClass="btn btn-danger"
                                        rendered="#{examEventController.canUserEditEvent()
                                         and examEventController.event.id != null}"
