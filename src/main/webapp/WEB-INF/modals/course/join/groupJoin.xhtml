@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['courses.join']}" appendTo="@(body)" widgetVar="courseGroupJoin" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <h:form id="groupJoinModalForm">
+        <div class="modal-body">
+            <p>#{msg['courses.join.asGroup']}</p>
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <p:dataTable var="user" value="#{liveSearchController.selectedUsers}" scrollable="true"
+                                 scrollHeight="100" styleClass="table table-hover table-courses-overview"
+                                 id="selectedList" columnClasses="responsive,responsive,table-common-options-one">
+                        <p:column headerText="#{msg['common.name']}">
+                            <h:outputText value="#{user}" />
+                        </p:column>
+                        <p:column headerText="#{msg['common.email']}">
+                            <h:outputText value="#{user.email}" />
+                        </p:column>
+                        <p:column>
+                            <p:commandLink class="btn btn-danger">
+                                <i class="fa fa-remove"></i>
+                                <p:ajax listener="#{liveSearchController.removeUser(user)}"
+                                        update=":groupJoinModalForm:selectedList"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <p:inputText id="searchUser" h5:placeholder="#{msg['users.search']}" class="form-control"
+                                 h5:autofocus="autofocus" value="#{liveSearchController.searchString}" >
+                        <p:ajax event="keyup" listener="#{liveSearchController.searchForUsers}" process="@this"
+                                update="resultList"/>
+                    </p:inputText>
+                    <p:defaultCommand target="searchUser"/>
+                    <h:dataTable id="resultList" value="#{liveSearchController.userResultList}"
+                                 var="foundUser" styleClass="table"
+                                 columnClasses="responsive, table-common-options-one">
+                        <h:column>
+                            #{foundUser}
+                        </h:column>
+                        <h:column>
+                            <p:commandLink class="btn btn-default">
+                                <i class="fa fa-dot-circle-o"></i>
+                                <p:ajax listener="#{liveSearchController.addUser(foundUser)}"
+                                        update=":groupJoinModalForm"/>
+                            </p:commandLink>
+                        </h:column>
+                    </h:dataTable>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.close']}" type="button"
+                                 onclick="return exModal(':courseGroupJoin');" styleClass="btn btn-default" />
+                <p:commandButton action="#{courseOverviewController.joinAsGroup(liveSearchController.selectedUsers)}"
+                                 class="btn btn-primary" value="#{msg['common.continue']}"
+                                 onsuccess="return exModal(':courseGroupJoin','courseJoinType');"
+                                 update=":partTypeModalForm">
+                </p:commandButton>
+            </div>
+        </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>

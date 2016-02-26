@@ -81,9 +81,9 @@ public class CourseOverviewController {
     private long chosenPartTypeId;
 
     /**
-     * Newly to be created student for joining a course.
+     * Newly to be created students for joining a course.
      */
-    private Student newStudent;
+    private List<Student> newStudents;
 
     /**
      * The logged in user.
@@ -106,6 +106,8 @@ public class CourseOverviewController {
 
         loggedInUser = (User) FacesContext.getCurrentInstance().getExternalContext()
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
+
+        newStudents = new ArrayList<>();
     }
 
     /**
@@ -209,34 +211,49 @@ public class CourseOverviewController {
     public void courseSelected(Course course) {
         log.debug("courseSelected: " + course.getName());
         selectedCourse = course;
+        Student stud = joinCourse(course,loggedInUser);
+        if (stud != null) {
+            newStudents.add(stud);
+        }
+    }
+
+    /**
+     * Logic to make the given user join the given course. If the user
+     * has been a student in this course before his participation is restored.
+     * @param course Course to join
+     * @param user User to participate in the course
+     * @return Newly created or restored Student object
+     */
+    private Student joinCourse(Course course, User user) {
         boolean deletedStudent = false;
 
-        Student stud = courseService.findStudent(selectedCourse,loggedInUser);
+        Student stud = courseService.findStudent(course,user);
         if (stud != null) {
             if (stud.isDeleted()) {
                 log.debug("User has already been a student");
-                newStudent = stud;
                 deletedStudent = true;
             } else {
                 //non deleted student found
-                return;
+                return null;
             }
         } else {
             log.debug("Creating new student");
-            newStudent = new Student();
-            newStudent.setUser(loggedInUser);
-            newStudent.setCourse(selectedCourse);
-            newStudent.setTries(0);
+            stud = new Student();
+            stud.setUser(user);
+            stud.setCourse(course);
+            stud.setTries(0);
         }
 
-        newStudent.setConfirmed(!selectedCourse.getRequiresConfirmation());
-        newStudent.setAcceptedInvitation(true);
-        newStudent.setDeleted(false);
-        newStudent.setParticipationType(selectedCourse.getDefaultParticipationType());
+        stud.setConfirmed(!course.getRequiresConfirmation());
+        stud.setAcceptedInvitation(true);
+        stud.setDeleted(false);
+        stud.setParticipationType(course.getDefaultParticipationType());
 
         if (!deletedStudent) {
-            selectedCourse.getStudents().add(newStudent);
+            course.getStudents().add(stud);
         }
+
+        return stud;
     }
 
     /**
@@ -252,20 +269,41 @@ public class CourseOverviewController {
             }
         }
         if (partType == null) {
+            log.debug("parttype is null");
             return;
         }
 
         log.debug("parttypeSelected: " + partType.getName());
 
-        newStudent.setParticipationType(partType);
-
-        logUserJoinedCourse(partType);
+        for (Student s : newStudents) {
+            s.setParticipationType(partType);
+            logUserJoinedCourse(partType,s.getUser());
+        }
 
         courseService.update(selectedCourse);
         selectedCourse = null;
+        newStudents = new ArrayList<>();
         chosenPartTypeId = 0;
         log.debug("Course updated with new user as student");
         userController.updateUserCourses();
+    }
+
+    /**
+     * Method which gets called when the user chooses to let multiple users
+     * join the course. All members will join it immediately with the default
+     * participation type, but this can be changed in the next dialog.
+     * Nothing in the database is updated in this step.
+     * If one user is already a student in this course then
+     * his participation gets restored and set to 'not confirmed'.
+     * @param groupUsers Users to join a course
+     */
+    public void joinAsGroup(List<User> groupUsers) {
+        for (User u : groupUsers) {
+            Student stud = joinCourse(selectedCourse,u);
+            if (stud != null) {
+                newStudents.add(stud);
+            }
+        }
     }
 
     /**
@@ -273,15 +311,16 @@ public class CourseOverviewController {
      * The log text is different for the cases if the selected Course requires the student
      * to be confirmed or not.
      * @param pt Chosen participationtype
+     * @param user User who joined the course
      */
-    private void logUserJoinedCourse(ParticipationType pt) {
+    private void logUserJoinedCourse(ParticipationType pt, User user) {
         String description;
         if (selectedCourse.getRequiresConfirmation()) {
-            description = "User " + loggedInUser + " wants to join the course "
+            description = "User " + user + " wants to join the course "
                     + selectedCourse.getName() + " with participationtype: "
                     + pt.getName() + ". Awaits confirmation.";
         } else {
-            description = "User " + loggedInUser + " joined the course " + selectedCourse.getName()
+            description = "User " + user + " joined the course " + selectedCourse.getName()
                     + " with participatontype: " + pt.getName() + ".";
         }
         logService.persist(Log.from(loggedInUser,selectedCourse.getCourseId(),description));
