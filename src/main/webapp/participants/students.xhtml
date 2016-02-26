@@ -74,14 +74,18 @@
                           filterBy="#{student.user.lastName}"
                           filterMatchMode="contains"
                           styleClass="table-users-lastname">
-                    <h:outputText value="#{student.user.lastName}"/>
+                    <h:link outcome="/profile/show.xhtml" value="#{student.user.lastName}">
+                      <f:param name="user-id" value="#{student.user.userId}" />
+                    </h:link>
                 </p:column>
                 <p:column headerText="#{msg['common.firstName']}"
                           sortBy="#{student.user.firstName}"
                           filterBy="#{student.user.firstName}"
                           filterMatchMode="contains"
                           styleClass="table-users-firstname">
-                    <h:outputText value="#{student.user.firstName}"/>
+                    <h:link outcome="/profile/show.xhtml" value="#{student.user.firstName}">
+                      <f:param name="user-id" value="#{student.user.userId}" />
+                    </h:link>
                 </p:column>
                 <p:column headerText="#{msg['common.email']}"
                           sortBy="#{student.user.email}"
@@ -131,7 +135,7 @@
                     <h:link outcome="/certificate/printview" styleClass="btn btn-default" rendered="#{participantsController.mayPrint()}">
                         <f:param name="course-id" value="#{student.course.courseId}"/>
                         <f:param name="student-id" value="#{student.studentId}"/>
-			            <i class="fa fa-print"></i>
+                        <i class="fa fa-print"></i>
                     </h:link>
                 </p:column>
             </p:dataTable>
