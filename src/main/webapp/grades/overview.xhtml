@@ -38,10 +38,13 @@
                     <strong>#{msg['gradeType.paboGrade']}</strong>
                 </td>
                 <td>
+                    <ui:fragment rendered="#{gradesController.course.lastFinalization != null}">
                     <strong>#{gradesController.getPaboGradeName(gradesController.student.paboGrade)}</strong>
+                    </ui:fragment>
                 </td>
                 <td>
-                    #{gradesController.student.publicComment}
+                    <h:outputText value="#{gradesController.student.publicComment}"
+                                  rendered="#{gradesController.course.lastFinalization != null}" />
                 </td>
             </tr>
             <ui:repeat value="#{gradesController.course.exams}" var="exam">
