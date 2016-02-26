@@ -132,7 +132,6 @@ public class TutorialEventController {
      */
     private SimpleDateFormat dateFormatter;
 
-
     /**
      * Initialises the bean and gets the related tutorial.
      */
@@ -198,6 +197,7 @@ public class TutorialEventController {
 
         dateFormatter = new SimpleDateFormat("dd.MM.yyyy' 'HH:mm");
         dateFormatter.setTimeZone(TimeZone.getTimeZone(Constants.SYSTEM_TIMEZONE));
+
     }
 
     /**
@@ -266,6 +266,14 @@ public class TutorialEventController {
                 (Date) selectEvent.getObject());
     }
 
+
+    /**
+     * Method triggered when a dialog is cancelled.
+     */
+    public void onDialogCancel() {
+        log.debug("onDialogCancel() called");
+    }
+
     /**
      * Gets the current locale string.
      * @return The current locale string.
@@ -307,8 +315,6 @@ public class TutorialEventController {
             throw new ValidatorException(messages);
         }
     }
-
-
 
 
 
@@ -473,7 +479,6 @@ public class TutorialEventController {
                 //TODO Change here if lecturer can also edit other events
                 && (event.getId() == null
                 || loggedInUser.getUserId() == event.getCreatorId());
-        log.debug("canUserEditEvent() called, returns: " + canUserEditEvents);
         return canUserEditEvents;
     }
 

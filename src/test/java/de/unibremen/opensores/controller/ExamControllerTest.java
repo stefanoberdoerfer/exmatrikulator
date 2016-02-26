@@ -10,9 +10,10 @@ import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.ExamService;
 import de.unibremen.opensores.service.GradingService;
 import de.unibremen.opensores.service.LogService;
+
 import de.unibremen.opensores.testutil.ContextMocker;
-import de.unibremen.opensores.testutil.MockHelper;
 import de.unibremen.opensores.testutil.DataHelper;
+import de.unibremen.opensores.testutil.MockHelper;
 import de.unibremen.opensores.util.Constants;
 import org.junit.After;
 import org.junit.Before;
@@ -284,36 +285,6 @@ public class ExamControllerTest {
         verify(gradingServiceMock, times(1)).deleteAllGradingsFromExam(exam);
     }
 
-    /**
-     * Tests if the method for deadline validation throws an validation exception
-     * if the deadline is in the past.
-     */
-    @Test(expected = ValidatorException.class)
-    public void testValidateDeadLineTooEarly() {
-        Date tooEarlyDeadline = new Calendar.Builder()
-                .setDate(2000,01,01).build().getTime();
-        examController.validateDeadline(contextMock, uiComponentMock, tooEarlyDeadline);
-    }
-
-    /**
-     * Tests if the method for deadline validation throws an validation exception
-     * if the deadline is null
-     */
-    @Test(expected = ValidatorException.class)
-    public void testValidateDeadLineIsNull() {
-        examController.validateDeadline(contextMock, uiComponentMock, null);
-    }
-
-    /**
-     * Tests if the method for deadline validation with a correct deadline in
-     * the future.
-     */
-    @Test
-    public void testValidateDeadLine() {
-        Date doomsDay = new Calendar.Builder()
-                .setDate(2016,03,06).build().getTime();
-        examController.validateDeadline(contextMock, uiComponentMock, doomsDay);
-    }
 
     /**
      * Tests if the method for deadline validation throws an validation exception
@@ -444,7 +415,7 @@ public class ExamControllerTest {
 
     /**
      * Checks if the exam deletion name validation throws an ValidatorException
-     * if the checked string input is null
+     * if the checked string input is null.
      */
     @Test(expected = ValidatorException.class)
     public void testValidateExamDeletionNameNullParam() {

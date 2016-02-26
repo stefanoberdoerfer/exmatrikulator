@@ -10,6 +10,7 @@ import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.ExamEventService;
 import de.unibremen.opensores.service.ExamService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.PrivilegedUserService;
@@ -21,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleModel;
+import org.primefaces.model.DualListModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 
@@ -41,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -84,6 +87,11 @@ public class ExamEventController {
      * The ExamService for database transactions related to exams.
      */
     private ExamService examService;
+
+    /**
+     * The ExamEventService for database transactions related to eaxmEvent.
+     */
+    private ExamEventService examEventService;
 
     /**
      * The schedule model used by PrimeFaces for managing exam events.
@@ -130,16 +138,17 @@ public class ExamEventController {
      */
     private boolean isUserLecturer;
 
+
     /**
      * The Student object of the logged in user if the user is a student.
      */
     private Student studentUser;
 
     /**
-     * Boolean value which checks if a student is registered to any examEvent
-     * of this exam. Is not used when the logged in user is not a student.
+     * The exam event to which the logged in user is registered to as student.
      */
-    private boolean studentRegisteredToExam;
+    private ExamEvent studentExamEvent;
+
 
     /**
      * The old start date of a selected event.
@@ -156,6 +165,18 @@ public class ExamEventController {
      */
     private SimpleDateFormat dateFormatter;
 
+    /**
+     * A dual list for picking not already registered students for this exam to
+     * an exam event. Used by the PrimeFaces pickList;
+     */
+    private DualListModel<Student> studentDualList;
+
+    /**
+     * String of the course id.
+     */
+    private String courseIdStr;
+
+
     /*
      * Public methods
      */
@@ -169,8 +190,8 @@ public class ExamEventController {
         HttpServletRequest req =
                 (HttpServletRequest) FacesContext.getCurrentInstance()
                         .getExternalContext().getRequest();
-        course = courseService.findCourseById(
-                req.getParameter(Constants.HTTP_PARAM_COURSE_ID));
+        courseIdStr = req.getParameter(Constants.HTTP_PARAM_COURSE_ID);
+        course = courseService.findCourseById(courseIdStr);
         exam = examService.findExamById(
                 req.getParameter(Constants.HTTP_PARAM_EXAM_ID));
         log.debug("Course: " + course);
@@ -226,6 +247,12 @@ public class ExamEventController {
             }
         }
 
+
+        log.debug("Student user is: " + studentUser);
+        if (studentUser != null) {
+            studentExamEvent = getExamEventFromStudent(studentUser);
+        }
+
         if (examEventModel == null) {
             log.debug("examEventModel gets created");
             examEventModel = new DefaultScheduleModel();
@@ -244,8 +271,14 @@ public class ExamEventController {
         event = (ExamEvent) selectEvent.getObject();
         oldEventStartDate = event.getStartDate();
         oldEventEndDate = event.getEndDate();
-    }
 
+        if (canUserEditEvent()) {
+            course = courseService.findCourseById(courseIdStr);
+            studentDualList = new DualListModel<>(
+                    getStudentsWithoutEvents(),
+                    event.getExaminedStudents());
+        }
+    }
 
 
     /**
@@ -257,8 +290,21 @@ public class ExamEventController {
         event = new ExamEvent(exam,
                 (Date) selectEvent.getObject(),
                 (Date) selectEvent.getObject());
+        if (canUserEditEvent()) {
+            course = courseService.findCourseById(courseIdStr);
+            studentDualList = new DualListModel<>(
+                    getStudentsWithoutEvents(),
+                    event.getExaminedStudents());
+        }
     }
 
+
+    /**
+     * Updates the exam with its new deadline.
+     */
+    public void updateDeadLine() {
+        exam = examService.update(exam);
+    }
 
     /**
      * Adds a new event to the exam event.
@@ -266,16 +312,34 @@ public class ExamEventController {
      */
     public void addEvent(ActionEvent actionEvent) {
         log.debug("addEvent called with " + actionEvent);
+        log.debug("Size of registered students exceeds max num student integer");
+        log.debug("Student List size: " + studentDualList.getTarget().size());
+        log.debug("Max number of students int: " + event.getMaxNumStudents());
+
         if (event.getId() == null) {
+            updateExaminedStudentsFromDualList();
+            event = examEventService.persist(event);
             examEventModel.addEvent(event);
             log.debug("Event gets added");
             logEventCreated(event);
         } else {
+            updateExaminedStudentsFromDualList();;
             examEventModel.updateEvent(event);
             log.debug("Event gets updated");
-            if (event.getStartDate() != oldEventStartDate
-                    || event.getEndDate() != oldEventEndDate) {
+
+            if ((oldEventEndDate != null && oldEventStartDate != null)
+                    && (!event.getStartDate().equals(oldEventStartDate)
+                    || !event.getEndDate().equals(oldEventEndDate))) {
                 log.debug("The event dates have changed");
+                log.debug("Curr. event start date: \t" + event.getStartDate());
+                log.debug("Old event start date: \t" + oldEventStartDate);
+                log.debug("Current event end date: \t" + event.getEndDate());
+                log.debug("Old event end date: \t" + oldEventEndDate);
+
+                log.debug("(Long) Curr. event start date: \t" + event.getStartDate().getTime());
+                log.debug("(Long) Old event start date: \t" + oldEventStartDate.getTime());
+                log.debug("(Long) Current event end date: \t" + event.getEndDate().getTime());
+                log.debug("(Long) Old event end date: \t" + oldEventEndDate.getTime());
                 logEventMoved(event);
                 mailEventMoved(event, oldEventStartDate, oldEventEndDate);
             } else {
@@ -292,21 +356,19 @@ public class ExamEventController {
      */
     public void removeEvent(ActionEvent actionEvent) {
         log.debug("removeEvent called with " + actionEvent);
-        if (event.getId() == null) {
-            log.debug("The PrimeFaces string id of the event is null");
-        } else if (examEventModel.getEvents().contains(event)) {
+        if (examEventModel.getEvents().contains(event)) {
             log.debug("Removing the event from the EventModel");
-
-            examEventModel.deleteEvent(event);
             PrivilegedUser examiner = event.getExaminer();
             examiner.getExamEvents().remove(event);
             privilegedUserService.update(examiner);
 
-            List<Student> oldGradedStudents = event.getExaminedStudents();
-            for (Student student: oldGradedStudents) {
+            List<Student> oldExaminedStudents = event.getExaminedStudents();
+            for (Student student: oldExaminedStudents) {
                 student.getExamEvents().remove(event);
-                studentService.update(student);
             }
+            event.getExaminedStudents().clear();
+            studentService.update(oldExaminedStudents);
+            examEventModel.deleteEvent(event);
             logEventRemoved(event);
         }
         updateExamEvents();
@@ -319,6 +381,7 @@ public class ExamEventController {
      * registered to an event of the exam yet.
      */
     public void registerToExamEvent() {
+        log.debug("registerToExamEvent() called ");
         if (!isUserStudent()) {
             log.error("RegisterToExamEvent called but user is not a student.\n Doing nothing.");
             return;
@@ -327,19 +390,17 @@ public class ExamEventController {
             log.error("RegisterToExamEvent called but the event is full. \n Doing nothing.");
             return;
         }
-        if (studentRegisteredToExam) {
+        if (studentExamEvent != null) {
             log.error("RegisterToExamEvent called but student is already "
                     + "registered to an event of this exam. \n Doing nothing.");
             return;
         }
-
         event.getExaminedStudents().add(studentUser);
         studentUser.getExamEvents().add(event);
-        updateExamEvents();
         studentUser = studentService.update(studentUser);
-        studentRegisteredToExam = true;
+        event = examEventService.update(event);
+        studentExamEvent = event;
         logStudentRegisteredToEvent(event);
-        event = createDefaultEvent();
     }
 
     /**
@@ -348,18 +409,21 @@ public class ExamEventController {
      * to the selected event.
      */
     public void unregisterFromExamEvent() {
-        if (!isUserStudent()) {
-            log.error("RegisterToExamEvent called but user is not a student.\nDoing nothing.");
+        log.debug("unregisterFromExamEvent() called");
+        if (!isUserStudent() || studentExamEvent == null) {
+            log.error("RegisterToExamEvent called but user is not a student "
+                    + "or studentExam is null.\nDoing nothing.");
             return;
         }
-        if (event.getExaminedStudents().contains(studentUser)) {
-            event.getExaminedStudents().remove(studentUser);
-            studentUser.getExamEvents().remove(event);
-            updateExamEvents();
+        if (studentExamEvent.getExaminedStudents().contains(studentUser)) {
+            log.debug("studentExamEvent descr: " + studentExamEvent.getDescription());
+            studentExamEvent.getExaminedStudents().remove(studentUser);
+            studentUser.getExamEvents().remove(studentExamEvent);
             studentUser = studentService.update(studentUser);
-            studentRegisteredToExam = false;
-            logStudentUnregisteredFromEvent(event);
-            event = createDefaultEvent();
+            studentExamEvent = examEventService.update(studentExamEvent);
+            logStudentUnregisteredFromEvent(studentExamEvent);
+            examEventModel.updateEvent(studentExamEvent);
+            studentExamEvent = null;
         } else {
             log.error("Called unregisterFromExamEvent() even though student is"
                     + " not registered.\nDoing nothing");
@@ -384,10 +448,18 @@ public class ExamEventController {
      */
     public boolean canUserEditEvent(ExamEvent event) {
         boolean canUserEditEvents = event != null && (isUserPrivUser || isUserLecturer)
-                //TODO Change here if lecturer can also edit other events
                 && (event.getId() == null
                 || loggedInUser.equals(event.getExaminer().getUser()));
         return canUserEditEvents;
+    }
+
+    /**
+     * Boolean whether the currently logged in user is logged is registered to
+     * the current exam.
+     * @return True if the student user is registered to an exam, false otherwise.
+     */
+    public boolean isStudentRegisteredToExam() {
+        return studentUser != null && studentExamEvent != null;
     }
 
     /**
@@ -449,16 +521,46 @@ public class ExamEventController {
      * @return The list of students with no events.
      */
     public List<Student> getStudentsWithoutEvents() {
+        log.debug("getStudentsWithoutEvents() has been called");
         return course.getStudents().stream().filter(
             student ->
             {
                 for (ExamEvent event : student.getExamEvents()) {
                     if (event.getExam().equals(exam)) {
+                        log.debug("Student is " + student.getUser()
+                                + " is registered to an exam event");
                         return false;
                     }
                 }
+                log.debug("Student is " + student.getUser()
+                        + " is not registered to an exam event");
                 return true;
             }).collect(Collectors.toList());
+    }
+
+    /**
+     * Validates that the size of the target list of the dual list model is not
+     * larger than the number of allowed students.
+     * @param ctx The FacesContex of the validation.
+     * @param comp The UIComponent for which the validation occurs.
+     * @param value The value of the compinent.
+     */
+    public void validateStudentSize(FacesContext ctx, UIComponent comp, Object value) {
+        log.debug("validateStudentSize() called");
+        log.debug("Max number of students int: " + event.getMaxNumStudents());
+
+        if (value instanceof DualListModel<?>) {
+            ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                    FacesContext.getCurrentInstance().getViewRoot().getLocale());
+
+            DualListModel<?> dualListModel = (DualListModel<?>) value;
+            log.debug("Size of target list: " + dualListModel.getTarget());
+            if (dualListModel.getTarget().size() > event.getMaxNumStudents()) {
+                throw new ValidatorException(new FacesMessage(bundle.getString(
+                        "examEvent.messageNumStudentsExceeded")));
+            }
+        }
+
     }
 
     /*
@@ -476,6 +578,40 @@ public class ExamEventController {
     }
 
     /**
+     * Updates the examined students from the currently selected events and the picked
+     * students from the dual pick model.
+     */
+    private void updateExaminedStudentsFromDualList() {
+        log.debug("updateExaminedStudentsFromDualList() has been called");
+        log.debug("studentDualList.getTarget().size(): " + studentDualList.getTarget().size());
+        log.debug("studentDualList.getSource().size(): " + studentDualList.getSource().size());
+        log.debug("event.students.size: " + event.getExaminedStudents().size());
+        for (Student student: event.getExaminedStudents()) {
+            log.debug("Student in event: " + student.getUser());
+        }
+        for (Student assignedStudent: studentDualList.getTarget()) {
+            if (!event.getExaminedStudents().contains(assignedStudent)) {
+                log.debug("Student " + assignedStudent.getUser() + " is not in event, gets added");
+                event.getExaminedStudents().add(assignedStudent);
+                assignedStudent.getExamEvents().add(event);
+                logStudenAssignedToEvent(assignedStudent,event);
+            }
+        }
+        for (Student unassignedStudent: studentDualList.getSource()) {
+            if (event.getExaminedStudents().contains(unassignedStudent)) {
+                log.debug("Student " + unassignedStudent.getUser() + " is in event, gets removed");
+                event.getExaminedStudents().remove(unassignedStudent);
+                if (unassignedStudent.getExamEvents().contains(event)) {
+                    unassignedStudent.getExamEvents().remove(event);
+                    logStudentUnAssignedFromEvent(studentUser, event);
+                }
+            }
+        }
+
+    }
+
+
+    /**
      * Mails to every associated user of the exam that an event has been moved.
      * @param event The moved event.
      */
@@ -488,7 +624,7 @@ public class ExamEventController {
             try {
                 sendEventMoveEvent(user, oldEventStartDate,oldEventEndDate,
                         event.getStartDate(), event.getEndDate());
-            } catch (MessagingException | IOException e) {
+            } catch (MessagingException | MissingResourceException | IOException e) {
                 log.debug(e);
                 addFailMessage(emailFailMessage);
                 return;
@@ -538,6 +674,7 @@ public class ExamEventController {
     private void updateExamEvents() {
         log.debug("updateExamEvents() called");
         exam.getEvents().clear();
+        log.debug("ExamEventModel Size: " + examEventModel.getEvents().size());
         for (ScheduleEvent scheduleEvent: examEventModel.getEvents()) {
             ExamEvent examEvent = (ExamEvent) scheduleEvent;
             log.debug("Exam event with start date: " + examEvent.getStartDate()
@@ -546,11 +683,27 @@ public class ExamEventController {
             exam.getEvents().add(examEvent);
         }
         exam = examService.update(exam);
+        if (!examEventModel.getEvents().contains(event)) {
+            examEventService.remove(event);
+        }
         for (ScheduleEvent scheduleEvent: examEventModel.getEvents()) {
             ExamEvent examEvent = (ExamEvent) scheduleEvent;
             examEvent.setEditable(canUserEditEvent(examEvent));
         }
     }
+
+    /**
+     * Gets the examEvent of the current exam to which the user is registered.
+     */
+    private ExamEvent getExamEventFromStudent(Student student) {
+        for (ExamEvent examEvent: exam.getEvents()) {
+            if (examEvent.getExaminedStudents().contains(student)) {
+                return examEvent;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Adds a fail message to the FacesContext.
@@ -623,11 +776,37 @@ public class ExamEventController {
     }
 
     /**
-     * Logs that a student has unregistered from an exam event.
-     * @param event The exam event from which the student has unregistered.
+     * Logs that a student has to an exam event.
+     * Is called when the user is actively registering to the event.
+     * @param event The exam event from which the student has registered.
      */
     private void logStudentRegisteredToEvent(ExamEvent event) {
         String descr = String.format("The student %s has registered to the exam event "
+                        + "%s of the exam %s of the course %s",
+                loggedInUser, event.getTitle(), exam.getName(), course.getName());
+        logAction(descr);
+    }
+
+    /**
+     * Logs that a student has been assigned by the logged in user to the exam event.
+     * @param student The student which got assigned to the exam event.
+     * @param event The exam event from which the student has been assigned.
+     */
+    private void logStudenAssignedToEvent(Student student, ExamEvent event) {
+        String descr = String.format("The student %s has been assigned to the exam event "
+                        + "%s of the exam %s of the course %s",
+                loggedInUser, event.getTitle(), exam.getName(), course.getName());
+        logAction(descr);
+    }
+
+
+    /**
+     * Logs that a student has been unassigned by the logged in user from the exam event.
+     * @param student The student which got unassigned from the exam event.
+     * @param event The exam event from which the student has unregistered.
+     */
+    private void logStudentUnAssignedFromEvent(Student student, ExamEvent event) {
+        String descr = String.format("The student %s has been unassigned from the exam event "
                         + "%s of the exam %s of the course %s",
                 loggedInUser, event.getTitle(), exam.getName(), course.getName());
         logAction(descr);
@@ -676,6 +855,11 @@ public class ExamEventController {
     }
 
     @EJB
+    public void setExamEventService(ExamEventService examEventService) {
+        this.examEventService = examEventService;
+    }
+
+    @EJB
     public void setStudentService(StudentService studentService) {
         this.studentService = studentService;
     }
@@ -717,4 +901,23 @@ public class ExamEventController {
         return course;
     }
 
+    public Exam getExam() {
+        return exam;
+    }
+
+    public DualListModel<Student> getStudentDualList() {
+        return studentDualList;
+    }
+
+    public void setStudentDualList(DualListModel<Student> studentDualList) {
+        this.studentDualList = studentDualList;
+    }
+
+    public ExamEvent getStudentExamEvent() {
+        return studentExamEvent;
+    }
+
+    public void setStudentExamEvent(ExamEvent studentExamEvent) {
+        this.studentExamEvent = studentExamEvent;
+    }
 }

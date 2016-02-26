@@ -15,9 +15,39 @@
     <!-- Page Content -->
     <ui:define name="content">
         <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="headline">
+            <h1>#{msg['examEvent.eventsOfExam'].concat(' ').concat(examEventController.exam.name)}</h1>
+        </div>
         <h:form id="eventForm" >
+
+            <!-- Lecturer or Priv User View -->
             <h:panelGroup rendered="#{examEventController.userPrivUser
                         or examEventController.userLecturer}">
+                <h:panelGroup id="editDeadlinePnl" styleClass="form-group">
+                    <h:panelGroup layout="block">
+                        <p:outputLabel for="examDeadline"
+                                       class="col-xs-3 control-label"
+                                       value="#{msg['examEvent.deadline']}" />
+                        <h:panelGroup id="examDeadline" styleClass="col-xs-8"
+                                      layout="block">
+                            <p:calendar id="deadLineCal"
+                                        value="#{examEventController.exam.deadline}"
+                                        pattern="MM/dd/yyyy HH:mm:ss">
+                                <f:validator validatorId="deadlineValidator"/>
+                            </p:calendar>
+
+                            <p:commandLink id="updateDeadlineBtn"
+                                           process="deadLineCal @this"
+                                           styleClass="btn btn-primary"
+                                           update="deadLineCal"
+                                           value="#{msg['common.saveChanges']}">
+                                <f:actionListener binding="#{examEventController.updateDeadLine()}"/>
+                            </p:commandLink>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <p:blockUI block="editDeadlinePnl" trigger="updateDeadlineBtn"/>
+                <br/>
                 <p:schedule id="editSchedule"
                             value="#{examEventController.examEventModel}"
                             widgetVar="editSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}"
@@ -29,17 +59,81 @@
                             update="eventDialog" oncomplete="PF('examEventDialog').show();"/>
                 </p:schedule>
             </h:panelGroup>
-            <h:panelGroup rendered="#{examEventController.userStudent}">
-                <p:schedule id="studentSchedule"
-                            value="#{examEventController.examEventModel}"
-                            widgetVar="studentSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}" resizable="false"
-                            draggable="false" locale="#{examEventController.localeCountry}">
-                    <p:ajax event="eventSelect" listener="#{examEventController.onEventSelect}"
-                            update="eventDialog" oncomplete="PF('examEventDialog').show();"/>/>
-                </p:schedule>
-            </h:panelGroup>
 
-            <p:dialog id="eventDialog" widgetVar="examEventDialog" header="#{msg['examEvent.details']}">
+            <!-- Student View -->
+            <h:panelGroup rendered="#{examEventController.userStudent}">
+                <h:panelGroup id="viewDeadlinePnl" styleClass="form-group">
+                    <h:panelGroup layout="block">
+                        <p:outputLabel for="viewExamDeadline"
+                                       class="col-xs-3 control-label"
+                                       value="#{msg['examEvent.deadline']}" />
+                        <h:panelGroup id="viewExamDeadline" styleClass="col-xs-8"
+                                      layout="block">
+                            <h:outputText styleClass="form-control"
+                                          value="#{examEventController.exam.deadline}">
+                                <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}"  pattern="MM/dd/yyyy HH:mm:ss"/>
+                            </h:outputText>
+                            <h:panelGroup rendered="#{examEventController.isDeadlineDue()}">
+                                <div class="alert alert-danger">
+                                    <h:outputText value="#{msg['examEvent.deadlinePassed']}"/>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup id="currentExamEventPnl" styleClass="form-group">
+                    <h:panelGroup rendered="#{examEventController.isStudentRegisteredToExam()}">
+                        <h:panelGroup layout="block">
+                            <br/>
+                            <hr/>
+                            <h4>#{msg['examEvent.myExamEvent']}</h4>
+                            <p:outputLabel for="myExamStart"
+                                           class="col-xs-3 control-label"
+                                           value="#{msg['examEvent.starts']}" />
+                            <h:panelGroup id="myExamStart" styleClass="col-xs-8" layout="block">
+                                <h:outputText styleClass="form-control"
+                                              value="#{examEventController.studentExamEvent.startDate}">
+                                    <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}"  pattern="MM/dd/yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </h:panelGroup>
+
+                            <p:outputLabel for="myExamEnd"
+                                           class="col-xs-3 control-label"
+                                           value="#{msg['examEvent.ends']}" />
+                            <h:panelGroup id="myExamEnd" styleClass="col-xs-8" layout="block">
+                                <h:outputText styleClass="form-control"
+                                              value="#{examEventController.studentExamEvent.endDate}">
+                                    <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}"  pattern="MM/dd/yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="col-xs-8 col-xs-offset-r">
+                                <p:commandLink id="unregisterBtn"
+                                               rendered="#{not examEventController.isDeadlineDue()}"
+                                               value="#{msg['examEvent.unregister']}"
+                                               update="@form"
+                                               styleClass="btn btn-danger">
+                                    <f:actionListener binding="#{examEventController.unregisterFromExamEvent()}"/>
+                                </p:commandLink>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                        <br/>
+                        <hr/>
+                </h:panelGroup>
+            </h:panelGroup>
+            <p:blockUI block="currentExamEventPnl" trigger="unregisterBtn"/>
+
+            <p:schedule id="studentSchedule"
+                        value="#{examEventController.examEventModel}"
+                        widgetVar="studentSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}" resizable="false"
+                        draggable="false" locale="#{examEventController.localeCountry}">
+                <p:ajax event="eventSelect" listener="#{examEventController.onEventSelect}"
+                        update="eventDialog" oncomplete="PF('examEventDialog').show();"/>/>
+            </p:schedule>
+        </h:panelGroup>
+
+        <p:dialog id="eventDialog" widgetVar="examEventDialog" header="#{msg['examEvent.details']}">
+            <p:panel id="dialogPnl">
                 <ui:include src="/WEB-INF/alerts.xhtml" />
                 <div class="modal-body">
                     <div class="form-group">
@@ -92,7 +186,6 @@
                         </h:panelGroup>
 
                         <h:panelGroup rendered="#{examEventController.canUserEditEvent()}">
-
                             <p:outputLabel for="editorExaminerMenu" value="#{msg['examEvent.examiner']}"
                                            styleClass="col-xs-3 control-label text-left"/>
                             <div class="col-xs-8">
@@ -149,6 +242,18 @@
                                     <f:validateLongRange minimum="1" maximum="100000"/>
                                 </p:inputText>
                             </div>
+
+                            <p:outputLabel for="editStudents" value="#{msg['examEvent.examinedStudents']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+
+                            <div class="col-xs-8">
+                                <p:pickList id="editStudents" value="#{examEventController.studentDualList}"
+                                            var="student" itemLabel="#{student.user}"
+                                            itemValue="#{student}" converter="#{studentConverter}"
+                                            responsive="true" validator="#{examEventController.validateStudentSize}">
+                                    <f:attribute name="course" value="#{examEventController.course}" />
+                                </p:pickList>
+                            </div>
                         </h:panelGroup>
                     </div>
                 </div>
@@ -156,23 +261,38 @@
                     <div class="btn-group pull-left">
                         <p:commandLink value="#{msg['common.cancel']}" styleClass="btn btn-default"
                                        process="@this" oncomplete="PF('examEventDialog').hide();"/>
-                        <p:commandLink value="#{msg['common.remove']}" styleClass="btn btn-danger"
+                        <p:commandLink id="registerBtn"
+                                       rendered="#{not examEventController.canUserEditEvent()
+                                                  and not examEventController.isStudentRegisteredToExam()
+                                                  and not examEventController.isDeadlineDue()
+                                                  and not examEventController.event.isFull()}"
+                                       value="#{msg['examEvent.register']}"
+                                       update="currentExamEventPnl studentSchedule"
+                                       styleClass="btn btn-primary"
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) {
+                                                       PF('examEventDialog').hide();
+                                                   }" >
+                            <f:actionListener binding="#{examEventController.registerToExamEvent()}"/>
+                        </p:commandLink>
+                        <p:commandLink id="removeBtn" value="#{msg['common.remove']}" styleClass="btn btn-danger"
                                        rendered="#{examEventController.canUserEditEvent()
                                         and examEventController.event.id != null}"
                                        actionListener="#{examEventController.removeEvent}"
                                        oncomplete="PF('editSchedule').update();
                                                        PF('examEventDialog').hide();"/>
-                        <p:commandLink id="addButton" styleClass="btn btn-success"
+                        <p:commandLink id="addBtn" styleClass="btn btn-success"
                                        value="#{msg['common.saveChanges']}"
                                        rendered="#{examEventController.canUserEditEvent()}"
                                        actionListener="#{examEventController.addEvent}"
                                        oncomplete="if (args &amp;&amp; !args.validationFailed) {
                                                        PF('editSchedule').update();
                                                        PF('examEventDialog').hide();
-                                                }" />
+                                                   }" />
                     </div>
                 </div>
-            </p:dialog>
-        </h:form>
-    </ui:define>
-</ui:composition>
+            </p:panel>
+            <p:blockUI block="dialogPnl" trigger="removeBtn addBtn registerBtn" />
+        </p:dialog>
+    </h:form>
+</ui:define>
+        </ui:composition>

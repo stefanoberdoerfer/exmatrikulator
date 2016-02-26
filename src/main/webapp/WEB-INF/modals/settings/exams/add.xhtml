@@ -93,8 +93,9 @@
                                           rendered="#{examEventCheckBox.value}">
                                 <p:calendar id="deadLineCal"
                                             value="#{examController.selectedExam.deadline}"
-                                            validator="#{examController.validateDeadline}"
-                                            pattern="MM/dd/yyyy HH:mm:ss" />
+                                            pattern="MM/dd/yyyy HH:mm:ss">
+                                    <f:validator validatorId="deadlineValidator"/>
+                                </p:calendar>
                             </h:panelGroup>
                         </h:panelGroup>
                     </h:panelGroup>

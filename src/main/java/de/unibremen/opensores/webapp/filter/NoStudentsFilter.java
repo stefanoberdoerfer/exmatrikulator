@@ -24,6 +24,13 @@ import java.io.IOException;
  */
 @WebFilter
 public final class NoStudentsFilter implements Filter {
+
+    /**
+     *  The path for the exam events page to which students have access for
+     *  registering to exam events.
+     */
+    private static final String PATH_EXAM_EVENTS = "/settings/exams/events";
+
     /**
      * The course service for connecting to the database.
      */
@@ -34,6 +41,7 @@ public final class NoStudentsFilter implements Filter {
      */
     @EJB
     private transient UserService userService;
+
     /**
      * Main method for filtering requests.
      */
@@ -72,7 +80,13 @@ public final class NoStudentsFilter implements Filter {
             || userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
             filterChain.doFilter(req, res);
         } else {
-            hres.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            String path = hreq.getRequestURI().substring(hreq.getContextPath().length());
+            if (path.startsWith(PATH_EXAM_EVENTS)
+                    && userService.hasCourseRole(user, Role.STUDENT, course)) {
+                filterChain.doFilter(req, res);
+            } else {
+                hres.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            }
         }
     }
 
