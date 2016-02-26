@@ -3,33 +3,43 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough">
+  <f:metadata>
+    <f:viewAction action="#{userController.initRequest}" />
+    <f:viewParam name="user-id" value="#{userController.userId}" />
+  </f:metadata>
+
   <!-- Define Params -->
   <ui:param name="pageTitle" value="#{msg['common.myProfile']}" />
+
   <!-- Breadcrumbs -->
   <ui:define name="breadcrumbs">
     <li class="active">"#{msg['settings.myData']}"</li>
   </ui:define>
+
   <!-- Page Content -->
   <ui:define name="content">
     <div class="headline">
-        <div class="btn-group main-buttons pull-right">
-          <h:link value="#{msg['settings.edit']}" outcome="/profile/edit" class="btn btn-default" />
-        </div>
-        <h1>#{userController.user}</h1>
+        <c:if test="${userController.canEditProfile()}">
+          <div class="btn-group main-buttons pull-right">
+            <h:link value="#{msg['settings.edit']}" outcome="/profile/edit" class="btn btn-default" />
+          </div>
+        </c:if>
+        <h1>#{userController.profileUser}</h1>
     </div>
 
     <dl class="dl-horizontal">
         <dt>#{msg['common.email']}</dt>
-        <dd>#{userController.user.email}</dd>
+        <dd>#{userController.profileUser.email}</dd>
     </dl>
     <dl class="dl-horizontal">
         <dt>#{msg['common.phone']}</dt>
-        <dd>#{userController.user.phoneNumber}</dd>
+        <dd>#{userController.profileUser.phoneNumber}</dd>
     </dl>
     <dl class="dl-horizontal">
         <dt>#{msg['common.description']}</dt>
-        <dd>#{userController.user.profileInfo}</dd>
+        <dd>#{userController.profileUser.profileInfo}</dd>
     </dl>
   </ui:define>
 </ui:composition>
