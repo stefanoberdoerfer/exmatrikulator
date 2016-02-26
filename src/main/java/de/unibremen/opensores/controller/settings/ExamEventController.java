@@ -144,6 +144,11 @@ public class ExamEventController {
     private Student studentUser;
 
     /**
+     * The exam event to which the logged in user is registered to as student.
+     */
+    private ExamEvent studentExamEvent;
+
+    /**
      * Boolean value which checks if a student is registered to any examEvent
      * of this exam. Is not used when the logged in user is not a student.
      */
@@ -174,6 +179,8 @@ public class ExamEventController {
      * String of the course id.
      */
     private String courseIdStr;
+
+
     /*
      * Public methods
      */
@@ -319,8 +326,8 @@ public class ExamEventController {
             log.debug("Event gets updated");
 
             if ((oldEventEndDate != null && oldEventStartDate != null)
-                   && (!event.getStartDate().equals(oldEventStartDate)
-                           || !event.getEndDate().equals(oldEventEndDate))) {
+                    && (!event.getStartDate().equals(oldEventStartDate)
+                    || !event.getEndDate().equals(oldEventEndDate))) {
                 log.debug("The event dates have changed");
                 log.debug("Curr. event start date: \t" + event.getStartDate());
                 log.debug("Old event start date: \t" + oldEventStartDate);
@@ -503,19 +510,19 @@ public class ExamEventController {
     public List<Student> getStudentsWithoutEvents() {
         log.debug("getStudentsWithoutEvents() has been called");
         return course.getStudents().stream().filter(
-            student ->
-            {
-                for (ExamEvent event : student.getExamEvents()) {
-                    if (event.getExam().equals(exam)) {
-                        log.debug("Student is " + student.getUser()
-                            + " is registered to an exam event");
-                        return false;
+                student ->
+                {
+                    for (ExamEvent event : student.getExamEvents()) {
+                        if (event.getExam().equals(exam)) {
+                            log.debug("Student is " + student.getUser()
+                                    + " is registered to an exam event");
+                            return false;
+                        }
                     }
-                }
-                log.debug("Student is " + student.getUser()
-                           + " is not registered to an exam event");
-                return true;
-            }).collect(Collectors.toList());
+                    log.debug("Student is " + student.getUser()
+                            + " is not registered to an exam event");
+                    return true;
+                }).collect(Collectors.toList());
     }
 
     /**
@@ -568,7 +575,7 @@ public class ExamEventController {
         log.debug("studentDualList.getSource().size(): " + studentDualList.getSource().size());
         log.debug("event.students.size: " + event.getExaminedStudents().size());
         for (Student student: event.getExaminedStudents()) {
-             log.debug("Student in event: " + student.getUser());
+            log.debug("Student in event: " + student.getUser());
         }
         for (Student assignedStudent: studentDualList.getTarget()) {
             if (!event.getExaminedStudents().contains(assignedStudent)) {
@@ -672,6 +679,8 @@ public class ExamEventController {
             examEvent.setEditable(canUserEditEvent(examEvent));
         }
     }
+
+    //TODO private Method Student registered?
 
     /**
      * Adds a fail message to the FacesContext.
@@ -879,5 +888,13 @@ public class ExamEventController {
 
     public void setStudentDualList(DualListModel<Student> studentDualList) {
         this.studentDualList = studentDualList;
+    }
+
+    public ExamEvent getStudentExamEvent() {
+        return studentExamEvent;
+    }
+
+    public void setStudentExamEvent(ExamEvent studentExamEvent) {
+        this.studentExamEvent = studentExamEvent;
     }
 }

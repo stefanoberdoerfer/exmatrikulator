@@ -415,7 +415,7 @@ public class ExamControllerTest {
 
     /**
      * Checks if the exam deletion name validation throws an ValidatorException
-     * if the checked string input is null
+     * if the checked string input is null.
      */
     @Test(expected = ValidatorException.class)
     public void testValidateExamDeletionNameNullParam() {

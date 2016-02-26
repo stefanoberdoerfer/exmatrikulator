@@ -21,7 +21,7 @@
         <h:form id="eventForm" >
             <h:panelGroup rendered="#{examEventController.userPrivUser
                         or examEventController.userLecturer}">
-                <h:panelGroup id="deadlinePnl" styleClass="form-group">
+                <h:panelGroup id="editDeadlinePnl" styleClass="form-group">
                     <h:panelGroup layout="block">
                         <p:outputLabel for="examDeadline"
                                        class="col-xs-3 control-label"
@@ -44,7 +44,7 @@
                         </h:panelGroup>
                     </h:panelGroup>
                 </h:panelGroup>
-                <p:blockUI block="deadlinePnl" trigger="updateDeadlineBtn"/>
+                <p:blockUI block="editDeadlinePnl" trigger="updateDeadlineBtn"/>
                 <br/>
                 <p:schedule id="editSchedule"
                             value="#{examEventController.examEventModel}"
@@ -58,6 +58,39 @@
                 </p:schedule>
             </h:panelGroup>
             <h:panelGroup rendered="#{examEventController.userStudent}">
+                <h:panelGroup id="viewDeadlinePnl" styleClass="form-group">
+                    <h:panelGroup layout="block">
+                        <p:outputLabel for="viewExamDeadline"
+                                       class="col-xs-3 control-label"
+                                       value="#{msg['examEvent.deadline']}" />
+                        <h:panelGroup id="viewExamDeadline" styleClass="col-xs-8"
+                                      layout="block">
+                            <h:outputText styleClass="form-control"
+                                        value="#{examEventController.exam.deadline}">
+                                <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}"  pattern="MM/dd/yyyy HH:mm:ss"/>
+                            </h:outputText>
+                            <div class="alert alert-danger">
+                                <h:outputText value="#{msg['examEvent.deadlinePassed']}"/>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup id="currentExamEvent" styleClass="form-group">
+                    <h:panelGroup layout="block">
+                        <p:outputLabel for="currentExam"
+                                       class="col-xs-3 control-label"
+                                       value="#{msg['examEvent.deadline']}" />
+                        <h:panelGroup id="currentExam" styleClass="col-xs-8"
+                                      layout="block">
+                            <h:outputText styleClass="form-control"
+                                          value="#{examEventController.exam.deadline}">
+                                <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}"  pattern="MM/dd/yyyy HH:mm:ss"/>
+                            </h:outputText>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+
                 <p:schedule id="studentSchedule"
                             value="#{examEventController.examEventModel}"
                             widgetVar="studentSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}" resizable="false"

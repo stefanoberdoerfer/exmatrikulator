@@ -53,6 +53,15 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- TODO pom.xml fixen
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>7.0</version>
+      <scope>provided</scope>
+    </dependency>
+    -->
+
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.faces</artifactId>
