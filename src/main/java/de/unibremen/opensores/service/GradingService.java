@@ -175,19 +175,19 @@ public class GradingService extends GenericService<Grading> {
         if (userService.hasCourseRole(corrector, "LECTURER", course)) {
             s = em.createQuery("SELECT DISTINCT g "
                             + "FROM Group g "
-                            + "WHERE g.course.courseId = :courseId "
+                            + "WHERE g.tutorial.course.courseId = :courseId "
                             + "ORDER BY g.name ASC",
-                    Group.class)
+                        Group.class)
                     .setParameter("courseId", course.getCourseId())
                     .getResultList();
         } else {
             s = em.createQuery("SELECT DISTINCT g "
                             + "FROM Group g "
                             + "JOIN g.tutorial.tutors AS t "
-                            + "WHERE g.course.courseId = :courseId "
+                            + "WHERE g.tutorial.course.courseId = :courseId "
                             + "AND t.user.userId = :correctorId "
                             + "ORDER BY g.name ASC",
-                    Group.class)
+                        Group.class)
                     .setParameter("courseId", course.getCourseId())
                     .setParameter("correctorId", corrector.getUserId())
                     .getResultList();
@@ -253,7 +253,8 @@ public class GradingService extends GenericService<Grading> {
         try {
             return em.createQuery("SELECT DISTINCT g "
                             + "FROM Group g "
-                            + "JOIN g.course AS c WITH c.courseId = :cid "
+                            + "JOIN g.tutorial AS t "
+                            + "JOIN t.course AS c WITH c.courseId = :cid "
                             + "WHERE g.groupId = :gid",
                         Group.class)
                     .setParameter("cid", course.getCourseId())

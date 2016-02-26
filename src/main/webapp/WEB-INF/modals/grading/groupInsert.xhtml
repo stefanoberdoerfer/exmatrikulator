@@ -33,7 +33,7 @@
                         <h:selectOneMenu value="#{gradingInsertController.formGroup}"
                                          styleClass="form-control">
                             <f:selectItem itemValue="0" itemLabel="- - #{msg['common.pleaseSelect']} - -" />
-                            <f:selectItems value="#{gradingController.course.groups}" var="group"
+                            <f:selectItems value="#{gradingController.groups}" var="group"
                                            itemLabel="#{group.name}" itemValue="#{group.groupId}" />
                             <f:ajax listener="#{gradingInsertController.groupSelectionChanged}"
                                     execute="@form"
