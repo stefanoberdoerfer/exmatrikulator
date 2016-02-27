@@ -192,6 +192,7 @@ public class UserOverviewController {
      * Refreshes the selected user and the corresponding fields in the dialog.
      */
     public void onCreateUserCalled() {
+        log.debug("onCreateUserCalled invoked");
         selectedUser = new User();
     }
 

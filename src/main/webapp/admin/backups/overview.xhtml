@@ -27,6 +27,7 @@
 
         <h:form id="backupListForm">
           <p:dataTable var="backup" value="#{backupController.listBackups()}"
+                       styleClass="table table-hover"
                        paginator="true"
                        paginatorTemplate="{RowsPerPageDropdown}
                            {FirstPageLink} {PreviousPageLink} {CurrentPageReport}

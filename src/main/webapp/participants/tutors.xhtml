@@ -63,8 +63,8 @@
         </ul>
 
         <h:form id="participantForm">
-            <p:dataTable id="participantTbl" widgetVar="tutorsTblWidget"
-                         var="tutor"
+            <p:dataTable id="participantTbl" widgetVar="tutorsTblWidget" var="tutor"
+                         styleClass="table table-hover"
                          value="#{participantsController.course.undeletedTutors}"
                          filteredValue="#{participantsController.filteredPrivUsers}"
                          emptyMessage="#{msg['participants.noPrivilegedUsers']}"

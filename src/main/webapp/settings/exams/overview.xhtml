@@ -40,8 +40,8 @@
 
         <h:form id="examTblForm">
             <p:dataTable id="examTbl"
-                         value="#{examController.course.exams}"
-                         var="exam"
+                         value="#{examController.course.exams}" var="exam"
+                         styleClass="table table-hover"
                          filteredValue="#{examController.filteredExams}"
                          emptyMessage="#{msg['examination.messageNoExams']}">
                 <p:column headerText="#{msg['examination.name']}"

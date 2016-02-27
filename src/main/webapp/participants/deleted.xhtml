@@ -123,8 +123,8 @@
                 </p:column>
             </p:dataTable>
             <h2>#{msg['common.tutors']}</h2>
-            <p:dataTable id="participantTbl2" widgetVar="deletedtutorsTblWidget"
-                         var="tutor"
+            <p:dataTable id="participantTbl2" widgetVar="deletedtutorsTblWidget" var="tutor"
+                         styleClass="table table-hover"
                          value="#{participantsController.course.deletedTutors}"
                          filteredValue="#{participantsController.filteredDeletedPrivUsers}"
                          emptyMessage="#{msg['participants.noDeletedPrivilegedUsers']}"

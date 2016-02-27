@@ -63,8 +63,8 @@
         </ul>
 
         <h:form id="participantForm">
-            <p:dataTable id="participantTbl" widgetVar="lecturerWidget"
-                         var="lecturer"
+            <p:dataTable id="participantTbl" widgetVar="lecturerWidget" var="lecturer"
+                         styleClass="table table-hover"
                          value="#{participantsController.course.undeletedLecturers}"
                          filteredValue="#{participantsController.filteredLecturers}"
                          paginator="true"

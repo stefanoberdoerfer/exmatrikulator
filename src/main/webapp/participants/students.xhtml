@@ -64,8 +64,8 @@
 
         <h:form id="participantForm"
                 rendered="#{participantsController.loggedInUserCanManageStudents}">
-            <p:dataTable id="participantTbl" widgetVar="studentsTblWidget"
-                         var="student"
+            <p:dataTable id="participantTbl" widgetVar="studentsTblWidget" var="student"
+                         styleClass="table table-hover"
                          value="#{participantsController.course.confirmedUndeletedStudents}"
                          filteredValue="#{participantsController.filteredStudents}"
                          emptyMessage="#{msg['participants.noStudents']}"

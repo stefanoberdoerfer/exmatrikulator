@@ -31,10 +31,9 @@
                 <h1>#{msg['settings.logs']}</h1>
             </div>
             <div class="form-group">
-                <p:dataTable id="logTbl"
-                             widgetVar="logsTable"
-                             value="#{logController.logs}"
+                <p:dataTable id="logTbl" widgetVar="logsTable" value="#{logController.logs}"
                              var="log"
+                             styleClass="table table-hover"
                              filteredValue="#{logController.filteredLogs}"
                              paginator="true"
                              paginatorTemplate="{RowsPerPageDropdown}

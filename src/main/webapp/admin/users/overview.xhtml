@@ -14,22 +14,21 @@
     <!-- Page Content -->
     <ui:define name="content">
 
-        <div class="headline">
-            <h:panelGroup class="btn-group main-buttons pull-right" type="block">
-                <h:form id="headerform">
+        <h:form styleClass="headline" id="headerform">
+            <h:panelGroup class="btn-group main-buttons pull-right" layout="block">
                 <p:commandButton oncomplete="return exModal('userCreate');" value="#{msg['users.create']}"
                                class="btn btn-primary" update=":createUserDialog">
                     <f:actionListener binding="#{userOverviewController.onCreateUserCalled()}" />
                 </p:commandButton>
-                </h:form>
             </h:panelGroup>
             <h1>#{msg['common.user']}</h1>
-        </div>
+        </h:form>
 
         <ui:include src="/WEB-INF/alerts.xhtml" />
 
         <h:form id="usersform">
         <p:dataTable var="user" value="#{userOverviewController.users}" id="usertable"
+                     styleClass="table table-hover"
                      paginator="true"
                      paginatorTemplate="{RowsPerPageDropdown}
                            {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
