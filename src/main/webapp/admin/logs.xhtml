@@ -41,7 +41,8 @@
                              {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
                              {NextPageLink} {LastPageLink}"
                              rowsPerPageTemplate="20,50,100"
-                             emptyMessage="#{msg['settings.logs.noLogsMessage']}">
+                             emptyMessage="#{msg['settings.logs.noLogsMessage']}"
+                             paginatorPosition="bottom">
                     <p:column
                             filterMatchMode="contains"
                             filterBy="#{log.date}"

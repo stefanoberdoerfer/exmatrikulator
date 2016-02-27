@@ -33,7 +33,8 @@
                      paginatorTemplate="{RowsPerPageDropdown}
                            {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
                            {NextPageLink} {LastPageLink}"
-                     rowsPerPageTemplate="20,50,100">
+                     rowsPerPageTemplate="20,50,100"
+                     paginatorPosition="bottom">
             <p:column filterBy="#{user.lastName}" sortBy="#{user.lastName}"
                       filterMatchMode="contains"
                       headerText="#{msg['common.lastName']}"
