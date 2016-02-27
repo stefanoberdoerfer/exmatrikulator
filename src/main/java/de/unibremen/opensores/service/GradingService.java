@@ -300,6 +300,12 @@ public class GradingService extends GenericService<Grading> {
                     + oldGrade + " to "
                     + paboGrade.name();
         }
+        /*
+        Change the formula so the student knows it wasn't used for him/her.
+         */
+        student.setPaboGradeFormula("Manually set by "
+                + corrector.getFirstName() + " "
+                + corrector.getLastName());
 
         logService.persist(Log.from(corrector,
                 student.getCourse().getCourseId(), description));
