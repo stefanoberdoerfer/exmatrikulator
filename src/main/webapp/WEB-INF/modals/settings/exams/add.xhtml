@@ -113,6 +113,8 @@
                             <f:actionListener binding="#{examController.addExam()}"/>
                         </p:commandLink>
                     </div>
+
+                    <p:defaultCommand target="addExamBtn" />
                 </div>
             </p:panel>
             <p:blockUI block="addExamDlgPnl" trigger="addExamBtn"/>
