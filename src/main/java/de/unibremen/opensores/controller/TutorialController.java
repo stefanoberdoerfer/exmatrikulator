@@ -159,6 +159,11 @@ public class TutorialController implements Serializable {
     private DualListModel<Student> groupMembers;
 
     /**
+     * Whether the current user can manage tutorials.
+     */
+    private boolean manageTutorials;
+
+    /**
      * Method called on bean initialization.
      */
     @PostConstruct
@@ -180,12 +185,35 @@ public class TutorialController implements Serializable {
             return;
         }
 
+        manageTutorials = isAllowedToManageTutorials();
         tutorialTutors = new DualListModel<>(course.getTutors(),
             new ArrayList<>());
         tutorialStudents = new DualListModel<>(course.getStudents(),
             new ArrayList<>());
         groupMembers = new DualListModel<>(course.getStudents(),
             new ArrayList<>());
+    }
+
+    /**
+     * Whether or not the current user is allowed to mange tutorials.
+     *
+     * @return True if he is, false otherwise.
+     */
+    private boolean isAllowedToManageTutorials() {
+        if (userService.hasCourseRole(user, Role.LECTURER, course)) {
+            return true;
+        }
+
+        if (userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
+            PrivilegedUser pu = courseService.findPrivileged(course, user.getEmail());
+            if (pu == null) {
+                return false;
+            }
+
+            return pu.hasPrivilege(Privilege.ManageTutorials);
+        }
+
+        return false;
     }
 
     /**
@@ -511,7 +539,7 @@ public class TutorialController implements Serializable {
      * @return List of tutorials or null.
      */
     public List<Tutorial> getTutorials() {
-        if (userService.hasCourseRole(user, Role.LECTURER, course)) {
+        if (manageTutorials) {
             return course.getTutorials();
         }
 
@@ -522,11 +550,7 @@ public class TutorialController implements Serializable {
                 return null; // Should never be the case
             }
 
-            if (pu.hasPrivilege(Privilege.ManageTutorials)) {
-                return course.getTutorials();
-            } else {
-                list.addAll(pu.getTutorials());
-            }
+            list.addAll(pu.getTutorials());
         }
 
         if (userService.hasCourseRole(user, Role.STUDENT, course)) {
@@ -539,6 +563,15 @@ public class TutorialController implements Serializable {
         }
 
         return list;
+    }
+
+    /**
+     * Whether the current user is a tutorial manager.
+     *
+     * @return True if he is, false otherwise.
+     */
+    public boolean isTutorialManager() {
+        return manageTutorials;
     }
 
     /**
