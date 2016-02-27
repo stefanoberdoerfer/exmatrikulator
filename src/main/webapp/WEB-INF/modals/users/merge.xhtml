@@ -47,7 +47,7 @@
                     <p:commandLink action="#{userOverviewController.mergeUser(liveSearchController.selectedUser)}"
                                    id="mergeUserButton" class="btn btn-primary" value="#{msg['users.merge']}"
                                    oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userMerge')"
-                                   update=":usersform" />
+                                   update=":usersform:usertable" />
                 </div>
             </div>
             <p:blockUI block=":mergeUserDialog" trigger="mergeUserButton"/>

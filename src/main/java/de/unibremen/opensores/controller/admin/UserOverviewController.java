@@ -72,8 +72,6 @@ public class UserOverviewController {
     private boolean globalRoleLecturer;
     private boolean globalRoleUser;
 
-    private String searchString;
-
     /**
      * User ResourceBundle for internationalisation information.
      */
@@ -129,6 +127,10 @@ public class UserOverviewController {
             users = userService.getUsers();
         }
         return users;
+    }
+
+    private void updateUserList() {
+        users = userService.getUsers();
     }
 
     /**
@@ -220,6 +222,7 @@ public class UserOverviewController {
                             bundle.getString("passwordReset.mailFail")));
         }
         clearFields();
+        updateUserList();
     }
 
     /**
@@ -257,6 +260,7 @@ public class UserOverviewController {
         selectedUser.setPassword(RandomStringUtils.randomAlphanumeric(10));
         userService.update(selectedUser);
         clearFields();
+        updateUserList();
     }
 
     /**
@@ -275,10 +279,14 @@ public class UserOverviewController {
 
         //check if the users have common courses to throw an error
         for (Course c : coursesOfOtherUser) {
+            log.debug("Checking Course " + c.getName() + " of user " + toBeMerged);
             if (c.containsUser(selectedUser)) {
+                log.debug("Course " + c.getName() + " contains user " + selectedUser);
                 context.addMessage(null, new FacesMessage(FacesMessage
                         .SEVERITY_FATAL, bundle.getString("common.error"),
-                        bundle.getString("users.mergeError")));
+                        bundle.getString("users.mergeError")
+                                + " (" + c.getName() + ")."));
+                log.debug("merge failed");
                 return;
             }
         }
@@ -321,9 +329,17 @@ public class UserOverviewController {
             logService.update(l);
         }
 
+        //GlobalRoles
+        toBeMerged.getRoles().stream()
+                .filter(i1 -> !selectedUser.getRoles().contains(i1))
+                .forEach(i2 -> selectedUser.getRoles().add(i2));
+        userService.update(selectedUser);
+
+        log.debug("merge was successful");
         //delete other user
         selectedUser = toBeMerged;
         deleteUser();
+        updateUserList();
     }
 
     /**

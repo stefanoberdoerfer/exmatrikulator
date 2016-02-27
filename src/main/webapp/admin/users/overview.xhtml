@@ -26,6 +26,7 @@
             <h1>#{msg['common.user']}</h1>
         </div>
 
+        <ui:include src="/WEB-INF/alerts.xhtml" />
 
         <h:form id="usersform">
         <p:dataTable var="user" value="#{userOverviewController.users}" id="usertable"
