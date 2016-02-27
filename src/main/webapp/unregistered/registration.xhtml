@@ -79,6 +79,12 @@
                   value="#{registrationController.lastName}"/>
             </h:panelGroup>
 
+            <h:panelGroup layout="block" class="form-group">
+                <h:outputLabel for="matriculationNumber" value="#{msg['common.studentNumber']}" />
+                <h:inputText type="text" class="form-control" id="matriculationNumber"
+                             value="#{registrationController.matriculationNumber}"/>
+            </h:panelGroup>
+
             <h:panelGroup layout="block" class="form-group text-center">
                 <h:commandButton type="submit" class="btn btn-primary btn-block" value="#{msg['registration.submit']}"
                   action="#{registrationController.register()}"/>

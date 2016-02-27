@@ -46,7 +46,7 @@ public class RegistrationController {
     private String passwordConfirmed;
 
     /**
-     * The zyped in first name of the user.
+     * The typed in first name of the user.
      */
     private String firstName;
 
@@ -54,6 +54,11 @@ public class RegistrationController {
      * The typed in last name of the user.
      */
     private String lastName;
+
+    /**
+     * The typed in matriculationNumber (optional).
+     */
+    private String matriculationNumber;
 
     /**
      * Registers new users to the exmatrikulator database.
@@ -108,7 +113,7 @@ public class RegistrationController {
         newUser.setPassword(hashPW);
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
-        newUser.setLanguage("de");
+        newUser.setMatriculationNumber(matriculationNumber);
         newUser.addRole(GlobalRole.USER);
         newUser.setLastActivity(DateUtil.getDateTime());
         return newUser;
@@ -196,5 +201,21 @@ public class RegistrationController {
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    /**
+     * Gets the typed in matriculationNumber.
+     * @return The typed matriculationNumber.
+     */
+    public String getMatriculationNumber() {
+        return matriculationNumber;
+    }
+
+    /**
+     * Sets the typed in matriculationNumber.
+     * @param matriculationNumber The typed in matriculationNumber (optional).
+     */
+    public void setMatriculationNumber(String matriculationNumber) {
+        this.matriculationNumber = matriculationNumber;
     }
 }
