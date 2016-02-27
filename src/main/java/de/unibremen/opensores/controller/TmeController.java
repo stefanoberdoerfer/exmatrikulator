@@ -656,6 +656,15 @@ public class TmeController implements Serializable {
         return FileUtils.byteCountToDisplaySize(fsize);
     }
 
+    /**
+     * Removes a file from the list of currently uploaded files.
+     *
+     * @param file File which should be removed.
+     */
+    public void removeFile(UploadedFile file) {
+        files.remove(file);
+    }
+
     public List<UploadedFile> getFiles() {
         return files;
     }
