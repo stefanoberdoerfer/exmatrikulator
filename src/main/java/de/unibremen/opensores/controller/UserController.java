@@ -16,7 +16,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.context.ExternalContext;
+import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 /**
  * This class implements the Controller for managing the logged in user.
  *
+ * @author Sören Tempel
  * @author Stefan Oberdörfer
  * @author Kevin Scheck
  * @author Matthias Reichmann
@@ -64,6 +68,16 @@ public class UserController {
     private User selectedUser;
 
     /**
+     * The user whos profile is currently being viewed.
+     */
+    private User profileUser;
+
+    /**
+     * User id used to set profileUser.
+     */
+    private String userId;
+
+    /**
      * The UserService for database connection.
      */
     @EJB
@@ -75,11 +89,37 @@ public class UserController {
      */
     @PostConstruct
     public void initSession() {
-        user = (User) FacesContext.getCurrentInstance()
-                .getExternalContext().getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
-        updateUserCourses();
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext exContext = facesContext.getExternalContext();
 
+        user = (User) exContext.getSessionMap()
+            .get(Constants.SESSION_MAP_KEY_USER);
+
+        updateUserCourses();
         applicationController.registerSession(user,courseRoles);
+    }
+
+    /**
+     * Sets the profileUser attribute.
+     */
+    public void initRequest() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext exContext = facesContext.getExternalContext();
+
+        HttpServletResponse res = (HttpServletResponse) exContext.getResponse();
+        if (userId != null) {
+            profileUser = userService.findUserById(userId);
+            if (profileUser == null) {
+                try {
+                    res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                } catch (IOException e) {
+                    log.fatal(e);
+                }
+                return;
+            }
+        } else {
+            profileUser = user;
+        }
     }
 
     /**
@@ -91,6 +131,19 @@ public class UserController {
     }
 
     /**
+     * Whether the current user can edit the profileUsers profile.
+     *
+     * @return True if he can, false otherwise.
+     */
+    public boolean canEditProfile() {
+        if (profileUser == null) {
+            return false;
+        }
+
+        return user.getUserId().equals(profileUser.getUserId());
+    }
+
+    /**
      * Returns if the currently logged in user is a privileged user in the
      * given course.
      * @param course Course to check
@@ -98,7 +151,6 @@ public class UserController {
      */
     public boolean isPrivilegedUser(Course course) {
         Role role = courseRoles.get(course);
-
         if (role == null) {
             role = determineRole(course);
         }
@@ -114,7 +166,6 @@ public class UserController {
      */
     public boolean isLecturer(Course course) {
         Role role = courseRoles.get(course);
-
         if (role == null) {
             role = determineRole(course);
         }
@@ -130,7 +181,6 @@ public class UserController {
      */
     public boolean isStudent(Course course) {
         Role role = courseRoles.get(course);
-
         if (role == null) {
             role = determineRole(course);
         }
@@ -175,7 +225,7 @@ public class UserController {
      */
     public String saveUser() {
         user = userService.update(user);
-        return "profile.xhtml";
+        return "/profile/show.xhtml?faces-redirect=true";
     }
 
     /**
@@ -267,5 +317,21 @@ public class UserController {
 
     public void setSelectedUser(User selectedUser) {
         this.selectedUser = selectedUser;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public User getProfileUser() {
+        return profileUser;
+    }
+
+    public void setProfileUser(User profileUser) {
+        this.profileUser = profileUser;
     }
 }

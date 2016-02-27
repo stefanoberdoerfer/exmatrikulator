@@ -9,15 +9,18 @@
   <pe:importConstants className="de.unibremen.opensores.util.Constants" var="EXcons" />
 
   <!-- Define Params -->
-  <ui:param name="pageTitle" value="Veranstaltungsübersicht" />
+  <ui:param name="pageTitle" value="#{msg['common.myProfile']}" />
+
   <!-- Breadcrumbs -->
   <ui:define name="breadcrumbs">
     <li class="active">"#{msg['settings.myData']}"</li>
   </ui:define>
+
   <!-- Page Content -->
   <ui:define name="content">
     <div class="headline">
       <h1>#{msg['settings.myData']}</h1>
+      <ui:include src="/WEB-INF/alerts.xhtml" />
     </div>
 
     <div class="row">
@@ -26,16 +29,31 @@
                 <div class="form-group">
                   <h:outputLabel class="col-xs-3 control-label" value="#{msg['common.name']}" />
                     <div class="col-xs-4">
-                      <h:inputText type="text" class="form-control" value="#{userController.user.firstName}" />
+                      <h:inputText type="text" class="form-control" required="true"
+                          requiredMessage="#{msg['registration.missingFirstName']}"
+                          value="#{userController.user.firstName}" />
                     </div>
                     <div class="col-xs-4">
-                      <h:inputText type="text" class="form-control" value="#{userController.user.lastName}" />
+                      <h:inputText type="text" class="form-control" required="true"
+                          requiredMessage="#{msg['registration.missingLastName']}"
+                          value="#{userController.user.lastName}" />
                     </div>
                 </div>
+
+                <div class="form-group">
+                  <h:outputLabel class="col-xs-3 control-label" value="#{msg['common.studentNumber']}" />
+                    <div class="col-xs-8">
+                      <h:inputText type="text" class="form-control" value="#{userController.user.matriculationNumber}" />
+                    </div>
+                </div>
+
                 <div class="form-group">
                   <h:outputLabel class="col-xs-3 control-label" value="#{msg['common.email']}"/>
                     <div class="col-xs-8">
-                      <h:inputText type="email" class="form-control" value="#{userController.user.email}">
+                      <h:inputText type="email" class="form-control" required="true"
+                          requiredMessage="#{msg['registration.missingEmail']}"
+                          validatorMessage="#{msg['registration.invalidEmail']}"
+                          value="#{userController.user.email}">
                         <f:validateRegex pattern="#{EXcons.EMAIL_REGEX}" />
                       </h:inputText>
                     </div>
@@ -46,7 +64,7 @@
                 <div class="form-group">
                   <h:outputLabel class="col-xs-3 control-label" value="#{msg['common.phone']}" />
                     <div class="col-xs-8">
-                      <h:inputText type="text" class="form-control" />
+                      <h:inputText type="text" class="form-control" value="#{userController.user.phoneNumber}" />
                     </div>
                 </div>
 

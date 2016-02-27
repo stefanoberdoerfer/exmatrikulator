@@ -37,6 +37,9 @@ public class User {
     @Column(unique = true, nullable = false, length = 64)
     private String email;
 
+    @Column(nullable = true)
+    private String phoneNumber;
+
     @Column(columnDefinition = "LONG VARCHAR", nullable = true)
     private String password;
 
@@ -108,6 +111,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getPassword() {

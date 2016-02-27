@@ -74,7 +74,11 @@
                     #{user.firstName} #{user.lastName} <span class="caret"></span>
                 </div>
                 <ul class="dropdown-menu dropdown-menu-right">
-                    <li><h:link value="#{msg['common.myProfile']}" outcome="/profile/show" /></li>
+                    <li>
+                      <h:link value="#{msg['common.myProfile']}" outcome="/profile/show">
+                        <f:param name="user-id" value="#{userController.user.userId}" />
+                      </h:link>
+                    </li>
                     <li role="separator" class="divider"></li>
                     <li><h:commandLink value="#{msg['common.logout']}" action="#{navigation.logout}">
                         <c:if test="${param[EXcons.HTTP_PARAM_COURSE_ID] != null}">

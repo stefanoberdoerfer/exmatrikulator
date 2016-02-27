@@ -41,6 +41,23 @@ public class UserService extends GenericService<User> {
      */
     private static final int TOKEN_RANDIX = 32;
 
+    /**
+     * Finds a user using a string id.
+     *
+     * @param idStr User id to use for lookup.
+     * @return Associated user or null.
+     */
+    public User findUserById(String idStr) {
+        User user;
+        try {
+            user = (idStr == null || idStr.trim().isEmpty()) ? null :
+                find(User.class, Integer.valueOf(idStr).longValue());
+        } catch (NumberFormatException e) {
+            user = null;
+        }
+
+        return user;
+    }
 
     /**
      * Finds a user by his unique email credential.

@@ -79,14 +79,18 @@
                           filterBy="#{tutor.user.lastName}"
                           filterMatchMode="contains"
                           styleClass="table-users-lastname">
-                        <h:outputText value="#{tutor.user.lastName}"/>
+                        <h:link outcome="/profile/show.xhtml" value="#{tutor.user.lastName}">
+                          <f:param name="user-id" value="#{tutor.user.userId}" />
+                        </h:link>
                 </p:column>
                 <p:column headerText="#{msg['common.firstName']}"
                           sortBy="#{tutor.user.firstName}"
                           filterBy="#{tutor.user.firstName}"
                           filterMatchMode="contains"
                           styleClass="table-users-firstname">
-                        <h:outputText value="#{tutor.user.firstName}"/>
+                        <h:link outcome="/profile/show.xhtml" value="#{tutor.user.firstName}">
+                          <f:param name="user-id" value="#{tutor.user.userId}" />
+                        </h:link>
                 </p:column>
                 <p:column headerText="#{msg['common.email']}"
                           sortBy="#{tutor.user.email}"
