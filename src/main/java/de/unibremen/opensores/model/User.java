@@ -13,12 +13,12 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.mail.internet.AddressException;
 import javax.mail.MessagingException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.io.IOException;
 
@@ -54,6 +54,9 @@ public class User {
 
     @Column(nullable = true)
     private String language;
+
+    @Column(nullable = false)
+    private Date lastActivity;
 
     @Column(nullable = false)
     private Boolean isBlocked = false;
@@ -246,4 +249,11 @@ public class User {
         return firstName + " " + lastName;
     }
 
+    public Date getLastActivity() {
+        return new Date(lastActivity.getTime());
+    }
+
+    public void setLastActivity(Date lastActivity) {
+        this.lastActivity = new Date(lastActivity.getTime());
+    }
 }

@@ -46,4 +46,27 @@ public final class DateUtil {
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
+
+
+    /**
+     * Returns a date from which is 10 year ago from now.
+     * @return The date which is 10 years ago from now.
+     */
+    public static Date tenYearsAgo() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(getDateTime());
+        cal.add(Calendar.YEAR, -10);
+        return cal.getTime();
+    }
+
+    /**
+     * Returns a date from which is 10 year ago from now.
+     * @return The date which is 10 years ago from now.
+     */
+    public static Date tenYearsLater() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(getDateTime());
+        cal.add(Calendar.YEAR, +10);
+        return cal.getTime();
+    }
 }

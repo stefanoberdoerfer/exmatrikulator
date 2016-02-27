@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.util.DateUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -552,6 +553,8 @@ public class TmeController implements Serializable {
         newUser.setEmail(email);
         newUser.setFirstName(obj.getString("firstname"));
         newUser.setLastName(obj.getString("lastname"));
+        newUser.setLastActivity(DateUtil.getDateTime());
+
 
         // Teachers don't have a marticulation number
         if (obj.has("matriculationNumber")) {

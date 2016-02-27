@@ -73,12 +73,21 @@
                     </div>
                 </h:link>
 
-		<h:link outcome="/mailtemplate/overview" class="col-xs-12 settings-group" rendered="#{courseSettings.isLecturer()}">
+                <h:link outcome="/mailtemplate/overview" class="col-xs-12 settings-group" rendered="#{courseSettings.isLecturer()}">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <div class="settings-group-icon"><i class="fa fa-envelope"></i></div>
                     <h3 class="settings-group-name">#{msg['settings.mailtemplates']}</h3>
                     <div class="settings-group-desc">
                         #{msg['settings.explanations.mailtemplates']}
+                    </div>
+                </h:link>
+
+                <h:link onclick="return exModal('deleteCourse');" class="col-xs-12 settings-group">
+                    <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
+                    <i class="fa fa-trash"></i>
+                    <h3 class="settings-group-name">#{msg['settings.delete']}</h3>
+                    <div class="settings-group-desc">
+                        #{msg['settings.explanations.delete']}
                     </div>
                 </h:link>
 
@@ -122,7 +131,9 @@
             </div>
         </div>
         <ui:include src="/WEB-INF/modals/settings/export.xhtml" />
+        <ui:include src="/WEB-INF/modals/settings/delete.xhtml" />
         <ui:include src="/WEB-INF/modals/settings/finalize/confirm.xhtml" />
+        <ui:include src="/WEB-INF/modals/settings/finalize/success.xhtml" />
         <ui:include src="/WEB-INF/modals/settings/finalize/success.xhtml" />
     </ui:define>
 </ui:composition>

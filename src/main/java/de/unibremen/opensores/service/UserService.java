@@ -8,6 +8,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.util.DateUtil;
 
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -109,6 +110,8 @@ public class UserService extends GenericService<User> {
 
         return !lecturers.isEmpty();
     }
+
+
 
     /**
      * Returns true if the given user is a lecturer in the given course.
@@ -222,9 +225,10 @@ public class UserService extends GenericService<User> {
                 + " WITH t.user.userId = :id"
                 + " LEFT JOIN c.lecturers AS l"
                 + " WITH l.user.userId = :id"
-                + " WHERE (s.isHidden = :hidden and s.isDeleted = false) OR"
+                + " WHERE ((s.isHidden = :hidden and s.isDeleted = false) OR"
                 + " (l.isHidden = :hidden and l.isDeleted = false) OR"
-                + " (t.isHidden = :hidden and t.isDeleted = false)", Course.class)
+                + " (t.isHidden = :hidden and t.isDeleted = false))"
+                + " AND c.deleted = false", Course.class)
             .setParameter("id", user.getUserId())
             .setParameter("hidden", hidden)
             .getResultList();
@@ -250,9 +254,10 @@ public class UserService extends GenericService<User> {
                         + " WITH t.user.userId = :id"
                         + " LEFT JOIN c.lecturers AS l"
                         + " WITH l.user.userId = :id"
-                        + " WHERE l.user.userId IS NOT NULL"
+                        + " WHERE (l.user.userId IS NOT NULL"
                         + " OR t.user.userId IS NOT NULL"
-                        + " OR s.user.userId IS NOT NULL", Course.class)
+                        + " OR s.user.userId IS NOT NULL)"
+                        + " AND c.deleted = false", Course.class)
                 .setParameter("id", user.getUserId())
                 .getResultList();
     }
@@ -269,7 +274,8 @@ public class UserService extends GenericService<User> {
         List<Course> courses = em.createQuery(
                 "SELECT DISTINCT c FROM Course c"
                         + " LEFT JOIN c.lecturers AS l"
-                        + " WITH (l.user.userId = :id and l.isDeleted = false)", Course.class)
+                        + " WITH (l.user.userId = :id and l.isDeleted = false)"
+            + " WHERE c.deleted = false", Course.class)
                 .setParameter("id", user.getUserId())
                 .getResultList();
 
@@ -422,5 +428,22 @@ public class UserService extends GenericService<User> {
                         + "ORDER BY u.lastName ASC",
                     User.class)
                 .getResultList();
+    }
+
+    /**
+     * Gets all users than have not been active for ten years.
+     *
+     * @return List a list of users.
+     */
+    public List<User> getOldUsers() {
+        List<User> users = em.createQuery(
+                "SELECT DISTINCT u "
+                + "FROM User u "
+                + "WHERE (u.lastActivity <= :date "
+                + "AND u.isBlocked = false)", User.class)
+                .setParameter("date", DateUtil.tenYearsAgo())
+                .getResultList();
+
+        return users;
     }
 }

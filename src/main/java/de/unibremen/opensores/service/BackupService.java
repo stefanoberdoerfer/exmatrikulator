@@ -2,6 +2,7 @@ package de.unibremen.opensores.service;
 
 import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.util.ServerProperties;
+import de.unibremen.opensores.util.DateUtil;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -238,5 +239,35 @@ public class BackupService extends GenericService<Backup> {
                 throw new IOException();
             }
         }
+    }
+
+    /**
+     * Removes a collection of entities.
+     *
+     * @param backup a list of backups.
+     */
+    public void deleteBackup(Backup backup) {
+        try {
+            deleteFolder(new File(backup.getPath()));
+        } catch (IOException e) {
+            log.error(e);
+        }
+        em.remove(backup);
+    }
+
+    /**
+     * Gets all backups older than ten years.
+     *
+     * @return List a list of backups.
+     */
+    public List<Backup> getOldBackups() {
+        List<Backup> backups = em.createQuery(
+                "SELECT DISTINCT b "
+                + "FROM Backup b "
+                + "WHERE b.date <= :date", Backup.class)
+                .setParameter("date", DateUtil.tenYearsAgo())
+                .getResultList();
+
+        return backups;
     }
 }

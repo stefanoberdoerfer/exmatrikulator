@@ -110,4 +110,9 @@ public final class Constants {
      * has a length >= threshold
      */
     public static final int LIVE_SEARCH_THRESHOLD = 3;
+
+    /**
+     * String for deleted string values.
+     */
+    public static final String DELETED = "deleted";
 }

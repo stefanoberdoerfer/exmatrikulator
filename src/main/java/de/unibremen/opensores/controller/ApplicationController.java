@@ -1,7 +1,6 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.PaboData;
-import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GlobalRole;
@@ -23,7 +22,6 @@ import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Upload;
 import de.unibremen.opensores.model.User;
-import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
@@ -34,8 +32,7 @@ import de.unibremen.opensores.service.SemesterService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UploadService;
 import de.unibremen.opensores.service.UserService;
-import de.unibremen.opensores.service.MailTemplateService;
-import de.unibremen.opensores.controller.MailTemplateController;
+import de.unibremen.opensores.util.DateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
@@ -50,7 +47,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -236,6 +232,8 @@ public class ApplicationController {
         newUser.setLanguage("de");
         newUser.setSalution("Frau Prof. Dr.");
         newUser.addRole(GlobalRole.USER);
+        newUser.setLastActivity(DateUtil.getDateTime());
+
 
         final User secondUser = new User();
         secondUser.setEmail("user2@uni-bremen.de");
@@ -245,6 +243,8 @@ public class ApplicationController {
         secondUser.setMatriculationNumber("hat keine");
         secondUser.setLanguage("de");
         secondUser.addRole(GlobalRole.USER);
+        secondUser.setLastActivity(DateUtil.getDateTime());
+
 
         final User newLecturer = new User();
         newLecturer.setEmail("lecturer@uni-bremen.de");
@@ -253,6 +253,8 @@ public class ApplicationController {
         newLecturer.setLastName("Lektor");
         newLecturer.addRole(GlobalRole.LECTURER);
         newLecturer.addRole(GlobalRole.USER);
+        newLecturer.setLastActivity(DateUtil.getDateTime());
+
 
         final User newLecturer2 = new User();
         newLecturer2.setEmail("courseholder@uni-bremen.de");
@@ -261,6 +263,7 @@ public class ApplicationController {
         newLecturer2.setLastName("Courseholder");
         newLecturer2.addRole(GlobalRole.LECTURER);
         newLecturer2.addRole(GlobalRole.USER);
+        newLecturer2.setLastActivity(DateUtil.getDateTime());
 
         final User newAdmin = new User();
         newAdmin.setEmail("admin@uni-bremen.de");
@@ -269,6 +272,8 @@ public class ApplicationController {
         newAdmin.setLastName("Admin");
         newAdmin.addRole(GlobalRole.ADMIN);
         newAdmin.addRole(GlobalRole.USER);
+        newAdmin.setLastActivity(DateUtil.getDateTime());
+
 
         // User who isnt in the default course
         final User notInCourse = new User();
@@ -278,6 +283,7 @@ public class ApplicationController {
         notInCourse.setLastName("Imcuas");
         notInCourse.setMatriculationNumber("133742");
         notInCourse.addRole(GlobalRole.USER);
+        notInCourse.setLastActivity(DateUtil.getDateTime());
 
 
         final User unconfirmedUser = new User();
@@ -287,6 +293,7 @@ public class ApplicationController {
         unconfirmedUser.setLastName("Komfirmed");
         unconfirmedUser.setMatriculationNumber("113742");
         unconfirmedUser.addRole(GlobalRole.USER);
+        unconfirmedUser.setLastActivity(DateUtil.getDateTime());
 
         userService.persist(notInCourse);
         log.debug("Inserted User with id: " + notInCourse.getUserId());
@@ -317,6 +324,7 @@ public class ApplicationController {
 
         //Course with all relations filled
         Course course = new Course();
+        course.setCreated(DateUtil.getDateTime());
         course.setDefaultSws("2+2");
         course.setDefaultCreditPoints(1337);
         course.setName("TestVeranstaltung");

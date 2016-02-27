@@ -1,13 +1,16 @@
 package de.unibremen.opensores.service;
 
-import de.unibremen.opensores.model.User;
-import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Semester;
+import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Course;
-
+import de.unibremen.opensores.util.Constants;
+import de.unibremen.opensores.util.DateUtil;
 
 import javax.ejb.Stateless;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,8 @@ import java.util.List;
  */
 @Stateless
 public class CourseService extends GenericService<Course> {
+
+
     /**
      * Find course using the course name.
      *
@@ -30,7 +35,8 @@ public class CourseService extends GenericService<Course> {
         List<Course> courses = em.createQuery(
                 "SELECT DISTINCT c "
                 + "FROM Course c "
-                + "WHERE c.name = :name", Course.class)
+                + "WHERE c.name = :name "
+                + "AND c.deleted = false", Course.class)
             .setParameter("name", name)
             .getResultList();
 
@@ -49,7 +55,8 @@ public class CourseService extends GenericService<Course> {
                 "SELECT DISTINCT c FROM Course c "
                 + "JOIN c.semester AS s "
                 + "WITH s.semesterYear = :year "
-                + "WHERE c.name = :name", Course.class)
+                + "WHERE c.name = :name "
+                + "AND c.deleted = false", Course.class)
             .setParameter("year", semester.getSemesterYear())
             .setParameter("name", name)
             .getResultList();
@@ -66,8 +73,9 @@ public class CourseService extends GenericService<Course> {
     public Course findCourseByIdentifier(String identifier) {
         List<Course> courses = em.createQuery(
                 "SELECT DISTINCT c FROM Course c "
-                        + "WHERE trim(lower(c.identifier)) "
-                        + "= trim(lower(:identifier))", Course.class)
+                        + "WHERE (trim(lower(c.identifier)) "
+                        + "= trim(lower(:identifier))) "
+                        + "AND c.deleted = false", Course.class)
                 .setParameter("identifier", identifier)
                 .getResultList();
 
@@ -130,6 +138,50 @@ public class CourseService extends GenericService<Course> {
             .getResultList();
 
         return (students.isEmpty()) ? null : students.get(0);
+    }
+
+
+    //TODO Matthias bitte kurz helfen
+    /**
+     * Returns true if the given user is a lecturer in any course.
+     *
+     * @param user User to check.
+     * @return True if he is, false otherwise.
+     */
+    public boolean isLecturerInAnyCourse(User user) {
+        List<Lecturer> lecturers = em.createQuery(
+                "SELECT DISTINCT l FROM Lecturer l "
+                        + "JOIN l.user AS u WITH u.userId = :uid "
+                        + "WHERE (l.isDeleted = false "
+                        + "AND l.course.deleted = false)", Lecturer.class)
+                .setParameter("uid", user.getUserId())
+                .getResultList();
+
+        return !lecturers.isEmpty();
+    }
+
+    /**
+     * Deletes the course with its associations.
+     * @param course The course which should be deleted with its associations.
+     * @return The
+     */
+    public Course deleteCourseWithAssociatons(Course course) {
+        course.setDeleted(true);
+        for (Student student: course.getStudents()) {
+            student.setDeleted(true);
+        }
+
+        for (PrivilegedUser privilegedUser: course.getTutors()) {
+            privilegedUser.setDeleted(true);
+        }
+
+        for (Lecturer lecturer: course.getLecturers()) {
+            lecturer.setDeleted(true);
+        }
+
+        course.setDeleted(true);
+        course.setCreated(DateUtil.tenYearsLater());
+        return update(course);
     }
 
     /**
@@ -255,9 +307,49 @@ public class CourseService extends GenericService<Course> {
 
         return em.createQuery(
                 "SELECT DISTINCT c FROM Course c WHERE "
-                        + "TRIM(LOWER(c.name)) LIKE :searchInput OR"
-                        + ":searchInput IN elements(c.numbers) ", Course.class)
+                        + "(TRIM(LOWER(c.name)) LIKE :searchInput OR"
+                        + ":searchInput IN elements(c.numbers)) AND"
+                        + "c.deleted = false", Course.class)
                 .setParameter("searchInput", "%" + trimSearchInput + "%")
                 .getResultList();
+    }
+
+    /**
+     * Gets all courses older than ten years for a specific lecturer.
+     *
+     * @param user the user to look up.
+     *
+     * @return List a list of courses.
+     */
+    public List<Course> getOldCourses(User user) {
+        List<Course> courses = em.createQuery(
+                "SELECT DISTINCT c "
+                + "FROM Course c "
+                + "JOIN c.lecturers AS l "
+                + "WITH l.user.userId = :userId "
+                + "WHERE c.deleted = false AND "
+                + "c.created <= :date", Course.class)
+                .setParameter("date", DateUtil.tenYearsAgo())
+                .setParameter("userId", user.getUserId())
+                .getResultList();
+
+        return courses;
+    }
+
+    /**
+     * Gets all courses older than ten years.
+     *
+     * @return List a list of courses.
+     */
+    public List<Course> getOldCourses() {
+        List<Course> courses = em.createQuery(
+                "SELECT DISTINCT c "
+                + "FROM Course c "
+                + "WHERE (c.created <= :date "
+                + "AND c.deleted = false)", Course.class)
+                .setParameter("date", DateUtil.tenYearsAgo())
+                .getResultList();
+
+        return courses;
     }
 }

@@ -19,6 +19,7 @@ import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
+import de.unibremen.opensores.util.DateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +45,6 @@ import java.util.stream.Collectors;
 
 /**
  * Controller to manage the participants of a course.
- * //TODO Update User values after editing
  * @author Kevin Scheck
  */
 @ManagedBean
@@ -298,7 +298,6 @@ public class  ParticipantsController {
         }
     }
 
-
     /*
      * UI Callbacks
      */
@@ -460,6 +459,7 @@ public class  ParticipantsController {
             PasswordReset passwordReset = userService
                     .initPasswordReset(selectedUser, RESET_TOKEN_EXPIRATION);
             selectedUser.setToken(passwordReset);
+            selectedUser.setLastActivity(DateUtil.getDateTime());
             userService.persist(selectedUser);
         }
 

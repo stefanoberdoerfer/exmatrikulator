@@ -9,6 +9,8 @@ import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradeFormulaService;
@@ -19,6 +21,7 @@ import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
+import de.unibremen.opensores.util.DateUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,6 +75,8 @@ public class UserOverviewController {
     private boolean globalRoleLecturer;
     private boolean globalRoleUser;
 
+    private List<Course> oldCoursesAsLecturer;
+
     /**
      * User ResourceBundle for internationalisation information.
      */
@@ -116,6 +121,8 @@ public class UserOverviewController {
 
         bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
+
+        oldCoursesAsLecturer = courseService.getOldCourses(loggedInUser);
     }
 
     /**
@@ -208,6 +215,8 @@ public class UserOverviewController {
         PasswordReset passwordReset = userService
                 .initPasswordReset(selectedUser, RESET_TOKEN_EXPIRATION);
         selectedUser.setToken(passwordReset);
+        selectedUser.setLastActivity(DateUtil.getDateTime());
+
         userService.persist(selectedUser);
 
         logUserRegistedToSystem(selectedUser);
@@ -626,5 +635,9 @@ public class UserOverviewController {
 
     public void setGlobalRoleUser(boolean globalRoleUser) {
         this.globalRoleUser = globalRoleUser;
+    }
+
+    public List<Course> getOldCoursesAsLecturer() {
+        return oldCoursesAsLecturer;
     }
 }
