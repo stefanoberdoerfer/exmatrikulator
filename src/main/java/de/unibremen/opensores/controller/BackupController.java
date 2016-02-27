@@ -75,7 +75,7 @@ public class BackupController {
         Backup backup = null;
         log.debug("createBackup called");
         try {
-            backup = backupService.runBackup("Manual Backup");
+            backup = backupService.runBackup("ManualBackup");
         } catch (PersistenceException | IOException e) {
             log.fatal(e);
             return;
