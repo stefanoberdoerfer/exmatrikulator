@@ -499,7 +499,7 @@ public class GradingService extends GenericService<Grading> {
         /*
         If the user is a tutor, check if he may grade this student
          */
-        if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
+        if (!userService.hasCourseRole(corrector, "LECTURER", course)
                 && (!exam.isGradableByTutors()
                 || !this.mayGrade(corrector, student))) {
             throw new IllegalAccessException("NOT_GRADABLE");
@@ -558,7 +558,7 @@ public class GradingService extends GenericService<Grading> {
         /*
         If the user is a tutor, check if he may grade this group
          */
-        if (userService.hasCourseRole(corrector, "PRIVILEGED_USER", course)
+        if (!userService.hasCourseRole(corrector, "LECTURER", course)
                 && (!exam.isGradableByTutors()
                 || !this.mayGrade(corrector, group))) {
             throw new IllegalAccessException("NOT_GRADABLE");

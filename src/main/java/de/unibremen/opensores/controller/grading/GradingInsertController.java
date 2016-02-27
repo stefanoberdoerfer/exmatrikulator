@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -57,6 +58,9 @@ public class GradingInsertController {
     private String formPublicComment;
     private boolean overwriting = false;
     private Integer formGradeType = GradeType.Pabo.getId();
+
+    @ManagedProperty("#{gradingController}")
+    private GradingController gradingController;
 
     /**
      * Stores the currently logged in user.
@@ -277,10 +281,10 @@ public class GradingInsertController {
         Try to store the grade
          */
         Exam exam = null;
+        Student student = null;
 
         try {
-            Student student = gradingService.findStudent(course,
-                    formStudent);
+            student = gradingService.findStudent(course, formStudent);
 
             if (student == null) {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -365,6 +369,8 @@ public class GradingInsertController {
         /*
         Success
          */
+        gradingController.resetExamGradings(student);
+
         facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_INFO, bundle.getString("common.success"),
                 bundle.getString("gradings.stored")));
@@ -437,5 +443,13 @@ public class GradingInsertController {
         formPrivateComment = "";
         formPublicComment = "";
         overwriting = false;
+    }
+
+    public GradingController getGradingController() {
+        return gradingController;
+    }
+
+    public void setGradingController(GradingController gradingController) {
+        this.gradingController = gradingController;
     }
 }

@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -53,6 +54,9 @@ public class GradingEditController {
     private String formPublicComment;
     private boolean overwriting = false;
     private Integer formGradeType;
+
+    @ManagedProperty("#{gradingController}")
+    private GradingController gradingController;
 
     /**
      * Stores if the currently logged in user is lecturer.
@@ -241,6 +245,8 @@ public class GradingEditController {
         /*
         Success
          */
+        gradingController.resetExamGradings(student);
+
         facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_INFO, bundle.getString("common.success"),
                 bundle.getString("gradings.stored")));
@@ -364,5 +370,13 @@ public class GradingEditController {
 
     public Integer getFormGradeType() {
         return formGradeType;
+    }
+
+    public GradingController getGradingController() {
+        return gradingController;
+    }
+
+    public void setGradingController(GradingController gradingController) {
+        this.gradingController = gradingController;
     }
 }

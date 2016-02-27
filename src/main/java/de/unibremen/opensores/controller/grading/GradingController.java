@@ -53,7 +53,7 @@ public class GradingController {
     /**
      * Student gradings. Stored here so it won't be loaded multiple times.
      */
-    private Map<Student, Map<Long, Grading>> studentGradings = new HashMap<>();
+    private Map<Long, Map<Long, Grading>> studentGradings = new HashMap<>();
 
     /**
      * String to search for in the students overview.
@@ -171,7 +171,7 @@ public class GradingController {
         log.debug("load student gradings for student "
                 + student.getUser().getFirstName());
 
-        Map<Long, Grading> gradings = studentGradings.get(student);
+        Map<Long, Grading> gradings = studentGradings.get(student.getStudentId());
 
         log.debug("Gradings is "
                 + (gradings == null ? "not loaded" : "already loaded"));
@@ -179,7 +179,7 @@ public class GradingController {
         if (gradings == null) {
             gradings = gradingService.getStudentGradings(student);
             log.debug("Loaded gradings is null");
-            studentGradings.put(student, gradings);
+            studentGradings.put(student.getStudentId(), gradings);
         }
 
         return gradings.get(exam.getExamId());
@@ -216,5 +216,15 @@ public class GradingController {
 
         return grading != null && GradeType.Boolean.hasPassed(grading
                 .getGrade().getValue());
+    }
+
+    public void resetExamGradings(Student student) {
+        log.debug("Remove student gradings for " + student.getStudentId());
+
+        if (student == null) {
+            return;
+        }
+
+        studentGradings.remove(student.getStudentId());
     }
 }
