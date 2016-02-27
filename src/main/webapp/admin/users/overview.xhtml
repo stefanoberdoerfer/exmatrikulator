@@ -26,6 +26,7 @@
             <h1>#{msg['common.user']}</h1>
         </div>
 
+        <ui:include src="/WEB-INF/alerts.xhtml" />
 
         <h:form id="usersform">
         <p:dataTable var="user" value="#{userOverviewController.users}" id="usertable"
@@ -60,15 +61,15 @@
                 <h:outputText value="#{user.matriculationNumber}"/>
             </p:column>
             <p:column headerText="#{msg['common.roles']}" styleClass="table-users-type">
-                <h:outputText value="#{user.roles}"/>
+                <h:outputText value="#{userOverviewController.getNamesOfGlobalRoles(user.roles)}"/>
             </p:column>
             <p:column styleClass="table-common-options-four text-right">
                 <p:commandLink oncomplete="return exModal('userEdit');"
-                               h5:data-toggle="tooltip" update=":editUserDialog"
+                               h5:data-toggle="tooltip" update=":editUserForm"
                                h5:data-placement="top" title="#{msg['users.edit']}"
-                               styleClass="btn btn-default">
+                               styleClass="btn btn-default"
+                               action="#{userOverviewController.onEditUserCalled(user)}" >
                     <i class="fa fa-pencil"></i>
-                    <f:actionListener binding="#{userOverviewController.onEditUserCalled(user)}" />
                 </p:commandLink>
 
                 <p:commandLink oncomplete="return exModal('userPassword');"

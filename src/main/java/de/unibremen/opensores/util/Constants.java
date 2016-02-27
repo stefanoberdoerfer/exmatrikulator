@@ -104,4 +104,10 @@ public final class Constants {
      * The timezone of the system in Exmatrikulator.
      */
     public static final String SYSTEM_TIMEZONE = "Europe/Berlin";
+
+    /**
+     * Live search threshold. Searching should begin if searchString
+     * has a length >= threshold
+     */
+    public static final int LIVE_SEARCH_THRESHOLD = 3;
 }

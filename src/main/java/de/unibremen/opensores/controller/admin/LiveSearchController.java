@@ -54,7 +54,7 @@ public class LiveSearchController {
      */
     public void searchForUsers(AjaxBehaviorEvent event) {
         log.debug("searchForUsers: " + searchString);
-        if (searchString.length() >= 3) {
+        if (searchString.length() >= Constants.LIVE_SEARCH_THRESHOLD) {
             userResultList = userService.searchForUsers(searchString);
         }
     }

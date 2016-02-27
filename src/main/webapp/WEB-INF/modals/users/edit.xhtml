@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui">
     <p:dialog id="editUserDialog" header="#{msg['users.edit']}" appendTo="@(body)" widgetVar="userEdit" modal="true">
         <ui:include src="/WEB-INF/alerts.xhtml" />
-        <h:form>
+        <h:form id="editUserForm">
             <p:panel id="editDlgPnl">
                 <div class="modal-body">
                     <div class="form-group">
@@ -38,7 +38,7 @@
                         <label for="editUserMatriculation" class="col-xs-3 control-label">#{msg['common.studentNumber']}</label>
                         <div class="col-xs-8">
                             <h:inputText styleClass="form-control" id="editUserMatriculation"
-                                         value="#{userController.selectedUser.matriculationNumber}"/>
+                                         value="#{userOverviewController.selectedUser.matriculationNumber}"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -54,14 +54,14 @@
                             <div>
                                 <h:selectBooleanCheckbox
                                         id="lecturerRole"
-                                        value="#{userOverviewController.globalRoleAdmin}"/>
+                                        value="#{userOverviewController.globalRoleLecturer}"/>
                                 <h:outputLabel value="#{msg['common.lecturer']}"
                                                for="lecturerRole" styleClass="col-xs-offset-1"/>
                             </div>
                             <div>
                                 <h:selectBooleanCheckbox
                                         id="userRole"
-                                        value="#{userOverviewController.globalRoleAdmin}"/>
+                                        value="#{userOverviewController.globalRoleUser}"/>
                                 <h:outputLabel value="#{msg['common.user']}"
                                                for="userRole" styleClass="col-xs-offset-1"/>
                             </div>
@@ -73,9 +73,10 @@
                         <p:button value="#{msg['common.close']}" type="button" onclick="return exModal(':userEdit');"
                                   styleClass="btn btn-default" />
                         <p:commandLink id="editUserButton"
-                                       action="#{userOverviewController.saveEditChanges}"
+                                       action="#{userOverviewController.saveEditChanges()}"
                                        class="btn btn-primary" value="#{msg['common.saveChanges']}"
-                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userEdit')" />
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userEdit')"
+                                       update=":usersform"/>
                     </div>
                 </div>
             </p:panel>

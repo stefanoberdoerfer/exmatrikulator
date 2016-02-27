@@ -31,8 +31,7 @@
                                        action="#{userOverviewController.deleteUser()}"
                                        class="btn btn-danger" value="#{msg['common.remove']}"
                                        oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userRemove')"
-                                    />
-
+                                       update=":usersform"/>
                     </div>
                 </div>
             </p:panel>

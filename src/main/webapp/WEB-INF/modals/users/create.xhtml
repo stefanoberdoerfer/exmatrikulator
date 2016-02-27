@@ -77,7 +77,8 @@
                     <p:commandLink action="#{userOverviewController.createNewUser()}"
                                    id="createUserButton"
                                    class="btn btn-primary" value="#{msg['users.create']}"
-                                   oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userCreate')" />
+                                   oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':userCreate')"
+                                   update=":usersform" />
                 </div>
             </div>
             </p:panel>
