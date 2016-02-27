@@ -101,25 +101,27 @@
                 </p:column>
                 <p:column headerText="#{msg['common.actions']}"
                           styleClass="table-common-options-two text-right">
-                    <p:commandLink oncomplete="return exModal('participantEdit');"
-                                   update=":editUserDialog"
-                                   h5:data-toggle="tooltip"
-                                   h5:data-placement="top" title="#{msg['course.tutor.edit']}"
-                                   class="btn btn-default"
-                                   rendered="#{participantsController.loggedInUserCanManageTutors
+                    <div class="btn-group">
+                        <p:commandLink oncomplete="return exModal('participantEdit');"
+                                       update=":editUserDialog"
+                                       h5:data-toggle="tooltip"
+                                       h5:data-placement="top" title="#{msg['course.tutor.edit']}"
+                                       class="btn btn-default"
+                                       rendered="#{participantsController.loggedInUserCanManageTutors
                                        and participantsController.course.getLecturerFromUser(tutor.user) == null}">
-                        <f:actionListener binding="#{participantsController.onEditPrivilegedUserDialogCalled(tutor)}"/>
-                        <i class="fa fa-pencil"></i>
-                    </p:commandLink>
-                    <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
-                                   update=":participantRemoveDialog"
-                                   h5:data-placement="top" title="#{msg['course.tutor.remove']}"
-                                   class="btn btn-danger"
-                                   rendered="#{participantsController.loggedInUserCanManageTutors
+                            <f:actionListener binding="#{participantsController.onEditPrivilegedUserDialogCalled(tutor)}"/>
+                            <i class="fa fa-pencil"></i>
+                        </p:commandLink>
+                        <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
+                                       update=":participantRemoveDialog"
+                                       h5:data-placement="top" title="#{msg['course.tutor.remove']}"
+                                       class="btn btn-danger"
+                                       rendered="#{participantsController.loggedInUserCanManageTutors
                                        and participantsController.course.getLecturerFromUser(tutor.user) == null}">
-                        <i class="fa fa-remove"></i>
-                        <f:actionListener binding="#{participantsController.onDeletePrivilegedUserDialogCalled(tutor)}"/>
-                    </p:commandLink>
+                            <i class="fa fa-remove"></i>
+                            <f:actionListener binding="#{participantsController.onDeletePrivilegedUserDialogCalled(tutor)}"/>
+                        </p:commandLink>
+                    </div>
                 </p:column>
             </p:dataTable>
         </h:form>
