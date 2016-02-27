@@ -225,9 +225,10 @@ public class UserService extends GenericService<User> {
                 + " WITH t.user.userId = :id"
                 + " LEFT JOIN c.lecturers AS l"
                 + " WITH l.user.userId = :id"
-                + " WHERE (s.isHidden = :hidden and s.isDeleted = false) OR"
+                + " WHERE ((s.isHidden = :hidden and s.isDeleted = false) OR"
                 + " (l.isHidden = :hidden and l.isDeleted = false) OR"
-                + " (t.isHidden = :hidden and t.isDeleted = false)", Course.class)
+                + " (t.isHidden = :hidden and t.isDeleted = false))"
+                + " AND c.deleted = false", Course.class)
             .setParameter("id", user.getUserId())
             .setParameter("hidden", hidden)
             .getResultList();
@@ -253,9 +254,10 @@ public class UserService extends GenericService<User> {
                         + " WITH t.user.userId = :id"
                         + " LEFT JOIN c.lecturers AS l"
                         + " WITH l.user.userId = :id"
-                        + " WHERE l.user.userId IS NOT NULL"
+                        + " WHERE (l.user.userId IS NOT NULL"
                         + " OR t.user.userId IS NOT NULL"
-                        + " OR s.user.userId IS NOT NULL", Course.class)
+                        + " OR s.user.userId IS NOT NULL)"
+                        + " AND c.deleted = false", Course.class)
                 .setParameter("id", user.getUserId())
                 .getResultList();
     }
@@ -272,7 +274,8 @@ public class UserService extends GenericService<User> {
         List<Course> courses = em.createQuery(
                 "SELECT DISTINCT c FROM Course c"
                         + " LEFT JOIN c.lecturers AS l"
-                        + " WITH (l.user.userId = :id and l.isDeleted = false)", Course.class)
+                        + " WITH (l.user.userId = :id and l.isDeleted = false)"
+            + " WHERE c.deleted = false", Course.class)
                 .setParameter("id", user.getUserId())
                 .getResultList();
 

@@ -113,6 +113,18 @@ public class CourseSettingsController {
     }
 
     /**
+     * Deletes a course.
+     *
+     * @return String redirect to Settings page"
+     */
+    public String deleteCourse() {
+        log.debug("Deleting course " + course.getName());
+        course.setDeleted(true);
+        courseService.update(course);
+        return PATH_TO_COURSE_OVERVIEW;
+    }
+
+    /**
      * Wether the user is allowed to print or not.
      *
      * @return boolean true if yes
