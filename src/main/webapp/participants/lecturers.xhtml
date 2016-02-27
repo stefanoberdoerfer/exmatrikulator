@@ -95,8 +95,7 @@
                           styleClass="table-common-email">
                     <h:outputText value="#{lecturer.user.email}"/>
                 </p:column>
-                <p:column headerText="#{msg['common.actions']}"
-                          styleClass="table-common-options-one text-right">
+                <p:column styleClass="table-common-options-one text-right">
                     <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
                                    update=":participantRemoveDialog"
                                    rendered="#{participantsController.course.getLecturerFromUser(participantsController.loggedInUser) != null

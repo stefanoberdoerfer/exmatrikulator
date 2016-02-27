@@ -99,8 +99,7 @@
                           styleClass="table-common-email">
                     <h:outputText value="#{tutor.user.email}"/>
                 </p:column>
-                <p:column headerText="#{msg['common.actions']}"
-                          styleClass="table-common-options-two text-right">
+                <p:column styleClass="table-common-options-two text-right">
                     <div class="btn-group">
                         <p:commandLink oncomplete="return exModal('participantEdit');"
                                        update=":editUserDialog"

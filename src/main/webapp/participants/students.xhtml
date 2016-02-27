@@ -120,8 +120,7 @@
                           styleClass="table-grades-grade text-center">
                     <h:outputText value="#{participantsController.getPaboGradeName(student.paboGrade)}"/>
                 </p:column>
-                <p:column headerText="#{msg['common.actions']}"
-                          styleClass="table-common-options-three text-right">
+                <p:column styleClass="table-common-options-three text-right">
                     <div class="btn-group">
                         <p:commandLink oncomplete="return exModal('participantEdit');"
                                        h5:data-toggle="tooltip" update=":editUserDialog"
