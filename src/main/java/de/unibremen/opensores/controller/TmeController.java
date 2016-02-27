@@ -300,8 +300,16 @@ public class TmeController implements Serializable {
             return (Course) obj;
         }
 
+        String name = node.getString("name");
+        Semester semester = createSemester(node.getString("zeitraum"));
+
+        Course exc = courseService.findCourseByName(name, semester);
+        if (exc != null) {
+            return exc;
+        }
+
         Course course = new Course();
-        course.setName(node.getString("name"));
+        course.setName(name);
         course.setDefaultSws(node.getString("wochenstunden"));
         course.setDefaultCreditPoints(node.getInt("cp"));
         course.setRequiresConfirmation(false);
@@ -323,8 +331,6 @@ public class TmeController implements Serializable {
         type.setIsDefaultParttype(true);
         type.setCourse(course);
         course.getParticipationTypes().add(type);
-
-        Semester semester = createSemester(node.getString("zeitraum"));
         course.setSemester(semester);
 
         List<String> vaks = new ArrayList<>();
