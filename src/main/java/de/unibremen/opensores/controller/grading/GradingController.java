@@ -218,13 +218,16 @@ public class GradingController {
                 .getGrade().getValue());
     }
 
+    /**
+     * Called to reset the exam gradings cache for a specific student.
+     * @param student Student to remove from the cache.
+     */
     public void resetExamGradings(Student student) {
-        log.debug("Remove student gradings for " + student.getStudentId());
-
         if (student == null) {
             return;
         }
 
+        log.debug("Remove student gradings for " + student.getStudentId());
         studentGradings.remove(student.getStudentId());
     }
 }
