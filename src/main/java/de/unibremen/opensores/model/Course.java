@@ -62,11 +62,18 @@ public class Course {
     @Type(type = "date")
     private Date lastFinalization;
 
+    @Column(nullable = false)
+    @Type(type = "date")
+    private Date created;
+
     @Column
     private Integer minGroupSize;
 
     @Column
     private Integer maxGroupSize;
+
+    @Column
+    private boolean deleted;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Student> students = new ArrayList<>();
@@ -430,6 +437,24 @@ public class Course {
         }
     }
 
+    /**
+     * Returns the date of creation.
+     *
+     * @return Date creation of this course.
+     */
+    public Date getCreated() {
+        return new Date(created.getTime());
+    }
+
+    /**
+     * Sets the date of cretion.
+     *
+     * @param created Date of creation.
+     */
+    public void setCreated(final Date created) {
+        this.created = new Date(created.getTime());
+    }
+
     @Override
     public int hashCode() {
         if (this.courseId != null) {
@@ -450,5 +475,13 @@ public class Course {
         } else {
             return (obj == this);
         }
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

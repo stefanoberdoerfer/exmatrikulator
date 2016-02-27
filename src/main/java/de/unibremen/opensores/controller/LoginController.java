@@ -3,6 +3,7 @@ package de.unibremen.opensores.controller;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
+import de.unibremen.opensores.util.DateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
@@ -93,7 +94,8 @@ public class LoginController {
                     bundle.getString("login.fail")));
             return "";
         }
-
+        user.setLastActivity(DateUtil.getDateTime());
+        user = userService.update(user);
         facesContext.getExternalContext().getSessionMap().put(Constants.SESSION_MAP_KEY_USER, user);
         return PATH_TO_COURSE_OVERVIEW;
     }

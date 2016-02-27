@@ -8,6 +8,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.util.DateUtil;
 
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -109,6 +110,8 @@ public class UserService extends GenericService<User> {
 
         return !lecturers.isEmpty();
     }
+
+
 
     /**
      * Returns true if the given user is a lecturer in the given course.
@@ -422,5 +425,22 @@ public class UserService extends GenericService<User> {
                         + "ORDER BY u.lastName ASC",
                     User.class)
                 .getResultList();
+    }
+
+    /**
+     * Gets all users than have not been active for ten years.
+     *
+     * @return List a list of users.
+     */
+    public List<User> getOldUsers() {
+        List<User> users = em.createQuery(
+                "SELECT DISTINCT u "
+                + "FROM User u "
+                + "WHERE (u.lastActivity <= :date "
+                + "AND u.isBlocked = false)", User.class)
+                .setParameter("date", DateUtil.tenYearsAgo())
+                .getResultList();
+
+        return users;
     }
 }

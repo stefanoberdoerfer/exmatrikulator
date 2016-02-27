@@ -3,6 +3,7 @@ package de.unibremen.opensores.controller;
 import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.util.DateUtil;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.ejb.EJB;
@@ -109,7 +110,7 @@ public class RegistrationController {
         newUser.setLastName(lastName);
         newUser.setLanguage("de");
         newUser.addRole(GlobalRole.USER);
-
+        newUser.setLastActivity(DateUtil.getDateTime());
         return newUser;
     }
 

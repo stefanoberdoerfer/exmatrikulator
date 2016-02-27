@@ -24,6 +24,18 @@
             </h:form>
             <h1>#{msg['courses.overview']}</h1>
         </div>
+        <h:panelGroup id="oldCourseAlert">
+            <h:panelGroup class="alert alert-danger"
+                          rendered="#{courseOverviewController.oldData()}">
+                <h:outputText value="#{msg['courses.overview.warningOldData']}"/>
+                <p:commandLink styleClass="btn btn-danger"  update="oldCourseRemoveDlg"
+                               oncomplete="return exModal('oldCourseRemove');"
+                               value="#{msg['courses.overview.showOldData']}">
+
+                </p:commandLink>
+            </h:panelGroup>
+
+        </h:panelGroup>
 
         <h3>#{msg['courses.overview.normal']}</h3>
         <h:form id="courseOverviewForm">
@@ -99,6 +111,7 @@
             </p:dataTable>
         </h:form>
 
+        <ui:include src="/WEB-INF/modals/course/oldCourses.xhtml" />
         <ui:include src="/WEB-INF/modals/course/leave.xhtml" />
         <ui:include src="/WEB-INF/modals/course/join/search.xhtml" />
         <ui:include src="/WEB-INF/modals/course/join/groupJoin.xhtml" />

@@ -7,14 +7,20 @@ import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.GlobalRole;
+import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.LecturerService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.service.StudentService;
+import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.util.Constants;
+import de.unibremen.opensores.util.DateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -24,7 +30,6 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The Backing Bean of the Course cverview page. Covers logic which shouldn't
@@ -42,6 +47,16 @@ public class CourseOverviewController {
      * CourseService for database transactions related to courses.
      */
     private CourseService courseService;
+
+    /**
+     * UserService for finding old users.
+     */
+    private UserService userService;
+
+    /**
+     * BackupService for finding old Backups.
+     */
+    private BackupService backupService;
 
     /**
      * The LogService for creating Exmatrikulator business domain logs.
@@ -91,6 +106,21 @@ public class CourseOverviewController {
     private User loggedInUser;
 
     /**
+     * A list of courses which are 10 years old.
+     */
+    private List<Course> oldCourses;
+
+    /**
+     * A list of users which have not been active for 10 years.
+     */
+    private List<User> oldUsers;
+
+    /**
+     * A list of backups that are older than 10 years.
+     */
+    private List<Backup> oldBackups;
+
+    /**
      * Sessionscoped Usercontroller injected here to simplify
      * synchronisation of active courses.
      */
@@ -107,7 +137,38 @@ public class CourseOverviewController {
         loggedInUser = (User) FacesContext.getCurrentInstance().getExternalContext()
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
 
+        oldCourses = courseService.getOldCourses(loggedInUser);
+        oldUsers = new ArrayList<User>();
+        oldBackups = new ArrayList<Backup>();
         newStudents = new ArrayList<>();
+
+        if (loggedInUser.hasGlobalRole(GlobalRole.ADMIN)) {
+            oldCourses = courseService.getOldCourses();
+            oldUsers = userService.getOldUsers();
+            oldBackups = backupService.getOldBackups();
+        }
+    }
+
+    /**
+     * Deletes the inactive courses with its associations.
+     */
+    public void deleteOldData() {
+        log.debug("deleteOldData() called");
+
+        for (Course c : oldCourses) {
+            courseService.deleteCourseWithAssociatons(c);
+        }
+        oldCourses.clear();
+
+        for (User u : oldUsers) {
+            deleteUser(u);
+        }
+        oldUsers.clear();
+
+        for (Backup b : oldBackups) {
+            backupService.remove(b);
+        }
+        oldBackups.clear();
     }
 
     /**
@@ -327,6 +388,41 @@ public class CourseOverviewController {
     }
 
     /**
+     * Returns true if old data is available.
+     *
+     * @return boolean if old data is available.
+     */
+    public boolean oldData() {
+        if ((oldCourses != null) && (oldCourses.size() > 0)) {
+            return true;
+        } else if ((oldUsers != null) && (oldUsers.size() > 0)) {
+            return true;
+        } else if ((oldBackups != null) && (oldBackups.size() > 0)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Deletes a user by overwriting all of his/her attributes.
+     * This is beneficial for not destroying many relations by deleting this
+     * user completely.
+     *
+     * @param user the user to be deleted
+     */
+    public void deleteUser(User user) {
+        user.setFirstName("Deleted");
+        user.setLastName("User");
+        user.setEmail(RandomStringUtils.randomAlphanumeric(64));
+        user.setMatriculationNumber("XXXXXX");
+        user.setProfileInfo("");
+        user.setBlocked(true);
+        user.setPassword(RandomStringUtils.randomAlphanumeric(10));
+        userService.update(user);
+    }
+
+    /**
      * Injects the logService.
      * @param logService The logService to be injected to the bean.
      */
@@ -372,6 +468,24 @@ public class CourseOverviewController {
         this.studentService = studentService;
     }
 
+    /**
+     * Injects the user service.
+     * @param userService The user service to be injected to the bean.
+     */
+    @EJB
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    /**
+     * Injects the backup service.
+     * @param backupService The backup service to be injected to the bean.
+     */
+    @EJB
+    public void setBackupService(BackupService backupService) {
+        this.backupService = backupService;
+    }
+
     public String getCourseSearchInput() {
         return courseSearchInput;
     }
@@ -414,5 +528,17 @@ public class CourseOverviewController {
 
     public void setCourseToLeave(Course courseToLeave) {
         this.courseToLeave = courseToLeave;
+    }
+
+    public List<Course> getOldCourses() {
+        return oldCourses;
+    }
+
+    public List<User> getOldUsers() {
+        return oldUsers;
+    }
+
+    public List<Backup> getOldBackups() {
+        return oldBackups;
     }
 }
