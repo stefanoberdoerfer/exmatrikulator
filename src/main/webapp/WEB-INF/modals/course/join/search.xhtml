@@ -28,20 +28,26 @@
             <div class="form-group">
                 <h:dataTable id="coursesSearchOutput" value="#{courseOverviewController.searchResultList}"
                              var="course" styleClass="table"
-                             columnClasses="responsive, responsive, table-common-options-one">
+                             columnClasses="responsive, responsive, table-common-options-two">
                     <h:column>
                         #{course.name}<br></br>
                         #{course.semester}
                     </h:column>
                     <h:column>
                         <ui:repeat value="#{course.numbers}" var="vak">
-                            <h:outputText value="#{vak}"/> <c:if test="#{course.numbers.size > 1}"><br></br></c:if>
+                            <h:outputText value="#{vak}"/> <c:if test="#{course.numbers.size > 1}">, <br></br></c:if>
                         </ui:repeat>
                     </h:column>
                     <h:column>
                         <p:commandLink class="btn btn-default" action="#{courseOverviewController.courseSelected(course)}"
-                            onsuccess="return exModal(':courseJoinSearch', 'courseJoinType');"
-                            update=":partTypeModalForm">
+                                       title="#{msg['courses.join.group']}"
+                                       onsuccess="return exModal(':courseJoinSearch', 'courseGroupJoin');">
+                            <i class="fa fa-users"></i>
+                        </p:commandLink>
+                        <p:commandLink class="btn btn-default" action="#{courseOverviewController.courseSelected(course)}"
+                                       onsuccess="return exModal(':courseJoinSearch', 'courseJoinType');"
+                                       title="#{msg['courses.join.single']}"
+                                       update=":partTypeModalForm">
                             <i class="fa fa-plus"></i>
                         </p:commandLink>
                     </h:column>

@@ -24,12 +24,13 @@
                 <p:commandButton value="#{msg['common.close']}" type="button"
                                  onclick="return exModal(':courseJoinType');" styleClass="btn btn-default" />
                 <p:commandButton action="#{courseOverviewController.parttypeSelected()}" class="btn btn-primary"
-                        value="#{msg['common.select']}"
+                        value="#{msg['common.select']}" id="joinButton"
                         onsuccess="return exModal(':courseJoinType');"
                         update=":courseOverviewForm :navigationform">
                 </p:commandButton>
             </div>
         </div>
+        <p:blockUI block=":partTypeModalForm" trigger="joinButton"/>
         </h:form>
     </p:dialog>
 </ui:composition>
