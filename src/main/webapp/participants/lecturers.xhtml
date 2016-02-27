@@ -66,7 +66,13 @@
             <p:dataTable id="participantTbl" widgetVar="lecturerWidget"
                          var="lecturer"
                          value="#{participantsController.course.undeletedLecturers}"
-                         filteredValue="#{participantsController.filteredLecturers}">
+                         filteredValue="#{participantsController.filteredLecturers}"
+                         paginator="true"
+                         paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="20,50,100"
+                         paginatorPosition="bottom">
                 <p:column filterBy="#{lecturer.user.lastName}" sortBy="#{lecturer.user.lastName}"
                           filterMatchMode="contains"
                           headerText="#{msg['common.lastName']}"

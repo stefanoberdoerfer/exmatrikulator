@@ -27,26 +27,27 @@
 
         <h3>#{msg['courses.overview.normal']}</h3>
         <h:form id="courseOverviewForm">
-        <h:dataTable value="#{userController.activeCourses}" var="course"
-                     columnClasses="responsive,table-course-semester,table-common-number,table-common-number,table-common-options-three text-right"
-                     styleClass="table table-hover table-courses-overview">
-            <h:column>
-                <f:facet name="header">#{msg['common.name']}</f:facet>
+        <p:dataTable value="#{userController.activeCourses}" var="course"
+                     styleClass="table table-hover table-courses-overview"
+                     paginator="true"
+                     paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                     rowsPerPageTemplate="20,50,100"
+                     paginatorPosition="bottom">
+            <p:column headerText="#{msg['common.name']}">
                 #{course.name}
-            </h:column>
-            <h:column>
-                <f:facet name="header">#{msg['common.semester']}</f:facet>
+            </p:column>
+            <p:column headerText="#{msg['common.semester']}" styleClass="table-course-semester">
                 #{course.semester}
-            </h:column>
-            <h:column>
-                <f:facet name="header">#{msg['courses.creditPoints']}</f:facet>
+            </p:column>
+            <p:column headerText="#{msg['courses.creditPoints']}" styleClass="table-common-number">
                 #{course.defaultCreditPoints}
-            </h:column>
-            <h:column>
-                <f:facet name="header">#{msg['courses.sws']}</f:facet>
-                #{course.defaultCreditPoints}
-            </h:column>
-            <h:column>
+            </p:column>
+            <p:column headerText="#{msg['courses.sws']}" styleClass="table-common-number">
+                #{course.defaultSws}
+            </p:column>
+            <p:column styleClass="table-common-options-three text-right">
                 <p:commandLink onsuccess="return exModal('courseLeave');" h5:data-toggle="tooltip"
                         h5:data-placement="top" title="#{msg['courses.leave']}" class="btn btn-default"
                         update=":courseOverviewForm :navigationform"
@@ -58,44 +59,44 @@
                         action="#{courseOverviewController.setCourseHiddenStatus(course,true)}">
                     <i class="fa fa-eye-slash"></i>
                 </p:commandLink>
-            </h:column>
-        </h:dataTable>
+            </p:column>
+        </p:dataTable>
 
         <h3>#{msg['courses.overview.hidden']}</h3>
-        <h:dataTable value="#{userController.hiddenCourses}" var="course"
-                     columnClasses="responsive,table-course-semester,table-common-number,table-common-number,table-common-options-two"
-                     styleClass="table table-hover table-courses-overview">
-            <h:column>
-                <f:facet name="header">#{msg['common.name']}</f:facet>
-                #{course.name}
-            </h:column>
-            <h:column>
-                <f:facet name="header">#{msg['common.semester']}</f:facet>
-                #{course.semester}
-            </h:column>
-            <h:column>
-                <f:facet name="header">#{msg['courses.creditPoints']}</f:facet>
-                #{course.defaultCreditPoints}
-            </h:column>
-            <h:column>
-                <f:facet name="header">#{msg['courses.sws']}</f:facet>
-                #{course.defaultSws}
-            </h:column>
-            <h:column>
-                <f:facet name="header"></f:facet>
-                <p:commandLink onsuccess="return exModal('courseLeave');" h5:data-toggle="tooltip"
-                        h5:data-placement="top" title="#{msg['courses.leave']}" class="btn btn-default"
-                        update=":courseOverviewForm :navigationform"
-                        action="#{courseOverviewController.setCourseToLeave(course)}">
-                    <i class="fa fa-sign-out"></i>
-                </p:commandLink>
-                <p:commandLink styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
-                               title="#{msg['courses.show']}" update=":courseOverviewForm :navigationform"
-                               action="#{courseOverviewController.setCourseHiddenStatus(course,false)}">
-                    <i class="fa fa-eye-slash"></i>
-                </p:commandLink>
-            </h:column>
-        </h:dataTable>
+            <p:dataTable value="#{userController.hiddenCourses}" var="course"
+                         styleClass="table table-hover table-courses-overview"
+                         paginator="true"
+                         paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="20,50,100"
+                         paginatorPosition="bottom">
+                <p:column headerText="#{msg['common.name']}">
+                    #{course.name}
+                </p:column>
+                <p:column headerText="#{msg['common.semester']}" styleClass="table-course-semester">
+                    #{course.semester}
+                </p:column>
+                <p:column headerText="#{msg['courses.creditPoints']}" styleClass="table-common-number">
+                    #{course.defaultCreditPoints}
+                </p:column>
+                <p:column headerText="#{msg['courses.sws']}" styleClass="table-common-number">
+                    #{course.defaultCreditPoints}
+                </p:column>
+                <p:column styleClass="table-common-options-three text-right">
+                    <p:commandLink onsuccess="return exModal('courseLeave');" h5:data-toggle="tooltip"
+                                   h5:data-placement="top" title="#{msg['courses.leave']}" class="btn btn-default"
+                                   update=":courseOverviewForm :navigationform"
+                                   action="#{courseOverviewController.setCourseToLeave(course)}">
+                        <i class="fa fa-sign-out"></i>
+                    </p:commandLink>
+                    <p:commandLink styleClass="btn btn-default" h5:data-toggle="tooltip" h5:data-placement="top"
+                                   title="#{msg['courses.show']}" update=":courseOverviewForm :navigationform"
+                                   action="#{courseOverviewController.setCourseHiddenStatus(course,false)}">
+                        <i class="fa fa-eye-slash"></i>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
         </h:form>
 
         <ui:include src="/WEB-INF/modals/course/leave.xhtml" />

@@ -22,7 +22,13 @@
             <h1>#{msg['common.mailtemplates']}</h1>
         </div>
 
-    	<p:dataTable var="template" value="#{mailTemplateController.getMailTemplateList()}">
+    	<p:dataTable var="template" value="#{mailTemplateController.getMailTemplateList()}"
+                     paginator="true"
+                     paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                     rowsPerPageTemplate="20,50,100"
+                     paginatorPosition="bottom">
             <p:column headerText="#{msg['common.name']}">
                 #{template.name}
             </p:column>

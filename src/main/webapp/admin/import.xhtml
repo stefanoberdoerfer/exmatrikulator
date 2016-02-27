@@ -21,28 +21,26 @@
               <p>#{msg['settings.import.hint']}</p>
               <br />
 
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>#{msg['import.filename']}</th>
-                    <th class="table-common-filesize">#{msg['import.filesize']}</th>
-                    <th class="table-common-options-one"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <ui:repeat value="#{tmeController.files}" var="file">
-                  <tr class="vert-align-middle">
-                    <td>#{file.fileName}</td>
-                    <td>#{tmeController.getHumanReadableFileSize(file.getSize())}</td>
-                    <td>
-                      <p:commandLink class="btn btn-danger">
-                        <i class="fa fa-remove"></i>
-                      </p:commandLink>
-                    </td>
-                  </tr>
-                  </ui:repeat>
-                </tbody>
-              </table>
+              <p:dataTable value="#{tmeController.files}" var="file"
+                           paginator="true"
+                           paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                           rowsPerPageTemplate="20,50,100"
+                           paginatorPosition="bottom">
+                <p:column headerText="#{msg['import.filename']}">
+                  #{file.fileName}
+                </p:column>
+                <p:column headerText="#{msg['import.filesize']}"
+                          styleClass="table-common-filesize">
+                  #{tmeController.getHumanReadableFileSize(file.getSize())}
+                </p:column>
+                <p:column styleClass="table-common-options-one">
+                  <p:commandLink class="btn btn-danger">
+                    <i class="fa fa-remove"></i>
+                  </p:commandLink>
+                </p:column>
+              </p:dataTable><br />
 
               <p:fileUpload fileUploadListener="#{tmeController.handleFileUpload}"
                 mode="advanced" allowTypes="/(\.|\/)(tme)$/" auto="true"

@@ -106,7 +106,7 @@
                                 value="#{msg['settings.finalize.never']}" />
                         <h:outputText value="#{courseSettings.course.lastFinalization}"
                                       rendered="#{courseSettings.course.lastFinalization != null}">
-                            <f:convertDateTime type="both" pattern="YYYY-MM-dd HH:mm:ss"/>
+                            <f:convertDateTime type="both" pattern="dd. MMM YYYY"/>
                         </h:outputText>
                     </p><br />
 

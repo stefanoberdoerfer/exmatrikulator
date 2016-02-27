@@ -193,11 +193,6 @@ public class GradingController {
         return this.searchValue;
     }
 
-    /**
-     * Returns a list of all groups of the opened course.
-     *
-     * @return List of groups or null
-     */
     public List<Group> getGroups() {
         return gradingService.getGroups(course, user);
     }
