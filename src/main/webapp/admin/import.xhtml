@@ -47,9 +47,10 @@
               </p:dataTable><br />
 
               <p:fileUpload fileUploadListener="#{tmeController.handleFileUpload}"
-                mode="advanced" allowTypes="/(\.|\/)(tme)$/" auto="true"
-                update="@form" uploadLabel="#{msg['import.upload']}"
-                sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}" />
+                            mode="advanced" allowTypes="/(\.|\/)(tme)$/" auto="true"
+                            update="@form" uploadLabel="#{msg['import.upload']}"
+                            label="#{msg['import.choose']}"
+                            sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}" /><br />
               <h:commandButton action="#{tmeController.importFiles()}"
                 class="btn btn-primary" value="#{msg['import.startUserImport']}" />
             </div>

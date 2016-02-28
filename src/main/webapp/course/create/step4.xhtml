@@ -67,8 +67,9 @@
                     <p:fileUpload fileUploadListener="#{step4.studentImportController.handleFileUpload}"
                                   mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true"
                                   update="@form" uploadLabel="#{msg['import.upload']}"
+                                  label="#{msg['import.choose']}"
                                   invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
-                                  sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
+                                  sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/><br />
                     <h:commandButton class="btn btn-primary" action="#{step4.studentImportController.executeImport()}"
                                      value="#{msg['import.startUserImport']}">
                     </h:commandButton>
