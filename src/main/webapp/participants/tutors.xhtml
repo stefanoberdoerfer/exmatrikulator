@@ -41,7 +41,8 @@
                 </h:link>
             </li>
             <li>
-                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}">
+                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}"
+                        rendered="#{participantsController.loggedInUserCanManageStudents}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
@@ -56,7 +57,8 @@
                 </h:link>
             </li>
             <li>
-                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}">
+                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}"
+                        rendered="#{participantsController.loggedInUserCanManageStudents}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
@@ -67,6 +69,7 @@
                          styleClass="table table-hover"
                          value="#{participantsController.course.undeletedTutors}"
                          filteredValue="#{participantsController.filteredPrivUsers}"
+                         rendered="#{!participantsController.loggedInUserIsNotConfirmed}"
                          emptyMessage="#{msg['participants.noPrivilegedUsers']}"
                          paginator="true"
                          paginatorTemplate="{RowsPerPageDropdown}
@@ -106,8 +109,8 @@
                                        h5:data-toggle="tooltip"
                                        h5:data-placement="top" title="#{msg['course.tutor.edit']}"
                                        class="btn btn-default"
-                                       rendered="#{participantsController.loggedInUserCanManageTutors
-                                       and participantsController.course.getLecturerFromUser(tutor.user) == null}">
+                                       rendered="#{participantsController.course.getLecturerFromUser(tutor.user) == null
+                                            and participantsController.loggedInUserCanManageTutors}" >
                             <f:actionListener binding="#{participantsController.onEditPrivilegedUserDialogCalled(tutor)}"/>
                             <i class="fa fa-pencil"></i>
                         </p:commandLink>
@@ -115,14 +118,16 @@
                                        update=":participantRemoveDialog"
                                        h5:data-placement="top" title="#{msg['course.tutor.remove']}"
                                        class="btn btn-danger"
-                                       rendered="#{participantsController.loggedInUserCanManageTutors
-                                       and participantsController.course.getLecturerFromUser(tutor.user) == null}">
+                                       rendered="#{participantsController.course.getLecturerFromUser(tutor.user) == null
+                                            and participantsController.loggedInUserCanManageTutors}" >
                             <i class="fa fa-remove"></i>
                             <f:actionListener binding="#{participantsController.onDeletePrivilegedUserDialogCalled(tutor)}"/>
                         </p:commandLink>
                     </div>
                 </p:column>
             </p:dataTable>
+            <h:outputText value="#{msg['participants.notconfirmed']}"
+                          rendered="#{participantsController.loggedInUserIsNotConfirmed}"/>
         </h:form>
 
         <ui:include src="/WEB-INF/modals/participants/create.xhtml" />

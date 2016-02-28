@@ -56,7 +56,7 @@
         </p:column>
         <p:column>
             <f:facet name="header">#{msg['gradeType.grade']}</f:facet>
-            #{participantsController.getPaboGradeName(s.paboGrade)}
+            #{certificateController.getPaboGradeName(s.paboGrade)}
         </p:column>
         <p:column>
             #{certificateController.getParticipationType(s)}
@@ -80,6 +80,7 @@
          </ui:repeat>
          <li><h:outputText value="#{msg['common.semester']}: #{certificateController.course.semester}"/></li>
          <li><h:outputText value="#{msg['courses.creditPoints']}: #{certificateController.getCreditPoints(s)}"/></li>
+          <li><h:outputText value="#{msg['courses.weekhours']}: #{certificateController.getSws(s)}"/></li>
          <li><h:outputText value="#{msg['common.approval']}:"/></li>
          <li><h:outputText value="#{msg['course.comment']}:"/></li>
       </ul>
@@ -90,7 +91,7 @@
           <li><h:outputText value="#{msg['common.participationTypes']}: #{certificateController.getParticipationType(s)}"/></li>
           <li><h:outputText value="#{msg['participationType.performanceContent']}: #{certificateController.getPerformanceContent(s)}"/></li>
           <li><h:outputText value="#{msg['participationType.performanceArea']}: #{certificateController.getPerformanceArea(s)}"/></li>
-          <li><h:outputText value="#{msg['gradeType.grade']}: #{participantsController.getPaboGradeName(s.paboGrade)}"/></li>
+          <li><h:outputText value="#{msg['gradeType.grade']}: #{certificateController.getPaboGradeName(s.paboGrade)}"/></li>
       </ul>
       <br></br>
       <br></br>

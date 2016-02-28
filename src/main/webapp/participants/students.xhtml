@@ -41,7 +41,8 @@
                 </h:link>
             </li>
             <li>
-                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}">
+                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}"
+                        rendered="#{participantsController.loggedInUserCanManageStudents}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
@@ -56,16 +57,17 @@
                 </h:link>
             </li>
             <li>
-                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}">
+                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}"
+                    rendered="#{participantsController.loggedInUserCanManageStudents}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
         </ul>
 
-        <h:form id="participantForm"
-                rendered="#{participantsController.loggedInUserCanManageStudents}">
+        <h:form id="participantForm">
             <p:dataTable id="participantTbl" widgetVar="studentsTblWidget" var="student"
                          styleClass="table table-hover"
+                         rendered="#{!participantsController.loggedInUserIsNotConfirmed}"
                          value="#{participantsController.course.confirmedUndeletedStudents}"
                          filteredValue="#{participantsController.filteredStudents}"
                          emptyMessage="#{msg['participants.noStudents']}"
@@ -104,23 +106,34 @@
                           sortBy="#{student.user.matriculationNumber}"
                           filterBy="#{student.user.matriculationNumber}"
                           filterMatchMode="contains"
-                          styleClass="table-users-matriculation-nr text-center">
+                          styleClass="table-users-matriculation-nr text-center"
+                          rendered="#{participantsController.loggedInUserIsLecturer or
+                                        participantsController.loggedInUserCanPrintCerts or
+                                        participantsController.loggedInUserCanManageStudents}">
                     <h:outputText value="#{student.user.matriculationNumber}" />
                 </p:column>
                 <p:column headerText="#{msg['common.participationType']}"
                           sortBy="#{student.participationType.name}"
                           filterBy="#{student.participationType.name}"
-                          filterMatchMode="contains">
+                          filterMatchMode="contains"
+                          rendered="#{participantsController.loggedInUserIsLecturer or
+                                        participantsController.loggedInUserCanPrintCerts or
+                                        participantsController.loggedInUserCanManageStudents}">
                         <h:outputText value="#{student.participationType.name}"/>
                 </p:column>
                 <p:column headerText="#{msg['gradeType.paboGrade']}"
                           sortBy="#{student.paboGrade}"
                           filterBy="#{student.paboGrade}"
                           filterMatchMode="contains"
-                          styleClass="table-grades-grade text-center">
+                          styleClass="table-grades-grade text-center"
+                          rendered="#{participantsController.loggedInUserIsLecturer or
+                                        participantsController.loggedInUserCanPrintCerts}"
+                        >
                     <h:outputText value="#{participantsController.getPaboGradeName(student.paboGrade)}"/>
                 </p:column>
-                <p:column styleClass="table-common-options-three text-right">
+                <p:column styleClass="table-common-options-three text-right"
+                    rendered="#{participantsController.loggedInUserCanManageStudents or
+                                    participantsController.loggedInUserCanPrintCerts}">
                     <div class="btn-group">
                         <p:commandLink oncomplete="return exModal('participantEdit');"
                                        h5:data-toggle="tooltip" update=":editUserDialog"
@@ -130,7 +143,8 @@
                             <i class="fa fa-pencil"></i>
                             <f:actionListener binding="#{participantsController.onEditStudentDialogCalled(student)}" />
                         </p:commandLink>
-                        <h:link outcome="/certificate/printview" styleClass="btn btn-default" rendered="#{participantsController.mayPrint()}">
+                        <h:link outcome="/certificate/printview" styleClass="btn btn-default"
+                                rendered="#{participantsController.loggedInUserCanPrintCerts}">
                             <f:param name="course-id" value="#{student.course.courseId}"/>
                             <f:param name="student-id" value="#{student.studentId}"/>
                             <i class="fa fa-print"></i>
@@ -146,6 +160,8 @@
                     </div>
                 </p:column>
             </p:dataTable>
+            <h:outputText value="#{msg['participants.notconfirmed']}"
+                          rendered="#{participantsController.loggedInUserIsNotConfirmed}"/>
         </h:form>
 
         <ui:include src="/WEB-INF/modals/participants/create.xhtml" />

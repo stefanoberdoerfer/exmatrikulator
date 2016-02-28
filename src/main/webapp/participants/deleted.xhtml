@@ -41,7 +41,8 @@
                 </h:link>
             </li>
             <li>
-                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}">
+                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}"
+                        rendered="#{participantsController.loggedInUserCanManageStudents}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
@@ -56,7 +57,8 @@
                 </h:link>
             </li>
             <li class="active">
-                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}">
+                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}"
+                        rendered="#{participantsController.loggedInUserCanManageStudents}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>

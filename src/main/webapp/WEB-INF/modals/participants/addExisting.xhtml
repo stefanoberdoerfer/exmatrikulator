@@ -117,6 +117,18 @@
                                 <h:outputLabel value="#{msg['participants.additionalRights.credits']}"
                                                for="addGenerateCredits" />
                             </div>
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="addCreateExamEvents"
+                                                         value="#{participantsController.privilegeCreateExamEvents}" />
+                                <h:outputLabel value="#{msg['participants.additionalRights.examEvents']}"
+                                               for="addCreateExamEvents" />
+                            </div>
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="addManageRecordBooks"
+                                                         value="#{participantsController.privilegeManageRecordBooks}" />
+                                <h:outputLabel value="#{msg['participants.additionalRights.manageRecordBook']}"
+                                               for="addManageRecordBooks" />
+                            </div>
                         </div>
                     </h:panelGroup>
                 </div>

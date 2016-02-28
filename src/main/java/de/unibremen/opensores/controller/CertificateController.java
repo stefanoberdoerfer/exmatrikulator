@@ -2,6 +2,9 @@ package de.unibremen.opensores.controller;
 
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.Privilege;
+import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Role;
@@ -28,9 +31,10 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Password reset token controller.
+ * Backing bean for the certificate printview.
  *
- * @author Sören Tempel
+ * @author Lorenz Huether
+ * @author Stefan Oberdörfer
  */
 @ManagedBean
 @RequestScoped
@@ -119,18 +123,13 @@ public class CertificateController {
                 .getSessionMap()
                 .get(Constants.SESSION_MAP_KEY_USER);
 
-        Course currentCourse = null;
-        if (courseId != null) {
-            currentCourse = courseService.findCourseById(courseId);
-            if (currentCourse == null) {
-                log.debug("Cannot find course" + courseId);
-                return;
-            }
-            log.debug("Got courseId: " + courseId);
+        Course currentCourse = courseService.findCourseById(courseId);
+        if (currentCourse == null) {
+            log.debug("Cannot find course" + courseId);
+            return;
         }
 
-        if (!userService.hasCourseRole(user, Role.LECTURER, currentCourse)
-                || userService.getLecturer(user, currentCourse).isDeleted()) {
+        if (!userCanPrintCertificates(user,currentCourse)) {
             log.warn("Unprivileged user " + user.getUserId()
                 + " tried to create certificates.");
             return;
@@ -155,6 +154,23 @@ public class CertificateController {
         }
     }
 
+
+    /**
+     * Method to determine if a user is allowed to print certificates in the given course.
+     * @param user User to check
+     * @param course Course where the users privileges should be checked
+     * @return true if user is allowed to print certificates, false otherwise
+     */
+    private boolean userCanPrintCertificates(User user, Course course) {
+        if (userService.hasCourseRole(user, Role.LECTURER, course)
+                && !userService.getLecturer(user, course).isDeleted()) {
+            return true;
+        }
+
+        PrivilegedUser privUser = course.getPrivilegedUserFromUser(user);
+        return privUser != null && privUser.hasPrivilege(Privilege.GenerateCredits);
+    }
+
     /**
      * Returns a list of students.
      *
@@ -166,7 +182,7 @@ public class CertificateController {
         if (course != null && student == null) {
             students = courseService.getStudentList(course);
         } else if (course != null && student != null) {
-            students = new ArrayList<Student>();
+            students = new ArrayList<>();
             students.add(student);
         }
 
@@ -174,7 +190,7 @@ public class CertificateController {
             log.debug("No students found.");
         }
 
-        return (students == null) ? new ArrayList<Student>() : students;
+        return (students == null) ? new ArrayList<>() : students;
     }
 
     /**
@@ -224,9 +240,9 @@ public class CertificateController {
         String sws = partType.getSws();
 
         if (sws == null) {
-            return course.getDefaultSws().toString();
+            return course.getDefaultSws();
         } else {
-            return sws.toString();
+            return sws;
         }
     }
 
@@ -291,5 +307,26 @@ public class CertificateController {
      */
     public Course getCourse() {
         return course;
+    }
+
+    public String getPaboGradeName(final String name) {
+        return paboGradeDisplayName(name);
+    }
+
+    /**
+     * Returns the grade name of the PaboGrade enum instance identified by the
+     * given name. Returns a question mark if unknown.
+     * @param name Name of the instance
+     * @return Grade name or Question mark
+     */
+    public String paboGradeDisplayName(final String name) {
+        try {
+            PaboGrade paboGrade = PaboGrade.valueOf(name);
+
+            return paboGrade.getGradeName();
+        } catch (IllegalArgumentException | NullPointerException e) {
+
+            return "?";
+        }
     }
 }
