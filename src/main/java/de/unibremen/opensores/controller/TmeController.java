@@ -206,10 +206,10 @@ public class TmeController implements Serializable {
                 log.fatal(e);
                 return;
             } catch (ParseException e) {
-                log.error(e);
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_ERROR, bundle.getString("common.error"),
-                    e.getMessage()));
+                    String.format("Syntax error '%s' in line %d", e.getMessage(),
+                        e.getErrorOffset())));
             }
 
             if (!file.delete()) {
