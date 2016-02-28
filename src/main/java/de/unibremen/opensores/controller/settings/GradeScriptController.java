@@ -376,7 +376,8 @@ public class GradeScriptController {
         if (!userIsLecturer) {
             PrivilegedUser privilegedUser = course.getPrivilegedUserFromUser(loggedInUser);
             if (privilegedUser == null
-                    || privilegedUser.hasPrivilege(Privilege.EditExams.name())) {
+                    || privilegedUser.hasPrivilege(Privilege.EditExams.name())
+                    || course.getParticipationTypes().isEmpty()) {
                 log.debug("Logged in user is not a lecturer nor has a "
                         + "privileged user association with privileges to edit formulas");
                 try {
@@ -1023,9 +1024,9 @@ public class GradeScriptController {
         List<Student> otherStudentRelations = courseService
                 .getOtherStudentsFromStudentAndLecturer(student.getUser(),loggedInUser,course);
         PyObject[] pyTupleArgs = {
-            createPyGradeDict(course.getExams(), student),
-            createStudentInfoDict(student),
-            createOtherStudentGradesDict(otherStudentRelations)
+                createPyGradeDict(course.getExams(), student),
+                createStudentInfoDict(student),
+                createOtherStudentGradesDict(otherStudentRelations)
         };
         return new PyTuple(pyTupleArgs);
     }
@@ -1167,7 +1168,6 @@ public class GradeScriptController {
         copy.setValid(formula.isValid());
         copy.setEditDescription(formula.getEditDescription() == null
                 ? "" : formula.getEditDescription());
-        copy.setValid(formula.isValid());
         return copy;
     }
 

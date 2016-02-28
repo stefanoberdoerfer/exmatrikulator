@@ -131,13 +131,13 @@ public final class Constants {
           + "                  the email address or the matriculation number.\n"
           + "    :other_course_grades: A dictionary of other courses in of the student \n"
           + "                  in which the logged in user is a lecturer.\n"
-          + "    :return A valid PaboGrade (PaboGrade.1_0, or PaboGrade.1_3,..., PaboGrade.5_0, \n"
+          + "    :return A valid PaboGrade (PaboGrade.GRADE_1_0, ..., PaboGrade.GRADE_5_0, \n"
           + "            PaboGrade.GRADE_CHEATED, PaboGrade.GRADE_NEGLECTED\n"
           + "    \"\"\"\n"
           + "    print grades\n"
           + "    print student_info\n"
           + "    print other_course_grades\n"
-          + "    pass #return PaboGrade.1_0, or PaboGrade.1_3, PaboGrade,1_7,...PaboGrade.5_0";
+          + "    pass #return PaboGrade.GRADE_1_0, or PaboGrade.GRADE_1_3, ...PaboGrade.GRADE_5_0";
 
     /**
      * Message for default grade script initialization.
