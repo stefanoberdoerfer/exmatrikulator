@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.settings;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,7 +7,6 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.model.Role;
-import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.service.MailTemplateService;
 import de.unibremen.opensores.service.GradeService;
 import de.unibremen.opensores.service.CourseService;
@@ -163,9 +162,9 @@ public class MailTemplateController {
     /**
      * Saves an already existing template to the database.
      */
-    public void saveMailTemplate() {
+    public String saveMailTemplate() {
         if (course == null) {
-            return;
+            return "/settings/overview";
         }
 
         mailTemplate.setName(templateName);
@@ -174,14 +173,17 @@ public class MailTemplateController {
         mailTemplate.setLocale(templateLocale);
 
         mailTemplateService.update(mailTemplate);
+
+        return "/settings/mailtemplate/overview?faces-redirect=true"
+                + "&course-id=" + course.getCourseId();
     }
 
     /**
      * Creates a new mailTemplate and persists it.
      */
-    public void newMailTemplate() {
+    public String newMailTemplate() {
         if (course == null) {
-            return;
+            return "/settings/overview";
         }
 
         mailTemplate = new MailTemplate();
@@ -197,6 +199,9 @@ public class MailTemplateController {
         course.setEmailTemplates(templates);
 
         courseService.update(course);
+
+        return "/settings/mailtemplate/overview?faces-redirect=true"
+                + "&course-id=" + course.getCourseId();
     }
 
     /**
@@ -204,15 +209,16 @@ public class MailTemplateController {
      *
      * @param template the template to be deleted.
      */
-    public void remove(MailTemplate template) {
-        if (course == null || template == null) {
-            return;
-        } else if (template.getIsDefault()) {
-            return;
+    public String remove(MailTemplate template) {
+        if (course == null || template == null || template.getIsDefault()) {
+            return "/settings/overview";
         }
 
         log.debug("Removed template");
         mailTemplateService.remove(template);
+
+        return "/settings/mailtemplate/overview?faces-redirect=true"
+                + "&course-id=" + course.getCourseId();
     }
 
     /**
@@ -220,9 +226,9 @@ public class MailTemplateController {
      *
      * @param template the mail template to be set.
      */
-    public void setDefaultTemplate(MailTemplate template) {
+    public String setDefaultTemplate(MailTemplate template) {
         if (course == null) {
-            return;
+            return "/settings/overview";
         }
 
         log.debug("New default template set.");
@@ -234,6 +240,9 @@ public class MailTemplateController {
         template.setIsDefault(true);
 
         mailTemplateService.update(template);
+
+        return "/settings/mailtemplate/overview?faces-redirect=true"
+                + "&course-id=" + course.getCourseId();
     }
 
     public String getCourseId() {

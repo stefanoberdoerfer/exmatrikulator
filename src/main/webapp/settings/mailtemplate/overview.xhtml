@@ -15,7 +15,7 @@
     <ui:define name="content">
         <div class="headline">
             <h:panelGroup class="btn-group main-buttons pull-right" type="block">
-                <h:link outcome="/mailtemplate/new" value="#{msg['mailtemplates.create']}" class="btn btn-primary">
+                <h:link outcome="/settings/mailtemplate/new" value="#{msg['mailtemplates.create']}" class="btn btn-primary">
                     <f:param name="course-id" value="#{mailTemplateController.getCourseId()}"/>
                 </h:link>
             </h:panelGroup>
@@ -30,26 +30,31 @@
                            {NextPageLink} {LastPageLink}"
                      rowsPerPageTemplate="20,50,100"
                      paginatorPosition="bottom">
-            <p:column headerText="#{msg['common.name']}">
+            <p:column headerText="#{msg['common.name']}"
+                      styleClass="table-examination-name">
                 #{template.name}
             </p:column>
-            <p:column headerText="#{msg['mailtemplates.default']}">
-                #{template.isDefault}
+            <p:column headerText="#{msg['mailtemplates.default']}" styleClass="text-center">
+                <ui:fragment rendered="#{template.isDefault}">
+                    <i class="fa fa-check"></i>
+                </ui:fragment>
             </p:column>
-            <p:column styleClass="table-common-options-one">
-                <h:link outcome="/mailtemplate/edit" class="btn btn-default">
-                    <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
-                    <f:param name="mailtemplate-id" value="#{template.mailTemplateId}"/>
-                    <i class="fa fa-pencil"></i>
-                </h:link>
-                <p:commandButton action="#{mailTemplateController.remove(template)}"
-                        class="btn btn-default">
-                    <i class="icon-remove-sign"></i>
-                </p:commandButton>
-                <p:commandButton action="#{mailTemplateController.setDefaultTemplate(template)}"
-                        class="btn btn-default">
-                    <i class="icon-ok-sign"></i>
-                </p:commandButton>
+            <p:column styleClass="table-common-options-three text-right">
+                <div class="btn-group">
+                    <h:link outcome="/settings/mailtemplate/edit" class="btn btn-default">
+                        <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
+                        <f:param name="mailtemplate-id" value="#{template.mailTemplateId}"/>
+                        <i class="fa fa-pencil"></i>
+                    </h:link>
+                    <p:commandLink action="#{mailTemplateController.setDefaultTemplate(template)}"
+                                   class="btn btn-default" rendered="#{!template.isDefault}">
+                        <i class="fa fa-home"></i>
+                    </p:commandLink>
+                    <p:commandLink action="#{mailTemplateController.remove(template)}"
+                                   class="btn btn-danger" rendered="#{!template.isDefault}">
+                        <i class="fa fa-times"></i>
+                    </p:commandLink>
+                </div>
             </p:column>
         </p:dataTable>
     </ui:define>
