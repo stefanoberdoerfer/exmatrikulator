@@ -79,7 +79,7 @@ public class MailTemplateService extends GenericService<MailTemplate> {
                 "SELECT m From MailTemplate m"
                 + " JOIN m.course AS c"
                 + " WITH c.courseId = :courseId"
-                + " WHERE m.isDefault = TRUE", MailTemplate.class)
+                + " WHERE m.isDefault = true", MailTemplate.class)
                         .setParameter("courseId", course.getCourseId())
                         .getResultList();
 
