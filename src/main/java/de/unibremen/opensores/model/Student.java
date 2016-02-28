@@ -86,7 +86,7 @@ public class Student {
     private String paboGradeFormula;
 
     @ManyToOne
-    @JoinColumn(name = "parttypeId")
+    @JoinColumn(name = "parttypeId", nullable = false)
     private ParticipationType participationType;
 
     @ManyToMany(mappedBy = "uploaders")
