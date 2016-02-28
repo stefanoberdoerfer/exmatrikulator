@@ -50,14 +50,19 @@ public class CourseFilter implements Filter {
 
         User user = (User) hreq.getSession().getAttribute("user");
         if (user == null) {
-            hres.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            hres.sendRedirect(hreq.getContextPath());
             return;
         }
 
         String idStr = hreq.getParameter("course-id");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            hres.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
         Course course = courseService.findCourseById(idStr);
         if (course == null) {
-            hres.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            hres.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
