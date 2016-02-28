@@ -532,6 +532,7 @@ public class TmeController implements Serializable {
         student.setDeleted(false);
         student.setHidden(false);
         student.setTries(0);
+        student.setParticipationType(course.getDefaultParticipationType());
 
         if (node.getString("status") == "CONFIRMED") {
             student.setAcceptedInvitation(true);

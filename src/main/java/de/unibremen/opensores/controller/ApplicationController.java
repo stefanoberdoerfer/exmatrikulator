@@ -427,6 +427,7 @@ public class ApplicationController {
 
         course.getParticipationTypes().add(partType);
         student.setParticipationType(partType);
+        student2.setParticipationType(partType);
 
         ParticipationType winf = new ParticipationType();
         winf.setName("Wirtschaftsinformatik");
