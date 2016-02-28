@@ -1,4 +1,3 @@
-<!-- Todo: Seite darf nur von Dozenten aufgerufen werden -->
 <ui:composition template="/WEB-INF/base.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -62,10 +61,10 @@
 
                 <p:column headerText="#{msg['examination.gradeType']}"
                           filterMatchMode="contains"
-                          filterBy="#{examController.gradeLabelFromId(exam.gradeType)}"
-                          sortBy="#{examController.gradeLabelFromId(exam.gradeType)}"
+                          filterBy="#{examController.examLabel(exam)}"
+                          sortBy="#{examController.examLabel(exam)}"
                           styleClass="table-examination-grade">
-                    <h:outputText value="#{examController.gradeLabelFromId(exam.gradeType)}"/>
+                    <h:outputText value="#{examController.examLabel(exam)}"/>
                 </p:column>
 
                 <p:column styleClass="text-right">

@@ -254,10 +254,9 @@ public class UserService extends GenericService<User> {
                         + " WITH t.user.userId = :id"
                         + " LEFT JOIN c.lecturers AS l"
                         + " WITH l.user.userId = :id"
-                        + " WHERE (l.user.userId IS NOT NULL"
+                        + " WHERE l.user.userId IS NOT NULL"
                         + " OR t.user.userId IS NOT NULL"
-                        + " OR s.user.userId IS NOT NULL)"
-                        + " AND c.deleted = false", Course.class)
+                        + " OR s.user.userId IS NOT NULL", Course.class)
                 .setParameter("id", user.getUserId())
                 .getResultList();
     }

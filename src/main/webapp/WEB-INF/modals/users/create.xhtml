@@ -56,14 +56,14 @@
                         <div>
                             <h:selectBooleanCheckbox
                                     id="lecturerRole"
-                                    value="#{userOverviewController.globalRoleAdmin}"/>
+                                    value="#{userOverviewController.globalRoleLecturer}"/>
                             <h:outputLabel value="#{msg['common.lecturer']}"
                                            for="lecturerRole" styleClass="col-xs-offset-1"/>
                         </div>
                         <div>
                             <h:selectBooleanCheckbox
                                     id="userRole"
-                                    value="#{userOverviewController.globalRoleAdmin}"/>
+                                    value="#{userOverviewController.globalRoleUser}"/>
                             <h:outputLabel value="#{msg['common.user']}"
                                            for="userRole" styleClass="col-xs-offset-1"/>
                         </div>
