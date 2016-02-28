@@ -60,8 +60,20 @@ public final class DateUtil {
     }
 
     /**
-     * Returns a date from which is 10 year ago from now.
-     * @return The date which is 10 years ago from now.
+     * Returns a date from which is 20 year ago from now.
+     * @return The date which is 20 years ago from now.
+     */
+    public static Date twentyYearsAgo() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(getDateTime());
+        cal.add(Calendar.YEAR, -20);
+        return cal.getTime();
+    }
+
+
+    /**
+     * Returns a date from which is 10 year later from now.
+     * @return The date which is 10 years later from now.
      */
     public static Date tenYearsLater() {
         Calendar cal = Calendar.getInstance();

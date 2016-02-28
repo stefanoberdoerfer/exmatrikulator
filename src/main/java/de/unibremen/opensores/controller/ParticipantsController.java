@@ -877,7 +877,11 @@ public class  ParticipantsController {
      */
     private void updateSelectedValuesFromStudent(Student student) {
         log.debug("updateSelectedValuesFromStudent() called: " + student);
-        selectedParticipationTypeId = student.getParticipationType().getPartTypeId();
+        if (student.getParticipationType() != null) {
+            selectedParticipationTypeId = student.getParticipationType().getPartTypeId();
+        } else {
+            selectedParticipationTypeId = course.getDefaultParticipationType().getPartTypeId();
+        }
     }
 
     /**

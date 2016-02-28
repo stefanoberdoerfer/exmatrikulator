@@ -115,4 +115,33 @@ public final class Constants {
      * String for deleted string values.
      */
     public static final String DELETED = "deleted";
+
+    /**
+     * The default grade script for new courses / participation types.
+     */
+    public static final String DEFAULT_GRADE_SCRIPT =
+         "def set_final_grade(grades, student_info, other_course_grades):\n"
+          + "    \"\"\"\n"
+          + "    This method is the main method which sets the final grades of\n"
+          + "    each student in this participation type. This method must return a PaboGrade.\n"
+          + "    This method takes the following parameters, which are all dictionaries:\n"
+          + "    :grades A dictionary of the current grades. The key is the exam shortcut\n"
+          + "            and the value is the grade representation.\n"
+          + "    :student_info A dictionary has the basic information about the student like\n"
+          + "                  the email address or the matriculation number.\n"
+          + "    :other_course_grades: A dictionary of other courses in of the student \n"
+          + "                  in which the logged in user is a lecturer.\n"
+          + "    :return A valid PaboGrade (PaboGrade.GRADE_1_0, ..., PaboGrade.GRADE_5_0, \n"
+          + "            PaboGrade.GRADE_CHEATED, PaboGrade.GRADE_NEGLECTED\n"
+          + "    \"\"\"\n"
+          + "    print grades\n"
+          + "    print student_info\n"
+          + "    print other_course_grades\n"
+          + "    pass #return PaboGrade.GRADE_1_0, or PaboGrade.GRADE_1_3, ...PaboGrade.GRADE_5_0";
+
+    /**
+     * Message for default grade script initialization.
+     */
+    public static final String DEFAULT_SCRIPT_EDIT_MESSAGE =
+            "Initialized default grade script";
 }

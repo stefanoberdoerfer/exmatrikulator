@@ -14,3 +14,4 @@ src/main/webapp/resources/
 derby.log
 exmatrikulator-db/
 fileuploads/
+*.csv~

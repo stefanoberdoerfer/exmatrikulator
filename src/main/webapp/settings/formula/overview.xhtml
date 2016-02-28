@@ -123,9 +123,9 @@
                     </p:column>
                     <p:column headerText="#{msg['examination.gradeType']}"
                               filterMatchMode="contains"
-                              filterBy="#{scriptController.gradeLabelFromId(exam.gradeType)}"
-                              sortBy="#{scriptController.gradeLabelFromId(exam.gradeType)}">
-                        <h:outputText value="#{scriptController.gradeLabelFromId(exam.gradeType)}"/>
+                              filterBy="#{scriptController.gradeLabelFromExamId(exam.examId)}"
+                              sortBy="#{scriptController.gradeLabelFromExamId(exam.examId)}">
+                        <h:outputText value="#{scriptController.gradeLabelFromExamId(exam.examId)}"/>
                     </p:column>
                 </p:dataTable>
             </div>
@@ -166,7 +166,7 @@
                         <p:column headerText="#{exam.name
                                             .concat(' &#10; '
                                             .concat(scriptController
-                                            .gradeLabelFromId(exam.gradeType)))}"
+                                            .gradeLabelFromExamId(exam.examId)))}"
                                   escape="false" style="white-space:pre-line;" styleClass="text-center">
                             <h:outputText rendered="#{student.getGradingFromExam(exam) != null}"
                                           value="#{student.getGradingFromExam(exam).grade.value}">

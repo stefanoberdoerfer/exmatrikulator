@@ -11,6 +11,7 @@ import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
@@ -95,13 +96,27 @@ public class GradeScriptController {
     private static final int PY_DECIMAL_PRECISION = 1000;
 
     /**
+     * The indexes of the arguments in the 4 element tuple for the grade script method.
+     */
+    private static final int PY_IDX_ARG_TUPLE_CURRENT_GRADES = 0;
+    private static final int PY_IDX_ARG_TUPLE_STUDENT_INFO = 1;
+    private static final int PY_IDX_ARG_TUPLE_OLD_GRADES = 2;
+
+    /**
      * Path to the model directory, must be loaded in the namespace
      * of the python interpreter.
      */
     private static final String PATH_MODEL
             = "src/main/java/de/unibremen/opensores/model";
 
-
+    /**
+     * The keys of student infos in the student dict.
+     */
+    private static final String KEY_STUDENT_INFO_FIRST_NAME = "first_name";
+    private static final String KEY_STUDENT_INFO_LAST_NAME = "last_name";
+    private static final String KEY_STUDENT_INFO_EMAIL = "email";
+    private static final String KEY_STUDENT_INFO_MATR = "matriculation";
+    private static final String KEY_STUDENT_INFO_PART_TYPE = "party_type";
     /**
      * The imports which get executed after resetting the locals before a script
      * gets executed.
@@ -111,6 +126,7 @@ public class GradeScriptController {
         "from decimal import *",
         "import inspect",
         "import sys",
+        "import json",
         "import codecs"
     };
 
@@ -145,46 +161,49 @@ public class GradeScriptController {
 
     /**
      * Python method which checks if the method for setting final grades
-     * "set_final_grade" has been supplied with exactly one argument.
+     * "set_final_grade" has been supplied with exactly three arguments.
      * Takes the parameter dir which is a list the names of the local namespace
      */
     private static final String PY_INIT_CHECK_SET_FINAL_GRADE_METHOD =
             String.format("%ndef check_%1$s_method(dir):%n"
-                    + "    return \"%1$s\" in dir and "
-                    + "len(inspect.getargspec(%1$s)[0]) == 1%n",
+                            + "    return \"%1$s\" in dir and "
+                            + "len(inspect.getargspec(%1$s)[0]) == 3%n",
                     PY_GRADE_METHOD_NAME);
 
     /**
      * Calls the method check_set_final_grade_method too check if the method
-     * which is called to set the grades is in the namespace and takes one
-     * argument.
+     * which is called to set the grades is in the namespace and takes three arguments
      * Returns a PyBoolean which is true if the method exists and takes one
-     * parameter and false otherwise
+     * parameter and false otherwise.
      */
     private static final String PY_CALL_CHECK_SET_FINAL_GRADE_METHOD =
             String.format("check_%s_method(dir())", PY_GRADE_METHOD_NAME);
 
     /**
-     * Python variable name of a list of dictionaries of student grades.
+     * Python variable name of a list of pyTuple of student arguments.
      */
-    private static final String PY_VAR_NAME_GRADEDICT_LIST = "student_grades_list";
+    private static final String PY_VAR_STUDENT_ARGS_LIST = "student_args_list";
 
 
+    /**
+     * The string value which is used to set the final grade.
+     */
     private static final String PY_STR_FINAL_GRADE = "final_grade";
 
     /**
-     * Name of a single python dictionary representing the grades of a student.
+     * Name of a single python tuple representing the method arguments of a student.
      */
-    private static final String PY_VAR_NAME_GRADEDICT = "grades";
+    private static final String PY_VAR_STUDENT_ARG = "student_arg";
 
     /**
      * Executes set_final_grades for every student object.
      */
     private static final String PY_EXEC_SET_FINAL_GRADES
-            = String.format("for %s in %s:%n\t%s['%s'] = %s(%s)",
-            PY_VAR_NAME_GRADEDICT, PY_VAR_NAME_GRADEDICT_LIST,
-            PY_VAR_NAME_GRADEDICT, PY_STR_FINAL_GRADE, PY_GRADE_METHOD_NAME,
-            PY_VAR_NAME_GRADEDICT);
+            = String.format("for %s in %s:%n\t%1$s[%d]['%s'] = %s(%1$s[%d],%1$s[%d],%1$s[%d])",
+            PY_VAR_STUDENT_ARG, PY_VAR_STUDENT_ARGS_LIST, PY_IDX_ARG_TUPLE_CURRENT_GRADES,
+            PY_STR_FINAL_GRADE, PY_GRADE_METHOD_NAME,
+            PY_IDX_ARG_TUPLE_CURRENT_GRADES, PY_IDX_ARG_TUPLE_STUDENT_INFO,
+            PY_IDX_ARG_TUPLE_OLD_GRADES);
 
 
     /**
@@ -258,7 +277,7 @@ public class GradeScriptController {
     /**
      * Map from the grade type ids to their corresponding labels.
      */
-    private Map<Integer, String> gradeTypeLabels;
+    private Map<Long, String> gradeTypeLabels;
 
     /**
      * The python pyInterpreter to run python code.
@@ -357,7 +376,8 @@ public class GradeScriptController {
         if (!userIsLecturer) {
             PrivilegedUser privilegedUser = course.getPrivilegedUserFromUser(loggedInUser);
             if (privilegedUser == null
-                    || privilegedUser.hasPrivilege(Privilege.EditExams.name())) {
+                    || privilegedUser.hasPrivilege(Privilege.EditExams.name())
+                    || course.getParticipationTypes().isEmpty()) {
                 log.debug("Logged in user is not a lecturer nor has a "
                         + "privileged user association with privileges to edit formulas");
                 try {
@@ -375,11 +395,7 @@ public class GradeScriptController {
             }
         }
 
-        gradeTypeLabels = new HashMap<>();
-        gradeTypeLabels.put(GradeType.Numeric.getId(), bundle.getString("gradeType.grade"));
-        gradeTypeLabels.put(GradeType.Point.getId(), bundle.getString("gradeType.points"));
-        gradeTypeLabels.put(GradeType.Boolean.getId(), bundle.getString("gradeType.boolean"));
-        gradeTypeLabels.put(GradeType.Percent.getId(), bundle.getString("gradeType.percent"));
+        gradeTypeLabels = getGradeTypeLabelOfExams(course.getExams(), bundle);
 
         editedFormulas = new HashMap<>();
         for (ParticipationType type: course.getParticipationTypes()) {
@@ -476,7 +492,7 @@ public class GradeScriptController {
         PyBoolean gradingMethodSet;
         try {
             gradingMethodSet =
-                (PyBoolean) pyInterpreter.eval(PY_CALL_CHECK_SET_FINAL_GRADE_METHOD);
+                    (PyBoolean) pyInterpreter.eval(PY_CALL_CHECK_SET_FINAL_GRADE_METHOD);
         } catch (PyException e) {
             log.error(e);
             scriptOutput = e.toString();
@@ -484,16 +500,17 @@ public class GradeScriptController {
         }
 
         if (!gradingMethodSet.getBooleanValue()) {
-            log.debug("The method set_final_grade hasn't been set with one arg");
+            log.debug("The method set_final_grade hasn't been set with three args");
             gradeFormula.setValid(false);
             addFailMessage(bundle.getString("gradingFormula.messageMethodNotSet"));
             return;
         }
 
         log.debug("Trying to set the pabo Grades");
-        final Map<Student, PyDictionary> studentPyGradeDictMap = createStudentPyGradeDictMap();
-        pyInterpreter.set(PY_VAR_NAME_GRADEDICT_LIST, new PyList(studentPyGradeDictMap.values()));
+        final Map<Student, PyTuple> studentArgsMap = createStudentParams();
+        pyInterpreter.set(PY_VAR_STUDENT_ARGS_LIST, new PyList(studentArgsMap.values()));
 
+        log.debug("Trying to execute the grading method with the student args");
         try {
             pyInterpreter.exec(PY_EXEC_SET_FINAL_GRADES);
         } catch (PyException e) {
@@ -504,10 +521,21 @@ public class GradeScriptController {
             return;
         }
 
+        log.debug("Executing succeeded, getting all pabo grades now");
         boolean allValidPaboGradesSet = true;
-        for (Map.Entry<Student,PyDictionary> entry: studentPyGradeDictMap.entrySet()) {
-            Object paboGradeObj = entry.getValue().get(new PyString(PY_STR_FINAL_GRADE))
-                                        .__tojava__(PaboGrade.class);
+
+        for (Map.Entry<Student,PyTuple> entry: studentArgsMap.entrySet()) {
+            Object firstArg =  entry.getValue().get(PY_IDX_ARG_TUPLE_CURRENT_GRADES);
+            if (!(firstArg instanceof PyDictionary)) {
+                log.error("The first argument of the student tuple list is not a dict");
+                entry.getKey().setPaboGrade(null);
+                allValidPaboGradesSet = false;
+                continue;
+            }
+
+            PyDictionary gradesDict = (PyDictionary) firstArg;
+            Object paboGradeObj = gradesDict.get(new PyString(PY_STR_FINAL_GRADE))
+                    .__tojava__(PaboGrade.class);
             if (!(paboGradeObj instanceof PaboGrade)) {
                 entry.getKey().setPaboGrade(null);
                 allValidPaboGradesSet = false;
@@ -562,7 +590,7 @@ public class GradeScriptController {
     public void deleteFormula(GradeFormula formula) {
         if (formula == null) {
             throw new IllegalArgumentException("The type and formula cant be null."
-                + " The formula has to be in the grade formula history of the type");
+                    + " The formula has to be in the grade formula history of the type");
         }
         getActiveParticipationType().getGradeFormulas().remove(formula);
         course.getParticipationTypes().set(activeTabIndex,
@@ -674,12 +702,12 @@ public class GradeScriptController {
 
     /**
      * Gets the label of a gradeType given the id of the gradeType.
-     * @param gradeId The id of the gradeType value.
+     * @param examId The id of the exam.
      * @return The lable of the gradeType.
      *         Or an empty string if the gradeType is not found.
      */
-    public String gradeLabelFromId(int gradeId) {
-        return (gradeTypeLabels.containsKey(gradeId)) ? gradeTypeLabels.get(gradeId) : "";
+    public String gradeLabelFromExamId(long examId) {
+        return (gradeTypeLabels.containsKey(examId)) ? gradeTypeLabels.get(examId) : "";
     }
 
     /*
@@ -793,8 +821,8 @@ public class GradeScriptController {
         }
 
         log.debug("Trying to set the pabo Grades");
-        final Map<Student, PyDictionary> studentPyGradeDictMap = createStudentPyGradeDictMap();
-        pyInterpreter.set(PY_VAR_NAME_GRADEDICT_LIST, new PyList(studentPyGradeDictMap.values()));
+        final Map<Student, PyTuple> studentPyGradeDictMap = createStudentParams();
+        pyInterpreter.set(PY_VAR_STUDENT_ARGS_LIST, new PyList(studentPyGradeDictMap.values()));
 
         try {
             pyInterpreter.exec(PY_EXEC_SET_FINAL_GRADES);
@@ -803,8 +831,18 @@ public class GradeScriptController {
         }
 
         boolean allValidPaboGradesSet = true;
-        for (Map.Entry<Student, PyDictionary> entry: studentPyGradeDictMap.entrySet()) {
-            Object paboGradeObj = entry.getValue().get(new PyString(PY_STR_FINAL_GRADE))
+
+        for (Map.Entry<Student, PyTuple> entry: studentPyGradeDictMap.entrySet()) {
+
+            Object firstArg =  entry.getValue().get(PY_IDX_ARG_TUPLE_CURRENT_GRADES);
+            if (!(firstArg instanceof PyDictionary)) {
+                log.error("The first argument of the student tuple list is not a dict");
+                allValidPaboGradesSet = false;
+                break;
+            }
+
+            PyDictionary gradesDict = (PyDictionary) firstArg;
+            Object paboGradeObj = gradesDict.get(new PyString(PY_STR_FINAL_GRADE))
                     .__tojava__(PaboGrade.class);
             if (!(paboGradeObj instanceof PaboGrade)) {
                 allValidPaboGradesSet = false;
@@ -851,8 +889,8 @@ public class GradeScriptController {
      * @param student The student which gradings should be put in the dict.
      * @return The Python dictionary of the exam shortcuts.
      */
-    private PyDictionary getPyGradeDict(List<Exam> exams, Student student) {
-        log.debug("getPyGradeDict called with student " + student.getUser());
+    private PyDictionary createPyGradeDict(List<Exam> exams, Student student) {
+        log.debug("createPyGradeDict called with student " + student.getUser());
         PyDictionary pyGradeDict = new PyDictionary();
         for (Exam exam: exams) {
             Grading grading = student.getGradingFromExam(exam);
@@ -868,7 +906,9 @@ public class GradeScriptController {
      * depending of the gradeType and value of the grade. The following mappings
      * take place:
      *  * GradeType.Boolean will be represented as PyBoolean
-     *    for passed(true) / not passed(false).
+     *    for passed(true)
+     *    / not passed(false)
+     *    / none if the error doesnt represent a boolean.
      *  * GradeType.Numeric and GradeType.Percent will be represented as python
      *    Decimals with the numeric or percent values.
      *  * GradeType.Point will be represented as tuple of the reached and max
@@ -900,20 +940,19 @@ public class GradeScriptController {
      * @param grade A grade of the type GradeType.Boolean. It must have as value
      *              either "0" for not passed or "1" for passed.
      *              If the gradeType is not a boolean grade or the value of the
-     *              grade does not match, an IllegalArgumentException gets thrown-
+     *              grade does not match, an None gets returned;
      * @return A PyBoolean which is true if the grade has a value of 1, or false
      *         if the grade has a value of 0.
-     * @throws IllegalArgumentException If the value of the grade does not
-     *                                  equal 1 or 0.
      */
-    private PyBoolean booleanGradeToPyBoolean(Grade grade) {
+    private PyObject booleanGradeToPyBoolean(Grade grade) {
         log.debug("booleanGradeToPyBoolean called with " + grade);
-        if (grade.getValue().equals(new BigDecimal("1"))) {
+        if (grade.getValue().compareTo(new BigDecimal("1")) == 0) {
             return new PyBoolean(true);
-        } else if (grade.getValue().equals(new BigDecimal("0"))) {
+        } else if (grade.getValue().compareTo(new BigDecimal("0")) == 0) {
             return new PyBoolean(false);
         } else {
-            throw new IllegalArgumentException("The value of the grade does not equal 1 or 0");
+            log.error("Grade had a GradeType of boolean, but didnt have the right values");
+            return pyInterpreter.get(PY_NONE);
         }
     }
 
@@ -946,20 +985,120 @@ public class GradeScriptController {
     }
 
     /**
-     * Creates a map from each student to a python dictionary containing
-     * the gradings of each exam of the student.
-     * The python dictionary has the shortcut of the exam as key and the value
-     * of the students grading as value (see gradeValueToPyObject).
+     * Creates a map from each student to a python tuple containing the three
+     * arguments of the method set_final_grade.
+
      * @return The map of student gradings.
      */
-    private Map<Student, PyDictionary> createStudentPyGradeDictMap() {
-        log.debug("createStudentPyGradeDictMap() called");
-        Map<Student, PyDictionary> studentPyGradeDictMap = new HashMap<>();
+    private Map<Student, PyTuple> createStudentParams() {
+        log.debug("createStudentParams() called");
+
+        Map<Student, PyTuple> studentPyTupleMap = new HashMap<>();
         for (Student student: gradedStudents.get(getActiveParticipationType())) {
             log.debug("Putting student " + student.getUser() + " in dict");
-            studentPyGradeDictMap.put(student, getPyGradeDict(course.getExams(), student));
+            studentPyTupleMap.put(student, createStudentArgsTuple(student, course));
         }
-        return studentPyGradeDictMap;
+
+        return studentPyTupleMap;
+
+    }
+
+
+    /**
+     * The first element of the tuple for the student for the arguments in the
+     * method to set the final grade.
+     * The first parameter is a is a python dictionary containing the grades
+     * of the current course.
+     * The second parameter is a python dictionary with information about the
+     * student like the email and matriculationNumber.
+     * The first parameter is python dictionary containing the other grades of the
+     * students, indexes by the semesters and the courses of the other student,
+     * in which the current user was a lecturer.
+     * @param student The student of which the pyTuple of the method args should
+     *                be built.
+     * @param course The current course.
+     * @return The pyTuple containing the arugments of the student.
+     */
+    private PyTuple createStudentArgsTuple(Student student, Course course) {
+        log.debug("createStudentArgsTuple called with student " + student.getUser());
+        List<Student> otherStudentRelations = courseService
+                .getOtherStudentsFromStudentAndLecturer(student.getUser(),loggedInUser,course);
+        PyObject[] pyTupleArgs = {
+                createPyGradeDict(course.getExams(), student),
+                createStudentInfoDict(student),
+                createOtherStudentGradesDict(otherStudentRelations)
+        };
+        return new PyTuple(pyTupleArgs);
+    }
+
+
+    /**
+     * Creates a PyDictionary about infos about the student. The infos and their
+     * stored keys
+     * first_name: FirstName of the student
+     * last_name: LastName of the student
+     * email: email of the student
+     * matriculation: Matriculation number of the student.
+     * part_type: participation type of the student.
+     * @param student The student which infos should be put in the py Dict.
+     * @return The PyDict with student infos.
+     */
+    private PyDictionary createStudentInfoDict(Student student) {
+        log.debug("createStudentInfoDict called with student " + student.getUser());
+        PyDictionary studentDict = new PyDictionary();
+
+        studentDict.put(new PyString(KEY_STUDENT_INFO_MATR),
+                student.getUser().getMatriculationNumber() == null
+                        ? new PyString("")
+                        : new PyString(student.getUser().getMatriculationNumber()));
+
+        studentDict.put(new PyString(KEY_STUDENT_INFO_FIRST_NAME),
+                new PyString(student.getUser().getFirstName()));
+        studentDict.put(new PyString(KEY_STUDENT_INFO_LAST_NAME),
+                new PyString(student.getUser().getLastName()));
+        studentDict.put(new PyString(KEY_STUDENT_INFO_EMAIL),
+                new PyString(student.getUser().getEmail()));
+        studentDict.put(new PyString(KEY_STUDENT_INFO_PART_TYPE),
+                new PyString(student.getParticipationType().getName()));
+
+
+        return studentDict;
+    }
+
+    /**
+     * Creates a python dictionary of the other student relations of a student
+     * in which the currently logged in user is lecturer.
+     * The dictionary has as the first index the semester in which the courses were
+     * located, which points to a dictionary of courses during this semester.
+     * This dictionary uses the shortcut of a course to get a grade dictionary
+     * of the student in that course.
+     * @param otherStudentRelations The other student relations which should create
+     *                            the Python Dictionary
+     * @return The python dictionary with other grades indexed by semester
+     *         and course shortcut.
+     */
+    private PyDictionary createOtherStudentGradesDict(List<Student> otherStudentRelations) {
+        List<Semester> semesters = new ArrayList<>();
+        PyDictionary semesterDict = new PyDictionary();
+
+        for (Student otherStudent: otherStudentRelations) {
+            Semester semester = otherStudent.getCourse().getSemester();
+
+            if (!semesters.contains(semester)) {
+                semesters.add(otherStudent.getCourse().getSemester());
+                semesterDict.put(new PyString(semester.toString()), new PyDictionary());
+            }
+
+            if (!otherStudent.getCourse().equals(course)) {
+                PyDictionary courseDict = (PyDictionary)
+                        semesterDict.get(new PyString(semester.toString()));
+
+                courseDict.put(new PyString(otherStudent.getCourse().getIdentifier()),
+                        createPyGradeDict(otherStudent.getCourse().getExams(), otherStudent));
+            }
+        }
+
+        return semesterDict;
     }
 
     /**
@@ -1029,9 +1168,39 @@ public class GradeScriptController {
         copy.setValid(formula.isValid());
         copy.setEditDescription(formula.getEditDescription() == null
                 ? "" : formula.getEditDescription());
-        copy.setValid(formula.isValid());
         return copy;
     }
+
+
+
+    /**
+     * Creates a map of exam ids and the grade type labels of the exams.
+     * Exams with point grades get their max points appended.
+     * @param exams The list of exams which grade types shold be created.
+     * @param bundle The resource bundle containng the labels.
+     * @return The map of grade type labels.
+     */
+    private Map<Long, String> getGradeTypeLabelOfExams(List<Exam> exams, ResourceBundle bundle) {
+        Map<Long, String> gradeTypeMap = new HashMap<>();
+        for (Exam exam: exams) {
+            if (exam.getGradeType().equals(GradeType.Numeric.getId())) {
+                gradeTypeMap.put(exam.getExamId(), bundle.getString("gradeType.grade"));
+            } else if (exam.getGradeType().equals(GradeType.Boolean.getId())) {
+                gradeTypeMap.put(exam.getExamId(), bundle.getString("gradeType.boolean"));
+            } else if (exam.getGradeType().equals(GradeType.Percent.getId())) {
+                gradeTypeMap.put(exam.getExamId(), bundle.getString("gradeType.percent"));
+            } else if (exam.getGradeType().equals(GradeType.Point.getId())) {
+                String pointlabel = bundle.getString("gradeType.points");
+                if (exam.getMaxPoints() != null) {
+                    pointlabel += String.format(" (max %.2f)", exam.getMaxPoints().floatValue());
+                }
+                gradeTypeMap.put(exam.getExamId(), pointlabel);
+            }
+        }
+        return gradeTypeMap;
+    }
+
+
 
 
     /*
@@ -1046,7 +1215,7 @@ public class GradeScriptController {
     private void logStudentsGraded(ParticipationType type) {
         for (Student student: gradedStudents.get(type)) {
             logAction("Student " + student.getUser() + " of the participation type "
-                + type.getName() + " got the Pabo Grade "
+                    + type.getName() + " got the Pabo Grade "
                     + ((student.getPaboGrade() == null)
                     ? null :  PaboGrade.valueOf(student.getPaboGrade())));
         }
@@ -1061,7 +1230,7 @@ public class GradeScriptController {
                 + " got saved for the participation type"
                 + formula.getParticipationType().getName() + "."
                 + (formula.isValid()
-                    ? " The formula was valid." : " The formula was not valid.");
+                ? " The formula was valid." : " The formula was not valid.");
         logAction(descr);
     }
 
@@ -1151,7 +1320,7 @@ public class GradeScriptController {
         this.filteredExams = filteredExams;
     }
 
-    public Map<Integer, String> getGradeTypeLabels() {
+    public Map<Long, String> getGradeTypeLabels() {
         return gradeTypeLabels;
     }
 

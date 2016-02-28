@@ -217,6 +217,7 @@ public class ApplicationController {
         return highest;
     }
 
+
     /**
      * Inserts dummy users in the database at startup.
      * @TODO Delete before deadline :^)
@@ -334,6 +335,9 @@ public class ApplicationController {
         course.setStudentsCanSeeFormula(true);
         course.setSemester(semester);
 
+
+
+
         course = courseService.persist(course);
         log.debug("Inserted Course with id: " + course.getCourseId());
 
@@ -441,7 +445,7 @@ public class ApplicationController {
         GradeFormula formula = new GradeFormula();
         formula.setSaveDate(new Date(100L));
         formula.setEditor(newLecturer);
-        formula.setFormula("def set_final_grade(grades):\n"
+        formula.setFormula("def set_final_grade(grades, student_info, other_course_grades):\n"
                 + "    return PaboGrade.GRADE_5_0");
         formula.setEditDescription("Initialized GradeFormula");
         partType.addNewFormula(formula);
@@ -449,7 +453,7 @@ public class ApplicationController {
         GradeFormula winfFormula = new GradeFormula();
         winfFormula.setSaveDate(new Date(100L));
         winfFormula.setEditor(newLecturer);
-        winfFormula.setFormula("def set_final_grade(grades):\n"
+        winfFormula.setFormula("def set_final_grade(grades, student_info,other_course_grades):\n"
                 + "    return PaboGrade.GRADE_1_0");
         winfFormula.setEditDescription("Initialized WINF GradeFormula");
         course.getParticipationTypes().add(winf);
@@ -541,6 +545,7 @@ public class ApplicationController {
 
         uploadService.persist(upload);
 
+
         // Recordbook
         RecordBookEntry rbe = RecordBookEntry.from(student2,course,exam,
                 new Date(),60,"Alles komplett gelöst");
@@ -555,6 +560,7 @@ public class ApplicationController {
         entry.setExam(exam);
 
         recordBookService.persist(entry);
+
 
         //Testlogs
 
