@@ -70,10 +70,12 @@
                 <div class="form-group" id="issecretary">
                     <h:panelGroup rendered="#{participantsController.selectedRoleId eq Role.PRIVILEGED_USER.id}">
                         <label class="col-xs-3 control-label">#{msg['participants.create.secretary']}</label>
-                        <div class="checkbox">
-                            <h:selectBooleanCheckbox id="checkboxIsSecretary" value="#{participantsController.privilegedUserSecretary}" />
-                            <h:outputLabel value="#{msg['participants.create.secretaryText']}"
-                                           for="checkboxIsSecretary" />
+                        <div class="col-xs-8">
+                            <div class="checkbox">
+                                <h:selectBooleanCheckbox id="checkboxIsSecretary" value="#{participantsController.privilegedUserSecretary}" />
+                                <h:outputLabel value="#{msg['participants.create.secretaryText']}"
+                                               for="checkboxIsSecretary" />
+                            </div>
                         </div>
                     </h:panelGroup>
                 </div>
