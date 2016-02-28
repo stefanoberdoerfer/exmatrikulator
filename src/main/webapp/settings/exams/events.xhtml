@@ -47,6 +47,9 @@
                     </h:panelGroup>
                 </h:panelGroup>
                 <p:blockUI block="editDeadlinePnl" trigger="updateDeadlineBtn"/>
+                    <div class="text-center">
+                        <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                    </div>
                 <br/>
                 <p:schedule id="editSchedule"
                             value="#{examEventController.examEventModel}"
@@ -121,7 +124,11 @@
                         <hr/>
                 </h:panelGroup>
             </h:panelGroup>
-            <p:blockUI block="currentExamEventPnl" trigger="unregisterBtn"/>
+            <p:blockUI block="currentExamEventPnl" trigger="unregisterBtn">
+                <div class="text-center">
+                    <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                </div>
+            </p:blockUI>
 
             <p:schedule id="studentSchedule"
                         value="#{examEventController.examEventModel}"
@@ -291,7 +298,11 @@
                     </div>
                 </div>
             </p:panel>
-            <p:blockUI block="dialogPnl" trigger="removeBtn addBtn registerBtn" />
+            <p:blockUI block="dialogPnl" trigger="removeBtn addBtn registerBtn">
+                <div class="text-center">
+                    <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                </div>
+            </p:blockUI>
         </p:dialog>
     </h:form>
 </ui:define>

@@ -56,7 +56,11 @@
             <ui:repeat value="#{gradesController.course.exams}" var="exam">
                 <tr class="vert-align-middle">
                     <td>#{exam.name}</td>
-                    <td>#{gradesController.studentGradings.get(exam.examId).grade.value}</td>
+                    <td>
+                        #{gradesController.studentGradings.get(exam.examId).grade.value}
+                        <h:outputText value=" / #{exam.maxPoints}" rendered="#{gradesController.isPointExam(exam)
+                            and gradesController.studentGradings.get(exam.examId).grade.value ne null }" />
+                    </td>
                     <td>#{gradesController.studentGradings.get(exam.examId).publicComment}</td>
                     <td>
                         <h:link styleClass="btn btn-default"

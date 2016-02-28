@@ -72,17 +72,15 @@
                 <p:column headerText="#{msg['common.studentNumber']}">
                     #{student.user.matriculationNumber}
                 </p:column>
-                <p:column styleClass="table-grades-grade text-center" headerText="#{msg['gradeType.paboGrade']}">
+                <p:column styleClass="table-grades-grade text-center" headerText="#{msg['gradeType.paboGrade']}"
+                          rendered="#{userController.isLecturer(gradingController.course)}">
                     <p:commandLink action="#{gradingEditController.setFinalGrading(student)}"
                                    oncomplete="return exModal('gradeEditFinal');" update="gradeEditFinalForm"
                                    styleClass="pull-right"
-                                   rendered="#{userController.isLecturer(gradingController.course)}"><i
+                                   ><i
                             class="fa fa-pencil"></i>
                     </p:commandLink>
-                    <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course)}"><i
-                            class="fa fa-lock"></i>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{userController.isLecturer(gradingController.course)}">
+                    <h:panelGroup>
                         <strong>#{gradingController.getPaboGradeName(student.paboGrade)}</strong>
                     </h:panelGroup>
                 </p:column>
@@ -104,11 +102,13 @@
                                     gradingController.getStudentGrading(student, exam).corrector
                                     .equals(userController.user)}">
                                     #{gradingController.getStudentGrading(student, exam).grade.value}
+                                    <h:outputText value=" / #{exam.maxPoints}" rendered="#{gradingController.isPointExam(exam)
+                                        and gradingController.getStudentGrading(student, exam).grade.value ne null }" />
                                 </h:panelGroup>
 
                                 <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
                                                oncomplete="return exModal('gradeEditExam');"
-                                               update="gradeEditExamForm"><i
+                                               update="gradeEditExamForm" styleClass="btn-grading-edit"><i
                                         class="fa fa-pencil"></i>
                                 </p:commandLink>
                             </h:panelGroup>
@@ -133,7 +133,7 @@
 
                                 <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
                                                oncomplete="return exModal('gradeEditExam');"
-                                               update="gradeEditExamForm"><i
+                                               update="gradeEditExamForm" styleClass="btn-grading-edit"><i
                                         class="fa fa-pencil"></i>
                                 </p:commandLink>
                             </h:panelGroup>

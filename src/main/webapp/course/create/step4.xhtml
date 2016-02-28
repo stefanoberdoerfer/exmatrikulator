@@ -67,8 +67,9 @@
                     <p:fileUpload fileUploadListener="#{step4.studentImportController.handleFileUpload}"
                                   mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true"
                                   update="@form" uploadLabel="#{msg['import.upload']}"
+                                  label="#{msg['import.choose']}"
                                   invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
-                                  sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
+                                  sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/><br />
                     <h:commandButton class="btn btn-primary" action="#{step4.studentImportController.executeImport()}"
                                      value="#{msg['import.startUserImport']}">
                     </h:commandButton>
@@ -111,7 +112,9 @@
                 </div>
             </div>
         <p:blockUI block=":main" trigger="finishButton">
-            LOADING
+            <div class="text-center">
+                <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+            </div>
         </p:blockUI>
         </h:form>
         <ui:include src="/WEB-INF/modals/course/create/success.xhtml" />

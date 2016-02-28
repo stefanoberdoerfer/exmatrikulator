@@ -65,25 +65,72 @@
                                 <div class="table-common-sub">#{student.user.email}</div>
                             </div>
                             <div class="col-xs-9">
-                                <div class="col-xs-3 grading">
+                                <h:panelGroup class="col-xs-3 grading"
+                                              rendered="#{userController.isLecturer(gradingController.course)}">
+
                                     <strong>#{msg['gradeType.paboGrade']}</strong><br />
                                     #{gradingController.getPaboGradeName(student.paboGrade)}
+
                                     <p:commandLink action="#{gradingEditController.setFinalGrading(student)}"
                                                    oncomplete="return exModal('gradeEditFinal');"
                                                    update="gradeEditFinalForm">
                                         <i class="fa fa-pencil"></i>
                                     </p:commandLink>
-                                </div>
+
+                                </h:panelGroup>
                                 <ui:repeat value="#{gradingController.course.exams}" var="exam">
-                                    <div class="col-xs-3 grading">
+                                    <h:panelGroup layout="block" class="col-xs-3 grading"
+                                                  rendered="#{!gradingController.hasBooleanGradeType(exam) or
+                                                            gradingController.getStudentGrading(student, exam) == null}">
+
                                         <strong>#{exam.getName()}</strong><br />
-                                        #{gradingController.getStudentGrading(student, exam).grade.value}
+                                        <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course) and
+                                                                !gradingController.getStudentGrading(student, exam).corrector
+                                                                .equals(userController.user)}">
+                                            <i class="fa fa-lock"></i>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup rendered="#{userController.isLecturer(gradingController.course) or
+                                                                gradingController.getStudentGrading(student, exam).corrector
+                                                                .equals(userController.user)}">
+
+                                            #{gradingController.getStudentGrading(student, exam).grade.value}
+                                            <h:outputText value=" / #{exam.maxPoints}" rendered="#{gradingController.isPointExam(exam)
+                                                and gradingController.getStudentGrading(student, exam).grade.value ne null }" />
+
+                                        </h:panelGroup>
+
                                         <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
                                                        oncomplete="return exModal('gradeEditExam');"
-                                                       update="gradeEditExamForm">
-                                            <i class="fa fa-pencil"></i>
+                                                       update="gradeEditExamForm" styleClass="btn-grading-edit"><i
+                                                class="fa fa-pencil"></i>
                                         </p:commandLink>
-                                    </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" class="col-xs-3 grading"
+                                                  rendered="#{gradingController.hasBooleanGradeType(exam) and
+                                                            gradingController.getStudentGrading(student, exam) != null}">
+                                        <strong>#{exam.getName()}</strong><br />
+                                        <h:panelGroup rendered="#{!userController.isLecturer(gradingController.course) and
+                                                                !gradingController.getStudentGrading(student, exam).corrector
+                                                                .equals(userController.user)}">
+                                            <i class="fa fa-lock"></i>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup rendered="#{userController.isLecturer(gradingController.course) or
+                                                                gradingController.getStudentGrading(student, exam).corrector
+                                                                .equals(userController.user)}" styleClass="boolean-grade-label">
+                                            <h:outputText value="#{msg['gradings.passed']}"
+                                                          rendered="#{gradingController.hasPassed(student, exam)}" />
+                                            <h:outputText value="#{msg['gradings.failed']}"
+                                                          rendered="#{!gradingController.hasPassed(student, exam)}" />
+                                        </h:panelGroup>
+
+                                        <p:commandLink action="#{gradingEditController.setExamGrading(student, exam)}"
+                                                       oncomplete="return exModal('gradeEditExam');"
+                                                       update="gradeEditExamForm" styleClass="btn-grading-edit"><i
+                                                class="fa fa-pencil"></i>
+                                        </p:commandLink>
+                                    </h:panelGroup>
                                 </ui:repeat>
                             </div>
                         </div>

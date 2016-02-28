@@ -176,9 +176,11 @@
                                     <li><h:link outcome="/grading/overview" value="#{msg['courses.grading']}">
                                         <f:param name="course-id" value="#{course.courseId}"/>
                                     </h:link></li>
+                                    <ui:fragment rendered='#{navigation.canSeeOthersRecordBooks(course)}'>
                                     <li><h:link outcome="/recordbook/overview" value="#{msg['recordbooks']}">
                                         <f:param name="course-id" value="#{course.courseId}"/>
                                     </h:link></li>
+                                    </ui:fragment>
                                     <li><h:link outcome="/settings/overview" value="#{msg['common.settings']}">
                                         <f:param name="course-id" value="#{course.courseId}"/>
                                     </h:link></li>

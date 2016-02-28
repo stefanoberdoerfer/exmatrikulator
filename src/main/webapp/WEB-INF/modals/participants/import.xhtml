@@ -40,8 +40,9 @@
             <p:fileUpload fileUploadListener="#{studentImportController.handleFileUpload}"
                           mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true"
                           update="@form" uploadLabel="#{msg['import.upload']}"
+                          label="#{msg['import.choose']}"
                           invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
-                          sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
+                          sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/><br />
 
             <p:commandButton class="btn btn-primary" value="#{msg['import.startUserImport']}"
                 update="@form">
@@ -73,7 +74,11 @@
             </div>
         </div>
         </p:panel>
-        <p:blockUI block="importDialogPanel" trigger="importButton"/>
+        <p:blockUI block="importDialogPanel" trigger="importButton">
+            <div class="text-center">
+                <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+            </div>
+        </p:blockUI>
         </h:form>
     </p:dialog>
 </ui:composition>

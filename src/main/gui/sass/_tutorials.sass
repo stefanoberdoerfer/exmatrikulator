@@ -1,0 +1,10 @@
+ul
+  &.tutors
+    display: inline
+
+    li
+      &::after
+        content: ","
+
+      &:last-of-type::after
+        content: ""

@@ -107,8 +107,14 @@ public class OverviewController {
         Store if the currently logged in user may see the record books of
         others.
          */
+        log.debug("Is lecturer? " + (userService.hasCourseRole(user, Role.LECTURER,
+                course) ? "yes" : "no"));
+
         allowedToSeeOthers = userService.hasCourseRole(user, Role.LECTURER,
                 course);
+
+        log.debug("Is privileged? " + (userService.hasCourseRole(user, Role.PRIVILEGED_USER,
+                course) ? "yes" : "no"));
 
         if (!allowedToSeeOthers && userService.hasCourseRole(user,
                 Role.PRIVILEGED_USER, course)) {

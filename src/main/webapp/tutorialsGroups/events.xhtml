@@ -134,7 +134,11 @@
                     </div>
                 </div>
                 </p:panel>
-                <p:blockUI block="dialogPnl" trigger="removeBtn addBtn"/>
+                <p:blockUI block="dialogPnl" trigger="removeBtn addBtn">
+                    <div class="text-center">
+                        <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                    </div>
+                </p:blockUI>
             </p:dialog>
         </h:form>
     </ui:define>

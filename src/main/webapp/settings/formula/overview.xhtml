@@ -91,9 +91,15 @@
                                                style="margin-top:20px;"/>
                             </p:panel>
                             <p:blockUI trigger="execScriptBtn" block="scriptPnl">
+                                <div class="text-center">
+                                    <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                                </div>
                                 #{msg['gradingformula.isExecuting']}
                             </p:blockUI>
                             <p:blockUI trigger="saveScriptBtn" block="scriptPnl">
+                                <div class="text-center">
+                                    <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                                </div>
                                 #{msg['gradingFormula.blockMsgGettingSaved']}
                             </p:blockUI>
                         </p:tab>
