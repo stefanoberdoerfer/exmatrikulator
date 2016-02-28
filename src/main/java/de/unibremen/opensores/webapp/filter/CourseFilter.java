@@ -50,7 +50,7 @@ public class CourseFilter implements Filter {
 
         User user = (User) hreq.getSession().getAttribute("user");
         if (user == null) {
-            hres.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            hres.sendRedirect(hreq.getContextPath());
             return;
         }
 
