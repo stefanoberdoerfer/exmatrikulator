@@ -10,6 +10,7 @@ import org.primefaces.model.UploadedFile;
 import org.mindrot.jbcrypt.BCrypt;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import de.unibremen.opensores.util.Constants;
 import de.unibremen.opensores.util.tme.Parser;
 import de.unibremen.opensores.util.tme.TMEObject;
 import de.unibremen.opensores.util.tme.TMEArray;
@@ -21,6 +22,7 @@ import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.GlobalRole;
+import de.unibremen.opensores.model.GradeFormula;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.service.UserService;
@@ -350,6 +352,20 @@ public class TmeController implements Serializable {
         type.setCreditPoints(null);
         type.setIsDefaultParttype(true);
         type.setCourse(course);
+
+        User currentUser = (User) FacesContext.getCurrentInstance()
+            .getExternalContext().getSessionMap()
+            .get(Constants.SESSION_MAP_KEY_USER);
+
+        GradeFormula formular = new GradeFormula();
+        formular.setFormula(Constants.DEFAULT_GRADE_SCRIPT);
+        formular.setEditDescription(Constants.DEFAULT_SCRIPT_EDIT_MESSAGE);
+        formular.setEditor(currentUser);
+        formular.setSaveDate(DateUtil.getDateTime());
+        formular.setValid(false);
+        formular.setParticipationType(type);
+        type.getGradeFormulas().add(formular);
+
         course.getParticipationTypes().add(type);
         course.setSemester(semester);
 
