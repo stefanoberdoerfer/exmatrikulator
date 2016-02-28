@@ -70,7 +70,7 @@ public class SemesterService extends GenericService<Semester> {
      */
     public void createNextSemesters(int nextSemesters) {
         Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
+        int year = cal.get(Calendar.YEAR) + 1;
 
         for (int n = 0; n <= nextSemesters; n++) {
             Semester soSe = new Semester();
