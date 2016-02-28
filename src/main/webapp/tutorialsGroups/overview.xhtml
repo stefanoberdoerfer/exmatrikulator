@@ -36,7 +36,9 @@
                 <h3>#{tutorial.name}</h3>
                 <h4 class="table-groups-tutors">
                   <strong>#{msg['common.tutors']}:</strong>
-                  <ui:repeat var="tutor" value="#{tutorial.tutors}">#{tutor.user}</ui:repeat>
+                  <ul class="list-inline tutors">
+                      <ui:repeat var="tutor" value="#{tutorial.tutors}"><li>#{tutor.user}</li></ui:repeat>
+                  </ul>
                 </h4>
               </div>
 
