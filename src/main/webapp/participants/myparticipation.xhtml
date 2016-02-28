@@ -1,0 +1,54 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['participationType.my']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li>#{myPartTypeController.course.name}</li>
+        <li class="active">#{msg['participationType.my']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <h:form id="participationForm">
+            <div class="headline">
+                <h:panelGroup class="btn-group main-buttons pull-right">
+                    <p:commandLink styleClass="btn btn-primary" value="#{msg['common.saveChanges']}"
+                                   action="#{myPartTypeController.changeParticipationType()}">
+                        <f:param name="course-id" value="#{myPartTypeController.course.courseId}"/>
+                    </p:commandLink>
+                </h:panelGroup>
+                <h1>#{msg['participationType.my']}</h1>
+            </div>
+
+            <div class="row form-horizontal">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <h:outputText value="#{msg['participationType.my.info']}"/>
+                        </div>
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-xs-10">
+                            <h:selectOneMenu value="#{myPartTypeController.chosenPartTypeId}"
+                                             styleClass="form-control" id="parttypeSelectOne">
+                                <p:ajax listener="#{myPartTypeController.partTypeChanged}" update="@form"/>
+                                <f:param name="course-id" value="#{myPartTypeController.course.courseId}"/>
+                                <f:selectItems value="#{myPartTypeController.course.participationTypes}"
+                                               var="pt" itemValue="#{pt.partTypeId}" itemLabel="#{pt.name}" />
+                            </h:selectOneMenu>
+                        </div>
+                        <div class="col-xs-10">
+                            <ui:include src="/WEB-INF/alerts.xhtml" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Backing Bean of the Course cverview page. Covers logic which shouldn't
+ * The Backing Bean of the Course overview page. Covers logic which shouldn't
  * be implemented in UserController.
  *
  * @author Stefan Oberdörfer
