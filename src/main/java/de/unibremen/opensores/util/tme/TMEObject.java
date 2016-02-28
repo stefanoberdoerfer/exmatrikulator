@@ -59,7 +59,7 @@ public class TMEObject {
      * @return True if it is, false otherwise.
      */
     public boolean has(final String key) {
-        return map.containsValue(key);
+        return map.containsKey(key);
     }
 
     /**
