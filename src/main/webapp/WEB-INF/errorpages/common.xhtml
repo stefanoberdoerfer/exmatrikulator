@@ -35,15 +35,17 @@
 
     <h:body id="errorPage">
         <div class="hint">
-            <h:graphicImage library="images" name="el_toro_light.svg" class="logo" />
+            <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
             <h1>#{errorCode}</h1>
             <h4>#{errorName}</h4>
         </div>
         <div class="eyecatcher">
+            <ui:fragment rendered="#{errorCode eq 500}">
             <video autoplay="autoplay">
                 <source src="#{request.contextPath}/resources/videos/IceBucketChallenge.webm" type="video/webm" />
                 <source src="#{request.contextPath}/resources/videos/IceBucketChallenge.mp4" type="video/mp4" />
             </video>
+            </ui:fragment>
         </div>
     </h:body>
 </html>
