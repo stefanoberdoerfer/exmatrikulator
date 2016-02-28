@@ -259,6 +259,9 @@ public class TmeController implements Serializable {
                 case "Course":
                     createCourse(obj);
                     break;
+                case "Tutorial":
+                    createTutorial(obj);
+                    break;
                 case "Teacher":
                 case "StudentData":
                     createUser(obj);
@@ -269,7 +272,6 @@ public class TmeController implements Serializable {
                 case "Exam":
                 case "ExamDate":
                 case "StudentExam":
-                case "Tutorial":
                 case "TutorialDate":
                 case "WorkPackage":
                 case "Group":
@@ -535,6 +537,29 @@ public class TmeController implements Serializable {
         entityMap.put(node.getId(), student);
         return student;
     }
+
+    /**
+     * Creates a tutorial from the given TME object. The associated
+     * course is copied from the entity map.
+     *
+     * @pre Associated course needs to be in the entityMap.
+     * @param node TME tutorial object.
+     * @return Created tutorial entity.
+     * @throws TmeException On a failed creation.
+     */
+    private Tutorial createTutorial(TMEObject node)
+            throws TmeException {
+        int courseId = node.getInt("course");
+        Object courseObj = entityMap.get(courseId);
+        if (courseObj == null) {
+            throw new TmeException(String.format("Course node %d needs to "
+                        + "be declared before tutorial node %d",
+                        courseId, node.getId()));
+        }
+
+        return createTutorial(node, (Course) courseObj);
+    }
+
 
     /**
      * Creates a tutorial from the given TME object in the given course.
