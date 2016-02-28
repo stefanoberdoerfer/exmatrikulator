@@ -314,6 +314,7 @@ public class TmeController implements Serializable {
         course.setDefaultCreditPoints(node.getInt("cp"));
         course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
+        course.setCreated(DateUtil.getDateTime());
 
         //super safe identifier collisionhandling
         String randomIdentifier;
