@@ -16,7 +16,6 @@ import java.util.List;
 
 /**
  * Service class for the Course model class.
- * @todo JPA Course search
  *
  * @author Stefan Oberdörfer
  * @author Matthias Reichmann
@@ -141,7 +140,6 @@ public class CourseService extends GenericService<Course> {
     }
 
 
-    //TODO Matthias bitte kurz helfen
     /**
      * Returns true if the given user is a lecturer in any course.
      *
@@ -285,10 +283,9 @@ public class CourseService extends GenericService<Course> {
      * @return A list of all courses or an empty list if no courses were found.
      */
     public List<Course> listCourses() {
-        List<Course> courseList = em.createQuery(
+        return em.createQuery(
                 "SELECT DISTINCT c "
                         + "FROM Course c ", Course.class).getResultList();
-        return courseList;
     }
 
     /**
@@ -308,7 +305,7 @@ public class CourseService extends GenericService<Course> {
         return em.createQuery(
                 "SELECT DISTINCT c FROM Course c WHERE "
                         + "(TRIM(LOWER(c.name)) LIKE :searchInput OR"
-                        + ":searchInput IN elements(c.numbers)) AND"
+                        + ":searchInput IN elements(c.numbers)) AND "
                         + "c.deleted = false", Course.class)
                 .setParameter("searchInput", "%" + trimSearchInput + "%")
                 .getResultList();

@@ -11,6 +11,7 @@ import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.util.DateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -156,6 +158,8 @@ public class CourseCreateFlowController implements Serializable {
                 defaultParttype.getStudents().add(s);
             }
 
+            course.setCreated(DateUtil.getDateTime());
+
             //persist whole course
             courseService.persist(course);
 
@@ -186,6 +190,7 @@ public class CourseCreateFlowController implements Serializable {
         PasswordReset passwordReset = userService
                 .initPasswordReset(newUser, RESET_TOKEN_EXPIRATION);
         newUser.setToken(passwordReset);
+        newUser.setLastActivity(DateUtil.getDateTime());
         userService.persist(newUser);
         try {
             sendRegistrationMail(newUser);

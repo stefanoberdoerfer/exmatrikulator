@@ -66,10 +66,10 @@
 
                 <p:column headerText="#{msg['examination.gradeType']}"
                           filterMatchMode="contains"
-                          filterBy="#{step2.examController.gradeLabelFromId(exam.gradeType)}"
-                          sortBy="#{step2.examController.gradeLabelFromId(exam.gradeType)}"
+                          filterBy="#{step2.examController.examLabel(exam)}"
+                          sortBy="#{step2.examController.examLabel(exam)}"
                           styleClass="table-examination-grade">
-                    <h:outputText value="#{step2.examController.gradeLabelFromId(exam.gradeType)}"/>
+                    <h:outputText value="#{step2.examController.examLabel(exam)}"/>
                 </p:column>
 
                 <p:column styleClass="text-right">

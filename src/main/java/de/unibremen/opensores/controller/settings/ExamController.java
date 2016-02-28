@@ -2,6 +2,7 @@ package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.Grade;
 import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.ExamService;
@@ -19,9 +20,11 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -130,46 +133,13 @@ public class ExamController {
     public void init() {
         log.debug("init() called");
         context = FacesContext.getCurrentInstance();
-        HttpServletRequest httpReq
-                = (HttpServletRequest) context.getExternalContext().getRequest();
-        log.debug("Request URI: " + httpReq.getRequestURI());
-        final String courseIdString = httpReq.getParameter(Constants.HTTP_PARAM_COURSE_ID);
+        ExternalContext exContext = context.getExternalContext();
+        HttpServletRequest req = (HttpServletRequest) exContext.getRequest();
 
-        log.debug("course-id: " + courseIdString);
-        long courseId = -1;
-        if (courseIdString != null) {
-            try {
-                courseId = Long.parseLong(courseIdString.trim());
-            } catch (NumberFormatException e) {
-                log.debug("NumberFormatException while parsing courseId");
-            }
-        }
-
-        if (courseId != -1) {
-            course = courseService.find(Course.class, courseId);
-        }
+        loggedInUser = (User) exContext.getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
+        course = courseService.findCourseById(req.getParameter(Constants.HTTP_PARAM_COURSE_ID));
 
         log.debug("Loaded course object: " + course);
-
-
-        if (course == null) {
-            log.debug("trying to redirect to /course/overview");
-            try {
-                FacesContext.getCurrentInstance()
-                        .getExternalContext().redirect(FacesContext
-                        .getCurrentInstance().getExternalContext()
-                        .getApplicationContextPath() + PATH_TO_COURSE_OVERVIEW);
-                return;
-            } catch (IOException e) {
-                log.error(e);
-                log.fatal("Could not redirect to " + PATH_TO_COURSE_OVERVIEW);
-                return;
-            }
-        }
-
-        log.debug("Course exam list size: " + course.getExams().size());
-
-
 
         gradeTypeLabels = new HashMap<>();
         bundle = ResourceBundle.getBundle("messages",
@@ -295,7 +265,7 @@ public class ExamController {
             course = courseService.update(course);
             examService.remove(selectedExam);
         }
-        //TODO Mark every grade script unvalid which contains the shortcut of exam
+        //TODO Mark every grade script invalid which contains the shortcut of exam
     }
 
     /*
@@ -436,12 +406,25 @@ public class ExamController {
     /**
      * Gets the label of a gradeType given the id of the gradeType.
      * @param gradeId The id of the gradeType value.
-     * @return The lable of the gradeType.
-     *         Or an empty string if the gradeType is not found.
+     * @return The label of the gradeType
+     *         or an empty string if the gradeType is not found.
      */
     public String gradeLabelFromId(int gradeId) {
         return (gradeTypeLabels.containsKey(gradeId))
                 ? gradeTypeLabels.get(gradeId) : "";
+    }
+
+    /**
+     * Gets the label of a exam given the id of the gradeType and
+     * adds the maximum points if its a PointGrade.
+     * @param exam The exam to be printed as string.
+     * @return The label of the exam with optional maxpoints number
+     *         or an empty string if the gradeType is not found.
+     */
+    public String examLabel(Exam exam) {
+        String result = gradeLabelFromId(exam.getGradeType());
+        return (exam.getMaxPoints() == null) ? result : result
+                + " (max. " + exam.getMaxPoints() + ")";
     }
 
     /*
