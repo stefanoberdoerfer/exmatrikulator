@@ -13,7 +13,7 @@
             <div class="btn-group">
                 <p:commandButton value="#{msg['common.no']}" type="button"
                                  onclick="return exModal(':finalizeConfirm');" styleClass="btn btn-default" />
-                <h:link onclick="return exModal(':finalizeConfirm', 'finalizeSuccess');"
+		<p:commandButton actionListener="#{courseSettings.finalizeAndSend()}" oncomplete="return exModal(':finalizeConfirm', 'finalizeSuccess');"
                         class="btn btn-danger" value="#{msg['common.yes']}" />
             </div>
         </div>
