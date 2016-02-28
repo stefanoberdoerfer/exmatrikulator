@@ -62,7 +62,6 @@ public class ParticipationType {
     private List<Student> students = new ArrayList<>();
 
     @OneToMany(mappedBy = "participationType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    //@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<GradeFormula> gradeFormulas = new ArrayList<>();
 
     @Column(nullable = false)
