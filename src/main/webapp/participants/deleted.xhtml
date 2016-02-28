@@ -67,6 +67,7 @@
             <h2>#{msg['common.students']}</h2>
             <p:dataTable id="participantTbl" widgetVar="deletedStudentsTblWidget"
                          var="student"
+                         styleClass="table table-hover"
                          value="#{participantsController.course.deletedStudents}"
                          filteredValue="#{participantsController.filteredDeletedStudents}"
                          emptyMessage="#{msg['participants.noDeletedStudents']}"
@@ -110,8 +111,7 @@
                           filterMatchMode="contains">
                     <h:outputText value="#{student.participationType.name}"/>
                 </p:column>
-                <p:column headerText="#{msg['common.actions']}"
-                          styleClass="table-common-options-one text-right">
+                <p:column styleClass="table-common-options-one text-right">
                     <p:commandLink h5:data-toggle="tooltip"
                                    update="participantTbl"
                                    class="btn btn-default"
@@ -123,8 +123,8 @@
                 </p:column>
             </p:dataTable>
             <h2>#{msg['common.tutors']}</h2>
-            <p:dataTable id="participantTbl2" widgetVar="deletedtutorsTblWidget"
-                         var="tutor"
+            <p:dataTable id="participantTbl2" widgetVar="deletedtutorsTblWidget" var="tutor"
+                         styleClass="table table-hover"
                          value="#{participantsController.course.deletedTutors}"
                          filteredValue="#{participantsController.filteredDeletedPrivUsers}"
                          emptyMessage="#{msg['participants.noDeletedPrivilegedUsers']}"
@@ -155,8 +155,7 @@
                           styleClass="table-common-email">
                     <h:outputText value="#{tutor.user.email}"/>
                 </p:column>
-                <p:column headerText="#{msg['common.actions']}"
-                          styleClass="table-common-options-one text-right">
+                <p:column styleClass="table-common-options-one text-right">
                     <p:commandLink update="participantTbl2"
                                    h5:data-toggle="tooltip"
                                    h5:data-placement="top" title="#{msg['common.restoreParticipant']}"

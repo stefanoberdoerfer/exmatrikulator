@@ -79,11 +79,12 @@
                             </tr>
                             <tr class="table-row-blank">
                                 <td>
-                                    <h:selectBooleanCheckbox styleClass="col-xs-3"
-                                                             id="isGroupPerformance"
-                                                             value="#{partTypeController.currentPartType.groupPerformance}"/>
-                                    <h:outputLabel value="#{msg['participationType.groupPerformance']}"
-                                                   for="isGroupPerformance" styleClass="col-xs-offset-1"/>
+                                    <div class="col-xs-9 col-xs-offset-3">
+                                        <h:selectBooleanCheckbox id="isGroupPerformance"
+                                                                 value="#{partTypeController.currentPartType.groupPerformance}"/>
+                                        <h:outputLabel value="#{msg['participationType.groupPerformance']}"
+                                                       for="isGroupPerformance" styleClass="col-xs-offset-1"/>
+                                    </div>
                                 </td>
                             </tr>
                             <tr class="table-row-blank">
@@ -108,11 +109,12 @@
                             </tr>
                             <tr class="table-row-blank">
                                 <td>
-                                    <h:selectBooleanCheckbox styleClass="col-xs-3"
-                                                             id="isRestricted"
-                                                             value="#{partTypeController.currentPartType.restricted}"/>
-                                    <h:outputLabel value="#{msg['participationType.restricted']}"
-                                                   for="isRestricted" styleClass="col-xs-offset-1"/>
+                                    <div class="col-xs-9 col-xs-offset-3">
+                                        <h:selectBooleanCheckbox id="isRestricted"
+                                                                 value="#{partTypeController.currentPartType.restricted}"/>
+                                        <h:outputLabel value="#{msg['participationType.restricted']}"
+                                                       for="isRestricted" styleClass="col-xs-offset-1"/>
+                                    </div>
                                 </td>
                             </tr>
                             <tr class="table-row-blank">

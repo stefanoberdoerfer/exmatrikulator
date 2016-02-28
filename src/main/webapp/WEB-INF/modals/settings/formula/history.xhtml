@@ -38,27 +38,25 @@
                     <p:column headerText="#{msg['gradingFormula.editDescription']}">
                         <h:outputText value="#{formula.editDescription}"/>
                     </p:column>
-                    <p:column headerText="#{msg['common.actions']}">
-                        <div align="center">
-                            <p:commandLink id="restoreBtn" h5:data-toggle="tooltip"
-                                           update=":scriptForm"
-                                           h5:data-placement="top" title="#{msg['gradingFormula.restore']}"
-                                           oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':formulaHistory');"
-                                           styleClass="btn btn-success">
-                                <i class="fa fa-plus"/>
-                                <f:actionListener binding="#{scriptController.restoreToFormula(formula)}"/>
-                            </p:commandLink>
-                            <p:commandLink id="deleteBtn" h5:data-toggle="tooltip"
-                                           h5:data-placement="top" title="#{msg['gradingFormula.deleteFormula']}"
-                                           oncomplete="PF('formulaHistory').hide();PF('formulaRemove').show();"
-                                           update="formulaRemoveDialog"
-                                           styleClass="btn btn-danger"
-                                           rendered="#{scriptController.userIsLecturer and
+                    <p:column styleClass="text-right table-common-options-two">
+                        <p:commandLink id="restoreBtn" h5:data-toggle="tooltip"
+                                       update=":scriptForm"
+                                       h5:data-placement="top" title="#{msg['gradingFormula.restore']}"
+                                       oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':formulaHistory');"
+                                       styleClass="btn btn-success">
+                            <i class="fa fa-plus"/>
+                            <f:actionListener binding="#{scriptController.restoreToFormula(formula)}"/>
+                        </p:commandLink>
+                        <p:commandLink id="deleteBtn" h5:data-toggle="tooltip"
+                                       h5:data-placement="top" title="#{msg['gradingFormula.deleteFormula']}"
+                                       oncomplete="PF('formulaHistory').hide();PF('formulaRemove').show();"
+                                       update="formulaRemoveDialog"
+                                       styleClass="btn btn-danger"
+                                       rendered="#{scriptController.userIsLecturer and
                                                    scriptController.activeParticipationType.gradeFormulas.size() > 1}">
-                                <i class="fa fa-remove"/>
-                                <f:actionListener binding="#{scriptController.onDeleteDialogCalled(formula)}"/>
-                            </p:commandLink>
-                        </div>
+                            <i class="fa fa-remove"/>
+                            <f:actionListener binding="#{scriptController.onDeleteDialogCalled(formula)}"/>
+                        </p:commandLink>
                     </p:column>
                 </p:dataTable>
                 <div class="modal-footer">

@@ -117,6 +117,8 @@
                             <f:actionListener binding="#{examController.editExam()}"/>
                         </p:commandLink>
                     </div>
+
+                    <p:defaultCommand target="editExamBtn" />
                 </div>
             </p:panel>
             <p:blockUI block="editExamDlgPnl" trigger="editExamBtn"/>

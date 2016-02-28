@@ -64,7 +64,7 @@ public class LogService extends GenericService<Log> {
      */
     public List<Log> listLogs() {
         List<Log> logList = em.createQuery(
-                "SELECT DISTINCT l FROM Log l", Log.class)
+                "SELECT DISTINCT l FROM Log l ORDER BY l.date DESC", Log.class)
             .getResultList();
 
         return logList;

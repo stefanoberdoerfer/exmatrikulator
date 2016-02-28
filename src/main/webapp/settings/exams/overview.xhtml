@@ -40,35 +40,35 @@
 
         <h:form id="examTblForm">
             <p:dataTable id="examTbl"
-                         value="#{examController.course.exams}"
-                         var="exam"
+                         value="#{examController.course.exams}" var="exam"
+                         styleClass="table table-hover"
                          filteredValue="#{examController.filteredExams}"
                          emptyMessage="#{msg['examination.messageNoExams']}">
                 <p:column headerText="#{msg['examination.name']}"
                           filterMatchMode="contains"
                           filterBy="#{exam.name}"
-                          sortBy="#{exam.name}">
+                          sortBy="#{exam.name}"
+                          styleClass="table-examination-name">
                     <h:outputText value="#{exam.name}"/>
                 </p:column>
 
                 <p:column headerText="#{msg['examination.shortcut']}"
                           filterBy="#{exam.shortcut}"
                           filterMatchMode="contains"
-                          sortBy="#{exam.shortcut}">
-                    <!-- Monospace, damit klar wird, damit man evtl. merkt,
-                         dass man spaeter damit programmieren wird -->
-                    <h:outputText style="font-family: monospace"
-                                  value="#{exam.shortcut}"/>
+                          sortBy="#{exam.shortcut}"
+                          styleClass="table-examination-shortcut">
+                    <h:outputText value="#{exam.shortcut}"/>
                 </p:column>
 
                 <p:column headerText="#{msg['examination.gradeType']}"
                           filterMatchMode="contains"
                           filterBy="#{examController.gradeLabelFromId(exam.gradeType)}"
-                          sortBy="#{examController.gradeLabelFromId(exam.gradeType)}">
+                          sortBy="#{examController.gradeLabelFromId(exam.gradeType)}"
+                          styleClass="table-examination-grade">
                     <h:outputText value="#{examController.gradeLabelFromId(exam.gradeType)}"/>
                 </p:column>
 
-                <p:column headerText="#{msg['common.actions']}">
+                <p:column styleClass="text-right">
                     <div class="btn-group">
                         <h:link styleClass="btn btn-default"
                                 outcome="/settings/exams/events"

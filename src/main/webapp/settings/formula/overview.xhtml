@@ -106,7 +106,8 @@
                              value="#{scriptController.course.exams}"
                              var="exam"
                              filteredValue="#{scriptController.filteredExams}"
-                             emptyMessage="#{msg['examination.messageNoExams']}">
+                             emptyMessage="#{msg['examination.messageNoExams']}"
+                             styleClass="table table-hover">
                     <p:column headerText="#{msg['examination.name']}"
                               filterMatchMode="contains"
                               filterBy="#{exam.name}"
@@ -146,6 +147,7 @@
                              rendered="#{scriptController.userIsLecturer}"
                              value="#{scriptController.getGradedStudentsFrom(scriptController.activeParticipationType)}"
                              var="student" scrollable="true"
+                             styleClass="table table-hover table-student-grades"
                              paginator="true"
                              paginatorTemplate="{RowsPerPageDropdown}
                              {FirstPageLink} {PreviousPageLink} {CurrentPageReport}

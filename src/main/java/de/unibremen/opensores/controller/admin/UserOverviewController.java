@@ -192,6 +192,7 @@ public class UserOverviewController {
      * Refreshes the selected user and the corresponding fields in the dialog.
      */
     public void onCreateUserCalled() {
+        log.debug("onCreateUserCalled invoked");
         selectedUser = new User();
     }
 
@@ -364,18 +365,6 @@ public class UserOverviewController {
                 .collect(Collectors.joining(", "));
     }
 
-    private String getNameOfGlobalRole(int id) {
-        if (id == GlobalRole.ADMIN.getId()) {
-            return bundle.getString("common.admin");
-        } else if (id == GlobalRole.LECTURER.getId()) {
-            return bundle.getString("common.lecturer");
-        } else if (id == GlobalRole.USER.getId()) {
-            return bundle.getString("common.user");
-        } else {
-            return bundle.getString("common.undefined");
-        }
-    }
-
     /**
      * Saves the changes from editing an existing user.
      * @Pre All user inputs for editing are validated (e.g. Name, Email etc.).
@@ -500,6 +489,14 @@ public class UserOverviewController {
                     + " value from user: [" + stringValue + "]; throwing exception");
             throw new ValidatorException(messages);
 
+        }
+    }
+
+    private String getNameOfGlobalRole(Integer role) {
+        try {
+            return bundle.getString(GlobalRole.valueOf(role).getMessage());
+        } catch (Exception e) {
+            return null;
         }
     }
 

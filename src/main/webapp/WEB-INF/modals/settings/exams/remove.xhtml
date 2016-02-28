@@ -35,6 +35,8 @@
                             <f:actionListener binding="#{examController.deleteExam()}"/>
                         </p:commandLink>
                     </div>
+
+                    <p:defaultCommand target="removeExamBtn" />
                 </div>
             </p:panel>
             <p:blockUI block="removeExamDlgPnl" trigger="removeExamBtn"/>

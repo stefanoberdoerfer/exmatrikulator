@@ -23,6 +23,7 @@
         </div>
 
     	<p:dataTable var="template" value="#{mailTemplateController.getMailTemplateList()}"
+                     styleClass="table table-hover"
                      paginator="true"
                      paginatorTemplate="{RowsPerPageDropdown}
                            {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
