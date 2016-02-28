@@ -41,7 +41,8 @@
                 </h:link>
             </li>
             <li>
-                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}">
+                <h:link outcome="/participants/unconfirmed" value="#{msg['participation.unconfirmedStudents']}"
+                        rendered="#{participantsController.loggedInUserCanManageStudents}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
@@ -56,17 +57,19 @@
                 </h:link>
             </li>
             <li>
-                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}">
+                <h:link outcome="/participants/deleted" value="#{msg['participants.deletedParticipants']}"
+                        rendered="#{participantsController.loggedInUserCanManageStudents}">
                     <f:param name="course-id" value="#{participantsController.course.courseId}"/>
                 </h:link>
             </li>
         </ul>
 
-        <h:form id="participantForm">
+        <h:form id="participantForm" >
             <p:dataTable id="participantTbl" widgetVar="lecturerWidget" var="lecturer"
                          styleClass="table table-hover"
                          value="#{participantsController.course.undeletedLecturers}"
                          filteredValue="#{participantsController.filteredLecturers}"
+                         rendered="#{!participantsController.loggedInUserIsNotConfirmed}"
                          paginator="true"
                          paginatorTemplate="{RowsPerPageDropdown}
                            {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
@@ -95,17 +98,20 @@
                           styleClass="table-common-email">
                     <h:outputText value="#{lecturer.user.email}"/>
                 </p:column>
-                <p:column styleClass="table-common-options-one text-right">
+                <p:column styleClass="table-common-options-one text-right"
+                          rendered="#{participantsController.loggedInUserIsLecturer}">
                     <p:commandLink oncomplete="return exModal('participantRemove');" h5:data-toggle="tooltip"
                                    update=":participantRemoveDialog"
-                                   rendered="#{participantsController.course.getLecturerFromUser(participantsController.loggedInUser) != null
-                                                   and !participantsController.loggedInUser.equals(lecturer.user)}"
-                                   h5:data-placement="top" title="#{msg['course.lecturer.remove']}" class="btn btn-danger" >
+                                   h5:data-placement="top" title="#{msg['course.lecturer.remove']}" class="btn btn-danger"
+                                   rendered="#{!participantsController.loggedInUser.equals(lecturer.user)
+                                                   and !lecturer.isCourseCreator()}" >
                         <i class="fa fa-remove"></i>
                         <f:actionListener binding="#{participantsController.onDeleteLecturerDialogCalled(lecturer)}"/>
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
+            <h:outputText value="#{msg['participants.notconfirmed']}"
+                          rendered="#{participantsController.loggedInUserIsNotConfirmed}"/>
         </h:form>
 
         <ui:include src="/WEB-INF/modals/participants/create.xhtml" />

@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 /**
  * Controller to manage the participants of a course.
  * @author Kevin Scheck
+ * @author Stefan Oberdörfer
  */
 @ManagedBean
 @ViewScoped
@@ -230,6 +231,11 @@ public class  ParticipantsController {
     private List<User> userSearchResultList;
 
     /**
+     * Boolean if the logged in user is a lecturer of the course.
+     */
+    private boolean loggedInUserIsLecturer;
+
+    /**
      * Boolean if the logged in user can manage students.
      */
     private boolean loggedInUserCanManageStudents;
@@ -238,6 +244,16 @@ public class  ParticipantsController {
      * Boolean if the logged in user can manage tutors.
      */
     private boolean loggedInUserCanManageTutors;
+
+    /**
+     * Boolean if the logged in user can print certificates.
+     */
+    private boolean loggedInUserCanPrintCerts;
+
+    /**
+     * Boolean if the logged in user is a not confirmed student.
+     */
+    private boolean loggedInUserIsNotConfirmed;
 
 
     /*
@@ -259,8 +275,8 @@ public class  ParticipantsController {
         HttpServletRequest req = (HttpServletRequest) exContext.getRequest();
         HttpServletResponse res = (HttpServletResponse) exContext.getResponse();
 
-        loggedInUser = (User) exContext.getSessionMap().get("user");
-        course = courseService.findCourseById(req.getParameter("course-id"));
+        loggedInUser = (User) exContext.getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
+        course = courseService.findCourseById(req.getParameter(Constants.HTTP_PARAM_COURSE_ID));
         if (course == null || loggedInUser == null) {
             try {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -277,44 +293,47 @@ public class  ParticipantsController {
 
         selectedParticipationTypeId = course.getDefaultParticipationType().getPartTypeId();
 
-        loggedInUserCanManageTutors = course.getLecturerFromUser(loggedInUser) != null;
-        loggedInUserCanManageStudents = canLoggedInUserCanManageStudents();
+        checkUserRights();
 
         log.debug("Logged in user: " + loggedInUser
                 + " can manage students: " + loggedInUserCanManageStudents);
-        if (!loggedInUserCanManageStudents) {
-            log.debug("Logged in user cant manage students, redirecting to course overview");
-            try {
-                FacesContext.getCurrentInstance()
-                        .getExternalContext().redirect(FacesContext
-                        .getCurrentInstance().getExternalContext()
-                        .getApplicationContextPath() + Constants.PATH_TO_COURSE_OVERVIEW);
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.fatal("Could not redirect to " + Constants.PATH_TO_COURSE_OVERVIEW);
-                return;
-            }
+    }
+
+    /**
+     * Sets the user rights boolean flags whether the logged in user can manage students,
+     * tutors and/or print certificates.
+     * The logged in user can manage tutors if the user is a lecturer
+     * in the course. He can manage students if the user is the lecturer or a privileged user
+     * in the course with the privilege to manage students.
+     * He can print certificates if the user is the lecturer or a privileged user in the course
+     * with the privilege to print certificates.
+     * Also determines if a logged in student is confirmed or not.
+     */
+    private void checkUserRights() {
+        loggedInUserIsLecturer = course.getLecturerFromUser(loggedInUser) != null;
+
+        PrivilegedUser priv = course.getPrivilegedUserFromUser(loggedInUser);
+        if (priv != null) {
+            loggedInUserCanManageStudents = loggedInUserIsLecturer
+                    || priv.hasPrivilege(Privilege.ManageStudents);
+            loggedInUserCanPrintCerts = loggedInUserIsLecturer
+                    || priv.hasPrivilege(Privilege.GenerateCredits);
+            loggedInUserCanManageTutors = loggedInUserIsLecturer
+                    || priv.hasPrivilege(Privilege.ManageTutorials);
+        } else {
+            loggedInUserCanManageStudents = loggedInUserIsLecturer;
+            loggedInUserCanPrintCerts = loggedInUserIsLecturer;
+            loggedInUserCanManageTutors = loggedInUserIsLecturer;
+
+            //check student only when user is not a privileged user
+            Student s = course.getStudentFromUser(loggedInUser);
+            loggedInUserIsNotConfirmed = (s != null && !s.isConfirmed());
         }
     }
 
     /*
      * UI Callbacks
      */
-
-
-    /**
-     * Wether the user is allowed to print or not.
-     *
-     * @return boolean true if yes
-     */
-    public boolean mayPrint() {
-        if (loggedInUser == null) {
-            return false;
-        } else {
-            return userService.hasCourseRole(loggedInUser, "LECTURER", course);
-        }
-    }
 
     /**
      * Method called when the user creation dialog gets opened.
@@ -704,20 +723,6 @@ public class  ParticipantsController {
     /*
      * Other private Methods
      */
-
-    /**
-     * Returns a boolean whether the logged in user can manage students.
-     * The logged in user can manage students if the user is a lecturer
-     * in the course or if the user is a privileged user in the course with the
-     * privilege to manage students.
-     * @return True if the logged in user can manage students, false otherwise.
-     */
-    private boolean canLoggedInUserCanManageStudents() {
-        return loggedInUserCanManageTutors
-                || (course.getPrivilegedUserFromUser(loggedInUser) != null
-                && course.getPrivilegedUserFromUser(loggedInUser)
-                .hasPrivilege(Privilege.ManageStudents.name()));
-    }
 
 
     /**
@@ -1275,5 +1280,29 @@ public class  ParticipantsController {
 
     public void setPrivilegeManageRecordBooks(boolean privilegeManageRecordBooks) {
         isPrivilegeManageRecordBooks = privilegeManageRecordBooks;
+    }
+
+    public boolean isLoggedInUserCanPrintCerts() {
+        return loggedInUserCanPrintCerts;
+    }
+
+    public void setLoggedInUserCanPrintCerts(boolean loggedInUserCanPrintCerts) {
+        this.loggedInUserCanPrintCerts = loggedInUserCanPrintCerts;
+    }
+
+    public boolean isLoggedInUserIsLecturer() {
+        return loggedInUserIsLecturer;
+    }
+
+    public void setLoggedInUserIsLecturer(boolean loggedInUserIsLecturer) {
+        this.loggedInUserIsLecturer = loggedInUserIsLecturer;
+    }
+
+    public boolean isLoggedInUserIsNotConfirmed() {
+        return loggedInUserIsNotConfirmed;
+    }
+
+    public void setLoggedInUserIsNotConfirmed(boolean loggedInUserIsNotConfirmed) {
+        this.loggedInUserIsNotConfirmed = loggedInUserIsNotConfirmed;
     }
 }
