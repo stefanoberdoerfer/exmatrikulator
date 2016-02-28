@@ -17,6 +17,7 @@ import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Semester;
 import de.unibremen.opensores.model.GlobalRole;
@@ -139,6 +140,15 @@ public class TmeController implements Serializable {
             justification = "actually findbugs is right this needs to be "
             + "serializable but I am too lazy to fix it")
     private transient HashMap<Integer, TMEObject> nodeMap = new HashMap<>();
+
+    /**
+     * List of imported courses.
+     */
+    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
+            justification = "actually findbugs is right this needs to be "
+            + "serializable but I am too lazy to fix it")
+    private transient List<Course> importedCourses = new ArrayList<>();
+
 
     /**
      * Handles file upload events.
@@ -362,7 +372,9 @@ public class TmeController implements Serializable {
         course = courseService.update(course);
         log.debug("Persisted course " + course.getName());
 
+        importedCourses.add(course);
         entityMap.put(node.getId(), course);
+
         return course;
     }
 
@@ -658,7 +670,30 @@ public class TmeController implements Serializable {
 
         newUser.addRole(GlobalRole.USER);
         if (node.has("superuser") && node.getBoolean("superuser")) {
-            newUser.addRole(GlobalRole.ADMIN);
+            newUser.addRole(GlobalRole.LECTURER);
+
+            Lecturer lecturer = new Lecturer();
+            lecturer.setHidden(false);
+            lecturer.setDeleted(false);
+            lecturer.setIsCourseCreator(false);
+            lecturer.setUser(newUser);
+
+            PrivilegedUser privUser = new PrivilegedUser();
+            privUser.setSecretary(false);
+            privUser.setUser(newUser);
+            privUser.setHidden(false);
+
+            for (Course course : importedCourses) {
+                lecturer.setCourse(course);
+                privUser.setCourse(course);
+
+                course.getLecturers().add(lecturer);
+                course.getTutors().add(privUser);
+
+                if (course.getLecturers().size() >= 1) {
+                    course.getLecturers().get(0).setIsCourseCreator(true);
+                }
+            }
         }
 
         userService.persist(newUser);
