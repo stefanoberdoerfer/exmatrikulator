@@ -101,7 +101,7 @@ public class GradingService extends GenericService<Grading> {
                     .setParameter("courseId", course.getCourseId())
                     .getResultList();
         } else {
-            s = em.createQuery("SELECT DISTINCT s "
+            s = em.createQuery("SELECT s "
                             + "FROM Student s "
                             + "JOIN s.tutorial.tutors AS t "
                             + "WHERE s.course.courseId = :courseId "
@@ -181,7 +181,7 @@ public class GradingService extends GenericService<Grading> {
                     .setParameter("courseId", course.getCourseId())
                     .getResultList();
         } else {
-            s = em.createQuery("SELECT DISTINCT g "
+            s = em.createQuery("SELECT g "
                             + "FROM Group g "
                             + "JOIN g.tutorial.tutors AS t "
                             + "WHERE g.tutorial.course.courseId = :courseId "

@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
@@ -225,5 +226,20 @@ public class NavigationController {
 
     public void setUserController(UserController userController) {
         this.userController = userController;
+    }
+
+    /**
+     * Returns if the currently logged in tutor or lecturer can see the record
+     * books of other users.
+     * @param course Course to check
+     * @return True if he can see them
+     */
+    public boolean canSeeOthersRecordBooks(Course course) {
+        if (userController.isLecturer(course)) {
+            return true;
+        }
+
+        return course.getPrivilegedUserFromUser(userController.getUser())
+                .hasPrivilege(Privilege.ManageRecordBooks);
     }
 }
