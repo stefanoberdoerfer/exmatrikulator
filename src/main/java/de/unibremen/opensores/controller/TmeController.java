@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -216,19 +217,25 @@ public class TmeController implements Serializable {
             }
         }
 
+        String msg = null;
         try {
             importObjects(objs);
         } catch (TmeException e) {
-            log.error(e);
-            facesContext.addMessage(null, new FacesMessage(FacesMessage
-                .SEVERITY_ERROR, bundle.getString("common.error"),
-                e.getMessage()));
-            return;
+            msg = e.getMessage();
+        } catch (ClassCastException e) {
+            msg = bundle.getString("import.unexpectedType");
+        } catch (NoSuchElementException e) {
+            msg = bundle.getString("import.nonExistingNode");
         }
 
-        facesContext.addMessage(null, new FacesMessage(FacesMessage
-                    .SEVERITY_INFO, bundle.getString("common.success"),
-                    bundle.getString("import.success")));
+        if (msg != null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+        } else {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_INFO, bundle.getString("common.success"),
+                bundle.getString("import.success")));
+        }
     }
 
     /**
