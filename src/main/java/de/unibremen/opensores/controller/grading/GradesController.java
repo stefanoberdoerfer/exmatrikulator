@@ -125,4 +125,8 @@ public class GradesController {
     public Student getStudent() {
         return student;
     }
+
+    public boolean isPointExam(Exam exam) {
+        return exam.getGradeType().equals(GradeType.Point.getId());
+    }
 }

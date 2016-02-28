@@ -230,4 +230,8 @@ public class GradingController {
         log.debug("Remove student gradings for " + student.getStudentId());
         studentGradings.remove(student.getStudentId());
     }
+
+    public boolean isPointExam(Exam exam) {
+        return exam.getGradeType().equals(GradeType.Point.getId());
+    }
 }
