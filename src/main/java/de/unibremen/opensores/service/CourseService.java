@@ -159,6 +159,39 @@ public class CourseService extends GenericService<Course> {
     }
 
     /**
+     * Gets a list of Student participation types where the user is participating
+     * as a user and the lecturer is one of the lecturers of the courses.
+     * The course parameter will be excluded from this list.
+     * @param studentUser The user which other student relations of courses in which the lecturer
+     *             was one of the lecturer should be got.
+     * @param lecturerUser The user of this lecturer must be one of the lecturers
+     *                 of the other courses in which the student was participating in.
+     * @param excludingCourse This course is the course which should be exlucded
+     *                        from the result list.
+     * @return The List of Student relations of courses in which the user was
+     *          participating as student and the lecturer was one of the lecturers,
+     *          excluding one specified course.
+     */
+    public List<Student> getOtherStudentsFromStudentAndLecturer(User studentUser, User lecturerUser,
+                                                                Course excludingCourse) {
+        return em.createQuery(
+                "SELECT s FROM Student s "
+                    + " JOIN s.course AS c"
+                    + " JOIN c.lecturers AS l"
+                    + " WHERE s.user.userId = :userId"
+                    + " AND c.courseId != :courseId"
+                    + " AND l.user.userId = :lUserId"
+                    + " AND c.deleted = false"
+                    + " AND s.isConfirmed = true"
+                    + " AND s.isDeleted = false", Student.class)
+                .setParameter("userId", studentUser.getUserId())
+                .setParameter("courseId", excludingCourse.getCourseId())
+                .setParameter("lUserId", lecturerUser.getUserId())
+                .getResultList();
+    }
+
+
+    /**
      * Deletes the course with its associations.
      * @param course The course which should be deleted with its associations.
      * @return The

@@ -217,6 +217,11 @@ public class ApplicationController {
         return highest;
     }
 
+
+    private void initOldCourseData() {
+
+    }
+
     /**
      * Inserts dummy users in the database at startup.
      * @TODO Delete before deadline :^)
@@ -334,6 +339,9 @@ public class ApplicationController {
         course.setStudentsCanSeeFormula(true);
         course.setSemester(semester);
 
+
+
+
         course = courseService.persist(course);
         log.debug("Inserted Course with id: " + course.getCourseId());
 
@@ -440,7 +448,7 @@ public class ApplicationController {
         GradeFormula formula = new GradeFormula();
         formula.setSaveDate(new Date(100L));
         formula.setEditor(newLecturer);
-        formula.setFormula("def set_final_grade(grades):\n"
+        formula.setFormula("def set_final_grade(grades, student_info, other_course_grades):\n"
                 + "    return PaboGrade.GRADE_5_0");
         formula.setEditDescription("Initialized GradeFormula");
         partType.addNewFormula(formula);
@@ -448,7 +456,7 @@ public class ApplicationController {
         GradeFormula winfFormula = new GradeFormula();
         winfFormula.setSaveDate(new Date(100L));
         winfFormula.setEditor(newLecturer);
-        winfFormula.setFormula("def set_final_grade(grades):\n"
+        winfFormula.setFormula("def set_final_grade(grades, student_info,other_course_grades):\n"
                 + "    return PaboGrade.GRADE_1_0");
         winfFormula.setEditDescription("Initialized WINF GradeFormula");
         course.getParticipationTypes().add(winf);
@@ -540,6 +548,7 @@ public class ApplicationController {
 
         uploadService.persist(upload);
 
+
         // Recordbook
         RecordBookEntry rbe = RecordBookEntry.from(student2,course,exam,
                 new Date(),60,"Alles komplett gelöst");
@@ -554,6 +563,113 @@ public class ApplicationController {
         entry.setExam(exam);
 
         recordBookService.persist(entry);
+
+
+        //// ====== COURSES USED TO TEST OLD GRADESCRIPT COURSES ============
+        //
+        ////next semester
+        //Semester semester3 = new Semester();
+        //semester3.setIsWinter(false);
+        //semester3.setSemesterYear(2016);
+        //semesterService.persist(semester3);
+        //
+        //
+        //Course course2 = new Course();
+        //course2.setCreated(DateUtil.twentyYearsAgo());
+        //course2.setDefaultSws("2+2");
+        //course2.setDefaultCreditPoints(1337);
+        //course2.setName("TestVeranstaltung");
+        //course2.setIdentifier("OLD_COURSE");
+        //course2.getNumbers().add("VAK-Nummer12345");
+        //course2.setRequiresConfirmation(false);
+        //course2.setStudentsCanSeeFormula(true);
+        //course2.setSemester(semester3);
+        //
+        //courseService.persist(course2);
+        //
+        ////Lecturer for course2
+        //Lecturer oldLecturer1 = new Lecturer();
+        //oldLecturer1.setUser(newLecturer);
+        //oldLecturer1.setHidden(false);
+        //oldLecturer1.setIsCourseCreator(true);
+        //oldLecturer1.setCourse(course2);
+        //course2.getLecturers().add(oldLecturer1);
+        //
+        //
+        //Student oldStudent1 = new Student();
+        //oldStudent1.setAcceptedInvitation(true);
+        //oldStudent1.setConfirmed(true);
+        //oldStudent1.setTries(0);
+        //oldStudent1.setDeleted(false);
+        //oldStudent1.setUser(newUser);
+        //oldStudent1.setHidden(false);
+        //oldStudent1.setPaboGrade("GRADE_4_0");
+        //oldStudent1.setPaboData(new PaboData());
+        //oldStudent1.setCourse(course2);
+        //course2.getStudents().add(oldStudent1);
+        //
+        //ParticipationType mathPartType = new ParticipationType();
+        //mathPartType.setName("Mathematik");
+        //mathPartType.setGroupPerformance(false);
+        //mathPartType.setRestricted(false);
+        //mathPartType.setCourse(course);
+        //mathPartType.setIsDefaultParttype(true);
+        //mathPartType = participationTypeService.persist(mathPartType);
+        //
+        //course2.getParticipationTypes().add(mathPartType);
+        //mathPartType.setCourse(course);
+        //
+        //GradeFormula mathFormula = new GradeFormula();
+        //mathFormula.setSaveDate(new Date(100L));
+        //mathFormula.setEditor(newLecturer);
+        //mathFormula.setFormula("def set_final_grade(grades,"
+        //        + "student_info, other_course_grades):\n"
+        //        + "    return PaboGrade.GRADE_1_0");
+        //mathFormula.setEditDescription("Initialized MATH GradeFormula");
+        //course2.getParticipationTypes().add(mathPartType);
+        //mathPartType.addNewFormula(mathFormula);
+        //
+        //Exam oldExam2 = new Exam();
+        //oldExam2.setName("Mündliche Prüfung");
+        //oldExam2.setShortcut("MP");
+        //oldExam2.setCourse(course2);
+        //oldExam2.setGradeType(GradeType.Boolean.getId());
+        //course2.getExams().add(oldExam2);
+        //
+        //Exam oldExam3 = new Exam();
+        //oldExam3.setName("Klausur");
+        //oldExam3.setShortcut("KL");
+        //oldExam3.setCourse(course2);
+        //oldExam3.setGradeType(GradeType.Numeric.getId());
+        //course2.getExams().add(oldExam3);
+        //
+        //Exam oldExam4 = new Exam();
+        //oldExam4.setName("Übungsblatt 1");
+        //oldExam4.setShortcut("UEB1");
+        //oldExam4.setCourse(course2);
+        //oldExam4.setMaxPoints(new BigDecimal("15.0"));
+        //oldExam4.setGradeType(GradeType.Point.getId());
+        //course2.getExams().add(oldExam4);
+        //
+        //
+        //Grading oldGrading = new Grading();
+        //oldGrading.setCorrector(newLecturer);
+        //oldGrading.setStudent(oldStudent1);
+        //oldStudent1.getGradings().add(oldGrading);
+        //oldGrading.setExam(course2.getExams().get(0));
+        //
+        //
+        ////Grade
+        //Grade oldGrade = new Grade();
+        //grade.setGradeType(oldExam2.getGradeType());
+        //if (oldExam2.getGradeType().equals(GradeType.Point.getId())) {
+        //    oldGrade.setMaxPoints(oldExam2.getMaxPoints());
+        //}
+        //oldGrade.setValue(new BigDecimal("0.1238"));
+        //
+        //oldGrading.setGrade(oldGrade);
+        //gradingService.persist(oldGrading);
+
 
         //Testlogs
 
