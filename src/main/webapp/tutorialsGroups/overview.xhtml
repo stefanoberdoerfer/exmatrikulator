@@ -157,6 +157,7 @@
               </tbody>
             </table>
 
+            <c:if test="${tutorialController.isTutorialManager()}">
             <div class="table-groups-buttons btn-group">
               <h:form>
                 <p:commandLink process="@this"
@@ -176,17 +177,21 @@
                 </p:commandLink>
               </h:form>
             </div>
+            </c:if>
             </p:tab>
           </p:tabView>
         </h:panelGroup>
 
-        <ui:include src="/WEB-INF/modals/tutorials/create.xhtml" />
-        <ui:include src="/WEB-INF/modals/tutorials/edit.xhtml" />
-        <ui:include src="/WEB-INF/modals/tutorials/remove.xhtml" />
-        <ui:include src="/WEB-INF/modals/groups/create.xhtml" />
-        <ui:include src="/WEB-INF/modals/groups/edit.xhtml" />
-        <ui:include src="/WEB-INF/modals/groups/remove.xhtml" />
-        <ui:include src="/WEB-INF/modals/students/create.xhtml" />
-        <ui:include src="/WEB-INF/modals/students/remove.xhtml" />
+        <c:if test="#{userController.isLecturer(tutorialController.course)
+                               or userController.isPrivilegedUser(tutorialController.course)}">
+            <ui:include src="/WEB-INF/modals/tutorials/create.xhtml" />
+            <ui:include src="/WEB-INF/modals/tutorials/edit.xhtml" />
+            <ui:include src="/WEB-INF/modals/tutorials/remove.xhtml" />
+            <ui:include src="/WEB-INF/modals/groups/create.xhtml" />
+            <ui:include src="/WEB-INF/modals/groups/edit.xhtml" />
+            <ui:include src="/WEB-INF/modals/groups/remove.xhtml" />
+            <ui:include src="/WEB-INF/modals/students/create.xhtml" />
+            <ui:include src="/WEB-INF/modals/students/remove.xhtml" />
+        </c:if>
     </ui:define>
 </ui:composition>
