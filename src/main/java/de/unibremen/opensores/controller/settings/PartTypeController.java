@@ -1,12 +1,14 @@
 package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.GradeFormula;
 import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.util.Constants;
+import de.unibremen.opensores.util.DateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -109,7 +111,7 @@ public class PartTypeController {
         currentPartType = new ParticipationType();
         currentPartType.setIsDefaultParttype(false);
         if (course != null && course.getParticipationTypes().isEmpty()) {
-            currentPartType.setCourse(course);
+            initNewPartType();
             currentPartType.setIsDefaultParttype(true);
             currentPartType.setName(bundle.getString("participationType.defaultPartType"));
             course.getParticipationTypes().add(currentPartType);
@@ -153,9 +155,24 @@ public class PartTypeController {
             course.getParticipationTypes().add(currentPartType);
         }
         log.debug("Save ParticipationType: " + currentPartType.getName());
+        initNewPartType();
+    }
+
+    /**
+     * initialises a new Participationtype to be edited from the UI.
+     */
+    private void initNewPartType() {
         currentPartType = new ParticipationType();
         currentPartType.setCourse(course);
         currentPartType.setIsDefaultParttype(false);
+        GradeFormula gradeFormula = new GradeFormula();
+        gradeFormula.setFormula(Constants.DEFAULT_GRADE_SCRIPT);
+        gradeFormula.setEditDescription(Constants.DEFAULT_SCRIPT_EDIT_MESSAGE);
+        gradeFormula.setEditor(loggedInUser);
+        gradeFormula.setValid(false);
+        gradeFormula.setSaveDate(DateUtil.getDateTime());
+        gradeFormula.setParticipationType(currentPartType);
+        currentPartType.getGradeFormulas().add(gradeFormula);
     }
 
     /**
@@ -180,9 +197,7 @@ public class PartTypeController {
         course.getParticipationTypes().remove(partType);
         if (editmode) {
             editmode = false;
-            currentPartType = new ParticipationType();
-            currentPartType.setCourse(course);
-            currentPartType.setIsDefaultParttype(false);
+            initNewPartType();
         }
         log.debug("Removing ParticipationType: " + partType.getName());
     }
