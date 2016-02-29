@@ -108,8 +108,8 @@ public class ApplicationController {
      */
     @PostConstruct
     public void init() {
-        initDummyData();
         initSemesters();
+        initDummyData();
 
         //initialize map used to determine the current login status of users
         //with writing rights in all the different courses of the Exmatrikulator system
@@ -181,6 +181,22 @@ public class ApplicationController {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
 
+        if (semesterService.findSemester(year, false) == null) {
+            Semester soSe = new Semester();
+            soSe.setIsWinter(false);
+            soSe.setSemesterYear(year);
+            semesterService.persist(soSe);
+            log.debug("Created " + soSe.toString());
+        }
+
+        if (semesterService.findSemester((year - 1), true) == null) {
+            Semester wiSe = new Semester();
+            wiSe.setIsWinter(true);
+            wiSe.setSemesterYear(year - 1);
+            semesterService.persist(wiSe);
+            log.debug("Created " + wiSe.toString());
+        }
+
         List<Semester> semesters = semesterService.listSemesters();
         int toCreate = 0;
 
@@ -220,7 +236,7 @@ public class ApplicationController {
 
     /**
      * Inserts dummy users in the database at startup.
-     * @TODO Delete before deadline :^)
+      @TODO Delete before deadline :^)
      */
     private void initDummyData() {
         //Users
@@ -311,17 +327,7 @@ public class ApplicationController {
         userService.persist(newAdmin);
         log.debug("Inserted Admin with id: " + newAdmin.getUserId());
 
-        //Current semester
-        Semester semester = new Semester();
-        semester.setIsWinter(true);
-        semester.setSemesterYear(2016);
-        semesterService.persist(semester);
 
-        //next semester
-        Semester semester2 = new Semester();
-        semester2.setIsWinter(false);
-        semester2.setSemesterYear(2016);
-        semesterService.persist(semester2);
 
         //Course with all relations filled
         Course course = new Course();
@@ -333,7 +339,7 @@ public class ApplicationController {
         course.getNumbers().add("VAK-Nummer123");
         course.setRequiresConfirmation(false);
         course.setStudentsCanSeeFormula(true);
-        course.setSemester(semester);
+        course.setSemester(semesterService.findSemester(2015, true));
 
 
 
