@@ -56,6 +56,11 @@ public class RegistrationController {
     private String lastName;
 
     /**
+     * The typed in salution of the user.
+     */
+    private String salution;
+
+    /**
      * The typed in matriculationNumber (optional).
      */
     private String matriculationNumber;
@@ -113,6 +118,7 @@ public class RegistrationController {
         newUser.setPassword(hashPW);
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
+        newUser.setSalution(salution);
         newUser.setMatriculationNumber(matriculationNumber);
         newUser.addRole(GlobalRole.USER);
         newUser.setLastActivity(DateUtil.getDateTime());
@@ -201,6 +207,22 @@ public class RegistrationController {
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    /**
+     * Gets the typed in salution.
+     * @return The typed in salution.
+     */
+    public String getSalution() {
+        return salution;
+    }
+
+    /**
+     * Sets the typed in salution.
+     * @param saltuion The typed in salution.
+     */
+    public void setSalution(String salution) {
+        this.salution = salution;
     }
 
     /**

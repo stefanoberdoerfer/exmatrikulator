@@ -66,6 +66,12 @@
             </h:panelGroup>
 
             <h:panelGroup layout="block" class="form-group">
+                <h:outputLabel for="credentialFirstName" value="#{msg['common.salution']}" />
+                <h:inputText type="text" class="form-control" id="credentialSalution"
+                  required="false" value="#{registrationController.salution}"/>
+            </h:panelGroup>
+
+            <h:panelGroup layout="block" class="form-group">
                 <h:outputLabel for="credentialFirstName" value="#{msg['common.firstName']}" />
                 <h:inputText type="text" class="form-control" id="credentialFirstName"
                   required="true" requiredMessage="#{msg['registration.missingFirstName']}"
