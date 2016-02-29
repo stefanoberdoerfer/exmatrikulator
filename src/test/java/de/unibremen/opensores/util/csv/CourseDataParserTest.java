@@ -225,7 +225,7 @@ public class CourseDataParserTest {
         student.setGroup(group);
         group.setTutorial(tutorial);
         Exam booleanExam = new Exam();
-        booleanExam.setName("--Prozentübungsblatt--");
+        booleanExam.setName("--Prozentuebungsblatt--");
         booleanExam.setGradeType(GradeType.Percent.getId());
 
         Grading numericGrading = new Grading();
@@ -254,7 +254,7 @@ public class CourseDataParserTest {
                 false, otherPrivUser, PATH_TEST_RES_CSV_COURSE_DATA,FILE_NAME_TEST_PRIV_USER);
         List<String> lines = FileUtils.readLines(lecturerExample);
         assertTrue(lines.size() == 2);
-        assertEquals("matr;tutorial;group;participation_type;final_grade;TestNumericGradeExam(Numeric);Prozentübungsblatt(Percent)", lines.get(0));
+        assertEquals("matr;tutorial;group;participation_type;final_grade;TestNumericGradeExam(Numeric);Prozentuebungsblatt(Percent)", lines.get(0));
         assertEquals("111111;?;?;Defaultparticipationtype;?;?;?", lines.get(1));
 
     }
