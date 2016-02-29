@@ -72,12 +72,7 @@ public final class NoStudentsFilter implements Filter {
         String path = hreq.getRequestURI().substring(hreq.getContextPath().length());
         log.debug("doFilter() called with path " + path);
 
-        // Must pass here or the download doesnt work.
-        if (path.startsWith(PATH_PABO_DOWNLOAD) || path.startsWith(PATH_CSV_DOWNLOAD) ) {
-            log.debug("Letting pass  download path ");
-            filterChain.doFilter(req, res);
-            return;
-        }
+
 
         // XXX this is _super_ insecure literally everyone can set this
         // header and thereby render this filter absolutly useless.
@@ -91,6 +86,13 @@ public final class NoStudentsFilter implements Filter {
 
         if (user == null) {
             hres.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        // Must pass here or the download doesnt work.
+        if (path.startsWith(PATH_PABO_DOWNLOAD) || path.startsWith(PATH_CSV_DOWNLOAD) ) {
+            log.debug("Letting pass  download path ");
+            filterChain.doFilter(req, res);
             return;
         }
 

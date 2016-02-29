@@ -8,6 +8,7 @@ import de.unibremen.opensores.model.Grading;
 import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
@@ -44,9 +45,15 @@ public class CourseDataParserTest {
     private static final String FILE_NAME_TEST_LECTURER = "test_lecturer.csv";
 
     /**
-     * Tests if the lecturer can view all fields and the fields are valid.
+     * Test file to check if the lecturer can view all fields and the fields are valid.
      */
     private static final String FILE_NAME_TEST_LECTURER_NULL_VALS = "test_lecturer_null_vals.csv";
+
+
+    /**
+     * Tests file to check a priv user cant view set fields which are not associated with him
+     */
+    private static final String FILE_NAME_TEST_PRIV_USER = "test_priv_user_hidden.csv";
 
     /**
      * Tests if an IllegalArgumentException is thrown if is the course null.
@@ -183,5 +190,72 @@ public class CourseDataParserTest {
         File lecturerExample = CourseDataParser.parseCourseToCSV(course,
                 true, null, PATH_TEST_RES_CSV_COURSE_DATA,FILE_NAME_TEST_LECTURER_NULL_VALS);
         List<String> lines = FileUtils.readLines(lecturerExample);
+    }
+
+    /**
+     * Tests if set fields are displayed as hidden if the user is not a lecturer
+     * and is not associated with the fields.
+     */
+    @Test
+    public void testPrivilegedUserWithNoRights() throws Exception {
+        User user = DataHelper.createBasicUser();
+        user.setMatriculationNumber("111111");
+        User lecturerUser = DataHelper.createBasicUserWithNewId();
+        Course course = DataHelper.createBasicCourse();
+        Lecturer lecturer = DataHelper.createLecturerWith(course, user);
+        Student student = DataHelper.createStudentWith(course, user);
+
+        User anotherUser = DataHelper.createBasicUserWithNewId();
+
+        PrivilegedUser lecturerPrivUser = DataHelper.createPrivUserWith(course, lecturerUser);
+        PrivilegedUser otherPrivUser = DataHelper.createPrivUserWith(course, anotherUser);
+
+        student.setPaboGrade(PaboGrade.GRADE_1_3.name());
+        Tutorial tutorial = new Tutorial();
+        tutorial.setName("TestTutorial...;;");
+        tutorial.getTutors().add(lecturerPrivUser);
+        student.setTutorial(tutorial);
+
+        Exam numericExam = new Exam();
+        numericExam.setName("--TestNumeric Grade Exam--");
+        numericExam.setGradeType(GradeType.Numeric.getId());
+
+        Group group = new Group();
+        group.setName(",,,TestGroup");
+        student.setGroup(group);
+        group.setTutorial(tutorial);
+        Exam booleanExam = new Exam();
+        booleanExam.setName("--Prozentübungsblatt--");
+        booleanExam.setGradeType(GradeType.Percent.getId());
+
+        Grading numericGrading = new Grading();
+        numericGrading.setStudent(student);
+        numericGrading.setCorrector(lecturerUser);
+        numericGrading.setExam(numericExam);
+        Grade grade = new Grade();
+        grade.setValue(new BigDecimal("10.25"));
+        numericGrading.setGrade(grade);
+        student.getGradings().add(numericGrading);
+
+        Grading percentGrading = new Grading();
+        percentGrading.setStudent(student);
+        percentGrading.setExam(booleanExam);
+        percentGrading.setCorrector(lecturerUser);
+        Grade boolGrade = new Grade();
+        boolGrade.setValue(new BigDecimal("12"));
+        percentGrading.setGrade(boolGrade);
+        student.getGradings().add(percentGrading);
+
+        course.getExams().add(numericExam);
+        course.getExams().add(booleanExam);
+
+        System.out.println("Students of course size " + course.getStudents());
+        File lecturerExample = CourseDataParser.parseCourseToCSV(course,
+                false, otherPrivUser, PATH_TEST_RES_CSV_COURSE_DATA,FILE_NAME_TEST_PRIV_USER);
+        List<String> lines = FileUtils.readLines(lecturerExample);
+        assertTrue(lines.size() == 2);
+        assertEquals("matr;tutorial;group;participation_type;final_grade;TestNumericGradeExam(Numeric);Prozentübungsblatt(Percent)", lines.get(0));
+        assertEquals("111111;?;?;Defaultparticipationtype;?;?;?", lines.get(1));
+
     }
 }

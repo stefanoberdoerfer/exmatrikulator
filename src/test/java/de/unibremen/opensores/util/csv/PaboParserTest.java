@@ -135,55 +135,65 @@ public final class PaboParserTest {
     public void testPaboUploadProvidedPaboFile() throws Exception{
         List<PaboData> paboDataList = PaboParser.parsePaboUpload(shortenedProvidedPaboFile);
 
-        //TODO FIX THIS READ NAMES FROM FILES
         int validRows = 5; // The first 5 rows
         int remainingEmptyRows = 6; // Last 6 rows are empty like in the example file
 
         PaboData expectedPaboData123450 = new PaboData();
         expectedPaboData123450.setAttempt(2);
         expectedPaboData123450.setExamName("Modulprüfung");
+        expectedPaboData123450.setPaboFirstName("Vorname1");
+        expectedPaboData123450.setPaboLastName("Nachname1");
         expectedPaboData123450.setMajor("Bachelor Informatik");
         expectedPaboData123450.setMatriculation("123450");
 
-        //assertTrue(paboDataList.get(0).equalsContents(expectedPaboData123450));
+        assertTrue(paboDataList.get(0).equalsContents(expectedPaboData123450));
 
         PaboData expectedPaboData123454 = new PaboData();
         expectedPaboData123454.setAttempt(3);
+        expectedPaboData123454.setPaboFirstName("Vorname5");
+        expectedPaboData123454.setPaboLastName("Nachname5");
         expectedPaboData123454.setExamName("Modulprüfung");
         expectedPaboData123454.setMajor("Bachelor Informatik");
         expectedPaboData123454.setMatriculation("123454");
 
-        //assertTrue(paboDataList.get(1).equalsContents(expectedPaboData123454));
+        assertTrue(paboDataList.get(1).equalsContents(expectedPaboData123454));
 
         PaboData expectedPaboData123463 = new PaboData();
         expectedPaboData123463.setAttempt(2);
+        expectedPaboData123463.setPaboFirstName("Vorname14");
+        expectedPaboData123463.setPaboLastName("Nachname14");
         expectedPaboData123463.setExamName("INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen");
         expectedPaboData123463.setMajor("Bachelor Wirtschaftsinformatik");
         expectedPaboData123463.setMatriculation("123463");
 
-       // assertTrue(paboDataList.get(2).equalsContents(expectedPaboData123463));
+        assertTrue(paboDataList.get(2).equalsContents(expectedPaboData123463));
 
 
         PaboData expectedPaboData123464 = new PaboData();
         expectedPaboData123464.setAttempt(2);
+        expectedPaboData123464.setPaboFirstName("Vorname15");
+        expectedPaboData123464.setPaboLastName("Nachname15");
+
         expectedPaboData123464.setExamName("INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen");
         expectedPaboData123464.setMajor("Bachelor Wirtschaftsinformatik");
         expectedPaboData123464.setMatriculation("123464");
 
-        //assertTrue(paboDataList.get(3).equalsContents(expectedPaboData123464));
+        assertTrue(paboDataList.get(3).equalsContents(expectedPaboData123464));
 
         PaboData expectedPaboData123465 = new PaboData();
         expectedPaboData123465.setAttempt(2);
+        expectedPaboData123465.setPaboFirstName("Vorname16");
+        expectedPaboData123465.setPaboLastName("Nachname16");
         expectedPaboData123465.setExamName("Modulprüfung");
         expectedPaboData123465.setMajor("Bachelor Informatik");
         expectedPaboData123465.setMatriculation("123465");
 
-        //assertTrue(paboDataList.get(4).equalsContents(expectedPaboData123465));
+        assertTrue(paboDataList.get(4).equalsContents(expectedPaboData123465));
 
         for (int i = validRows; i < validRows-1 + remainingEmptyRows; i++) {
             assertFalse(paboDataList.get(i).isValdid());
         }
-        //assertTrue(paboDataList.size() == validRows+remainingEmptyRows);
+        assertTrue(paboDataList.size() == validRows+remainingEmptyRows);
     }
 
     /**
