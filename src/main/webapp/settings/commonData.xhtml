@@ -17,209 +17,206 @@
     </ui:define>
     <!-- Page Content -->
     <ui:define name="content">
-        <h:form id="headlineForm">
+        <h:form id="commonDataForm">
             <div class="headline">
                 <div class="btn-group main-buttons pull-right">
-                    <h:form>
                     <p:commandLink styleClass="btn btn-primary" value="#{msg['settings.saveAndGoBack']}"
                                    action="/settings/overview">
                         <f:param name="course-id" value="#{commonDataController.course.courseId}"/>
                     </p:commandLink>
-                    </h:form>
                 </div>
                 <h1>#{msg['common.course.commonData']}</h1>
             </div>
-        </h:form>
 
-        <ui:include src="/WEB-INF/alerts.xhtml" />
+            <ui:include src="/WEB-INF/alerts.xhtml" />
 
-        <h:form layout="block" class="form-horizontal" id="commonDataForm">
-            <div class="row">
-                <div class="col-xs-6">
-                    <div class="form-group">
-                        <h:outputLabel for="courseName" class="col-xs-3 control-label text-left"
-                                       value="#{msg['common.name']}"/>
-                        <div class="col-xs-9" >
-                            <h:inputText type="text" class="form-control" id="courseName"
-                                         value="#{commonDataController.course.name}"
-                                         label="#{msg['common.name']}"
-                                         disabled="true"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <h:outputLabel for="courseIdentifier" class="col-xs-3 control-label text-left"
-                                       value="#{msg['common.identifier']}"/>
-                        <div class="col-xs-9" >
-                            <h:inputText type="text" class="form-control" id="courseIdentifier"
-                                         value="#{commonDataController.course.identifier}"
-                                         label="#{msg['common.identifier']}"
-                                         disabled="true"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <h:outputLabel for="courseNumber" class="col-xs-3 control-label text-left"
-                                       value="#{msg['courses.vak']}"/>
-                        <h:panelGroup styleClass="col-xs-9" id="courseNumber">
-                            <ui:repeat value="#{commonDataController.courseNumbers}" var="value">
-                                <h:inputText value="#{value.data}" class="form-control"/>
-                            </ui:repeat>
-                        </h:panelGroup>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-2 col-xs-offset-3">
-                            <h:commandButton value="#{msg['courses.create.moreVAK']}" class="btn btn-default">
-                                <f:ajax listener="#{commonDataController.addCourseNumber}"
-                                        execute="@form" render="@form"
-                                />
-                            </h:commandButton>
-                        </div>
-                        <div class="col-xs-2 col-xs-offset-2">
-                            <h:commandButton value="#{msg['courses.create.saveVAK']}" class="btn btn-default"
-                                rendered="#{!commonDataController.calledFromWizard}">
-                                <f:ajax listener="#{commonDataController.saveCourseNumbers()}"
-                                        execute="@form" render="@form"
-                                />
-                            </h:commandButton>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <h:outputLabel for="courseSemester" class="col-xs-3 control-label text-left"
-                                       value="#{msg['common.semester']}"/>
-                        <div class="col-xs-9" >
-                            <h:selectOneMenu value="#{commonDataController.semesterId}"
-                                             styleClass="form-control" id="courseSemester" disabled="true">
-                                <f:selectItems value="#{commonDataController.semesters}" var="semester"
-                                               itemValue="#{semester.semesterId}" itemLabel="#{semester.toString()}"
-                                />
-                            </h:selectOneMenu>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <h:outputLabel for="paboExamDateCal" class="col-xs-3 control-label text-left"
-                                       value="#{msg['course.create.paboExamDate']}"/>
-                        <div class="col-xs-9" >
-                            <p:calendar id="paboExamDateCal" value="#{commonDataController.course.paboExamDate}"
-                                        validatorMessage="#{msg['course.create.messageUnvalidDate']}"
-                                        timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy"/>
-                        </div>
-                    </div>
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <h:outputLabel for="courseCP" class="col-xs-3 control-label text-left"
-                                       value="#{msg['courses.creditPoints']}"/>
-                        <div class="col-xs-3">
-                            <h:inputText type="number" class="form-control" id="courseCP"
-                                         label="#{msg['courses.creditPoints']}" converter="javax.faces.Integer"
-                                         value="#{commonDataController.course.defaultCreditPoints}"
-                                         required="#{not empty param['commonDataForm:continueButton']}"
-                                         requiredMessage="#{msg['courses.create.messageInputCreditPoints']}">
-                                <f:convertNumber integerOnly="true"/>
-                                <f:validateLongRange minimum="0"/>
-                            </h:inputText>
-                        </div>
-                        <h:outputLabel for="courseSWS" class="col-xs-3 control-label text-left"
-                                       value="#{msg['courses.sws']}"/>
-                        <div class="col-xs-3">
-                            <h:inputText type="number" class="form-control" id="courseSWS" label="#{msg['courses.sws']}"
-                                         value="#{commonDataController.course.defaultSws}"
-                                         required="#{not empty param['commonDataForm:continueButton']}"
-                                         requiredMessage="#{msg['courses.create.messageInputSWS']}">
-                                <f:convertNumber integerOnly="true"/>
-                                <f:validateLongRange minimum="1"/>
-                            </h:inputText>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <h:outputLabel for="minGroup" class="col-xs-3 control-label text-left"
-                                       value="#{msg['courses.minGroupSize']}"/>
-                        <div class="col-xs-3">
-                            <h:inputText type="number" class="form-control" id="minGroup"
-                                         label="#{msg['courses.minGroupSize']}" converter="javax.faces.Integer"
-                                         value="#{commonDataController.course.minGroupSize}">
-                                <f:convertNumber integerOnly="true"/>
-                                <f:validateLongRange minimum="0"/>
-                            </h:inputText>
-                        </div>
-                        <h:outputLabel for="maxGroup" class="col-xs-3 control-label text-left"
-                                       value="#{msg['courses.maxGroupSize']}"/>
-                        <div class="col-xs-3">
-                            <h:inputText type="number" class="form-control" id="maxGroup"
-                                         label="#{msg['courses.maxGroupSize']}"
-                                         value="#{commonDataController.course.maxGroupSize}">
-                                <f:convertNumber integerOnly="true"/>
-                                <f:validateLongRange minimum="1"/>
-                            </h:inputText>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-9 col-xs-offset-3">
-                            <h:selectBooleanCheckbox
-                                    id="publicFormula"
-                                    value="#{commonDataController.course.studentsCanSeeFormula}"/>
-                            <h:outputLabel value="#{msg['courses.create.studentsCanSeeFormula']}"
-                                           for="publicFormula" styleClass="col-xs-offset-1"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-xs-9 col-xs-offset-3">
-                            <h:selectBooleanCheckbox
-                                    id="requiresConfirmation"
-                                    value="#{commonDataController.course.requiresConfirmation}"/>
-                            <h:outputLabel value="#{msg['courses.create.requiresConfirmation']}"
-                                           for="requiresConfirmation" styleClass="col-xs-offset-1"/>
-                        </div>
-                    </div>
-                    <div class="form-group"></div>
-                    <h:panelGroup styleClass="form-group" id="lecturers">
-                        <h:outputLabel class="col-xs-3 control-label text-left" value="#{msg['common.lecturers']}" />
-                        <div class="col-xs-9" >
-                            <ui:repeat value="#{commonDataController.course.lecturers}" var="lecturer">
-                                <h:panelGroup layout="block" styleClass="form-control-static" rendered="#{!lecturer.isDeleted()}">
-                                    #{lecturer.user}
-                                    <h:commandLink class="btn btn-danger col-xs-offset-3"
-                                                   rendered="#{!lecturer.isCourseCreator()}">
-                                        <i class="fa fa-remove"></i>
-                                        <f:ajax listener="#{commonDataController.removeLecturer(lecturer)}"
-                                                execute="@form" render="@form" immediate="true"
-                                        />
-                                    </h:commandLink>
-                                </h:panelGroup>
-                            </ui:repeat>
-                        </div>
-                    </h:panelGroup>
-                    <div class="form-group">
-                        <div class="col-xs-9 col-xs-offset-3">
-                            <div class="section-search">
-                                <p:inputText type="text" id="searchLecturer" class="form-control"
-                                             h5:placeholder="#{msg['courses.create.searchForLecturers']}"
-                                             valueChangeListener="#{commonDataController.searchForLecturers}">
-                                    <f:ajax execute="searchLecturer" render="lecturerOutput" event="blur" />
-                                </p:inputText>
-                                <h:link type="button" styleClass="btn btn-default">
-                                    <i class="fa fa-search"></i>
-                                </h:link>
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <h:outputLabel for="courseName" class="col-xs-3 control-label text-left"
+                                           value="#{msg['common.name']}"/>
+                            <div class="col-xs-9" >
+                                <h:inputText type="text" class="form-control" id="courseName"
+                                             value="#{commonDataController.course.name}"
+                                             label="#{msg['common.name']}"
+                                             disabled="true"/>
                             </div>
-                            <p:defaultCommand target="searchLecturer"/>
-                            <h:dataTable id="lecturerOutput" value="#{commonDataController.searchResultList}"
-                                         var="foundUser" styleClass="table"
-                                         columnClasses="responsive, table-common-options-one">
-                                <h:column>
-                                    #{foundUser}
-                                </h:column>
-                                <h:column>
-                                    <h:commandLink class="btn btn-default">
-                                        <i class="fa fa-plus"></i>
-                                        <f:ajax listener="#{commonDataController.addAsLecturer(foundUser)}"
-                                                execute="@form" render="@form"
-                                        />
-                                    </h:commandLink>
-                                </h:column>
-                            </h:dataTable>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="courseIdentifier" class="col-xs-3 control-label text-left"
+                                           value="#{msg['common.identifier']}"/>
+                            <div class="col-xs-9" >
+                                <h:inputText type="text" class="form-control" id="courseIdentifier"
+                                             value="#{commonDataController.course.identifier}"
+                                             label="#{msg['common.identifier']}"
+                                             disabled="true"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="courseNumber" class="col-xs-3 control-label text-left"
+                                           value="#{msg['courses.vak']}"/>
+                            <h:panelGroup styleClass="col-xs-9" id="courseNumber">
+                                <ui:repeat value="#{commonDataController.courseNumbers}" var="value">
+                                    <h:inputText value="#{value.data}" class="form-control"/>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-2 col-xs-offset-3">
+                                <h:commandButton value="#{msg['courses.create.moreVAK']}" class="btn btn-default">
+                                    <f:ajax listener="#{commonDataController.addCourseNumber}"
+                                            execute="@form" render="@form"
+                                    />
+                                </h:commandButton>
+                            </div>
+                            <div class="col-xs-2 col-xs-offset-2">
+                                <h:commandButton value="#{msg['courses.create.saveVAK']}" class="btn btn-default"
+                                                 rendered="#{!commonDataController.calledFromWizard}">
+                                    <f:ajax listener="#{commonDataController.saveCourseNumbers()}"
+                                            execute="@form" render="@form"
+                                    />
+                                </h:commandButton>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="courseSemester" class="col-xs-3 control-label text-left"
+                                           value="#{msg['common.semester']}"/>
+                            <div class="col-xs-9" >
+                                <h:selectOneMenu value="#{commonDataController.semesterId}"
+                                                 styleClass="form-control" id="courseSemester" disabled="true">
+                                    <f:selectItems value="#{commonDataController.semesters}" var="semester"
+                                                   itemValue="#{semester.semesterId}" itemLabel="#{semester.toString()}"
+                                    />
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="paboExamDateCal" class="col-xs-3 control-label text-left"
+                                           value="#{msg['course.create.paboExamDate']}"/>
+                            <div class="col-xs-9" >
+                                <p:calendar id="paboExamDateCal" value="#{commonDataController.course.paboExamDate}"
+                                            validatorMessage="#{msg['course.create.messageUnvalidDate']}"
+                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy"/>
+                            </div>
+                        </div>
+                        <div class="form-group"></div>
+                        <div class="form-group">
+                            <h:outputLabel for="courseCP" class="col-xs-3 control-label text-left"
+                                           value="#{msg['courses.creditPoints']}"/>
+                            <div class="col-xs-3">
+                                <h:inputText type="number" class="form-control" id="courseCP"
+                                             label="#{msg['courses.creditPoints']}" converter="javax.faces.Integer"
+                                             value="#{commonDataController.course.defaultCreditPoints}"
+                                             required="#{not empty param['commonDataForm:continueButton']}"
+                                             requiredMessage="#{msg['courses.create.messageInputCreditPoints']}">
+                                    <f:convertNumber integerOnly="true"/>
+                                    <f:validateLongRange minimum="0"/>
+                                </h:inputText>
+                            </div>
+                            <h:outputLabel for="courseSWS" class="col-xs-3 control-label text-left"
+                                           value="#{msg['courses.sws']}"/>
+                            <div class="col-xs-3">
+                                <h:inputText type="number" class="form-control" id="courseSWS" label="#{msg['courses.sws']}"
+                                             value="#{commonDataController.course.defaultSws}"
+                                             required="#{not empty param['commonDataForm:continueButton']}"
+                                             requiredMessage="#{msg['courses.create.messageInputSWS']}">
+                                    <f:convertNumber integerOnly="true"/>
+                                    <f:validateLongRange minimum="1"/>
+                                </h:inputText>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h:outputLabel for="minGroup" class="col-xs-3 control-label text-left"
+                                           value="#{msg['courses.minGroupSize']}"/>
+                            <div class="col-xs-3">
+                                <h:inputText type="number" class="form-control" id="minGroup"
+                                             label="#{msg['courses.minGroupSize']}" converter="javax.faces.Integer"
+                                             value="#{commonDataController.course.minGroupSize}">
+                                    <f:convertNumber integerOnly="true"/>
+                                    <f:validateLongRange minimum="0"/>
+                                </h:inputText>
+                            </div>
+                            <h:outputLabel for="maxGroup" class="col-xs-3 control-label text-left"
+                                           value="#{msg['courses.maxGroupSize']}"/>
+                            <div class="col-xs-3">
+                                <h:inputText type="number" class="form-control" id="maxGroup"
+                                             label="#{msg['courses.maxGroupSize']}"
+                                             value="#{commonDataController.course.maxGroupSize}">
+                                    <f:convertNumber integerOnly="true"/>
+                                    <f:validateLongRange minimum="1"/>
+                                </h:inputText>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-9 col-xs-offset-3">
+                                <h:selectBooleanCheckbox
+                                        id="publicFormula"
+                                        value="#{commonDataController.course.studentsCanSeeFormula}"/>
+                                <h:outputLabel value="#{msg['courses.create.studentsCanSeeFormula']}"
+                                               for="publicFormula" styleClass="col-xs-offset-1"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-9 col-xs-offset-3">
+                                <h:selectBooleanCheckbox
+                                        id="requiresConfirmation"
+                                        value="#{commonDataController.course.requiresConfirmation}"/>
+                                <h:outputLabel value="#{msg['courses.create.requiresConfirmation']}"
+                                               for="requiresConfirmation" styleClass="col-xs-offset-1"/>
+                            </div>
+                        </div>
+                        <div class="form-group"></div>
+                        <h:panelGroup styleClass="form-group" id="lecturers">
+                            <h:outputLabel class="col-xs-3 control-label text-left" value="#{msg['common.lecturers']}" />
+                            <div class="col-xs-9" >
+                                <ui:repeat value="#{commonDataController.course.lecturers}" var="lecturer">
+                                    <h:panelGroup layout="block" styleClass="form-control-static" rendered="#{!lecturer.isDeleted()}">
+                                        #{lecturer.user}
+                                        <h:commandLink class="btn btn-danger col-xs-offset-3"
+                                                       rendered="#{!lecturer.isCourseCreator()}">
+                                            <i class="fa fa-remove"></i>
+                                            <f:ajax listener="#{commonDataController.removeLecturer(lecturer)}"
+                                                    execute="@form" render="@form" immediate="true"
+                                            />
+                                        </h:commandLink>
+                                    </h:panelGroup>
+                                </ui:repeat>
+                            </div>
+                        </h:panelGroup>
+                        <div class="form-group">
+                            <div class="col-xs-9 col-xs-offset-3">
+                                <div class="section-search">
+                                    <p:inputText type="text" id="searchLecturer" class="form-control"
+                                                 h5:placeholder="#{msg['courses.create.searchForLecturers']}"
+                                                 valueChangeListener="#{commonDataController.searchForLecturers}">
+                                        <f:ajax execute="searchLecturer" render="lecturerOutput" event="blur" />
+                                    </p:inputText>
+                                    <h:link type="button" styleClass="btn btn-default">
+                                        <i class="fa fa-search"></i>
+                                    </h:link>
+                                </div>
+                                <p:defaultCommand target="searchLecturer"/>
+                                <h:dataTable id="lecturerOutput" value="#{commonDataController.searchResultList}"
+                                             var="foundUser" styleClass="table"
+                                             columnClasses="responsive, table-common-options-one">
+                                    <h:column>
+                                        #{foundUser}
+                                    </h:column>
+                                    <h:column>
+                                        <h:commandLink class="btn btn-default">
+                                            <i class="fa fa-plus"></i>
+                                            <f:ajax listener="#{commonDataController.addAsLecturer(foundUser)}"
+                                                    execute="@form" render="@form"
+                                            />
+                                        </h:commandLink>
+                                    </h:column>
+                                </h:dataTable>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </h:form>
-
     </ui:define>
 </ui:composition>
