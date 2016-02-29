@@ -84,7 +84,7 @@ public class PaboController {
     private LogService logService;
 
     /**
-     * The filename of the upload of a user to be set to the coure if the
+     * The filename of the upload of a user to be set to the course if the
      * user confirms.
      */
     private String uploadFileName;
@@ -148,7 +148,7 @@ public class PaboController {
     private File localUploadedCSVFile;
 
     /**
-     * A list of line indexes and messages about unvalid pabo export rows.
+     * A list of line indexes and messages about invalid pabo export rows.
      */
     private List<PaboErrorMsg> paboErrorMsgs;
 
@@ -536,13 +536,13 @@ public class PaboController {
 
 
     /**
-     * Gets a map of the row indexes of unvalid pabo data descriptions.
+     * Gets a map of the row indexes of invalid pabo data descriptions.
      * and error strings describing the fault of the data. The map stores the row of the data.
      * The first row of the file gets thrown away, so the index i of the faulty data
      * is the and for the user rows start with one, the row index is i+2.
      * @see PaboParser
      * @see PaboData
-     * @return The map of the row indexes and unvalid pabo data descriptions.
+     * @return The map of the row indexes and invalid pabo data descriptions.
      */
     private List<PaboErrorMsg> getPaboErrorsFromPaboData(List<PaboData> dataList) {
         List<PaboErrorMsg> paboErrorMsgs = new ArrayList<>();
@@ -558,23 +558,23 @@ public class PaboController {
                     break;
                 case PaboData.UNVALID_MATRICULATION:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
-                            bundle.getString("course.paboFile.unvalidMatriculation")));
+                            bundle.getString("course.paboFile.invalidMatriculation")));
                     break;
                 case PaboData.UNVALID_ATTEMPT:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
-                            bundle.getString("course.paboFile.unvalidAttempts")));
+                            bundle.getString("course.paboFile.invalidAttempts")));
                     break;
                 case PaboData.UNVALID_EXAM_NAME:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
-                            bundle.getString("course.paboFile.unvalidExamName")));
+                            bundle.getString("course.paboFile.invalidExamName")));
                     break;
                 case PaboData.UNVALID_MAJOR:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
-                            bundle.getString("course.paboFile.unvalidMajor")));
+                            bundle.getString("course.paboFile.invalidMajor")));
                     break;
                 case PaboData.UNVALID_ALL_EMPTY:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
-                            bundle.getString("course.paboFile.unvalidRowSyntax")));
+                            bundle.getString("course.paboFile.invalidRowSyntax")));
                     break;
                 default:
                     break;

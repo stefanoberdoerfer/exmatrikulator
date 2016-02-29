@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -67,6 +68,7 @@ public final class MockHelper {
         when(courseServiceMock.find(Course.class, DataHelper.COURSE_ID)).thenReturn(course);
         when(courseServiceMock.update(course)).thenReturn(course);
         when(courseServiceMock.findCourseById(""+DataHelper.COURSE_ID)).thenReturn(course);
+        when(courseServiceMock.findCourseById(DataHelper.COURSE_ID_STR)).thenReturn(course);
         return courseServiceMock;
     }
 
@@ -116,7 +118,6 @@ public final class MockHelper {
 
     /**
      * Mocks the functionality of f the CourseSerivce class.
-     * @todo Extend with own desired basic functionality.
      * @return The Mocked UserService.
      */
     public static UserService mockUserService() {

@@ -31,6 +31,11 @@ public final class DataHelper {
     public static final long COURSE_ID = idCount++;
 
     /**
+     * String value of the course id.
+     */
+    public static final String COURSE_ID_STR = String.valueOf(COURSE_ID);
+
+    /**
      * The id of the default participation type of the basic course.
      */
     public static final long DEFAULT_PART_TYPE_ID = idCount++;
