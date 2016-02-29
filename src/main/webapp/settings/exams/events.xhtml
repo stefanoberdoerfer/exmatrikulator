@@ -28,14 +28,15 @@
                         <p:outputLabel for="examDeadline"
                                        class="col-xs-3 control-label"
                                        value="#{msg['examEvent.deadline']}" />
-                        <h:panelGroup id="examDeadline" styleClass="col-xs-8"
+                        <h:panelGroup id="examDeadline" styleClass="col-xs-6"
                                       layout="block">
                             <p:calendar id="deadLineCal"
                                         value="#{examEventController.exam.deadline}"
                                         pattern="MM/dd/yyyy HH:mm:ss">
                                 <f:validator validatorId="deadlineValidator"/>
                             </p:calendar>
-
+                        </h:panelGroup>
+                        <div class="cols-xs-3">
                             <p:commandLink id="updateDeadlineBtn"
                                            process="deadLineCal @this"
                                            styleClass="btn btn-primary"
@@ -43,13 +44,13 @@
                                            value="#{msg['common.saveChanges']}">
                                 <f:actionListener binding="#{examEventController.updateDeadLine()}"/>
                             </p:commandLink>
-                        </h:panelGroup>
+                        </div>
                     </h:panelGroup>
                 </h:panelGroup>
                 <p:blockUI block="editDeadlinePnl" trigger="updateDeadlineBtn"/>
-                    <div class="text-center">
-                        <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
-                    </div>
+                <div class="text-center">
+                    <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                </div>
                 <br/>
                 <p:schedule id="editSchedule"
                             value="#{examEventController.examEventModel}"
@@ -85,8 +86,8 @@
                     </h:panelGroup>
                 </h:panelGroup>
 
-                <h:panelGroup id="currentExamEventPnl" styleClass="form-group">
-                    <h:panelGroup rendered="#{examEventController.isStudentRegisteredToExam()}">
+                <h:panelGroup id="currentExamEventPnl" styleClass="form-group" layout="block">
+                    <h:panelGroup  layout="block" rendered="#{examEventController.isStudentRegisteredToExam()}">
                         <h:panelGroup layout="block">
                             <br/>
                             <hr/>
@@ -122,188 +123,191 @@
                         </h:panelGroup>
                         <br/>
                         <hr/>
+                    </h:panelGroup>
                 </h:panelGroup>
-            </h:panelGroup>
-            <p:blockUI block="currentExamEventPnl" trigger="unregisterBtn">
-                <div class="text-center">
-                    <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
-                </div>
-            </p:blockUI>
-
-            <p:schedule id="studentSchedule"
-                        value="#{examEventController.examEventModel}"
-                        widgetVar="studentSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}" resizable="false"
-                        draggable="false" locale="#{examEventController.localeCountry}">
-                <p:ajax event="eventSelect" listener="#{examEventController.onEventSelect}"
-                        update="eventDialog" oncomplete="PF('examEventDialog').show();"/>/>
-            </p:schedule>
-        </h:panelGroup>
-
-        <p:dialog id="eventDialog" widgetVar="examEventDialog" header="#{msg['examEvent.details']}">
-            <p:panel id="dialogPnl">
-                <ui:include src="/WEB-INF/alerts.xhtml" />
-                <div class="modal-body">
-                    <div class="form-group">
-                        <h:panelGroup rendered="#{not examEventController.canUserEditEvent()}" layout="block">
-
-                            <p:outputLabel for="studentExaminerTxt" value="#{msg['examEvent.examiner']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-
-                            <div class="col-xs-8">
-                                <h:outputText styleClass="form-control" id="studentExaminerTxt"
-                                              value="#{examEventController.event.examiner.user}"/>
-                            </div>
-
-                            <p:outputLabel for="fromStudentText" value="#{msg['common.from']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-
-                            <div class="col-xs-8">
-                                <h:outputText styleClass="form-control" id="fromStudentText" value="#{examEventController.event.startDate}">
-                                    <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
-                                </h:outputText>
-                            </div>
-                            <br/>
-
-                            <p:outputLabel for="toStudentTxt" value="#{msg['common.to']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-                            <div class="col-xs-8">
-                                <h:outputText styleClass="form-control" id="toStudentTxt" value="#{examEventController.event.endDate}">
-                                    <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
-                                </h:outputText>
-                            </div>
-                            <br/>
-                            <p:outputLabel for="studentDescr" value="#{msg['common.description']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-                            <div class="col-xs-8">
-                                <p:inputTextarea id="studentDescr" value="#{examEventController.event.description}"
-                                                 maxlength="#{EXcons.MAX_TUT_EVENT_DESCR_LENGTH}"
-                                                 autoResize="true"
-                                                 rows="8" cols="30"
-                                                 readonly="true"/>
-                            </div>
-
-                            <p:outputLabel for="studentMaxNumStudents" value="#{msg['examEvent.maxNumStudent']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-
-                            <div class="col-xs-8">
-                                <h:outputText styleClass="form-control" id="studentMaxNumStudents"
-                                              value="#{examEventController.event.maxNumStudents}"/>
-                            </div>
-
-                        </h:panelGroup>
-
-                        <h:panelGroup rendered="#{examEventController.canUserEditEvent()}">
-                            <p:outputLabel for="editorExaminerMenu" value="#{msg['examEvent.examiner']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-                            <div class="col-xs-8">
-                                <p:selectOneMenu styleClass="form-control" id="editorExaminerMenu"
-                                                 converter="#{privilegedUserConverter}"
-                                                 value="#{examEventController.event.examiner}">
-                                    <f:attribute name="course" value="#{examEventController.course}" />
-                                    <f:selectItems value="#{examEventController.course.tutors}" var="tutor"
-                                                   itemLabel="#{tutor.user.toString()}" itemValue="#{tutor}"/>
-                                </p:selectOneMenu>
-                            </div>
-
-                            <p:outputLabel for="fromEditCal" value="#{msg['common.from']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-                            <div class="col-xs-8">
-                                <p:calendar id="fromEditCal" value="#{examEventController.event.startDate}"
-                                            locale="#{examEventController.localeCountry}"
-                                            required="true" validatorMessage="#{msg['tutEvent.validatorMessageStartDate']}"
-                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
-                            </div>
-
-                            <p:outputLabel for="toEditCal" value="#{msg['common.to']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-                            <div class="col-xs-8">
-                                <p:calendar id="toEditCal" value="#{examEventController.event.endDate}"
-                                            locale="#{examEventController.localeCountry}"
-                                            required="true"
-                                            validator="#{examEventController.validateEndDateAfterStartDate}"
-                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
-                            </div>
-
-                            <p:outputLabel for="editDescr" value="#{msg['common.description']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-                            <div class="col-xs-8">
-                                <p:inputTextarea id="editDescr" value="#{examEventController.event.description}"
-                                                 maxlength="#{EXcons.MAX_TUT_EVENT_DESCR_LENGTH}"
-                                                 autoResize="true"
-                                                 rows="8" cols="30"
-                                                 counter="descrCharCounter"
-                                                 counterTemplate="#{msg['tutEvent.counterTemplate']}"/>
-                                <br/>
-                                <h:outputText id="descrCharCounter"/>
-                            </div>
-
-                            <p:outputLabel for="editMaxNumStudents" value="#{msg['examEvent.maxNumStudent']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-
-                            <div class="col-xs-8">
-                                <p:inputText styleClass="form-control" id="editMaxNumStudents"
-                                             value="#{examEventController.event.maxNumStudents}"
-                                             required="true"
-                                             validatorMessage="#{msg['examEvent.messageMaxNumStudent']}">
-                                    <f:convertNumber integerOnly="true"/>
-                                    <f:validateLongRange minimum="1" maximum="100000"/>
-                                </p:inputText>
-                            </div>
-
-                            <p:outputLabel for="editStudents" value="#{msg['examEvent.examinedStudents']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-
-                            <div class="col-xs-8">
-                                <p:pickList id="editStudents" value="#{examEventController.studentDualList}"
-                                            var="student" itemLabel="#{student.user}"
-                                            itemValue="#{student}" converter="#{studentConverter}"
-                                            responsive="true" validator="#{examEventController.validateStudentSize}">
-                                    <f:attribute name="course" value="#{examEventController.course}" />
-                                </p:pickList>
-                            </div>
-                        </h:panelGroup>
+                <p:blockUI block="currentExamEventPnl" trigger="unregisterBtn">
+                    <div class="text-center">
+                        <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="btn-group pull-left">
-                        <p:commandLink value="#{msg['common.cancel']}" styleClass="btn btn-default"
-                                       process="@this" oncomplete="PF('examEventDialog').hide();"/>
-                        <p:commandLink id="registerBtn"
-                                       rendered="#{not examEventController.canUserEditEvent()
+                </p:blockUI>
+
+                <p:schedule id="studentSchedule"
+                            value="#{examEventController.examEventModel}"
+                            widgetVar="studentSchedule" timeZone="#{EXcons.SYSTEM_TIMEZONE}" resizable="false"
+                            draggable="false" locale="#{examEventController.localeCountry}">
+                    <p:ajax event="eventSelect" listener="#{examEventController.onEventSelect}"
+                            update="eventDialog" oncomplete="PF('examEventDialog').show();"/>/>
+                </p:schedule>
+            </h:panelGroup>
+
+            <p:dialog id="eventDialog" widgetVar="examEventDialog" header="#{msg['examEvent.details']}">
+                <p:panel id="dialogPnl">
+                    <ui:include src="/WEB-INF/alerts.xhtml" />
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <h:panelGroup rendered="#{not examEventController.canUserEditEvent()}" layout="block">
+
+                                <p:outputLabel for="studentExaminerTxt" value="#{msg['examEvent.examiner']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+
+                                <div class="col-xs-9">
+                                    <h:outputText styleClass="form-control" id="studentExaminerTxt"
+                                                  value="#{examEventController.event.examiner.user}"/>
+                                </div>
+
+                                <p:outputLabel for="fromStudentText" value="#{msg['common.from']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+
+                                <div class="col-xs-9">
+                                    <h:outputText styleClass="form-control" id="fromStudentText" value="#{examEventController.event.startDate}">
+                                        <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                    </h:outputText>
+                                </div>
+                                <br/>
+
+                                <p:outputLabel for="toStudentTxt" value="#{msg['common.to']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+                                <div class="col-xs-9">
+                                    <h:outputText styleClass="form-control" id="toStudentTxt" value="#{examEventController.event.endDate}">
+                                        <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                    </h:outputText>
+                                </div>
+                                <br/>
+                                <p:outputLabel for="studentDescr" value="#{msg['common.description']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+                                <div class="col-xs-9">
+                                    <p:inputTextarea id="studentDescr" value="#{examEventController.event.description}"
+                                                     maxlength="#{EXcons.MAX_TUT_EVENT_DESCR_LENGTH}"
+                                                     autoResize="true"
+                                                     rows="8" cols="30"
+                                                     readonly="true"/>
+                                </div>
+
+                                <p:outputLabel for="studentMaxNumStudents" value="#{msg['examEvent.maxNumStudent']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+
+                                <div class="col-xs-9">
+                                    <h:outputText styleClass="form-control" id="studentMaxNumStudents"
+                                                  value="#{examEventController.event.maxNumStudents}"/>
+                                </div>
+
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{examEventController.canUserEditEvent()}">
+                                <p:outputLabel for="editorExaminerMenu" value="#{msg['examEvent.examiner']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+                                <div class="col-xs-9">
+                                    <p:selectOneMenu styleClass="form-control" id="editorExaminerMenu"
+                                                     converter="#{privilegedUserConverter}"
+                                                     value="#{examEventController.event.examiner}">
+                                        <f:attribute name="course" value="#{examEventController.course}" />
+                                        <f:selectItems value="#{examEventController.course.tutors}" var="tutor"
+                                                       itemLabel="#{tutor.user.toString()}" itemValue="#{tutor}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <p:outputLabel for="fromEditCal" value="#{msg['common.from']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+                                <div class="col-xs-9">
+                                    <p:calendar id="fromEditCal" value="#{examEventController.event.startDate}"
+                                                locale="#{examEventController.localeCountry}"
+                                                required="true" validatorMessage="#{msg['tutEvent.validatorMessageStartDate']}"
+                                                timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                </div>
+
+                                <p:outputLabel for="toEditCal" value="#{msg['common.to']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+                                <div class="col-xs-9">
+                                    <p:calendar id="toEditCal" value="#{examEventController.event.endDate}"
+                                                locale="#{examEventController.localeCountry}"
+                                                required="true"
+                                                validator="#{examEventController.validateEndDateAfterStartDate}"
+                                                timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                </div>
+
+                                <p:outputLabel for="editDescr" value="#{msg['common.description']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+                                <div class="col-xs-9">
+                                    <p:inputTextarea id="editDescr" value="#{examEventController.event.description}"
+                                                     maxlength="#{EXcons.MAX_TUT_EVENT_DESCR_LENGTH}"
+                                                     autoResize="true"
+                                                     rows="8" cols="30"
+                                                     counter="descrCharCounter"
+                                                     counterTemplate="#{msg['tutEvent.counterTemplate']}"/>
+                                    <br/>
+                                    <h:outputText id="descrCharCounter"/>
+                                </div>
+
+                                <p:outputLabel for="editMaxNumStudents" value="#{msg['examEvent.maxNumStudent']}"
+                                               styleClass="col-xs-3 control-label text-left"/>
+
+                                <div class="col-xs-9">
+                                    <p:inputText styleClass="form-control" id="editMaxNumStudents"
+                                                 value="#{examEventController.event.maxNumStudents}"
+                                                 required="true"
+                                                 validatorMessage="#{msg['examEvent.messageMaxNumStudent']}">
+                                        <f:convertNumber integerOnly="true"/>
+                                        <f:validateLongRange minimum="1" maximum="100000"/>
+                                    </p:inputText>
+                                </div>
+
+                                <p:outputLabel for="editStudents" value="#{msg['examEvent.examinedStudents']}"
+                                               styleClass="col-xs-3 control-label"/>
+
+                                <div class="col-xs-9">
+                                    <p:pickList id="editStudents" value="#{examEventController.studentDualList}"
+                                                var="student" itemLabel="#{student.user}"
+                                                showSourceFilter="true" showTargetFilter="true"
+                                                itemValue="#{student}" converter="#{studentConverter}"
+                                                responsive="true" validator="#{examEventController.validateStudentSize}">
+                                        <f:facet name="sourceCaption">#{msg['examEvents.withoutEvent']}</f:facet>
+                                        <f:facet name="targetCaption">#{msg['examEvents.registeredToEvent']}</f:facet>
+                                        <f:attribute name="course" value="#{examEventController.course}" />
+                                    </p:pickList>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-group pull-left">
+                            <p:commandLink value="#{msg['common.cancel']}" styleClass="btn btn-default"
+                                           process="@this" oncomplete="PF('examEventDialog').hide();"/>
+                            <p:commandLink id="registerBtn"
+                                           rendered="#{not examEventController.canUserEditEvent()
                                                   and not examEventController.isStudentRegisteredToExam()
                                                   and not examEventController.isDeadlineDue()
                                                   and not examEventController.event.isFull()}"
-                                       value="#{msg['examEvent.register']}"
-                                       update="currentExamEventPnl studentSchedule"
-                                       styleClass="btn btn-primary"
-                                       oncomplete="if (args &amp;&amp; !args.validationFailed) {
+                                           value="#{msg['examEvent.register']}"
+                                           update="currentExamEventPnl studentSchedule"
+                                           styleClass="btn btn-primary"
+                                           oncomplete="if (args &amp;&amp; !args.validationFailed) {
                                                        PF('examEventDialog').hide();
                                                    }" >
-                            <f:actionListener binding="#{examEventController.registerToExamEvent()}"/>
-                        </p:commandLink>
-                        <p:commandLink id="removeBtn" value="#{msg['common.remove']}" styleClass="btn btn-danger"
-                                       rendered="#{examEventController.canUserEditEvent()
+                                <f:actionListener binding="#{examEventController.registerToExamEvent()}"/>
+                            </p:commandLink>
+                            <p:commandLink id="removeBtn" value="#{msg['common.remove']}" styleClass="btn btn-danger"
+                                           rendered="#{examEventController.canUserEditEvent()
                                         and examEventController.event.id != null}"
-                                       actionListener="#{examEventController.removeEvent}"
-                                       oncomplete="PF('editSchedule').update();
+                                           actionListener="#{examEventController.removeEvent}"
+                                           oncomplete="PF('editSchedule').update();
                                                        PF('examEventDialog').hide();"/>
-                        <p:commandLink id="addBtn" styleClass="btn btn-success"
-                                       value="#{msg['common.saveChanges']}"
-                                       rendered="#{examEventController.canUserEditEvent()}"
-                                       actionListener="#{examEventController.addEvent}"
-                                       oncomplete="if (args &amp;&amp; !args.validationFailed) {
+                            <p:commandLink id="addBtn" styleClass="btn btn-success"
+                                           value="#{msg['common.saveChanges']}"
+                                           rendered="#{examEventController.canUserEditEvent()}"
+                                           actionListener="#{examEventController.addEvent}"
+                                           oncomplete="if (args &amp;&amp; !args.validationFailed) {
                                                        PF('editSchedule').update();
                                                        PF('examEventDialog').hide();
                                                    }" />
+                        </div>
                     </div>
-                </div>
-            </p:panel>
-            <p:blockUI block="dialogPnl" trigger="removeBtn addBtn registerBtn">
-                <div class="text-center">
-                    <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
-                </div>
-            </p:blockUI>
-        </p:dialog>
-    </h:form>
-</ui:define>
-        </ui:composition>
+                </p:panel>
+                <p:blockUI block="dialogPnl" trigger="removeBtn addBtn registerBtn">
+                    <div class="text-center">
+                        <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                    </div>
+                </p:blockUI>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

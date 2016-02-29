@@ -3,6 +3,8 @@ package de.unibremen.opensores.webapp.filter;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.service.CourseService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -28,6 +30,20 @@ import javax.servlet.http.HttpSession;
  */
 @Stateless
 public class CourseFilter implements Filter {
+
+
+    /**
+     * The log4j logger.
+     */
+    private static Logger log = LogManager.getLogger(LoginFilter.class);
+
+
+    /**
+     *  Paths which must be passed because downloads require non ajax requests
+     *  with own http parameters.
+     */
+    private static final String PATH_PABO_DOWNLOAD = "/settings/pabo.xhtml";
+    private static final String PATH_CSV_DOWNLOAD = "/settings/overview.xhtml";
     /**
      * The course service for connecting to the database.
      */
@@ -36,10 +52,11 @@ public class CourseFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res,
-            FilterChain filterChain) throws IOException, ServletException {
+                         FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse hres = (HttpServletResponse) res;
         HttpServletRequest hreq = (HttpServletRequest) req;
-
+        String path = hreq.getRequestURI().substring(hreq.getContextPath().length());
+        log.debug("doFilter() called with path: " + path);
         // XXX this is _super_ insecure literally everyone can set this
         // header and thereby render this filter absolutly useless.
         String freq = hreq.getHeader("Faces-Request");
@@ -51,6 +68,13 @@ public class CourseFilter implements Filter {
         User user = (User) hreq.getSession().getAttribute("user");
         if (user == null) {
             hres.sendRedirect(hreq.getContextPath());
+            return;
+        }
+
+        // Must pass here or the download doesnt work.
+        if (path.startsWith(PATH_PABO_DOWNLOAD) || path.startsWith(PATH_CSV_DOWNLOAD) ) {
+            log.debug("Letting pass  download path ");
+            filterChain.doFilter(req, res);
             return;
         }
 

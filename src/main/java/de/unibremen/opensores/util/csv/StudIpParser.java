@@ -76,6 +76,11 @@ public final class StudIpParser {
     private static final String LATIN_ONE_ENCODING = "ISO-8859-1";
 
     /**
+     * Empty Constructor for no object creation.
+     */
+    private StudIpParser() {}
+
+    /**
      * Parses a Stud IP course export csv file and returns a list of Users with
      * the first name, last name and emails for each row of the file.
      * @param studIpCSVFile The stud ip CSV File. It shouldnt be altered after

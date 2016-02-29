@@ -19,6 +19,20 @@ public enum GradeType {
     }
 
     /**
+     * Returns the grdeType of a gradeType id.
+     * @param id The gradeType id.
+     * @return The Gradetype of the grade type id or null if no gradetype ha been found.
+     */
+    public static GradeType getById(final int id) {
+        for (GradeType type : GradeType.values()) {
+            if (type.getId() == id) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns if the given value is valid. Max value will only be considered
      * for Point grades.
      * @param value Value to check

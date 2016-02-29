@@ -88,6 +88,15 @@
                             </h:selectOneMenu>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <h:outputLabel for="paboExamDateCal" class="col-xs-3 control-label text-left"
+                                       value="#{msg['course.create.paboExamDate']}"/>
+                        <div class="col-xs-9" >
+                            <p:calendar id="paboExamDateCal" value="#{step1.commonDataController.course.paboExamDate}"
+                                        validatorMessage="#{msg['course.create.messageUnvalidDate']}"
+                                        timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy"/>
+                        </div>
+                    </div>
                     <div class="form-group"></div>
                     <div class="form-group">
                         <h:outputLabel for="courseCP" class="col-xs-3 control-label text-left"

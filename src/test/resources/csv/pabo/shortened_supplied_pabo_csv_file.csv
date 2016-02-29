@@ -1,0 +1,12 @@
+Matrnr;Nachname;Vorname;Prfdatum;Note;Prfbem;Versuch;Teilprf;Studiengang;;;;
+123450;Nachname1;Vorname1;;;;2;Modulprüfung;Bachelor Informatik;;;;Hilfe für das Prfbem-Feld
+123454;Nachname5;Vorname5;;;;3;Modulprüfung;Bachelor Informatik;;;;7 = Bestanden
+123463;Nachname14;Vorname14;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123464;Nachname15;Vorname15;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123465;Nachname16;Vorname16;;;;2;Modulprüfung;Bachelor Informatik;;;;
+;;;;;;;;;;;;8 = Nicht Bestanden
+;;;;;;;;;;;;
+;;;;;;;;;;;;Format für das Prfdatum-Feld
+;;;;;;;;;;;;------------------------------
+;;;;;;;;;;;;DD.MM.JJJJ
+;;;;;;;;;;;;z.B. 01.01.2014

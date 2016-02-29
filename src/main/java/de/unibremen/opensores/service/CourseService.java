@@ -382,4 +382,61 @@ public class CourseService extends GenericService<Course> {
 
         return courses;
     }
+
+
+    /**
+     * Finds all students which have pabo data.
+     * @param course The course from which the students with pabo
+     *               data should be found.
+     * @return The list of students with pabo data.
+     */
+    public List<Student> findStudentsWithPaboData(Course course) {
+        return em.createQuery(
+                "SELECT DISTINCT s FROM Student s"
+                        + " JOIN s.course AS c"
+                        + " WITH c.courseId = :courseId"
+                        + " WHERE s.paboData IS NOT NULL"
+                        + " AND s.isConfirmed = true"
+                        + " AND s.isDeleted = false", Student.class)
+                .setParameter("courseId", course.getCourseId())
+                .getResultList();
+    }
+
+    /**
+     * Finds all students which have no pabo data.
+     * @param course The course from which the students without pabo
+     *               data should be found.
+     * @return The list of students without pabo data.
+     */
+    public List<Student> findStudentWithNoPaboData(Course course) {
+        return em.createQuery(
+                "SELECT DISTINCT s FROM Student s"
+                        + " JOIN s.course AS c"
+                        + " WITH c.courseId = :courseId"
+                        + " WHERE s.paboData IS NULL"
+                        + " AND s.isConfirmed = true"
+                        + " AND s.isDeleted = false", Student.class)
+                .setParameter("courseId", course.getCourseId())
+                .getResultList();
+    }
+
+    /**
+     * Finds all students which have no pabo data.
+     * @param course The course from which the students without pabo
+     *               data should be found.
+     * @return The list of students without pabo data.
+     */
+    public List<Student> findStudentWithPaboDataButNoPaboGrade(Course course) {
+        return em.createQuery(
+                "SELECT DISTINCT s FROM Student s"
+                        + " JOIN s.course AS c"
+                        + " WITH c.courseId = :courseId"
+                        + " WHERE s.paboData IS NOT NULL"
+                        + " AND s.paboGrade IS NULL"
+                        + " AND s.isConfirmed = true"
+                        + " AND s.isDeleted = false", Student.class)
+                .setParameter("courseId", course.getCourseId())
+                .getResultList();
+    }
+
 }

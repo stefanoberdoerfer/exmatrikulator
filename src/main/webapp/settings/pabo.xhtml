@@ -1,0 +1,318 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.settings']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li>#{paboController.course.name}</li>
+        <li class="active">#{msg['common.settings']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <h:form id="paboOverviewForm">
+            <div class="headline">
+                <h1>#{msg['settings.paboFiles']}</h1>
+
+                <h:panelGroup id="btnsPnl"
+                              class="btn-group main-buttons pull-right" layout="block">
+                    <p:commandLink value="#{msg['course.paboFile.uploadPaboCSV']}"
+                                   styleClass="btn btn-primary"
+                                   oncomplete="PF('paboImport').show();"
+                                   update=":paboImportDlg"
+                                   actionListener="#{paboController.onReset()}"/>
+                    <p:commandButton id="downloadBtn" rendered="#{paboController.hasEverUploadedPabo()}"
+                                     action="#{paboController.generatePaboDownload()}"
+                                     ajax="false" value="#{msg['courses.paboFiles.downloadPabo']}"/>
+                </h:panelGroup>
+                <p:blockUI block="btnsPnl" trigger="downloadBtn">
+                    #{msg['courses.paboFiles.downloadIsExecuting']}
+                </p:blockUI>
+            </div>
+
+
+            <div class="form-group">
+                <h:panelGroup rendered="#{not paboController.hasEverUploadedPabo()}" layout="block">
+                    <div class="alert alert-warning">
+                        #{msg['course.paboFile.warningNoUploadEver']}
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup id="finalizeAndDatePnl" layout="block"
+                              rendered="#{paboController.hasEverUploadedPabo() and not paboController.isFinalized()}">
+                    <div class="alert alert-warning">
+                        <h:panelGroup rendered="#{not paboController.isFinalized()}">
+                            #{msg['course.paboFile.warningNotFinalized']}
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+            </div>
+            <h:panelGroup layout="block"
+                          rendered="#{paboController.isFinalized() and paboController.hasEverUploadedPabo()
+                            and paboController.getMatchedPaboStudentsWOPaboGrade.size() > 0}">
+                <div class="alert alert-danger">
+                    #{msg['course.paboFile.warningPaboMatchedWOPaboGrade']}
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup id="examDateGroup" layout="block">
+                <h4>#{msg['courses.paboFiles.examDate']}</h4>
+
+                <div class="form-group">
+                    <p:outputLabel for="examDateCal" value="#{msg['common.date']}"
+                                   styleClass="col-xs-3 control-label text-left"/>
+
+                    <div class="col-xs-6">
+                        <p:calendar id="examDateCal"
+                                    value="#{paboController.course.paboExamDate}"
+                                    timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy"/>
+                    </div>
+
+                    <div class="col-xs-3">
+                        <p:commandButton id="saveExamDateBtn"
+                                         update="examDateGroup finalizeAndDatePnl"
+                                         value="#{msg['courses.paboFiles.saveDate']}"
+                                         styleClass="btn btn-primary"
+                                         actionListener="#{paboController.updateExamDate()}"/>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <p:blockUI block="examDateGroup" trigger="saveExamDateBtn"/>
+
+            <h:panelGroup rendered="#{paboController.hasEverUploadedPabo()}" layout="block">
+                <h4>#{msg['courses.paboFiles.lastUpload']}</h4>
+
+                <div class="form-group">
+                    <p:outputLabel for="uploadDateTxt" value="#{msg['common.date']}"
+                                   styleClass="col-xs-3 control-label text-left"/>
+
+                    <div class="col-xs-8">
+                        <h:outputText styleClass="form-control" id="uploadDateTxt"
+                                      value="#{paboController.course.paboUploadDate}">
+                            <f:convertDateTime timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <p:outputLabel for="uploadFileNameTxt" value="#{msg['import.filename']}"
+                                   styleClass="col-xs-3 control-label text-left"/>
+
+                    <div class="col-xs-8">
+                        <h:outputText styleClass="form-control" id="uploadFileNameTxt"
+                                      value="#{paboController.course.paboUploadFileName}">
+                        </h:outputText>
+                    </div>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup styleClass="col-xs-12" layout="block">
+                <p:tabView>
+                    <p:tab title="#{msg['courses.paboFiles.matchedPaboStudents']}">
+                        <p:dataTable id="matchedPaboStds" widgetVar="matchedPaboStds"
+                                     var="student"
+                                     value="#{paboController.matchedPaboStudents}"
+                                     filteredValue="#{paboController.filteredMatchedPaboStudents}"
+                                     emptyMessage="#{msg['coure.paboFile.noStudentsWithPaboData']}"
+                                     paginator="true"
+                                     paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="20,50,100"
+                                     paginatorPosition="bottom">
+                            <p:column headerText="#{msg['common.lastName']}"
+                                      sortBy="#{student.user.lastName}"
+                                      filterBy="#{student.user.lastName}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-lastname">
+                                <h:link outcome="/profile/show.xhtml" value="#{student.user.lastName}">
+                                    <f:param name="user-id" value="#{student.user.userId}" />
+                                </h:link>
+                            </p:column>
+                            <p:column headerText="#{msg['common.firstName']}"
+                                      sortBy="#{student.user.firstName}"
+                                      filterBy="#{student.user.firstName}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-firstname">
+                                <h:link outcome="/profile/show.xhtml" value="#{student.user.firstName}">
+                                    <f:param name="user-id" value="#{student.user.userId}" />
+                                </h:link>
+                            </p:column>
+                            <p:column headerText="#{msg['common.email']}"
+                                      sortBy="#{student.user.email}"
+                                      filterBy="#{student.user.email}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-common-email">
+                                <h:outputText value="#{student.user.email}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['common.studentNumber']}"
+                                      sortBy="#{student.user.matriculationNumber}"
+                                      filterBy="#{student.user.matriculationNumber}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-matriculation-nr text-center">
+                                <h:outputText value="#{student.user.matriculationNumber}" />
+                            </p:column>
+                            <p:column headerText="#{msg['courses.paboFiles.major']}"
+                                      sortBy="#{student.paboData.major}"
+                                      filterBy="#{student.paboData.major}"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{student.paboData.major}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['courses.paboFiles.examName']}"
+                                      sortBy="#{student.paboData.examName}"
+                                      filterBy="#{student.paboData.examName}"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{student.paboData.examName}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['courses.paboFiles.attempts']}"
+                                      sortBy="#{student.paboData.attempt}"
+                                      filterBy="#{student.paboData.attempt}"
+                                      filterMatchMode="contains"
+                                      styleClass="text-center">
+                                <h:outputText value="#{student.paboData.attempt}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['gradeType.paboGrade']}"
+                                      sortBy="#{student.paboGrade}"
+                                      filterBy="#{student.paboGrade}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-grades-grade text-center">
+                                <h:outputText value="#{participantsController.getPaboGradeName(student.paboGrade)}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+
+                    <p:tab title="#{msg['courses.paboFiles.unmatchedPaboStudents']}">
+                        <p:dataTable id="unmatchedStdsTbl" widgetVar="unmatchedStds"
+                                     var="student"
+                                     value="#{paboController.notMatchedPaboStudents}"
+                                     filteredValue="#{paboController.filteredUnMatchedPaboStudents}"
+                                     emptyMessage="#{msg['course.paboFiles.noStudentsWithoutPaboData']}"
+                                     paginator="true"
+                                     paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="20,50,100"
+                                     paginatorPosition="bottom">
+                            <p:column headerText="#{msg['common.lastName']}"
+                                      sortBy="#{student.user.lastName}"
+                                      filterBy="#{student.user.lastName}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-lastname">
+                                <h:link outcome="/profile/show.xhtml" value="#{student.user.lastName}">
+                                    <f:param name="user-id" value="#{student.user.userId}" />
+                                </h:link>
+                            </p:column>
+                            <p:column headerText="#{msg['common.firstName']}"
+                                      sortBy="#{student.user.firstName}"
+                                      filterBy="#{student.user.firstName}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-firstname">
+                                <h:link outcome="/profile/show.xhtml" value="#{student.user.firstName}">
+                                    <f:param name="user-id" value="#{student.user.userId}" />
+                                </h:link>
+                            </p:column>
+                            <p:column headerText="#{msg['common.email']}"
+                                      sortBy="#{student.user.email}"
+                                      filterBy="#{student.user.email}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-common-email">
+                                <h:outputText value="#{student.user.email}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['common.studentNumber']}"
+                                      sortBy="#{student.user.matriculationNumber}"
+                                      filterBy="#{student.user.matriculationNumber}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-matriculation-nr text-center">
+                                <h:outputText value="#{student.user.matriculationNumber}" />
+                            </p:column>
+                            <p:column headerText="#{msg['common.participationType']}"
+                                      sortBy="#{student.participationType.name}"
+                                      filterBy="#{student.participationType.name}"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{student.participationType.name}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['gradeType.paboGrade']}"
+                                      sortBy="#{student.paboGrade}"
+                                      filterBy="#{student.paboGrade}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-grades-grade text-center">
+                                <h:outputText value="#{participantsController.getPaboGradeName(student.paboGrade)}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+
+
+                    <p:tab title="#{msg['courses.paboFiles.matchedStudentsWOGrades']}">
+                        <p:dataTable id="matchedStdWoGradesTbl" widgetVar="matchedStdWoGrades"
+                                     var="student"
+                                     value="#{paboController.matchedPaboStudentsWOPaboGrade}"
+                                     filteredValue="#{paboController.filteredMatchedPaboStudentsWOPaboGrade}"
+                                     emptyMessage="#{msg['courses.paboFile.noMatchedStudentsWOGrade']}"
+                                     paginator="true"
+                                     paginatorTemplate="{RowsPerPageDropdown}
+                           {FirstPageLink} {PreviousPageLink} {CurrentPageReport}
+                           {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="20,50,100"
+                                     paginatorPosition="bottom">
+                            <p:column headerText="#{msg['common.lastName']}"
+                                      sortBy="#{student.user.lastName}"
+                                      filterBy="#{student.user.lastName}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-lastname">
+                                <h:link outcome="/profile/show.xhtml" value="#{student.user.lastName}">
+                                    <f:param name="user-id" value="#{student.user.userId}" />
+                                </h:link>
+                            </p:column>
+                            <p:column headerText="#{msg['common.firstName']}"
+                                      sortBy="#{student.user.firstName}"
+                                      filterBy="#{student.user.firstName}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-firstname">
+                                <h:link outcome="/profile/show.xhtml" value="#{student.user.firstName}">
+                                    <f:param name="user-id" value="#{student.user.userId}" />
+                                </h:link>
+                            </p:column>
+                            <p:column headerText="#{msg['common.email']}"
+                                      sortBy="#{student.user.email}"
+                                      filterBy="#{student.user.email}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-common-email">
+                                <h:outputText value="#{student.user.email}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['common.studentNumber']}"
+                                      sortBy="#{student.user.matriculationNumber}"
+                                      filterBy="#{student.user.matriculationNumber}"
+                                      filterMatchMode="contains"
+                                      styleClass="table-users-matriculation-nr text-center">
+                                <h:outputText value="#{student.user.matriculationNumber}" />
+                            </p:column>
+                            <p:column headerText="#{msg['courses.paboFiles.major']}"
+                                      sortBy="#{student.paboData.major}"
+                                      filterBy="#{student.paboData.major}"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{student.paboData.major}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['courses.paboFiles.examName']}"
+                                      sortBy="#{student.paboData.examName}"
+                                      filterBy="#{student.paboData.examName}"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{student.paboData.examName}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['courses.paboFiles.attempts']}"
+                                      sortBy="#{student.paboData.attempt}"
+                                      filterBy="#{student.paboData.attempt}"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{student.paboData.attempt}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:panelGroup>
+        </h:form>
+        <ui:include src="/WEB-INF/modals/settings/importPabo.xhtml" />
+    </ui:define>
+</ui:composition>

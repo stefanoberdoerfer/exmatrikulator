@@ -1,11 +1,15 @@
 package de.unibremen.opensores.util.csv;
 
+import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +17,7 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -48,6 +53,12 @@ public class StudIpParserTest {
     /**
      * The filep path for a .csv file in which one of the rows have
      */
+    private static final String NO_EMAIL_PATH
+            = "src/test/resources/csv/studip/no_email.csv";
+
+    /**
+     * The filep path for a .csv file in which one of the rows have
+     */
     private static final String WRONG_NAME_PATH
             = "src/test/resources/csv/studip/wrong_name.csv";
 
@@ -77,6 +88,11 @@ public class StudIpParserTest {
     private File wrongNameFile;
 
     /**
+     * File where the email is empty in the field.
+     */
+    private File noEmailFile;
+
+    /**
      * Loads all supplied Stud ip export csv files.
      */
     @Before
@@ -86,6 +102,7 @@ public class StudIpParserTest {
         wrongFormatFile = new File(WRONG_FORMAT_CSV_PATH);
         wrongEmailFile = new File(WRONG_EMAIL_PATH);
         wrongNameFile = new File(WRONG_NAME_PATH);
+        noEmailFile = new File(NO_EMAIL_PATH);
     }
 
 
@@ -232,6 +249,16 @@ public class StudIpParserTest {
     @Test(expected = IOException.class)
     public void testWrongEmailFile() throws Exception {
         StudIpParser.parseCSV(wrongEmailFile);
+    }
+
+
+    /**
+     * Tests if an IOException gets thrown if a user in the csv file has no
+     * email address.
+     */
+    @Test(expected = IOException.class)
+    public void noEmailFile() throws Exception {
+        StudIpParser.parseCSV(noEmailFile);
     }
 
 }
