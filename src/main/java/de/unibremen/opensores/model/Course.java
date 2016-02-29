@@ -75,6 +75,17 @@ public class Course {
     @Column
     private boolean deleted;
 
+    @Column(nullable = true)
+    @Type(type = "date")
+    private Date paboExamDate;
+
+    @Column(nullable = true)
+    @Type(type = "date")
+    private Date paboUploadDate;
+
+    @Column(nullable = true)
+    private String paboUploadFileName;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Student> students = new ArrayList<>();
 
@@ -477,6 +488,22 @@ public class Course {
         }
     }
 
+    public Date getPaboExamDate() {
+        return paboExamDate == null ? null : new Date(paboExamDate.getTime());
+    }
+
+    public void setPaboExamDate(Date paboExamDate) {
+        this.paboExamDate = paboExamDate == null ? null : new Date(paboExamDate.getTime());
+    }
+
+    public Date getPaboUploadDate() {
+        return paboUploadDate == null ? null : new Date(paboUploadDate.getTime());
+    }
+
+    public void setPaboUploadDate(Date paboUploadDate) {
+        this.paboUploadDate = paboUploadDate == null ? null : new Date(paboUploadDate.getTime());
+    }
+
     public boolean isDeleted() {
         return deleted;
     }
@@ -484,4 +511,13 @@ public class Course {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
+    public String getPaboUploadFileName() {
+        return paboUploadFileName;
+    }
+
+    public void setPaboUploadFileName(String paboUploadFileName) {
+        this.paboUploadFileName = paboUploadFileName;
+    }
+
 }

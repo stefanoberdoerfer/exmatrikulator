@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog id="paboImportDlg" header="#{msg['courses.paboFiles.import']}"
+              appendTo="@(body)" widgetVar="paboImport" modal="true">
+        <h:form layout="block" enctype="multipart/form-data">
+            <ui:include src="/WEB-INF/alerts.xhtml" />
+            <p:panel id="importPaboDialogPnl">
+
+                <div class="modal-body">
+                    <p>#{msg['courses.paboFiles.hint']}</p>
+                    <br />
+                    <p:fileUpload id="uploadBtn" fileUploadListener="#{paboController.uploadPaboExportFile}"
+                                  mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true" multiple="false"
+                                  update="@form" uploadLabel="#{msg['course.paboFile.uploadPaboCSV']}"
+                                  invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
+                                  sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
+
+                    <h:panelGroup rendered="#{paboController.uploadAndParseSucceeded}">
+                        <h4>#{msg['courses.paboFiles.uploadedFile']}</h4>
+                        <div class="form-group">
+                            <p:outputLabel for="fileNameTxt" value="#{msg['import.filename']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+                            <div class="col-xs-8">
+                                <h:outputText styleClass="form-control" id="fileNameTxt"
+                                              value="#{paboController.uploadedFile.fileName}">
+                                </h:outputText>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <p:outputLabel for="fileSizeTxt" value="#{msg['import.filesize']}"
+                                           styleClass="col-xs-3 control-label text-left"/>
+                            <div class="col-xs-8">
+                                <h:outputText styleClass="form-control" id="fileSizeTxt"
+                                              value="#{paboController.getHumanReadableFileSize(paboController.uploadedFile.size)}">
+                                </h:outputText>
+                            </div>
+                        </div>
+
+                        <h4>#{msg['courses.paboFiles.uploadResults']}</h4>
+                        <p:tabView scrollable="true">
+                            <p:tab title="#{msg['courses.paboFiles.notImportedLines']}">
+                                <p:dataTable var="paboErrorMsg"
+                                             value="#{paboController.paboErrorMsgs}"
+                                             scrollable="true" sortBy="#{paboErrorMsg.row}"
+                                             scrollHeight="200" styleClass="table table-condensed">
+                                    <p:column headerText="#{msg['couses.paboFiles.line']}">
+                                        <h:outputText value="#{paboErrorMsg.row}" />
+                                    </p:column>
+
+                                    <p:column headerText="#{msg['courses.paboFiles.reasonNoImport']}">
+                                        <h:outputText value="#{paboErrorMsg.message}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="#{msg['courses.paboFiles.notImportedValid']}">
+                                <p:dataTable var="paboData"
+                                             value="#{paboController.notMatchedValidPaboData}"
+                                             scrollable="true"
+                                             scrollHeight="200" styleClass="table table-condensed">
+                                    <p:column headerText="#{msg['common.matriculation']}">
+                                        <h:outputText value="#{paboData.matriculation}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg['common.name']}">
+                                        <h:outputText value="#{paboData.getFullName()}" />
+                                    </p:column>
+                                    <p:column headerText="#{msg['courses.paboFiles.major']}">
+                                        <h:outputText value="#{paboData.major}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                    </h:panelGroup>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <p:commandButton id="cancelBtn"
+                                         update=":paboOverviewForm"
+                                         value="#{msg['common.cancel']}"
+                                         oncomplete="PF('paboImport').hide();"
+                                         styleClass="btn btn-default">
+                            <f:actionListener binding="#{paboController.onReset()}" />
+                        </p:commandButton>
+                        <p:commandButton id="confirmBtn"
+                                         class="btn btn-primary" value="#{msg['courses.paboFiles.confirmImport']}"
+                                         update=":paboOverviewForm"
+                                         onsuccess="PF('paboImport').hide();">
+                            <f:actionListener binding="#{paboController.confirmPaboUpload()}"/>
+                        </p:commandButton>
+                    </div>
+                </div>
+            </p:panel>
+            <p:blockUI block="importPaboDialogPnl" trigger="uploadBtn cancelBtn confirmBtn"/>
+        </h:form>
+    </p:dialog>
+</ui:composition>

@@ -4,6 +4,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.GradeFormula;
 import de.unibremen.opensores.model.Lecturer;
+import de.unibremen.opensores.model.PaboData;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Semester;
@@ -28,6 +29,11 @@ public final class DataHelper {
      * This constant should be used for the course id in tests.
      */
     public static final long COURSE_ID = idCount++;
+
+    /**
+     * String value of the course id.
+     */
+    public static final String COURSE_ID_STR = String.valueOf(COURSE_ID);
 
     /**
      * The id of the default participation type of the basic course.
@@ -223,5 +229,35 @@ public final class DataHelper {
         type.addNewFormula(formula);
         return formula;
     }
+
+    /**
+     * Creates a basic pabo data with test names
+     * @param student The student which should get valid pabo data
+     * @return The student with valid pabo data.
+     */
+    public static Student basicValidPaboDataFor(Student student) {
+        return basicValidPaboDataFor(student,"");
+    }
+
+    /**
+     * Creates a basic pabo data with test names
+     * @param student The student which should get valid pabo data
+     * @param appendStr An String which get appended for test nams like TestExamName
+     *                  for testing unique objects.
+     * @return The student with valid pabo data.
+     */
+    public static Student basicValidPaboDataFor(Student student, String appendStr) {
+        PaboData data = new PaboData();
+        data.setAttempt(1);
+        data.setMatriculation("123456");
+        data.setValidationId(PaboData.VALID);
+        data.setPaboFirstName("TestFirstName" + appendStr);
+        data.setPaboLastName("TestLastName" + appendStr);
+        data.setMajor("TestMajor" + appendStr);
+        data.setExamName("TestExamName" + appendStr);
+        student.setPaboData(data);
+        return student;
+    }
+
 
 }

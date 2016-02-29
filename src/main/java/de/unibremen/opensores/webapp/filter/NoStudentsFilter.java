@@ -5,6 +5,8 @@ import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.ejb.EJB;
 import javax.servlet.Filter;
@@ -25,11 +27,25 @@ import java.io.IOException;
 @WebFilter
 public final class NoStudentsFilter implements Filter {
 
+
+    /**
+     * The log4j logger.
+     */
+    private static Logger log = LogManager.getLogger(NoStudentsFilter.class);
+
     /**
      *  The path for the exam events page to which students have access for
      *  registering to exam events.
      */
     private static final String PATH_EXAM_EVENTS = "/settings/exams/events";
+
+
+    /**
+     *  Paths which must be passed because downloads require non ajax requests
+     *  with own http parameters.
+     */
+    private static final String PATH_PABO_DOWNLOAD = "/settings/pabo.xhtml";
+    private static final String PATH_CSV_DOWNLOAD = "/settings/overview.xhtml";
 
     /**
      * The course service for connecting to the database.
@@ -50,8 +66,13 @@ public final class NoStudentsFilter implements Filter {
                          ServletResponse res,
                          FilterChain filterChain)
             throws IOException, ServletException {
+
         HttpServletResponse hres = (HttpServletResponse) res;
         HttpServletRequest hreq = (HttpServletRequest) req;
+        String path = hreq.getRequestURI().substring(hreq.getContextPath().length());
+        log.debug("doFilter() called with path " + path);
+
+
 
         // XXX this is _super_ insecure literally everyone can set this
         // header and thereby render this filter absolutly useless.
@@ -68,6 +89,13 @@ public final class NoStudentsFilter implements Filter {
             return;
         }
 
+        // Must pass here or the download doesnt work.
+        if (path.startsWith(PATH_PABO_DOWNLOAD) || path.startsWith(PATH_CSV_DOWNLOAD) ) {
+            log.debug("Letting pass  download path ");
+            filterChain.doFilter(req, res);
+            return;
+        }
+
         String idStr = hreq.getParameter("course-id");
         Course course = courseService.findCourseById(idStr);
 
@@ -77,10 +105,9 @@ public final class NoStudentsFilter implements Filter {
         }
 
         if (userService.hasCourseRole(user, Role.LECTURER, course)
-            || userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
+                || userService.hasCourseRole(user, Role.PRIVILEGED_USER, course)) {
             filterChain.doFilter(req, res);
         } else {
-            String path = hreq.getRequestURI().substring(hreq.getContextPath().length());
             if (path.startsWith(PATH_EXAM_EVENTS)
                     && userService.hasCourseRole(user, Role.STUDENT, course)) {
                 filterChain.doFilter(req, res);

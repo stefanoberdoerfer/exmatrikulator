@@ -959,7 +959,7 @@ public class GradeScriptController {
     /**
      * Creates a python decimal object from a java BigDecimal object.
      * @param bigDecimal The BigDecimal object from which the python decimal
-     *                   object should be created from-
+     *                   object should be created from.
      * @return A pyObject representing the python decimal.
      */
     private PyObject pyDecimalFromBigDecimal(BigDecimal bigDecimal) {

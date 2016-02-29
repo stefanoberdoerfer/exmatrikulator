@@ -61,7 +61,6 @@ public class LogController {
     /**
      * The user service for connection to the database.
      */
-    @EJB
     private transient UserService userService;
 
     /**
@@ -221,6 +220,11 @@ public class LogController {
     /*
      * Getters and Setters
      */
+
+    @EJB
+    public void setUserService(UserService service) {
+        this.userService = service;
+    }
 
     @EJB
     public void setCourseService(CourseService service) {

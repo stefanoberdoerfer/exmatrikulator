@@ -1,0 +1,96 @@
+Matrnr;Nachname;Vorname;Prfdatum;Note;Prfbem;Versuch;Teilprf;Studiengang;;;;
+123450;Nachname1;Vorname1;;;;2;Modulprüfung;Bachelor Informatik;;;;Hilfe für das Prfbem-Feld
+123451;Nachname2;Vorname2;;;;2;Modulprüfung;Bachelor Informatik;;;;------------------------------
+123452;Nachname3;Vorname3;;;;3;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;2 = Versäumnis
+123453;Nachname4;Vorname4;;;;2;Modulprüfung;Bachelor Informatik;;;;3 = Täuschung
+123454;Nachname5;Vorname5;;;;3;Modulprüfung;Bachelor Informatik;;;;7 = Bestanden
+123455;Nachname6;Vorname6;;;;4;Modulprüfung;Bachelor Informatik;;;;8 = Nicht Bestanden
+123456;Nachname7;Vorname7;;;;4;Modulprüfung;Bachelor Informatik;;;;
+123457;Nachname8;Vorname8;;;;3;Modulprüfung;Bachelor Informatik;;;;Format für das Prfdatum-Feld
+123458;Nachname9;Vorname9;;;;4;Modulprüfung;Bachelor Informatik;;;;------------------------------
+123459;Nachname10;Vorname10;;;;2;Modulprüfung;Bachelor Informatik;;;;DD.MM.JJJJ
+123460;Nachname11;Vorname11;;;;2;Modulprüfung;Bachelor Informatik;;;;z.B. 01.01.2014
+123461;Nachname12;Vorname12;;;;4;Modulprüfung;Bachelor Informatik;;;;
+123462;Nachname13;Vorname13;;;;5;Modulprüfung;Bachelor Informatik;;;;
+123463;Nachname14;Vorname14;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123464;Nachname15;Vorname15;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123465;Nachname16;Vorname16;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123466;Nachname17;Vorname17;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123467;Nachname18;Vorname18;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123468;Nachname19;Vorname19;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123469;Nachname20;Vorname20;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123470;Nachname21;Vorname21;;;;3;Modulprüfung;Bachelor Informatik;;;;
+123471;Nachname22;Vorname22;;;;4;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;Hilfe für das Prfbem-Feld
+123472;Nachname23;Vorname23;;;;2;Modulprüfung;Bachelor Informatik;;;;------------------------------
+123473;Nachname24;Vorname24;;;;3;Modulprüfung;Bachelor Informatik;;;;2 = Versäumnis
+123474;Nachname25;Vorname25;;;;2;Modulprüfung;Bachelor Informatik;;;;3 = Täuschung
+123475;Nachname26;Vorname26;;;;2;Modulprüfung;Bachelor Informatik;;;;7 = Bestanden
+123476;Nachname27;Vorname27;;;;2;Modulprüfung;Bachelor Informatik;;;;8 = Nicht Bestanden
+123477;Nachname28;Vorname28;;;;3;Modulprüfung;Bachelor Informatik;;;;
+123478;Nachname29;Vorname29;;;;2;Modulprüfung;Bachelor Informatik;;;;Format für das Prfdatum-Feld
+123479;Nachname30;Vorname30;;;;3;Modulprüfung;Bachelor Informatik;;;;------------------------------
+123480;Nachname31;Vorname31;;;;4;Modulprüfung;Bachelor Informatik;;;;DD.MM.JJJJ
+123481;Nachname32;Vorname32;;;;4;Modulprüfung;Bachelor Informatik;;;;z.B. 01.01.2014
+123482;Nachname33;Vorname33;;;;3;Modulprüfung;Bachelor Informatik;;;;
+123483;Nachname34;Vorname34;;;;4;Modulprüfung;Bachelor Informatik;;;;
+123484;Nachname35;Vorname35;;;;3;Modulprüfung;Bachelor Informatik;;;;
+123485;Nachname36;Vorname36;;;;3;Modulprüfung;Bachelor Informatik;;;;
+123486;Nachname37;Vorname37;;;;4;Modulprüfung;Bachelor Informatik;;;;
+123487;Nachname38;Vorname38;;;;4;Modulprüfung;Bachelor Informatik;;;;
+123488;Nachname39;Vorname39;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123489;Nachname40;Vorname40;;;;2;Modulprüfung Softwareprojekt 1;Bachelor Mathematik;;;;
+123490;Nachname41;Vorname41;;;;3;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123491;Nachname42;Vorname42;;;;4;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123492;Nachname43;Vorname43;;;;4;Modulprüfung;Bachelor Informatik;;;;Hilfe für das Prfbem-Feld
+123493;Nachname44;Vorname44;;;;4;Modulprüfung;Bachelor Informatik;;;;------------------------------
+123494;Nachname45;Vorname45;;;;3;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;2 = Versäumnis
+123495;Nachname46;Vorname46;;;;4;Modulprüfung;Bachelor Informatik;;;;3 = Täuschung
+123496;Nachname47;Vorname47;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;7 = Bestanden
+123497;Nachname48;Vorname48;;;;4;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;8 = Nicht Bestanden
+123498;Nachname49;Vorname49;;;;4;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123499;Nachname50;Vorname50;;;;2;Modulprüfung;Bachelor Informatik;;;;Format für das Prfdatum-Feld
+123500;Nachname51;Vorname51;;;;2;Modulprüfung;Bachelor Informatik;;;;------------------------------
+123501;Nachname52;Vorname52;;;;2;Modulprüfung;Bachelor Informatik;;;;DD.MM.JJJJ
+123502;Nachname53;Vorname53;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;z.B. 01.01.2014
+123503;Nachname54;Vorname54;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123504;Nachname55;Vorname55;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123505;Nachname56;Vorname56;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123506;Nachname57;Vorname57;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123507;Nachname58;Vorname58;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123508;Nachname59;Vorname59;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123509;Nachname60;Vorname60;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123510;Nachname61;Vorname61;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123511;Nachname62;Vorname62;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123512;Nachname63;Vorname63;;;;1;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123513;Nachname64;Vorname64;;;;2;Modulprüfung;Bachelor Informatik;;;;Hilfe für das Prfbem-Feld
+123514;Nachname65;Vorname65;;;;2;Modulprüfung;Bachelor Informatik;;;;------------------------------
+123515;Nachname66;Vorname66;;;;2;Modulprüfung;Bachelor Informatik;;;;2 = Versäumnis
+123516;Nachname67;Vorname67;;;;2;Modulprüfung;Bachelor Informatik;;;;3 = Täuschung
+123517;Nachname68;Vorname68;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;7 = Bestanden
+123518;Nachname69;Vorname69;;;;2;Modulprüfung;Bachelor Informatik;;;;8 = Nicht Bestanden
+123519;Nachname70;Vorname70;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123520;Nachname71;Vorname71;;;;2;Modulprüfung;Bachelor Informatik;;;;Format für das Prfdatum-Feld
+123521;Nachname72;Vorname72;;;;2;Modulprüfung;Bachelor Informatik;;;;------------------------------
+123522;Nachname73;Vorname73;;;;2;Modulprüfung;Bachelor Informatik;;;;DD.MM.JJJJ
+123523;Nachname74;Vorname74;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;z.B. 01.01.2014
+123524;Nachname75;Vorname75;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123525;Nachname76;Vorname76;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123526;Nachname77;Vorname77;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123527;Nachname78;Vorname78;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123528;Nachname79;Vorname79;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123529;Nachname80;Vorname80;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123530;Nachname81;Vorname81;;;;1;Modulprüfung;Bachelor Informatik;;;;
+123531;Nachname82;Vorname82;;;;2;Modulprüfung;Bachelor Informatik;;;;
+123532;Nachname83;Vorname83;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123533;Nachname84;Vorname84;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;
+123534;Nachname85;Vorname85;;;;2;Modulprüfung;Bachelor Informatik;;;;Hilfe für das Prfbem-Feld
+123535;Nachname86;Vorname86;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;------------------------------
+123536;Nachname87;Vorname87;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;2 = Versäumnis
+123537;Nachname88;Vorname88;;;;2;INF-3 Softwareprojekt 1 inkl. Datenbankgrundlagen;Bachelor Wirtschaftsinformatik;;;;3 = Täuschung
+123538;Nachname89;Vorname89;;;;2;Modulprüfung;Bachelor Informatik;;;;7 = Bestanden
+;;;;;;;;;;;;8 = Nicht Bestanden
+;;;;;;;;;;;;
+;;;;;;;;;;;;Format für das Prfdatum-Feld
+;;;;;;;;;;;;------------------------------
+;;;;;;;;;;;;DD.MM.JJJJ
+;;;;;;;;;;;;z.B. 01.01.2014

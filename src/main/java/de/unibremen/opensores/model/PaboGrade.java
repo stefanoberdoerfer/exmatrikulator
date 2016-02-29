@@ -4,17 +4,17 @@ package de.unibremen.opensores.model;
  * Enumeration of different Pabo Grades.
  */
 public enum PaboGrade {
-    GRADE_1_0(1.0,7,"1,0"),
+    GRADE_1_0(1.0,7,"1"),
     GRADE_1_3(1.3,7,"1,3"),
     GRADE_1_7(1.7,7,"1,7"),
-    GRADE_2_0(2.0,7,"2,0"),
+    GRADE_2_0(2.0,7,"2"),
     GRADE_2_3(2.3,7,"2,3"),
     GRADE_2_7(2.7,7,"2,7"),
-    GRADE_3_0(3.0,7,"3,0"),
+    GRADE_3_0(3.0,7,"3"),
     GRADE_3_3(3.0,7,"3,3"),
     GRADE_3_7(3.0,7,"3,7"),
-    GRADE_4_0(4.0,7,"4,0"),
-    GRADE_5_0(5.0,8,"5,0"),
+    GRADE_4_0(4.0,7,"4"),
+    GRADE_5_0(5.0,8,"5"),
     GRADE_CHEATED(null,3,"Täuschung"),
     GRADE_NEGLECTED(null,2,"Versäumnis");
 
@@ -45,6 +45,10 @@ public enum PaboGrade {
 
     public int getGradeRemark() {
         return gradeRemark;
+    }
+
+    public boolean isNumeric() {
+        return gradeValue != null;
     }
 
     /**

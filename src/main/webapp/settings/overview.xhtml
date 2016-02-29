@@ -19,7 +19,8 @@
         </div>
         <div class="row">
             <div class="col-xs-5">
-                <h:link outcome="/settings/commonData" class="col-xs-12 settings-group">
+                <h:link outcome="/settings/commonData" class="col-xs-12 settings-group"
+                        rendered="#{courseSettings.isLecturer()}">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <div class="settings-group-icon"><i class="fa fa-database"></i></div>
                     <h3 class="settings-group-name">#{msg['common.course.commonData']}</h3>
@@ -28,7 +29,9 @@
                     </div>
                 </h:link>
 
-                <h:link outcome="/settings/exams/overview" class="col-xs-12 settings-group">
+                <h:link outcome="/settings/exams/overview"
+                        rendered="#{courseSettings.mayEditExams()}"
+                        class="col-xs-12 settings-group">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <div class="settings-group-icon"><i class="fa fa-file-text"></i></div>
                     <h3 class="settings-group-name">#{msg['common.course.exams']}</h3>
@@ -37,7 +40,8 @@
                     </div>
                 </h:link>
 
-                <h:link outcome="/settings/participationTypes" class="col-xs-12 settings-group">
+                <h:link outcome="/settings/participationTypes" class="col-xs-12 settings-group"
+                        rendered="#{courseSettings.isLecturer()}">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <i class="fa fa-users"></i>
                     <h3 class="settings-group-name">#{msg['common.course.participationTypes']}</h3>
@@ -46,7 +50,9 @@
                     </div>
                 </h:link>
 
-                <h:link outcome="/settings/formula/overview" class="col-xs-12 settings-group">
+
+                <h:link outcome="/settings/formula/overview" class="col-xs-12 settings-group"
+                        rendered="#{courseSettings.mayEditFormulas()}">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <i class="fa fa-calculator"></i>
                     <h3 class="settings-group-name">#{msg['common.course.gradingFormula']}</h3>
@@ -55,7 +61,8 @@
                     </div>
                 </h:link>
 
-                <h:link outcome="/settings/logs" class="col-xs-12 settings-group">
+                <h:link outcome="/settings/logs" class="col-xs-12 settings-group"
+                        rendered="#{courseSettings.isLecturer()}">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <div class="settings-group-icon"><i class="fa fa-list-alt"></i></div>
                     <h3 class="settings-group-name">#{msg['settings.logs']}</h3>
@@ -64,7 +71,8 @@
                     </div>
                 </h:link>
 
-                <h:link outcome="/certificate/printview" class="col-xs-12 settings-group" rendered="#{courseSettings.isLecturer()}">
+                <h:link outcome="/certificate/printview" class="col-xs-12 settings-group"
+                        rendered="#{courseSettings.mayPrint()}">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <div class="settings-group-icon"><i class="fa fa-print"></i></div>
                     <h3 class="settings-group-name">#{msg['settings.printCertificate']}</h3>
@@ -73,7 +81,8 @@
                     </div>
                 </h:link>
 
-                <h:link outcome="/settings/mailtemplate/overview" class="col-xs-12 settings-group" rendered="#{courseSettings.isLecturer()}">
+                <h:link outcome="/settings/mailtemplate/overview" class="col-xs-12 settings-group"
+                        rendered="#{courseSettings.isLecturer()}">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <div class="settings-group-icon"><i class="fa fa-envelope"></i></div>
                     <h3 class="settings-group-name">#{msg['settings.mailtemplates']}</h3>
@@ -82,24 +91,30 @@
                     </div>
                 </h:link>
 
-		<h:link onclick="return exModal('deleteCourse');" class="col-xs-12 settings-group" rendered="#{courseSettings.isLecturer()}">
+
+                <h:link outcome="/settings/pabo"
+                        rendered="#{courseSettings.mayExportPabo()}"
+                        class="col-xs-12 settings-group" >
+                    <i class="fa fa-cloud-download"></i>
+                    <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
+                    <h3 class="settings-group-name">#{msg['settings.paboFiles']}</h3>
+                    <div class="settings-group-desc">
+                        #{msg['settings.explanation.paboImportExport']}
+                        <h:panelGroup rendered="#{courseSettings.course.paboUploadDate == null}">
+                            <div class="alert alert-warning">
+                                #{msg['settings.export.warning']}
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </h:link>
+
+                <h:link onclick="return exModal('deleteCourse');" class="col-xs-12 settings-group"
+                        rendered="#{courseSettings.isLecturer()}">
                     <f:param name="course-id" value="#{courseSettings.course.courseId}"/>
                     <i class="fa fa-trash"></i>
                     <h3 class="settings-group-name">#{msg['settings.delete']}</h3>
                     <div class="settings-group-desc">
                         #{msg['settings.explanations.delete']}
-                    </div>
-                </h:link>
-
-                <h:link onclick="return exModal('paboExport');" class="col-xs-12 settings-group">
-                    <i class="fa fa-cloud-download"></i>
-                    <h3 class="settings-group-name">#{msg['settings.export']}</h3>
-                    <div class="settings-group-desc">
-                        #{msg['settings.explanation.export']}
-                        <!-- Todo: Nur anzeigen wenn zutrifft -->
-                        <div class="alert alert-warning">
-                            #{msg['settings.export.warning']}
-                        </div>
                     </div>
                 </h:link>
 
@@ -112,7 +127,7 @@
                         <br />
                         #{msg['settings.finalize.last']}:
                         <h:outputText rendered="#{courseSettings.course.lastFinalization == null}"
-                                value="#{msg['settings.finalize.never']}" />
+                                      value="#{msg['settings.finalize.never']}" />
                         <h:outputText value="#{courseSettings.course.lastFinalization}"
                                       rendered="#{courseSettings.course.lastFinalization != null}">
                             <f:convertDateTime type="both" pattern="dd. MMM YYYY"/>
@@ -126,9 +141,23 @@
                     </div>
                 </div>
 
-                <h3>#{msg['settings.export']}</h3>
-                <p>#{msg['settings.export.none']}</p>
             </div>
+            <h:form>
+                <h:panelGroup layout="block" id="csvData">
+                    <div class="col-xs-6 col-xs-offset-1 settings-finalize">
+                        <h3>#{msg['settings.csvData']}</h3>
+                        <p>#{msg['settings.csvDataExplanation']}</p>
+                        <p:commandLink id="downloadBtn"
+                                       value="#{msg['settings.csvDataDownload']}"
+                                       styleClass="btn btn-primary"
+                                       ajax="false"
+                                       action="#{courseSettings.generateCourseDataCSV}"/>
+                    </div>
+                </h:panelGroup>
+                <p:blockUI block="csvData" trigger="downloadBtn">
+                    #{msg['settings.csvDataGenerated']}
+                </p:blockUI>
+            </h:form>
         </div>
         <ui:include src="/WEB-INF/modals/settings/export.xhtml" />
         <ui:include src="/WEB-INF/modals/settings/delete.xhtml" />
