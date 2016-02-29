@@ -41,6 +41,13 @@
                 </div>
 
                 <div class="form-group">
+                  <h:outputLabel class="col-xs-3 control-label" value="#{msg['common.salution']}" />
+                    <div class="col-xs-8">
+                      <h:inputText type="text" class="form-control" value="#{userController.user.salution}" />
+                    </div>
+                </div>
+
+                <div class="form-group">
                   <h:outputLabel class="col-xs-3 control-label" value="#{msg['common.studentNumber']}" />
                     <div class="col-xs-8">
                       <h:inputText type="text" class="form-control" value="#{userController.user.matriculationNumber}" />

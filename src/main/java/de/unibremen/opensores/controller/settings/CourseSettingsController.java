@@ -235,7 +235,7 @@ public class CourseSettingsController {
         HashMap<String, Object> map = new HashMap<>();
         map.put("firstName", (firstName == null) ? "" : firstName);
         map.put("lastName", (lastName == null) ? "" : lastName);
-        map.put("salution", (salution == null) ? "" : salution);
+        map.put("salutation", (salution == null) ? "" : salution);
         map.put("paboGrade", (paboGrade == null) ? "" : paboGrade);
         map.put("comment", (comment == null) ? "" : comment);
         map.put("semester", semester);
