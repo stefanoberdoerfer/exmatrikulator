@@ -17,7 +17,8 @@
                         <h:outputText value="#{msg['users.merge.hint']}" />
                         <br></br>
                         <p:inputText id="searchUser" h5:placeholder="#{msg['users.search']}" class="form-control"
-                                     h5:autofocus="autofocus" value="#{liveSearchController.searchString}" >
+                                     h5:autofocus="autofocus" h5:autocomplete="off"
+                                     value="#{liveSearchController.searchString}" >
                             <p:ajax event="keyup" listener="#{liveSearchController.searchForUsers}" process="@this"
                                     update="resultList"/>
                         </p:inputText>

@@ -34,13 +34,11 @@
                         #{msg['common.student']}
                     </label>
                     <div class="col-xs-9" id="gradeStudent">
-                        <h:inputText styleClass="form-control"
-                                     value="#{gradingInsertController.formStudent}"
-                                     h5:autofocus="true" h5:autocomplete="off">
-                            <f:ajax listener="#{gradingInsertController.userSelectionChanged}"
-                                    execute="@form"
-                                    render="gradeInsertForm" />
-                        </h:inputText>
+                        <p:autoComplete id="autocomplete"
+                                        value="#{gradingInsertController.formStudent}"
+                                        completeMethod="#{gradingInsertController.completeFormStudent}"
+                                        minQueryLength="3" queryDelay="750">
+                        </p:autoComplete>
                         <div class="alert alert-info">
                             #{msg['gradings.insert.student']}
                         </div>

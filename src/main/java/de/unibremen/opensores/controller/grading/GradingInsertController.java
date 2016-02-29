@@ -16,6 +16,7 @@ import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.event.SelectEvent;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -30,7 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the modal dialogs to insert grades for single students and
@@ -380,6 +383,15 @@ public class GradingInsertController {
         return overwriting;
     }
 
+    public List<String> completeFormStudent(String query) {
+        List<Student> students =  gradingService.getStudents(course,user,query);
+        return students.stream().map(this::printStudent).collect(Collectors.toList());
+    }
+
+    private String printStudent(Student student) {
+        return student.getUser().toString();
+    }
+
     /**
      * Called whenever the exam selection changes. Also resets the overwriting
      * flag.
@@ -412,15 +424,15 @@ public class GradingInsertController {
      * Called whenever the user selection changes. Resets the overwriting flag
      * only if the name really changed.
      */
-    public void userSelectionChanged() {
-        if (prevStudent != null && prevStudent.equals(formStudent)) {
+    public void userSelectionChanged(SelectEvent event) {
+        if (prevStudent != null && prevStudent.equals(event.getObject().toString())) {
             log.debug("User selection did not really change");
             return;
         }
 
         log.debug("User selection changed");
         overwriting = false;
-        prevStudent = formStudent;
+        prevStudent = event.getObject().toString();
     }
 
     public void groupSelectionChanged() {
