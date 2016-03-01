@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.common;
 
 import de.unibremen.opensores.model.PaboData;
 import de.unibremen.opensores.model.Course;
@@ -247,7 +247,7 @@ public class ApplicationController {
         newUser.setLastName("User");
         newUser.setMatriculationNumber("123456");
         newUser.setLanguage("de");
-        newUser.setSalution("Frau Prof. Dr.");
+        newUser.setSalutation("Frau Prof. Dr.");
         newUser.addRole(GlobalRole.USER);
         newUser.setLastActivity(DateUtil.getDateTime());
 
@@ -354,7 +354,7 @@ public class ApplicationController {
         MailTemplate mail = new MailTemplate();
         mail.setName("Test Template");
         mail.setSubject("Durchgefallen");
-        mail.setText("Test : {{salution}} {{firstName}} {{lastName}}"
+        mail.setText("Test : {{salutation}} {{firstName}} {{lastName}}"
                 + " {{paboGrade}} {{semester}} {{courseName}}"
                 + " {{#grades}} {{.}} {{/grades}}");
         mail.setLocale("de");

@@ -40,14 +40,14 @@ public final class PaboParserTest {
     /**
      * The path to a shortened version of the provided pabo csv file.
      */
-    private static final String CASCADE_UNVALID_FIELDS_PATH
-            = "src/test/resources/csv/pabo/cascade_unvalid_types.csv";
+    private static final String CASCADE_INVALID_FIELDS_PATH
+            = "src/test/resources/csv/pabo/cascade_invalid_types.csv";
 
     /**
      * The path to a shortened version of the provided pabo csv file.
      */
-    private static final String UNVALID_FORMAT_CSV_PATH
-            = "src/test/resources/csv/pabo/unvalid_format.csv";
+    private static final String INVALID_FORMAT_CSV_PATH
+            = "src/test/resources/csv/pabo/invalid_format.csv";
 
     /**
      * The path to a shortened version of the provided pabo csv file.
@@ -80,7 +80,7 @@ public final class PaboParserTest {
     /**
      * The filename of an already existing file in path PATH_TEST_RES_CSV_PABO.
      */
-    private static final String ALREADY_EXISTS_FILE_NAME = "unvalid_format.csv";
+    private static final String ALREADY_EXISTS_FILE_NAME = "invalid_format.csv";
 
     /**
      * The header row text of a pabo csv file.
@@ -102,12 +102,12 @@ public final class PaboParserTest {
      * A File which has not a valid syntax (the number of columns of each row is
      * not as expected).
      */
-    private File unvalidFormatFile;
+    private File invalidFormatFile;
 
     /**
-     * The file which types are unvalid after each row.
+     * The file which types are invalid after each row.
      */
-    private File cascadeUnvalidTypesFile;
+    private File cascadeInvalidTypesFile;
 
     /**
      * A file which got created from parsing the student pabo data.
@@ -121,8 +121,8 @@ public final class PaboParserTest {
     public void loadFiles() {
         shortenedProvidedPaboFile = new File(SHORTENED_PROVIDED_PABO_CSV_PATH);
         notACSVFile = new File(NOT_A_CSV_PATH);
-        unvalidFormatFile = new File(UNVALID_FORMAT_CSV_PATH);
-        cascadeUnvalidTypesFile = new File(CASCADE_UNVALID_FIELDS_PATH);
+        invalidFormatFile = new File(INVALID_FORMAT_CSV_PATH);
+        cascadeInvalidTypesFile = new File(CASCADE_INVALID_FIELDS_PATH);
     }
 
     /**
@@ -197,33 +197,33 @@ public final class PaboParserTest {
     }
 
     /**
-     * Tests if the correct unvalid ids gets passed in the PaboData.
-     * The fields get unvalid cascading, so that the first row has the first
-     * parsed field unvalid, the second row has the first parsed field valid, but the
-     * second field unvalid and so on.
+     * Tests if the correct invalid ids gets passed in the PaboData.
+     * The fields get invalid cascading, so that the first row has the first
+     * parsed field invalid, the second row has the first parsed field valid, but the
+     * second field invalid and so on.
      * @throws Exception Thrown by the parser, is unexpected.
      */
     @Test
-    public void testPaboUploadCascadeUnvalidFields() throws Exception {
-        List<PaboData> paboDataList = PaboParser.parsePaboUpload(cascadeUnvalidTypesFile);
+    public void testPaboUploadCascadeInvalidFields() throws Exception {
+        List<PaboData> paboDataList = PaboParser.parsePaboUpload(cascadeInvalidTypesFile);
         int expectedNumRows = 6;
         assertTrue(paboDataList.size() == expectedNumRows);
 
         PaboData data = paboDataList.get(0);
         assertFalse(data.isValdid());
-        assertTrue(data.getValidationId() == PaboData.UNVALID_MATRICULATION);
+        assertTrue(data.getValidationId() == PaboData.INVALID_MATRICULATION);
 
         data = paboDataList.get(1);
         assertFalse(data.isValdid());
-        assertTrue(data.getValidationId() == PaboData.UNVALID_ATTEMPT);
+        assertTrue(data.getValidationId() == PaboData.INVALID_ATTEMPT);
 
         data = paboDataList.get(2);
         assertFalse(data.isValdid());
-        assertTrue(data.getValidationId() == PaboData.UNVALID_EXAM_NAME);
+        assertTrue(data.getValidationId() == PaboData.INVALID_EXAM_NAME);
 
         data = paboDataList.get(3);
         assertFalse(data.isValdid());
-        assertTrue(data.getValidationId() == PaboData.UNVALID_MAJOR);
+        assertTrue(data.getValidationId() == PaboData.INVALID_MAJOR);
 
         data = paboDataList.get(4);
         assertTrue(data.isValdid());
@@ -234,7 +234,7 @@ public final class PaboParserTest {
 
         data = paboDataList.get(5);
         assertFalse(data.isValdid());
-        assertTrue(data.getValidationId() == PaboData.UNVALID_ALL_EMPTY);
+        assertTrue(data.getValidationId() == PaboData.INVALID_ALL_EMPTY);
     }
 
     /**
@@ -255,18 +255,18 @@ public final class PaboParserTest {
     }
 
     /**
-     * Tests if the parser returns a PaboData object with an unvalid format id
+     * Tests if the parser returns a PaboData object with an invalid format id
      * as validation id
      * @see PaboData
      */
     @Test
-    public void testPaboUploadUnvalidFormat() throws Exception {
+    public void testPaboUploadInvalidFormat() throws Exception {
         int numExpectedRows = 5;
-        List<PaboData> dataList = PaboParser.parsePaboUpload(unvalidFormatFile);
+        List<PaboData> dataList = PaboParser.parsePaboUpload(invalidFormatFile);
         for (int i = 0; i < numExpectedRows; i++) {
             PaboData data = dataList.get(i);
             assertFalse(data.isValdid());
-            assertTrue(data.getValidationId() == PaboData.UNVALID_ALL_EMPTY);
+            assertTrue(data.getValidationId() == PaboData.INVALID_ALL_EMPTY);
         }
     }
 
@@ -296,17 +296,6 @@ public final class PaboParserTest {
 
     }
 
-
-    //TODO DELETE
-    ///**
-    // * Tests if an IOException gets thrown if the specified file already exists.
-    // */
-    //@Test(expected = IOException.class)
-    //public void testParsePaboDownloaFileExists() throws Exception {
-    //    PaboParser.parsePaboDownload(new ArrayList<>(), new Date(),
-    //            ALREADY_EXISTS_FILE_NAME, PATH_TEST_RES_CSV_PABO);
-    //}
-//
     /**
      * Tests if just the header gets parsed if no students get supplied.
      */

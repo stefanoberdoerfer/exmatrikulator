@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.Course;
@@ -22,14 +22,11 @@ import javax.faces.application.FacesMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.ResourceBundle;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -61,7 +58,7 @@ public class LogController {
     /**
      * The user service for connection to the database.
      */
-    private transient UserService userService;
+    private UserService userService;
 
     /**
      * CourseService for database transactions related to courses.
@@ -111,7 +108,7 @@ public class LogController {
     /**
      * The currently logged in user.
      */
-    private transient User user;
+    private User user;
 
     /**
      * Gets the Course from the Course-id http parameter.

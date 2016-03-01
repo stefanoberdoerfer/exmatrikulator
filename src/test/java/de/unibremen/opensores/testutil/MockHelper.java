@@ -94,7 +94,7 @@ public final class MockHelper {
      */
     public static StudentService mockStudentService() {
         StudentService studentServiceMock = mock(StudentService.class);
-        //TODO Extend with desired functionality
+        //Extend with desired functionality
         return studentServiceMock;
     }
 

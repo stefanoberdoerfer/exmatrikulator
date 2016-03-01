@@ -1,5 +1,5 @@
 /**
- * Parser for the TME format used by jgradebook.
+ * Parser for the TME format used by JGradebook.
  *
  * @author Sören Tempel
  */

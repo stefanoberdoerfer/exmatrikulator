@@ -407,7 +407,6 @@ public class UserService extends GenericService<User> {
      */
     public String getPasswordResetURL(HttpServletRequest request, User user, PasswordReset token)
             throws MalformedURLException {
-        // XXX can this be tricked into returning another URL?
         StringBuffer requestUrl = request.getRequestURL();
 
         int baseIdx = requestUrl.lastIndexOf("/");

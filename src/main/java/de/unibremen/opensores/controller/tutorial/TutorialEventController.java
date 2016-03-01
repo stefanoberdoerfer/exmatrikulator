@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.tutorial;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Log;
@@ -13,8 +13,6 @@ import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.primefaces.event.ScheduleEntryMoveEvent;
-import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.ScheduleEvent;
@@ -306,7 +304,7 @@ public class TutorialEventController {
         addFailMessage(bundle.getString("tutEvent.validatorMessageEndDate"));
 
         if (!(value instanceof Date) || event.getStartDate() == null) {
-            //Let the start date validator handle the unvalid start date first
+            //Let the start date validator handle the invalid start date first
             return;
         }
 
@@ -476,7 +474,7 @@ public class TutorialEventController {
      */
     public boolean canUserEditEvent(TutorialEvent event) {
         boolean canUserEditEvents = event != null && (isUserTutor || isUserLecturer)
-                //TODO Change here if lecturer can also edit other events
+                //Change here if lecturer can also edit other events which he didn't create
                 && (event.getId() == null
                 || loggedInUser.getUserId() == event.getCreatorId());
         return canUserEditEvents;

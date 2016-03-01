@@ -11,14 +11,13 @@
     <ui:param name="pageTitle" value="#{msg['courses.tutorialsGroups']}" />
     <!-- Breadcrumbs -->
     <ui:define name="breadcrumbs">
-        <!-- Todo: Veranstaltungsnamen anzeigen -->
         <li>#{tutorialController.course.name}</li>
         <li class="active">#{msg['courses.tutorialsGroups']}</li>
     </ui:define>
     <!-- Page Content -->
     <ui:define name="content">
         <div class="headline">
-          <c:if test="${tutorialController.isTutorialManager()}">
+          <c:if test="${tutorialController.tutorialManager}">
             <div class="btn-group main-buttons pull-right">
                 <h:link onclick="return exModal('tutorialCreate');" value="#{msg['tutorials.create']}"
                         class="btn btn-primary" />
@@ -52,7 +51,7 @@
                         <i class="fa fa-calendar"/>
                     </h:link>
 
-                    <c:if test="${tutorialController.isTutorialManager()}">
+                    <c:if test="${tutorialController.tutorialManager}">
                       <p:commandLink process="@this"
                           update=":editTutorialForm"
                           oncomplete="return exModal('tutorialEdit');"
@@ -91,7 +90,7 @@
                     #{student.user}
                   </td>
                   <td>#{student.user.matriculationNumber}</td>
-                  <c:if test="${tutorialController.isTutorialManager()}">
+                  <c:if test="${tutorialController.tutorialManager}">
                     <td class="text-right">
                       <div class="btn-group">
                         <h:form>
@@ -112,7 +111,7 @@
                 <tr class="vert-align-middle">
                   <td>
                     <strong>#{group.name}</strong>
-                    <c:if test="${tutorialController.isTutorialManager()}">
+                    <c:if test="${tutorialController.tutorialManager}">
                       <div class="btn-group pull-right">
                         <h:form>
                           <p:commandLink process="@this"
@@ -137,7 +136,7 @@
                     <strong>#{student.user}</strong>
                   </td>
                   <td>#{student.user.matriculationNumber}</td>
-                  <c:if test="${tutorialController.isTutorialManager()}">
+                  <c:if test="${tutorialController.tutorialManager}">
                     <td class="text-right">
                       <div class="btn-group">
                         <h:form>
@@ -157,7 +156,7 @@
               </tbody>
             </table>
 
-            <c:if test="${tutorialController.isTutorialManager()}">
+            <c:if test="${tutorialController.tutorialManager}">
             <div class="table-groups-buttons btn-group">
               <h:form>
                 <p:commandLink process="@this"

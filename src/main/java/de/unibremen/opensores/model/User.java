@@ -24,7 +24,6 @@ import java.io.IOException;
 
 /**
  * Entity bean of the User class.
- * @TODO Discuss max. field length (e.g. firstName)
  */
 @Entity
 @Table(name = "USERS")
@@ -65,7 +64,7 @@ public class User {
     private String matriculationNumber;
 
     @Column(nullable = true)
-    private String salution;
+    private String salutation;
 
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Integer.class)
     @CollectionTable(joinColumns = @JoinColumn(name = "userId"))
@@ -206,12 +205,12 @@ public class User {
         this.resetToken = resetToken;
     }
 
-    public String getSalution() {
-        return salution;
+    public String getSalutation() {
+        return salutation;
     }
 
-    public void setSalution(String salution) {
-        this.salution = salution;
+    public void setSalutation(String salutation) {
+        this.salutation = salutation;
     }
 
     @Override

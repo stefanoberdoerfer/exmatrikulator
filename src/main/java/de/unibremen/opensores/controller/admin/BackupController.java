@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.admin;
 
 import de.unibremen.opensores.controller.settings.CourseSettingsController;
 import de.unibremen.opensores.model.Backup;

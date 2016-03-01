@@ -1,5 +1,6 @@
 package de.unibremen.opensores.controller;
 
+import de.unibremen.opensores.controller.common.UserController;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Log;
@@ -17,7 +18,6 @@ import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.util.Constants;
-import de.unibremen.opensores.util.DateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.commons.lang3.RandomStringUtils;

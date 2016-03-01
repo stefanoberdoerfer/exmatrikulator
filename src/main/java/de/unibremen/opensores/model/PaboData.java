@@ -18,27 +18,27 @@ public class PaboData {
     /**
      * The int value of an invalid attempt field.
      */
-    public static final int UNVALID_ATTEMPT = 1;
+    public static final int INVALID_ATTEMPT = 1;
 
     /**
      * The int value of an invalid exam field.
      */
-    public static final int UNVALID_EXAM_NAME = 2;
+    public static final int INVALID_EXAM_NAME = 2;
 
     /**
      * The int value of an invalid matriculation number field.
      */
-    public static final int UNVALID_MATRICULATION = 3;
+    public static final int INVALID_MATRICULATION = 3;
 
     /**
      * The int value of an invalid major field.
      */
-    public static final int UNVALID_MAJOR = 4;
+    public static final int INVALID_MAJOR = 4;
 
     /**
      * The int value of all empty fields while parsing.
      */
-    public static final int UNVALID_ALL_EMPTY = 5;
+    public static final int INVALID_ALL_EMPTY = 5;
 
     @Id
     @GeneratedValue

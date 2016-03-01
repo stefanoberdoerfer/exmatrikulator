@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
 public class PaboController {
 
 
-    private static transient Logger log = LogManager.getLogger(PaboController.class);
+    private static Logger log = LogManager.getLogger(PaboController.class);
 
     /**
      * Folder Path to temporary file location specified in server properties.
@@ -556,23 +556,23 @@ public class PaboController {
                 case PaboData.VALID:
                     log.error("The PaboData validId is valid but the boolean says its not");
                     break;
-                case PaboData.UNVALID_MATRICULATION:
+                case PaboData.INVALID_MATRICULATION:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
                             bundle.getString("course.paboFile.invalidMatriculation")));
                     break;
-                case PaboData.UNVALID_ATTEMPT:
+                case PaboData.INVALID_ATTEMPT:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
                             bundle.getString("course.paboFile.invalidAttempts")));
                     break;
-                case PaboData.UNVALID_EXAM_NAME:
+                case PaboData.INVALID_EXAM_NAME:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
                             bundle.getString("course.paboFile.invalidExamName")));
                     break;
-                case PaboData.UNVALID_MAJOR:
+                case PaboData.INVALID_MAJOR:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
                             bundle.getString("course.paboFile.invalidMajor")));
                     break;
-                case PaboData.UNVALID_ALL_EMPTY:
+                case PaboData.INVALID_ALL_EMPTY:
                     paboErrorMsgs.add(new PaboErrorMsg(rowIdx,
                             bundle.getString("course.paboFile.invalidRowSyntax")));
                     break;

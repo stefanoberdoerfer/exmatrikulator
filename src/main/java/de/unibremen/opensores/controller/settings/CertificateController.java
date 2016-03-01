@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.settings;
 
 
 import de.unibremen.opensores.model.Course;
@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ResourceBundle;
 import java.io.IOException;
 import java.util.Properties;

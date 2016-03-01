@@ -459,7 +459,7 @@ public class CourseSettingsController {
 
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
-        String salution = user.getSalution();
+        String salutation = user.getSalutation();
         String comment = student.getPublicComment();
         String paboGrade = student.getPaboGrade();
         String semester = course.getSemester().toString();
@@ -468,7 +468,7 @@ public class CourseSettingsController {
         HashMap<String, Object> map = new HashMap<>();
         map.put("firstName", (firstName == null) ? "" : firstName);
         map.put("lastName", (lastName == null) ? "" : lastName);
-        map.put("salutation", (salution == null) ? "" : salution);
+        map.put("salutation", (salutation == null) ? "" : salutation);
         map.put("paboGrade", (paboGrade == null) ? "" : paboGrade);
         map.put("comment", (comment == null) ? "" : comment);
         map.put("semester", semester);

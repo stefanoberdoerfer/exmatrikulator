@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.common;
 
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * This class implements the Controller for managing the logged in user.

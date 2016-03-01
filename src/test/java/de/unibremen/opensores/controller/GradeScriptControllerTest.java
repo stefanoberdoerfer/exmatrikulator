@@ -38,7 +38,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * This is test class for the GradeScript controller.
- * @TODO Unit Tests fuer restliche Klassen.
  * @author Kevin Scheck
  */
 public class GradeScriptControllerTest {

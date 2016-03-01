@@ -743,10 +743,10 @@ public class ParticipantsControllerTest {
 
     /**
      * Tests if the email validation method throws a ValidationException if
-     * an unvalid email (syntax wise) is passed as parameter.
+     * an invalid email (syntax wise) is passed as parameter.
      */
     @Test(expected = ValidatorException.class)
-    public void testValidateEmailUnvalidParam() {
+    public void testValidateEmailInvalidParam() {
         participantsController.validateEmail(contextMock, uiComponentMock, "my-email :^)");
     }
 

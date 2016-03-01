@@ -53,7 +53,7 @@ import java.util.ResourceBundle;
 @ViewScoped
 public class StudentImportController {
 
-    private static transient Logger log = LogManager.getLogger(StudentImportController.class);
+    private static Logger log = LogManager.getLogger(StudentImportController.class);
 
     /**
      * The expiration duration of a reset token of the newly created user.
@@ -93,7 +93,7 @@ public class StudentImportController {
     /**
      * Messages ResourceBundle for localised text.
      */
-    private transient ResourceBundle bundle;
+    private ResourceBundle bundle;
 
     /**
      * Boolean if sending Mails produces errors only once.

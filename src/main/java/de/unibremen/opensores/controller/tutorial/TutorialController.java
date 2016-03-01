@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.tutorial;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,13 +20,10 @@ import de.unibremen.opensores.service.TutorialService;
 import de.unibremen.opensores.service.PrivilegedUserService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.io.IOException;
-import java.io.Serializable;
-import java.text.MessageFormat;
 
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -46,11 +43,7 @@ import javax.validation.ValidationException;
  */
 @ManagedBean
 @ViewScoped
-public class TutorialController implements Serializable {
-    /**
-     * Unique serial version uid.
-     */
-    private static final long serialVersionUID = -626531390355925094L;
+public class TutorialController {
 
     /**
      * The log4j logger.
@@ -60,53 +53,53 @@ public class TutorialController implements Serializable {
     /**
      * The currently logged in user.
      */
-    private transient User user;
+    private User user;
 
     /**
      * The user service for connection to the database.
      */
     @EJB
-    private transient UserService userService;
+    private UserService userService;
 
     /**
      * The course service for connection to the database.
      */
     @EJB
-    private transient CourseService courseService;
+    private CourseService courseService;
 
     /**
      * The tutorial service for connection to the database.
      */
     @EJB
-    private transient TutorialService tutorialService;
+    private TutorialService tutorialService;
 
     /**
      * The student service for connection to the database.
      */
     @EJB
-    private transient StudentService studentService;
+    private StudentService studentService;
 
     /**
      * The group service for connection to the database.
      */
     @EJB
-    private transient GroupService groupService;
+    private GroupService groupService;
 
     /**
      * The privileged user service for connection to the database.
      */
     @EJB
-    private transient PrivilegedUserService privilegedUserService;
+    private PrivilegedUserService privilegedUserService;
 
     /**
      * Course for this tutorial.
      */
-    private transient Course course;
+    private Course course;
 
     /**
      * Current tutorial object.
      */
-    private transient Tutorial tutorial;
+    private Tutorial tutorial;
 
     /**
      * Name of the current tutorial.
@@ -136,7 +129,7 @@ public class TutorialController implements Serializable {
     /**
      * Current group context.
      */
-    private transient Group group;
+    private Group group;
 
     /**
      * Name of the current group.
@@ -146,7 +139,7 @@ public class TutorialController implements Serializable {
     /**
      * Current student context.
      */
-    private transient Student student;
+    private Student student;
 
     /**
      * New group name, used when the group is being edited.
