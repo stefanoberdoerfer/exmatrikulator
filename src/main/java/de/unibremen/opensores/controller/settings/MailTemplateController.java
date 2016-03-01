@@ -234,8 +234,11 @@ public class MailTemplateController {
         log.debug("New default template set.");
 
         MailTemplate defaultTemplate = mailTemplateService.getDefaultTemplate(course);
-        defaultTemplate.setIsDefault(false);
-        mailTemplateService.update(defaultTemplate);
+
+        if (defaultTemplate != null) {
+            defaultTemplate.setIsDefault(false);
+            mailTemplateService.update(defaultTemplate);
+        }
 
         template.setIsDefault(true);
 
