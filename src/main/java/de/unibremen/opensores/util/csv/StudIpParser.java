@@ -100,16 +100,13 @@ public final class StudIpParser {
      * @throws IOException If the file can't be opened,
      *         the file doesn't havethe same structure as a normal stud ip
      *         course export file, or the names or emails are not valid.
-     * @throws IOException If the Parameter @studIpCSVFile is not
-     *         a valid File object, or is not a .csv-File
-     *         (the file content type should equal).
+     * @throws IOException If the Parameter @studIpCSVFile is null,
+     *         or if parsing goes wrong
      */
     public static List<User> parseCSV(final File studIpCSVFile)
             throws IOException {
-        String contentType = (studIpCSVFile == null) ? null :
-            Files.probeContentType(studIpCSVFile.toPath());
 
-        if (contentType == null || !validContentType(contentType)) {
+        if (studIpCSVFile == null) {
             throw new IOException(
                     "The parameter studIpCSVFile must be a valid CSV File");
         }

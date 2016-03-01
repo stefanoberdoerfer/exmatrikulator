@@ -245,14 +245,6 @@ public final class PaboParserTest {
         PaboParser.parsePaboUpload(null);
     }
 
-    /**
-     * Tests if the parser throws an IOException if the file parameter is not a
-     * csv file.
-     */
-    @Test(expected = IOException.class)
-    public void testPaboUploadNotACSVFile() throws Exception {
-        PaboParser.parsePaboUpload(notACSVFile);
-    }
 
     /**
      * Tests if the parser returns a PaboData object with an invalid format id

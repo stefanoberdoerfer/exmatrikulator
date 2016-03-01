@@ -155,10 +155,7 @@ public final class PaboParser {
      *         the syntax of the file is wrong).
      */
     public static List<PaboData> parsePaboUpload(File paboCSVFile) throws IOException {
-        String contentType = (paboCSVFile == null) ? null :
-                Files.probeContentType(paboCSVFile.toPath());
-
-        if (contentType == null || !validContentType(contentType)) {
+        if (paboCSVFile == null) {
             throw new IOException("The parameter studIpCSVFile must be a valid CSV File");
         }
 

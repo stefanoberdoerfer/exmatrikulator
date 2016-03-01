@@ -202,17 +202,6 @@ public class StudIpParserTest {
 
 
     /**
-     * Tests if an IOException gets thrown if a non-csv file
-     * gets passed as parameter.
-     */
-    @Test(expected = IOException.class)
-    public void testNoCSVFileParameter() throws Exception {
-        StudIpParser.parseCSV(noCSVContentTypeFile);
-        fail();
-    }
-
-
-    /**
      * Tests if users dont get parsed which rows dont have the right format
      * (e.g. are empty or dont have the expected number of columns)
      */
