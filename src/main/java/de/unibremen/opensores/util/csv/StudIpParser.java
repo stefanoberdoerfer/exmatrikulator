@@ -3,6 +3,8 @@ package de.unibremen.opensores.util.csv;
 import com.opencsv.CSVReader;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.util.Constants;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.io.File;
@@ -21,6 +23,12 @@ import java.util.regex.Pattern;
  * @author Kevin Scheck
  */
 public final class StudIpParser {
+
+
+    /**
+     * The log4j logger.
+     */
+    private static Logger log = LogManager.getLogger(StudIpParser.class);
 
 
     /**
@@ -92,17 +100,14 @@ public final class StudIpParser {
      * @throws IOException If the file can't be opened,
      *         the file doesn't havethe same structure as a normal stud ip
      *         course export file, or the names or emails are not valid.
-     * @throws IllegalArgumentException If the Parameter @studIpCSVFile is not
-     *         a valid File object, or is not a .csv-File
-     *         (the file content type should equal).
+     * @throws IOException If the Parameter @studIpCSVFile is null,
+     *         or if parsing goes wrong
      */
     public static List<User> parseCSV(final File studIpCSVFile)
             throws IOException {
-        String contentType = (studIpCSVFile == null) ? null :
-            Files.probeContentType(studIpCSVFile.toPath());
 
-        if (contentType == null || !validContentType(contentType)) {
-            throw new IllegalArgumentException(
+        if (studIpCSVFile == null) {
+            throw new IOException(
                     "The parameter studIpCSVFile must be a valid CSV File");
         }
 
@@ -115,9 +120,9 @@ public final class StudIpParser {
 
         for (String[] row: rows) {
             if (row == null || row.length != NUM_COLS) {
-                reader.close();
-                throw new IOException("One row of the csv file doesn't have "
-                        + "eleven columns");
+                log.error("Skipping row, the row is either null "
+                         + "or  its length is not as expected");
+                continue;
             }
             final String firstName = row[COL_FIRST_NAME];
             final String lastName = row[COL_LAST_NAME];
@@ -125,9 +130,10 @@ public final class StudIpParser {
 
             if (!validName(firstName) || !validName(lastName)
                     || !validEmail(email)) {
-                reader.close();
-                throw new IOException(
-                        "The name or the email address is not valid");
+                log.error(String.format("The skippimg row,"
+                       + "the first name %s, last name %s or email %s is not valid",
+                        firstName, lastName, email));
+                continue;
             }
 
             final User user = new User();

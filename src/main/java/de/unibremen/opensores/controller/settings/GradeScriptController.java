@@ -116,7 +116,7 @@ public class GradeScriptController {
     private static final String KEY_STUDENT_INFO_LAST_NAME = "last_name";
     private static final String KEY_STUDENT_INFO_EMAIL = "email";
     private static final String KEY_STUDENT_INFO_MATR = "matriculation";
-    private static final String KEY_STUDENT_INFO_PART_TYPE = "party_type";
+    private static final String KEY_STUDENT_INFO_PART_TYPE = "part_type";
     /**
      * The imports which get executed after resetting the locals before a script
      * gets executed.
