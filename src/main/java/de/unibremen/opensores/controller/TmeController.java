@@ -248,6 +248,12 @@ public class TmeController implements Serializable {
                 .SEVERITY_INFO, bundle.getString("common.success"),
                 bundle.getString("import.success")));
         }
+
+        // Clear all data fields in order to prevent duplicated data
+        // errors when importing a different file afterwards.
+        entityMap.clear();
+        nodeMap.clear();
+        importedCourses.clear();
     }
 
     /**
