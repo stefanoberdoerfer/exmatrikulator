@@ -134,7 +134,7 @@ public final class StudIpParser {
             if (!validName(firstName) || !validName(lastName)
                     || !validEmail(email)) {
                 log.error(String.format("The skippimg row,"
-                       + "the first name %, last name % or email %s is not valid",
+                       + "the first name %s, last name %s or email %s is not valid",
                         firstName, lastName, email));
                 continue;
             }

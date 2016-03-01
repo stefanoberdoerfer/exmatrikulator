@@ -192,73 +192,61 @@ public class StudIpParserTest {
 
 
     /**
-     * Tests if an IllegalArgumentException gets thrown if null gets passed
+     * Tests if an IOException gets thrown if null gets passed
      * as parameter.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void testParseCSVNullParameter() {
-        try {
-            StudIpParser.parseCSV(null);
-            fail();
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-        }
+    @Test(expected = IOException.class)
+    public void testParseCSVNullParameter() throws Exception {
+        StudIpParser.parseCSV(null);
     }
 
 
     /**
-     * Tests if an IllegalArgumentException gets thrown if a non-csv file
+     * Tests if an IOException gets thrown if a non-csv file
      * gets passed as parameter.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void testNoCSVFileParameter() {
-        try {
-            StudIpParser.parseCSV(noCSVContentTypeFile);
-            fail();
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-        }
+    @Test(expected = IOException.class)
+    public void testNoCSVFileParameter() throws Exception {
+        StudIpParser.parseCSV(noCSVContentTypeFile);
+        fail();
     }
 
 
     /**
-     * Tests if an IOException gets thrown if the csv file has the wrong format.
+     * Tests if users dont get parsed which rows dont have the right format
+     * (e.g. are empty or dont have the expected number of columns)
      */
-    @Test(expected = IOException.class)
+    @Test
     public void testWrongFormatFile() throws Exception {
-        StudIpParser.parseCSV(wrongFormatFile);
+        assertTrue(StudIpParser.parseCSV(wrongFormatFile).isEmpty());
     }
 
 
     /**
-     * Tests if an IOException gets thrown if a user in the csv file has the
-     * wrong name.
+     * Tests if users dont get parsed which names are not valid, e.g. are empty
+     * or contain digits.
      */
-    @Test(expected = IOException.class)
+    @Test
     public void testWrongNameFile() throws Exception {
-        StudIpParser.parseCSV(wrongNameFile);
+        assertTrue(StudIpParser.parseCSV(wrongNameFile).isEmpty());
     }
 
 
     /**
-     * Tests if an IOException gets thrown if a user in the csv file has a wrong
-     * email address.
+     * Tests if users dont get parsed if the email addresses are not valid.
      */
-    @Test(expected = IOException.class)
+    @Test
     public void testWrongEmailFile() throws Exception {
-        StudIpParser.parseCSV(wrongEmailFile);
+        assertTrue(StudIpParser.parseCSV(wrongEmailFile).isEmpty());
     }
 
 
     /**
-     * Tests if an IOException gets thrown if a user in the csv file has no
-     * email address.
+     * Tests if users dont get parsed if the email addresses are empty.
      */
-    @Test(expected = IOException.class)
+    @Test
     public void noEmailFile() throws Exception {
-        StudIpParser.parseCSV(noEmailFile);
+        assertTrue(StudIpParser.parseCSV(noEmailFile).isEmpty());
     }
 
 }
