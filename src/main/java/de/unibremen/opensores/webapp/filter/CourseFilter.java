@@ -35,7 +35,7 @@ public class CourseFilter implements Filter {
     /**
      * The log4j logger.
      */
-    private static Logger log = LogManager.getLogger(LoginFilter.class);
+    private static Logger log = LogManager.getLogger(CourseFilter.class);
 
 
     /**
@@ -78,12 +78,14 @@ public class CourseFilter implements Filter {
 
         String idStr = hreq.getParameter("course-id");
         if (idStr == null || idStr.trim().isEmpty()) {
+            log.debug("Course id not found, sending bad request");
             hres.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         Course course = courseService.findCourseById(idStr);
         if (course == null) {
+            log.debug("Course not found, sending bad request");
             hres.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
