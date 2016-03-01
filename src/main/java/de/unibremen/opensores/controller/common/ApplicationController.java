@@ -1,6 +1,5 @@
 package de.unibremen.opensores.controller.common;
 
-import de.unibremen.opensores.model.PaboData;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GlobalRole;
@@ -12,6 +11,7 @@ import de.unibremen.opensores.model.Group;
 import de.unibremen.opensores.model.Lecturer;
 import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.MailTemplate;
+import de.unibremen.opensores.model.PaboData;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
@@ -33,22 +33,25 @@ import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UploadService;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.DateUtil;
+import de.unibremen.opensores.util.ServerProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Calendar;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Startup controller, creates dummy data.
@@ -113,6 +116,53 @@ public class ApplicationController {
         sessionRegister = new ConcurrentHashMap<>();
         for (Course c : courseService.listCourses()) {
             sessionRegister.put(c.getCourseId(),Collections.synchronizedList(new ArrayList<>()));
+        }
+
+        initSemesters();
+        initAdmin();
+    }
+
+    /**
+     * Creates the first admin user, needs to be set in config.properties.
+     */
+    public void initAdmin() {
+        String mail = null;
+        String pass = null;
+        String frst = null;
+        String last = null;
+
+        try {
+            Properties props = ServerProperties.getProperties();
+            mail = props.getProperty("install.admin.mail");
+            pass = props.getProperty("install.admin.pass");
+            frst = props.getProperty("install.admin.frst");
+            last = props.getProperty("install.admin.last");
+        } catch (final IOException e) {
+            log.error("Could not create default admin " + e.toString());
+        }
+
+        if (mail == null) {
+            log.error("Could not determine default admin mail");
+            return;
+        }
+
+        if (!userService.isEmailRegistered(mail)) {
+            if (pass == null) {
+                log.error("Could not determine default admin pass.");
+                return;
+            }
+            final User newAdmin = new User();
+            newAdmin.setEmail(mail);
+            newAdmin.setFirstName(frst);
+            newAdmin.setLastName(last);
+            newAdmin.setPassword(BCrypt.hashpw(pass, BCrypt.gensalt()));
+            newAdmin.addRole(GlobalRole.ADMIN);
+            newAdmin.addRole(GlobalRole.USER);
+            newAdmin.setLastActivity(DateUtil.getDateTime());
+            userService.persist(newAdmin);
+            log.debug("creating new admin, with user " + mail + " and pass " + pass);
+        } else {
+            log.debug("Admin already existing, skipping creation of default admin.");
         }
     }
 
