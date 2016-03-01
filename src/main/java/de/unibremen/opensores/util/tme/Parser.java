@@ -262,7 +262,6 @@ public class Parser {
                 try {
                     v = URLDecoder.decode(val.getText(), "utf-8");
                 } catch (final UnsupportedEncodingException e) {
-                    // XXX is there a better way to handle this?
                     v = val.getText();
                 }
 

@@ -1,6 +1,5 @@
 /**
- * Utilities package with various utlities.
- *
- * @author Sören Tempel
+ * Utilities package with wider range of usage.
+ * Includes mail, CSV- & TME-parsing and also application configuration.
  */
 package de.unibremen.opensores.util;

@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.login;
 
 import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.User;
@@ -56,9 +56,9 @@ public class RegistrationController {
     private String lastName;
 
     /**
-     * The typed in salution of the user.
+     * The typed in salutation of the user.
      */
-    private String salution;
+    private String salutation;
 
     /**
      * The typed in matriculationNumber (optional).
@@ -87,8 +87,8 @@ public class RegistrationController {
             return "";
         }
 
-        /* TODO wait until the admin confirmed the account and send an email to
-         * the user as soon as he did. */
+        /* The functionality that a user has to get confirmed by the admin first and gets an email
+         * as soon as he is confirmed can be implemented here */
 
         userService.persist(initUserFromInput());
         facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -118,7 +118,7 @@ public class RegistrationController {
         newUser.setPassword(hashPW);
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
-        newUser.setSalution(salution);
+        newUser.setSalutation(salutation);
         newUser.setMatriculationNumber(matriculationNumber);
         newUser.addRole(GlobalRole.USER);
         newUser.setLastActivity(DateUtil.getDateTime());
@@ -210,19 +210,19 @@ public class RegistrationController {
     }
 
     /**
-     * Gets the typed in salution.
-     * @return The typed in salution.
+     * Gets the typed in salutation.
+     * @return The typed in salutation.
      */
-    public String getSalution() {
-        return salution;
+    public String getSalutation() {
+        return salutation;
     }
 
     /**
-     * Sets the typed in salution.
-     * @param saltuion The typed in salution.
+     * Sets the typed in salutation.
+     * @param salutation The typed in salutation.
      */
-    public void setSalution(String salution) {
-        this.salution = salution;
+    public void setSalutation(String salutation) {
+        this.salutation = salutation;
     }
 
     /**

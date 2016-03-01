@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.admin;
 
 import de.unibremen.opensores.util.DateUtil;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 import org.mindrot.jbcrypt.BCrypt;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import de.unibremen.opensores.util.Constants;
 import de.unibremen.opensores.util.tme.Parser;
@@ -35,7 +34,6 @@ import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.exception.TmeException;
 import de.unibremen.opensores.exception.SemesterFormatException;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +41,6 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -53,10 +50,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.context.ExternalContext;
 import javax.faces.bean.ViewScoped;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.ResourceBundle;
 
 /**
@@ -66,11 +60,7 @@ import java.util.ResourceBundle;
  */
 @ManagedBean
 @ViewScoped
-public class TmeController implements Serializable {
-    /**
-     * Unique serial version uid.
-     */
-    private static final long serialVersionUID = -126631593355925099L;
+public class TmeController {
 
     /**
      * The log4j logger.
@@ -81,75 +71,63 @@ public class TmeController implements Serializable {
      * User service for connecting to the database.
      */
     @EJB
-    private transient UserService userService;
+    private UserService userService;
 
     /**
      * Course service for connecting to the database.
      */
     @EJB
-    private transient CourseService courseService;
+    private CourseService courseService;
 
     /**
      * Semester service for connecting to the database.
      */
     @EJB
-    private transient SemesterService semesterService;
+    private SemesterService semesterService;
 
     /**
      * Tutorial service for connecting to the database.
      */
     @EJB
-    private transient TutorialService tutorialService;
+    private TutorialService tutorialService;
 
     /**
      * PrivilegedUser service for connecting to the database.
      */
     @EJB
-    private transient PrivilegedUserService privilegedUserService;
+    private PrivilegedUserService privilegedUserService;
 
     /**
      * Student service for connecting to the database.
      */
     @EJB
-    private transient StudentService studentService;
+    private StudentService studentService;
 
     /**
      * Group service for connecting to the database.
      */
     @EJB
-    private transient GroupService groupService;
+    private GroupService groupService;
 
     /**
      * List of uploaded files by the user.
      */
-    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
-            justification = "actually findbugs is right this needs to be "
-            + "serializable but I am too lazy to fix it")
-    private transient List<UploadedFile> files = new ArrayList<>();
+    private List<UploadedFile> files = new ArrayList<>();
 
     /**
      * Maps TME ids to JPA entities.
      */
-    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
-            justification = "actually findbugs is right this needs to be "
-            + "serializable but I am too lazy to fix it")
-    private transient HashMap<Integer, Object> entityMap = new HashMap<>();
+    private HashMap<Integer, Object> entityMap = new HashMap<>();
 
     /**
      * Maps TME ids to TME objects.
      */
-    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
-            justification = "actually findbugs is right this needs to be "
-            + "serializable but I am too lazy to fix it")
-    private transient HashMap<Integer, TMEObject> nodeMap = new HashMap<>();
+    private HashMap<Integer, TMEObject> nodeMap = new HashMap<>();
 
     /**
      * List of imported courses.
      */
-    @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED",
-            justification = "actually findbugs is right this needs to be "
-            + "serializable but I am too lazy to fix it")
-    private transient List<Course> importedCourses = new ArrayList<>();
+    private List<Course> importedCourses = new ArrayList<>();
 
 
     /**

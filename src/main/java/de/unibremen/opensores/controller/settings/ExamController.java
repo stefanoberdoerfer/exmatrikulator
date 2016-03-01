@@ -251,7 +251,7 @@ public class ExamController {
      * @Pre onDeleteExamDialogCalled was called priorly.
      * @Post The selected exam is deleted from the course and the database.
      *       All Gradings related to the exam get deleted from the database.
-     *       Grade Formulas using this exam are unvalid now.
+     *       Grade Formulas using this exam are invalid now.
      */
     public void deleteExam() {
         log.debug("deleteExam() called");
@@ -311,7 +311,7 @@ public class ExamController {
             if (!Character.isAlphabetic(c) && !Character.isDigit(c)) {
                 log.debug("Failing validation for shortcut(characters): " + stringValue);
                 msgs.add(new FacesMessage(
-                        bundle.getString("examination.messageUnvalidChar")));
+                        bundle.getString("examination.messageInvalidChar")));
                 throw new ValidatorException(msgs);
             }
         }

@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Fitler to check access to courses. Also extracts the
+ * Filter to check access to courses. Also extracts the
  * course-id parameter from the HTTP request, fetches the
  * associated course and adds it to the sessionmap.
  *
@@ -48,7 +48,7 @@ public class CourseFilter implements Filter {
      * The course service for connecting to the database.
      */
     @EJB
-    private transient CourseService courseService;
+    private CourseService courseService;
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res,
@@ -57,8 +57,6 @@ public class CourseFilter implements Filter {
         HttpServletRequest hreq = (HttpServletRequest) req;
         String path = hreq.getRequestURI().substring(hreq.getContextPath().length());
         log.debug("doFilter() called with path: " + path);
-        // XXX this is _super_ insecure literally everyone can set this
-        // header and thereby render this filter absolutly useless.
         String freq = hreq.getHeader("Faces-Request");
         if (freq != null && freq.equals("partial/ajax")) {
             filterChain.doFilter(req, res);

@@ -1,4 +1,3 @@
-<!-- Todo: Seite darf nur von Dozenten aufgerufen werden -->
 <ui:composition template="/WEB-INF/base.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -93,7 +92,7 @@
                                        value="#{msg['course.create.paboExamDate']}"/>
                         <div class="col-xs-9" >
                             <p:calendar id="paboExamDateCal" value="#{step1.commonDataController.course.paboExamDate}"
-                                        validatorMessage="#{msg['course.create.messageUnvalidDate']}"
+                                        validatorMessage="#{msg['courses.create.messageInvalidDate']}"
                                         timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy"/>
                         </div>
                     </div>

@@ -51,12 +51,12 @@ public final class NoStudentsFilter implements Filter {
      * The course service for connecting to the database.
      */
     @EJB
-    private transient CourseService courseService;
+    private CourseService courseService;
     /**
      * The user service for connecting to the database.
      */
     @EJB
-    private transient UserService userService;
+    private UserService userService;
 
     /**
      * Main method for filtering requests.
@@ -72,10 +72,6 @@ public final class NoStudentsFilter implements Filter {
         String path = hreq.getRequestURI().substring(hreq.getContextPath().length());
         log.debug("doFilter() called with path " + path);
 
-
-
-        // XXX this is _super_ insecure literally everyone can set this
-        // header and thereby render this filter absolutly useless.
         String freq = hreq.getHeader("Faces-Request");
         if (freq != null && freq.equals("partial/ajax")) {
             filterChain.doFilter(req, res);

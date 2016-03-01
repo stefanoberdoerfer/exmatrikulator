@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.login;
 
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.PasswordReset;

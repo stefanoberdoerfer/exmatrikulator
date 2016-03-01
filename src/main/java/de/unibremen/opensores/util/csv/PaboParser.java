@@ -147,7 +147,7 @@ public final class PaboParser {
      * Parses a Pabo CSV import file to an Array of PaboData. The array is the
      * number of rows of the file minus 1. Eeah pabo data object represents a row
      * of the file. If the row of the pabo data is not parsed correctly, a pabo
-     * data with an unvalid id gets set as object of the array.
+     * data with an invalid id gets set as object of the array.
      * @see PaboData
      * @param paboCSVFile The csv file which is a csv import.
      * @return An array ob PaboData representing the parsed rows.
@@ -176,14 +176,14 @@ public final class PaboParser {
                     log.error("The length of row " + (rowIdx + 1)
                             + " of the file equals " + row.length);
                 }
-                parsedData = addUnvalidPaboData(PaboData.UNVALID_ALL_EMPTY, parsedData);
+                parsedData = addInvalidPaboData(PaboData.INVALID_ALL_EMPTY, parsedData);
                 rowIdx++;
                 continue;
             }
 
 
             if (emptyString(row[COL_MATRICULATION])) {
-                parsedData = addUnvalidPaboData(PaboData.UNVALID_MATRICULATION, parsedData);
+                parsedData = addInvalidPaboData(PaboData.INVALID_MATRICULATION, parsedData);
                 rowIdx++;
                 continue;
             }
@@ -196,19 +196,19 @@ public final class PaboParser {
             }
 
             if (attempts < 0) {
-                parsedData = addUnvalidPaboData(PaboData.UNVALID_ATTEMPT, parsedData);
+                parsedData = addInvalidPaboData(PaboData.INVALID_ATTEMPT, parsedData);
                 rowIdx++;
                 continue;
             }
 
             if (emptyString(row[COL_EXAM_NAME])) {
-                parsedData = addUnvalidPaboData(PaboData.UNVALID_EXAM_NAME, parsedData);
+                parsedData = addInvalidPaboData(PaboData.INVALID_EXAM_NAME, parsedData);
                 rowIdx++;
                 continue;
             }
 
             if (emptyString(row[COL_MAJOR])) {
-                parsedData = addUnvalidPaboData(PaboData.UNVALID_MAJOR, parsedData);
+                parsedData = addInvalidPaboData(PaboData.INVALID_MAJOR, parsedData);
                 rowIdx++;
                 continue;
             }
@@ -294,15 +294,15 @@ public final class PaboParser {
     }
 
     /**
-     * Adds a new unvalid pabo data object to the list.
-     * @param unvalidIdx The unvalid idx of the pabo data.
+     * Adds a new invalid pabo data object to the list.
+     * @param invalidIdx The invalid idx of the pabo data.
      * @param dataList The list to which the object  should be added.
      * @see PaboData
      * @return The list with the data appended.
      */
-    private static List<PaboData> addUnvalidPaboData(int unvalidIdx, List<PaboData> dataList) {
+    private static List<PaboData> addInvalidPaboData(int invalidIdx, List<PaboData> dataList) {
         PaboData data = new PaboData();
-        data.setValidationId(unvalidIdx);
+        data.setValidationId(invalidIdx);
         dataList.add(data);
         return dataList;
     }

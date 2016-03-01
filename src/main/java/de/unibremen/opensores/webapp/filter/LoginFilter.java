@@ -21,7 +21,6 @@ import java.io.IOException;
  * This class handles HTTP requests and checks whether the request can be
  * directed to a secured page based on whether the user is logged in and if the
  * user has the required rights to access that page.
- * @todo Handle AJAX /resource requests.
  * @author Kevin Scheck
  */
 @WebFilter

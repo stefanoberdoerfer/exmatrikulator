@@ -1,7 +1,6 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.common;
 
 import de.unibremen.opensores.model.Privilege;
-import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.service.UserService;
@@ -59,7 +58,7 @@ public class NavigationController {
     private static Map<String, Locale> languages;
 
     /**
-     * @todo This is retarded, locales should be fetched from faces-config.xml.
+     * Has to get updated when new languages are added.
      */
     static {
         languages = new LinkedHashMap<>();

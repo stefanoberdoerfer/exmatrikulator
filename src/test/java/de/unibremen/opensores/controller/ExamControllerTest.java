@@ -453,7 +453,7 @@ public class ExamControllerTest {
      * the file endings have not valid chars.
      */
     @Test(expected = ValidatorException.class)
-    public void testValidateFileEndingUnvalidChars() {
+    public void testValidateFileEndingInvalidChars() {
         examController.validateFileEndings(contextMock, uiComponentMock,"@@x€");
     }
 

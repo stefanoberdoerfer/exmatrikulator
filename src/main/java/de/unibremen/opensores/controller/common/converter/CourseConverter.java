@@ -1,4 +1,4 @@
-package de.unibremen.opensores.controller;
+package de.unibremen.opensores.controller.common.converter;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.service.CourseService;
@@ -26,7 +26,7 @@ public class CourseConverter implements Converter {
      * The course service for connection to the database.
      */
     @EJB
-    private transient CourseService courseService;
+    private CourseService courseService;
 
     @Override
     public Object getAsObject(FacesContext context,
