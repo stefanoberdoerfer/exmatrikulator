@@ -47,10 +47,11 @@
                         </div>
                     </h:panelGroup>
                 </h:panelGroup>
-                <p:blockUI block="editDeadlinePnl" trigger="updateDeadlineBtn"/>
-                <div class="text-center">
-                    <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
-                </div>
+                <p:blockUI block="editDeadlinePnl" trigger="updateDeadlineBtn">
+                    <div class="text-center">
+                        <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
+                    </div>
+                </p:blockUI>>
                 <br/>
                 <p:schedule id="editSchedule"
                             value="#{examEventController.examEventModel}"
@@ -114,9 +115,9 @@
                             <h:panelGroup styleClass="col-xs-8 col-xs-offset-r">
                                 <p:commandLink id="unregisterBtn"
                                                rendered="#{not examEventController.isDeadlineDue()}"
-                                               value="#{msg['examEvent.unregister']}"2
-                                               update="@form"
-                                               styleClass="btn btn-danger">
+                                               value="#{msg['examEvent.unregister']}">
+                                    update="@form"
+                                    styleClass="btn btn-danger">
                                     <f:actionListener binding="#{examEventController.unregisterFromExamEvent()}"/>
                                 </p:commandLink>
                             </h:panelGroup>
