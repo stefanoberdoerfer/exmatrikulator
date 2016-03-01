@@ -33,8 +33,12 @@
                         <p:ajax event="tabChange" listener="#{scriptController.onTabChange}" update=":studentsForm:studentGradesTbl" />
                         <p:tab title="#{partType.name}">
                             <p:panel id="scriptPnl">
-                                <p>#{msg['gradingformula.explanation']}</p>
-                                <!-- TODO Fix CSS Layout -->
+                                <h:outputText value="#{msg['gradingformula.explanation']}"
+                                              escape="false"/>
+                                <h:link value="#{msg['gradingFormula.linkToGuide']}" outcome="/settings/formula/guide" >
+                                        <f:param name="course-id" value="#{scriptController.course.courseId}"/>
+                                </h:link>
+                                <br/>
                                 <p:outputLabel styleClass="control-label" for="scriptSaveCommitMessage"
                                                value="#{msg['gradingFormula.editDescription']}"/>
                                 <p:inputText id="scriptSaveCommitMessage" styleClass="form-control"

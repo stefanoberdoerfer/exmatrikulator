@@ -1,0 +1,69 @@
+<ui:composition template="/WEB-INF/base.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <!-- Define Params -->
+    <ui:param name="pageTitle" value="#{msg['common.course.gradingFormula']}" />
+    <!-- Breadcrumbs -->
+    <ui:define name="breadcrumbs">
+        <li class="active">#{msg['formula.guide.title']}</li>
+    </ui:define>
+    <!-- Page Content -->
+    <ui:define name="content">
+        <div class="headline">
+            <h1>#{msg['formula.guide.title']}</h1>
+        </div>
+
+        <!-- Contents -->
+        <div class="row">
+            <div class="col-xs-9">
+                <!-- The principle of the grade fornula -->
+                <h2>#{msg['formula.guide.principleTitle']}</h2>
+                <h:outputText value="#{msg['formula.guide.principleText']}"
+                              escape="false" />
+                <pe:codeMirror id="defaultFormulaMirror"
+                               mode="python"
+                               widgetVar="pyCodeMirror"
+                               indentUnit="4"
+                               matchBrackets="true"
+                               readonly="true"
+                               theme="lesser-dark"
+                               value="#{EXcons.DEFAULT_GRADE_SCRIPT}"
+                               lineNumbers="true"
+                               style="margin-top:20px;"/>
+                <h2>#{msg['formula.guide.paboGradeTitle']}</h2>
+                <h:outputText value="#{msg['formula.guide.paboGradeText']}"
+                              escape="false" />
+                <pe:codeMirror id="oneThreeFormulaWindow"
+                               mode="python"
+                               widgetVar="pyCodeMirror"
+                               indentUnit="4"
+                               matchBrackets="true"
+                               readonly="true"
+                               theme="lesser-dark"
+                               value="#{msg['formula.guide.one_three_formula']}"
+                               lineNumbers="true"
+                               style="margin-top:20px;"/>
+                <h2>#{msg['formula.guide.parametersTitle']}</h2>
+                <h:outputText value="#{msg['formula.guide.parametersIntro']}"
+                              escape="false"/>
+                <h3>#{msg['formula.guide.parameterGradesTitle']}</h3>
+                <h:outputText value="#{msg['formula.guide.parameterGradesText']}"
+                              escape="false"/>
+                <h3>#{msg['formula.guide.parameterStudentInfoTitle']}</h3>
+                <h:outputText value="#{msg['formula.guide.parameterStudentInfoText']}"
+                              escape="false"/>
+                <h3>#{msg['formula.guide.parameterOtherCourseGradesTitle']}</h3>
+                <h:outputText value="#{msg['formula.guide.parameterOtherCourseGradesText']}"
+                              escape="false"/>
+
+            </div>
+
+        </div>
+    </ui:define>
+</ui:composition>
