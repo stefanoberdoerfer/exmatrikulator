@@ -1,5 +1,7 @@
 package de.unibremen.opensores.controller.admin;
 
+import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.util.DateUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +48,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.application.FacesMessage;
@@ -110,6 +113,12 @@ public class TmeController {
     private GroupService groupService;
 
     /**
+     * Logservice for exmatrikulator logs.
+     */
+    @EJB
+    private LogService logService;
+
+    /**
      * List of uploaded files by the user.
      */
     private List<UploadedFile> files = new ArrayList<>();
@@ -129,6 +138,19 @@ public class TmeController {
      */
     private List<Course> importedCourses = new ArrayList<>();
 
+    /**
+     * The currentlyl ogged in user.
+     */
+    private User loggedInUser;
+
+    /**
+     * Method called after the been has been initialized.
+     */
+    @PostConstruct
+    public void init() {
+        loggedInUser = (User) FacesContext.getCurrentInstance().getExternalContext()
+                .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
+    }
 
     /**
      * Handles file upload events.
@@ -147,6 +169,7 @@ public class TmeController {
         }
 
         files.add(file);
+        logFileUploaded(file);
     }
 
     /**
@@ -161,8 +184,9 @@ public class TmeController {
             Path fp = Files.createTempFile("exmatrikulator", file.getFileName());
             Files.copy(file.getInputstream(), fp,
                     StandardCopyOption.REPLACE_EXISTING);
-
-            uploadedFiles.add(fp.toFile());
+            File savedFile = fp.toFile();
+            uploadedFiles.add(savedFile);
+            logFileSaved(savedFile);
         }
 
         return uploadedFiles;
@@ -368,6 +392,8 @@ public class TmeController {
         course.setMaxGroupSize(node.getInt("maximaleGruppenGroesse"));
 
         courseService.persist(course);
+        logService.persist(Log.from(loggedInUser, course.getCourseId(),
+                "Has been created by TME Import"));
         createGroups(node.getArray("groups"), course);
 
         course = courseService.update(course);
@@ -458,6 +484,9 @@ public class TmeController {
         group.setName(node.getString("name"));
         group.setTutorial(tutorial);
         groupService.persist(group);
+        logService.persist(Log.from(loggedInUser, course.getCourseId(),
+                String.format("String the group %s has been created by TME import",
+                        group.getName())));
 
         tutorial.getGroups().add(group);
         List<Student> students = createStudents(node.getArray("students"),
@@ -552,7 +581,11 @@ public class TmeController {
             student.setPrivateComment(null);
         }
 
+        logService.persist(Log.from(loggedInUser,course.getCourseId(),
+            String.format("The student %s has been created by TME import",
+                    student.getUser())));
         studentService.persist(student);
+
         log.debug("Persisted student " + student.getUser());
 
         entityMap.put(node.getId(), student);
@@ -622,6 +655,9 @@ public class TmeController {
             course.getTutors().add(tutor);
             tutor.getTutorials().add(tutorial);
             privilegedUserService.persist(tutor);
+            logService.persist(Log.from(loggedInUser, course.getCourseId(),
+                   String.format("The privileged user %s has been persisted by tme import",
+                    tutor.getUser())));
         }
 
         course.getTutorials().add(tutorial);
@@ -699,6 +735,7 @@ public class TmeController {
         }
 
         userService.persist(newUser);
+        logUserCreated(newUser);
         log.debug(String.format("Persisted new user '%s' (%s)",
                     newUser.toString(), newUser.getEmail()));
 
@@ -747,5 +784,43 @@ public class TmeController {
 
     public void setFiles(List<UploadedFile> files) {
         this.files = files;
+    }
+
+    /*
+     * Logs
+     */
+
+    /**
+     * Logs that a file has been uploaded to the temporary folder.
+     * @param file The saved file.
+     */
+    private void logFileSaved(File file) {
+        logAction(String.format("The file %s been saved to the path %s",
+                file.getName(), file.getPath()));
+    }
+
+    /**
+     * Logs that the user has uploaded a file.
+     * @param file The uploaded file
+     */
+    private void logFileUploaded(UploadedFile file) {
+        logAction(String.format("Has uploaded the file %s", file.getFileName()));
+    }
+
+    /**
+     * Logs that an user has been created by tme import.
+     * @param user The created user.
+     */
+    private void logUserCreated(User user) {
+        logAction(String.format("The user %s has been created by TME import", user));
+    }
+
+
+    /**
+     * Logs an action of this controller with the currently logged in user.
+     * @param description The description of the action.
+     */
+    private void logAction(String description) {
+        logService.persist(Log.withoutCourse(loggedInUser,description));
     }
 }

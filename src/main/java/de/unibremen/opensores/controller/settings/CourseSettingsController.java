@@ -1,6 +1,7 @@
 package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Role;
@@ -12,6 +13,7 @@ import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradeService;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.MailTemplateService;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
@@ -108,6 +110,12 @@ public class CourseSettingsController {
      */
     @EJB
     private UserService userService;
+
+    /**
+     * The logService for exmatrikulator logs.
+     */
+    @EJB
+    private LogService logService;
 
     /**
      * The course for which the overview page gets accessed.
@@ -322,6 +330,8 @@ public class CourseSettingsController {
      */
     public String deleteCourse() {
         log.debug("Deleting course " + course.getName());
+        logService.persist(Log.from(user, course.getCourseId(),
+                "Has deleted the course"));
         course.setDeleted(true);
         courseService.update(course);
         return PATH_TO_COURSE_OVERVIEW;
@@ -333,6 +343,8 @@ public class CourseSettingsController {
     public void finalizeAndSend() {
         course.setLastFinalization(new Date());
         courseService.update(course);
+        logService.persist(Log.from(user, course.getCourseId(),
+                "Has finalized the course"));
         sendCourse();
     }
 
@@ -534,6 +546,8 @@ public class CourseSettingsController {
 
         MailTemplate template = mailTemplateService.getDefaultTemplate(course);
 
+        logService.persist(Log.from(user, course.getCourseId(),
+                "Sends the final mail to the whole course."));
         if (template == null) {
             log.error("Could not send mail no default template set!");
             return;

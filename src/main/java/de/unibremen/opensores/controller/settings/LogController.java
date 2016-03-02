@@ -159,6 +159,8 @@ public class LogController {
      */
     public void deleteLogRange() {
         ListIterator<Log> it = logs.listIterator();
+
+
         while (it.hasNext()) {
             Log cl = it.next();
             log.debug("Removing log with id " + cl.getLogId());
@@ -172,6 +174,10 @@ public class LogController {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
+
+        logService.persist(Log.withoutCourse(user,
+                String.format("Deleted logs from %s to %s",
+                        beginDate.toString(), endDate.toString())));
 
         String msg = bundle.getString("settings.logs.removeSuccess");
         facesContext.addMessage(null, new FacesMessage(FacesMessage

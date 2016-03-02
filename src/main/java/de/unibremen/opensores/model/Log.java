@@ -71,15 +71,24 @@ public class Log {
      * @return The log with the user, the current date and the course id.
      */
     public static Log from(User user, long courseId, String description) {
-        if (user == null) {
-            throw new IllegalArgumentException("The user can't be null.");
-        }
-        if (description == null || description.isEmpty()) {
-            throw new IllegalArgumentException("The description must be a non empty string.");
-        }
+        checkUser(user);
+        checkDescription(description);
+        Log log = withoutCourse(user, description);
+        log.courseId = courseId;
+        return log;
+    }
+
+    /**
+     * Static constructor method to create a log given the user.
+     * This log is not associated with a course.
+     * The current date is used as action date.
+     * @return The log with the user, the current date
+     */
+    public static Log withoutCourse(User user, String description) {
+        checkUser(user);
+        checkDescription(description);
         Log log = new Log();
         log.loggedInUser = user;
-        log.courseId = courseId;
         log.actionDescription = description;
         log.date = DateUtil.getDateTime();
         return log;
@@ -94,14 +103,14 @@ public class Log {
      *         as date.
      */
     public static Log anonymous(String description) {
-        if (description == null || description.isEmpty()) {
-            throw new IllegalArgumentException("The must be a non empty string.");
-        }
+        checkDescription(description);
         Log log = new Log();
         log.actionDescription = description;
         log.date = DateUtil.getDateTime();
         return log;
     }
+
+
 
     public User getLoggedInUser() {
         return loggedInUser;
@@ -141,5 +150,27 @@ public class Log {
 
     public void setLogId(long logId) {
         this.logId = logId;
+    }
+
+    /**
+     * Checks if the user is not null.
+     * @param user The user to be checked
+     * @throws IllegalArgumentException If the user is null.
+     */
+    private static void checkUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("The user can't be null.");
+        }
+    }
+
+    /**
+     * Checks if the description of the log is nut null nor empty.
+     * @param description The desription of the log.
+     * @throws IllegalArgumentException If the description is null or empty.
+     */
+    private static void checkDescription(String description) {
+        if (description == null || description.isEmpty()) {
+            throw new IllegalArgumentException("The must be a non empty string.");
+        }
     }
 }

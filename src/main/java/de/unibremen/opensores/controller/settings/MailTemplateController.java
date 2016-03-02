@@ -1,5 +1,7 @@
 package de.unibremen.opensores.controller.settings;
 
+import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.service.LogService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,6 +45,9 @@ public class MailTemplateController {
 
     @EJB
     private UserService userService;
+
+    @EJB
+    private LogService logService;
 
     /**
      * The current MailTemplate.
@@ -90,6 +95,11 @@ public class MailTemplateController {
     private ResourceBundle bundle;
 
     /**
+     * The currently logged in user.
+     */
+    private User user;
+
+    /**
      * Executed on request, initializes the course.
      */
     @PostConstruct
@@ -105,14 +115,13 @@ public class MailTemplateController {
                 .getExternalContext()
                 .getRequest();
 
-        String courseId = request.getParameter(
-                Constants.HTTP_PARAM_COURSE_ID);
-        String mailTemplateId = request.getParameter(
-                Constants.HTTP_PARAM_MAILTEMPLATE_ID);
 
-        User user = (User) context.getExternalContext()
+        user = (User) context.getExternalContext()
                 .getSessionMap()
                 .get(Constants.SESSION_MAP_KEY_USER);
+
+        String courseId = request.getParameter(
+                Constants.HTTP_PARAM_COURSE_ID);
 
         Course currentCourse = null;
         if (courseId != null) {
@@ -132,6 +141,9 @@ public class MailTemplateController {
         } else {
             course = currentCourse;
         }
+
+        String mailTemplateId = request.getParameter(
+                Constants.HTTP_PARAM_MAILTEMPLATE_ID);
 
         MailTemplate template = null;
         if (mailTemplateId != null) {
@@ -171,9 +183,11 @@ public class MailTemplateController {
         mailTemplate.setSubject(templateSubject);
         mailTemplate.setText(templateText);
         mailTemplate.setLocale(templateLocale);
-
         mailTemplateService.update(mailTemplate);
 
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Saving the existing mail template %s",
+                        mailTemplate.getName())));
         return "/settings/mailtemplate/overview?faces-redirect=true"
                 + "&course-id=" + course.getCourseId();
     }
@@ -199,7 +213,9 @@ public class MailTemplateController {
         course.setEmailTemplates(templates);
 
         courseService.update(course);
-
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Creating the new existing mail template %s",
+                        mailTemplate.getName())));
         return "/settings/mailtemplate/overview?faces-redirect=true"
                 + "&course-id=" + course.getCourseId();
     }
@@ -216,7 +232,9 @@ public class MailTemplateController {
 
         log.debug("Removed template");
         mailTemplateService.remove(template);
-
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Removing mail template %s",
+                        template.getName())));
         return "/settings/mailtemplate/overview?faces-redirect=true"
                 + "&course-id=" + course.getCourseId();
     }
@@ -243,7 +261,9 @@ public class MailTemplateController {
         template.setIsDefault(true);
 
         mailTemplateService.update(template);
-
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Setting the mail template %s as default template.",
+                        template.getName())));
         return "/settings/mailtemplate/overview?faces-redirect=true"
                 + "&course-id=" + course.getCourseId();
     }

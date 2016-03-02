@@ -2,9 +2,11 @@ package de.unibremen.opensores.controller.recordbook;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.RecordBookEntry;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.RecordBookService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -70,6 +72,12 @@ public class RecordBookRemoveController {
     private RecordBookService recordBookService;
 
     /**
+     * The LogService for Exmatrikulator logs.me
+     */
+    @EJB
+    private LogService logService;
+
+    /**
      * Method called after initialisation.
      */
     @PostConstruct
@@ -102,7 +110,13 @@ public class RecordBookRemoveController {
         Try to store the entry
          */
         try {
+
             recordBookService.removeEntry(course, user, entry);
+            logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Has removed a record book entry of the user %s "
+                                + "with the date %s and duration %d.",
+                                user, entry.getDate(), entry.getDuration())));
+
         } catch (IllegalAccessException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
@@ -110,6 +124,8 @@ public class RecordBookRemoveController {
 
             return;
         }
+
+
         /*
         Success
          */

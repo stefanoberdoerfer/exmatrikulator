@@ -2,9 +2,11 @@ package de.unibremen.opensores.controller.recordbook;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.RecordBookEntry;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.RecordBookService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -72,6 +74,12 @@ public class RecordBookEditController {
      */
     @EJB
     private RecordBookService recordBookService;
+
+    /**
+     * The logService for exmatrikulator logs.
+     */
+    @EJB
+    private LogService logService;
 
     /**
      * Method called after initialisation.
@@ -173,8 +181,16 @@ public class RecordBookEditController {
                 return;
             }
 
+
             recordBookService.editEntry(entry, user, exam, formDate,
                     formDuration, formComment);
+
+            logService.persist(Log.from(user, course.getCourseId(),
+                    String.format("Has edited a record book entry of the student %s "
+                            + "with the date %s and duration %d.",
+                            entry.getStudent().getUser(), entry.getDate().toString(),
+                            entry.getDuration())));
+
         } catch (IllegalAccessException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),

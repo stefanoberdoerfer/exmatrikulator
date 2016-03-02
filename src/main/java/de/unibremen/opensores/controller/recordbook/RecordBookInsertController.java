@@ -6,11 +6,13 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Exam;
 import de.unibremen.opensores.model.GradeType;
 import de.unibremen.opensores.model.Group;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.PaboGrade;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradingService;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.RecordBookService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -78,6 +80,12 @@ public class RecordBookInsertController {
      */
     @EJB
     private RecordBookService recordBookService;
+
+    /**
+     * The logService for exmatrikulator logs.
+     */
+    @EJB
+    private LogService logService;
 
     /**
      * Method called after initialisation.
@@ -179,8 +187,14 @@ public class RecordBookInsertController {
                 return;
             }
 
+
             recordBookService.addEntry(course, user, exam, formDate,
                     formDuration, formComment);
+            logService.persist(Log.from(user, course.getCourseId(),
+                    String.format("Has inserted an record book entry of the user %s "
+                                    + "with the date %s and duration %d.",
+                            user, formDate.toString(), formDuration)));
+
         } catch (IllegalAccessException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),

@@ -1,8 +1,10 @@
 package de.unibremen.opensores.controller.login;
 
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.PasswordReset;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.UserService;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -27,6 +29,9 @@ public class NewPasswordController {
      */
     @EJB
     private UserService userService;
+
+    @EJB
+    private LogService logService;
 
     /**
      * Unique id for the user who wants to change his password.
@@ -81,7 +86,7 @@ public class NewPasswordController {
         user.setToken(null);
         user.setPassword(hashpw);
         userService.update(user);
-
+        logService.persist(Log.withoutCourse(user, "Got his password reset."));
         facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_INFO, bundle.getString("common.success"),
                     bundle.getString("newPassword.success")));
@@ -158,8 +163,6 @@ public class NewPasswordController {
 
     /**
      * Returns the token string value.
-     *
-     * @param Token string value.
      */
     public String getTokenStr() {
         return tokenStr;
