@@ -239,7 +239,6 @@ public class CourseCopyController implements Serializable {
             px.setIsDefaultParttype(p.isDefaultParttype());
             px.setPerformanceArea(p.getPerformanceArea());
             px.setPerformanceContent(p.getPerformanceContent());
-            px.setRestricted(p.getRestricted());
 
             GradeFormula newFormula = new GradeFormula();
             GradeFormula otherFormula = p.getLatestFormula();

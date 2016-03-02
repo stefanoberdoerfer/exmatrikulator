@@ -24,12 +24,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * The Backing Bean of the Course overview page. Covers logic which shouldn't
@@ -121,6 +123,11 @@ public class CourseOverviewController {
     private List<Backup> oldBackups;
 
     /**
+     * ResourceBundle for getting localised messages.
+     */
+    private ResourceBundle bundle;
+
+    /**
      * Sessionscoped Usercontroller injected here to simplify
      * synchronisation of active courses.
      */
@@ -136,6 +143,9 @@ public class CourseOverviewController {
 
         loggedInUser = (User) FacesContext.getCurrentInstance().getExternalContext()
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
+
+        bundle = ResourceBundle.getBundle("messages",
+                FacesContext.getCurrentInstance().getViewRoot().getLocale());
 
         oldCourses = courseService.getOldCourses(loggedInUser);
         oldUsers = new ArrayList<User>();
@@ -215,9 +225,18 @@ public class CourseOverviewController {
         log.debug("User " + loggedInUser + " leaves course " + courseToLeave.getName());
         Lecturer lec = courseToLeave.getLecturerFromUser(loggedInUser);
         if (lec != null) {
-            lec.setDeleted(true);
-            log.debug("Lecturer relation updated");
-            lecturerService.update(lec);
+            //course creators can't leave the course
+            if (lec.isCourseCreator()) {
+                FacesContext.getCurrentInstance()
+                        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL,
+                                bundle.getString("common.error"),
+                                bundle.getString("courses.creatorCantLeave")));
+                return;
+            } else {
+                lec.setDeleted(true);
+                log.debug("Lecturer relation updated");
+                lecturerService.update(lec);
+            }
         }
 
         PrivilegedUser priv = courseToLeave.getPrivilegedUserFromUser(loggedInUser);

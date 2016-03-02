@@ -430,7 +430,6 @@ public class ApplicationController {
         ParticipationType partType = new ParticipationType();
         partType.setName("Informatik");
         partType.setGroupPerformance(false);
-        partType.setRestricted(false);
         partType.setCourse(course);
         partType.setIsDefaultParttype(true);
         partType = participationTypeService.persist(partType);
@@ -442,7 +441,6 @@ public class ApplicationController {
         ParticipationType winf = new ParticipationType();
         winf.setName("Wirtschaftsinformatik");
         winf.setGroupPerformance(false);
-        winf.setRestricted(false);
         winf.setCourse(course);
         winf.setIsDefaultParttype(false);
         winf = participationTypeService.persist(winf);
@@ -470,7 +468,6 @@ public class ApplicationController {
         ParticipationType partType2 = new ParticipationType();
         partType2.setName("Systems Engineering");
         partType2.setGroupPerformance(false);
-        partType2.setRestricted(false);
         partType2.setCourse(course);
         partType2.setIsDefaultParttype(false);
         course.getParticipationTypes().add(partType2);

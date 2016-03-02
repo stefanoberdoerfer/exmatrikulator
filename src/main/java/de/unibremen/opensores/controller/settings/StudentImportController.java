@@ -9,11 +9,13 @@ import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
+import de.unibremen.opensores.util.DateUtil;
 import de.unibremen.opensores.util.ServerProperties;
 import de.unibremen.opensores.util.csv.StudIpParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
@@ -334,6 +336,7 @@ public class StudentImportController {
         PasswordReset passwordReset = userService
                 .initPasswordReset(newUser, RESET_TOKEN_EXPIRATION);
         newUser.setToken(passwordReset);
+        newUser.setLastActivity(DateUtil.getDateTime());
         userService.persist(newUser);
         try {
             sendRegistrationMail(newUser);

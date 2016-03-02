@@ -39,9 +39,6 @@ public class ParticipationType {
     @Column
     private String performanceArea;
 
-    @Column(nullable = false)
-    private Boolean isRestricted;
-
     @Column(nullable = true)
     private String sws;
 
@@ -121,14 +118,6 @@ public class ParticipationType {
 
     public void setPerformanceArea(String performanceArea) {
         this.performanceArea = performanceArea;
-    }
-
-    public Boolean getRestricted() {
-        return isRestricted;
-    }
-
-    public void setRestricted(Boolean restricted) {
-        isRestricted = restricted;
     }
 
     public Course getCourse() {
