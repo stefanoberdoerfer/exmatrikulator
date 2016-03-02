@@ -11,6 +11,7 @@ import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradeService;
@@ -795,6 +796,10 @@ public class  ParticipantsController {
         if (editedPrivilegedUser != null) {
             log.debug("There is an old privileged user association, setting it to hidden");
             editedPrivilegedUser.setDeleted(true);
+            for (Tutorial t : editedPrivilegedUser.getTutorials()) {
+                t.getTutors().remove(editedPrivilegedUser);
+                editedPrivilegedUser.getTutorials().remove(t);
+            }
             logHidePrivilegedUserForStudent(editedPrivilegedUser);
         }
 
@@ -827,6 +832,14 @@ public class  ParticipantsController {
         if (editedStudent != null) {
             log.debug("There is an old student association, setting it to hidden");
             editedStudent.setDeleted(true);
+            if (editedStudent.getGroup() != null) {
+                editedStudent.getGroup().getStudents().remove(editedStudent);
+                editedStudent.setGroup(null);
+            }
+            if (editedStudent.getTutorial() != null) {
+                editedStudent.getTutorial().getStudents().remove(editedStudent);
+                editedStudent.setTutorial(null);
+            }
             logHideStudentForPrivilegedUser(editedStudent);
         }
 
