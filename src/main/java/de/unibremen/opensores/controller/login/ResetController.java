@@ -108,7 +108,7 @@ public class ResetController {
 
         PasswordReset passReset = userService.initPasswordReset(user, TOKEN_VALID_TIME);
         user.setToken(passReset);
-        logService.persist(Log.withoutCourse(user, "Has reset has password"));
+        logService.persist(Log.withoutCourse(user, "Has reset his password."));
         user = userService.update(user);
 
         try {

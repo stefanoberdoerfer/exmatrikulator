@@ -1,5 +1,7 @@
 package de.unibremen.opensores.controller.tutorial;
 
+import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.service.LogService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DualListModel;
@@ -90,6 +92,12 @@ public class TutorialController {
      */
     @EJB
     private PrivilegedUserService privilegedUserService;
+
+    /**
+     * The logService for Exmatrikulator logs.
+     */
+    @EJB
+    private LogService logService;
 
     /**
      * Course for this tutorial.
@@ -314,6 +322,8 @@ public class TutorialController {
             s.setGroup(null);
         }
 
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Removed tutorial %s.", tutorial.getName())));
         tutorialService.remove(tutorial);
         course = tutorial.getCourse();
 
@@ -358,7 +368,9 @@ public class TutorialController {
         group.setName(groupName);
         group.setTutorial(tutorial);
         groupService.persist(group);
-
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Created group %s in tutorial %s.",
+                        group.getName(), tutorial.getName())));
         try {
             group = updateMembers(group);
         } catch (ValidationException e) {
@@ -386,6 +398,9 @@ public class TutorialController {
 
         group.setName(newGroupName);
         group = groupService.update(group);
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Updated group %s in tutorial %s.",
+                        group.getName(), tutorial.getName())));
 
         try {
             group = updateMembers(group);
@@ -412,6 +427,10 @@ public class TutorialController {
                 student.setGroup(null);
                 studentService.update(student);
             }
+
+            logService.persist(Log.from(user, course.getCourseId(),
+                    String.format("Removed group %s in tutorial %s.",
+                            group.getName(), tutorial.getName())));
         }
 
         tutorial.getGroups().remove(group);
@@ -465,6 +484,9 @@ public class TutorialController {
         }
 
         group.setStudents(students);
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Edited the group members of group %s in tutorial %s.",
+                        group.getName(), tutorial.getName())));
         return group;
     }
 
@@ -490,6 +512,9 @@ public class TutorialController {
 
         tutorial.setStudents(tutorialStudents.getTarget());
         tutorial = tutorialService.update(tutorial);
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Updated the students of tutorial %s.",
+                        tutorial.getName())));
     }
 
     /**
@@ -524,6 +549,9 @@ public class TutorialController {
         student.setGroup(null);
         student.setTutorial(null);
         student = studentService.update(student);
+        logService.persist(Log.from(user, course.getCourseId(),
+                String.format("Removed student %s from from tutorial %s.",
+                        student.getUser(), tutorial.getName())));
     }
 
     /**

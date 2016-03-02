@@ -176,7 +176,7 @@ public class LogController {
             facesContext.getViewRoot().getLocale());
 
         logService.persist(Log.withoutCourse(user,
-                String.format("Deleting lgos from %s to %s",
+                String.format("Deleted logs from %s to %s",
                         beginDate.toString(), endDate.toString())));
 
         String msg = bundle.getString("settings.logs.removeSuccess");
