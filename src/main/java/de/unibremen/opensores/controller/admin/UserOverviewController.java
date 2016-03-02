@@ -261,6 +261,7 @@ public class UserOverviewController {
             courseService.update(c);
         }
 
+        logUserDeleted(selectedUser);
         selectedUser.setFirstName("Deleted");
         selectedUser.setLastName("User");
         selectedUser.setEmail(RandomStringUtils.randomAlphanumeric(10));
@@ -344,7 +345,7 @@ public class UserOverviewController {
                 .filter(i1 -> !selectedUser.getRoles().contains(i1))
                 .forEach(i2 -> selectedUser.getRoles().add(i2));
         userService.update(selectedUser);
-
+        logUserMerged(selectedUser, toBeMerged);
         log.debug("merge was successful");
         //delete other user
         selectedUser = toBeMerged;
@@ -385,7 +386,7 @@ public class UserOverviewController {
         }
 
         userService.update(selectedUser);
-
+        logUpdateUser(selectedUser);
         clearFields();
     }
 
@@ -517,6 +518,21 @@ public class UserOverviewController {
     private void logUserGotPasswordReset(User user) {
         logAction("The user " + user + " has been send a new password reset link.");
     }
+
+
+    private void logUpdateUser(User user) {
+        logAction("The user " + user + " has been updated.");
+    }
+
+    private void logUserMerged(User selectedUser, User mergeWith) {
+        log.debug("User " + selectedUser + " was merged with user " + mergeWith);
+    }
+
+    private void logUserDeleted(User user) {
+        logAction("The user " + user + " has been deleted.");
+
+    }
+
 
     /**
      * Injects the logService.
