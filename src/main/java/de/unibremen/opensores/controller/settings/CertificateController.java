@@ -3,31 +3,34 @@ package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.PaboGrade;
+import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
+import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
-import de.unibremen.opensores.model.Role;
-import de.unibremen.opensores.model.ParticipationType;
-import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
 import de.unibremen.opensores.util.ServerProperties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.ejb.EJB;
-import javax.annotation.PostConstruct;
-import javax.faces.bean.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.context.FacesContext;
-import java.util.ResourceBundle;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Properties;
+import java.util.ResourceBundle;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Backing bean for the certificate printview.
@@ -279,6 +282,59 @@ public class CertificateController {
         } else {
             return area;
         }
+    }
+
+    /**
+     * Returns the kind of the course.
+     *
+     * @param student The student to get the course from.
+     *
+     * @return String the kind.
+     */
+    public String getKind(Student student) {
+        if (student == null) {
+            return "";
+        }
+
+        String kind = student.getCourse().getKind();
+
+        if (kind == null) {
+            return "";
+        }
+
+        return kind;
+    }
+
+    /**
+     * Returns the comment of the course.
+     *
+     * @param student The student to get the course from.
+     *
+     * @return String the comment.
+     */
+    public String getComment(Student student) {
+        if (student == null) {
+            return "";
+        }
+
+        String comment = student.getCourse().getComment();
+
+        if (comment == null) {
+            return "";
+        }
+
+        return comment;
+    }
+
+    /**
+     * Returns the Date as a String.
+     *
+     * @return String Todays date.
+     */
+    public String getDate() {
+        Date date = new Date();
+        DateFormat format = new SimpleDateFormat("d.M.yyyy");
+        return format.format(date);
     }
 
     /**
