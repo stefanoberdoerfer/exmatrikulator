@@ -2,7 +2,11 @@ package de.unibremen.opensores.controller.admin;
 
 import de.unibremen.opensores.controller.settings.CourseSettingsController;
 import de.unibremen.opensores.model.Backup;
+import de.unibremen.opensores.model.Log;
+import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.BackupService;
+import de.unibremen.opensores.service.LogService;
+import de.unibremen.opensores.util.Constants;
 import de.unibremen.opensores.util.ServerProperties;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +18,7 @@ import javax.ejb.EJB;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.persistence.PersistenceException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,6 +39,8 @@ public class BackupController {
     @EJB
     private BackupService backupService;
 
+    private LogService logService;
+
     /**
      * The log4j logger.
      */
@@ -51,6 +58,11 @@ public class BackupController {
     private static String dtePropertyKey = "exmatrikulator.backup.dateForm";
 
     /**
+     * The logged in user.
+     */
+    private User loggedInUser;
+
+    /**
      * Executed after construction.
      */
     @PostConstruct
@@ -66,6 +78,9 @@ public class BackupController {
         } finally {
             dateForm = new SimpleDateFormat(format);
         }
+
+        loggedInUser = (User) FacesContext.getCurrentInstance().getExternalContext()
+                .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
     }
 
     /**
@@ -82,6 +97,7 @@ public class BackupController {
         }
 
         backupService.persist(backup);
+        logBackupCreated(backup);
     }
 
     /**
@@ -97,7 +113,7 @@ public class BackupController {
 
         String path = backup.getPath();
         backupService.remove(backup);
-
+        logBackupDeleted(backup);
         try {
             File file = new File(path);
             backupService.deleteFolder(file);
@@ -129,5 +145,38 @@ public class BackupController {
         }
 
         return dateForm.format(backup.getDate());
+    }
+
+    @EJB
+    public void setLogService(LogService logService) {
+        this.logService = logService;
+    }
+
+    /*
+     * Log methods
+     */
+
+    /**
+     * Logs that a backup has been created by the logged in user.
+     * @param backup The created backup.
+     */
+    private void logBackupCreated(Backup backup) {
+        logAction(String.format("The backup %s has been created manually", backup.getName()));
+    }
+
+    /**
+     * Logs that a backup has been deleted.
+     * @param backup The deleted backup.
+     */
+    private void logBackupDeleted(Backup backup) {
+        logAction(String.format("The backup %s has been deleted manually", backup.getName()));
+    }
+
+    /**
+     * Logs an action with backups with the currently logged in user.
+     * @param description The logged in user.
+     */
+    private void logAction(String description) {
+        logService.persist(Log.withoutCourse(loggedInUser, description));
     }
 }
