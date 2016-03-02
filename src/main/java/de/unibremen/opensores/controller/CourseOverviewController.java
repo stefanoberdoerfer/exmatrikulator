@@ -228,7 +228,6 @@ public class CourseOverviewController {
         }
         log.debug("User " + loggedInUser + " leaves course " + courseToLeave.getName());
 
-        logService.persist(Log.from(loggedInUser, courseToLeave.getCourseId(), "Left the course"));
         Lecturer lec = courseToLeave.getLecturerFromUser(loggedInUser);
         if (lec != null) {
             //course creators can't leave the course
@@ -259,6 +258,7 @@ public class CourseOverviewController {
             studentService.update(stud);
         }
 
+        logService.persist(Log.from(loggedInUser, courseToLeave.getCourseId(), "Left the course"));
         userController.updateUserCourses();
     }
 
