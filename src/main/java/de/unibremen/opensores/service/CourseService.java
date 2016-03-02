@@ -339,7 +339,7 @@ public class CourseService extends GenericService<Course> {
                 "SELECT DISTINCT c FROM Course c WHERE "
                         + "(TRIM(LOWER(c.name)) LIKE :searchInput OR"
                         + ":searchInput IN elements(c.numbers)) AND "
-                        + "c.deleted = false", Course.class)
+                        + "c.deleted = false AND c.lastFinalization IS NULL", Course.class)
                 .setParameter("searchInput", "%" + trimSearchInput + "%")
                 .getResultList();
     }

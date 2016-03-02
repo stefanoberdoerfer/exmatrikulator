@@ -331,7 +331,8 @@ public class TmeController {
         ParticipationType type = new ParticipationType();
         type.setName(node.getString("studyArea"));
         type.setGroupPerformance(node.getBoolean("groupPerformance"));
-        type.setRestricted(false);
+        type.setPerformanceArea(node.getString("pruefungsgebiet"));
+        type.setPerformanceContent(node.getString("inhaltUndForm"));
         type.setSws(null);
         type.setCreditPoints(null);
         type.setIsDefaultParttype(true);

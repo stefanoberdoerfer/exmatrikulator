@@ -108,10 +108,8 @@ public class PartTypeController {
      * and inserts a default ParticipationType if the course doesn't have any.
      */
     private void updateCurrentPartType() {
-        currentPartType = new ParticipationType();
-        currentPartType.setIsDefaultParttype(false);
+        initNewPartType();
         if (course != null && course.getParticipationTypes().isEmpty()) {
-            initNewPartType();
             currentPartType.setIsDefaultParttype(true);
             currentPartType.setName(bundle.getString("participationType.defaultPartType"));
             course.getParticipationTypes().add(currentPartType);
@@ -130,7 +128,7 @@ public class PartTypeController {
 
         if (!calledFromWizard) {
             log.debug("updating course from Settings");
-            courseService.update(course);
+            course = courseService.update(course);
             String description = "Participationtypes of this course were edited";
             logService.persist(Log.from(loggedInUser,course.getCourseId(),description));
         }
@@ -195,6 +193,7 @@ public class PartTypeController {
     public void removePartType(ParticipationType partType) {
         checkCourseIsNull();
         course.getParticipationTypes().remove(partType);
+        partType.setCourse(null);
         if (editmode) {
             editmode = false;
             initNewPartType();
