@@ -9,6 +9,7 @@ import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -291,6 +292,7 @@ public class CourseCopyController implements Serializable {
         }
     }
 
+
     /**
      * Copies Name, Numbers, SWS, CP, flags and Groupsizes from the given course to the new one.
      *
@@ -299,6 +301,7 @@ public class CourseCopyController implements Serializable {
      */
     private void copyCommonDataFrom(Course courseToCopy) {
         log.debug("Copy common data from: " + courseToCopy.getName());
+
         course.setName(courseToCopy.getName());
         course.setNumbers(courseToCopy.getNumbers());
         course.setDefaultSws(courseToCopy.getDefaultSws());

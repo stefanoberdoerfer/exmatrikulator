@@ -1,7 +1,9 @@
 package de.unibremen.opensores.controller.login;
 
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.PasswordReset;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.UserService;
 
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +45,12 @@ public class ResetController {
      */
     @EJB
     private UserService userService;
+
+    /**
+     * The log service for for Exmatrikulator logs.
+     */
+    @EJB
+    private LogService logService;
 
     /**
      * The faces context.
@@ -100,6 +108,7 @@ public class ResetController {
 
         PasswordReset passReset = userService.initPasswordReset(user, TOKEN_VALID_TIME);
         user.setToken(passReset);
+        logService.persist(Log.withoutCourse(user, "Has reset has password"));
         user = userService.update(user);
 
         try {

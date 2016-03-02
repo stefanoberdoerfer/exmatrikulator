@@ -1,7 +1,9 @@
 package de.unibremen.opensores.controller.login;
 
 import de.unibremen.opensores.model.GlobalRole;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.DateUtil;
 import org.mindrot.jbcrypt.BCrypt;
@@ -29,6 +31,12 @@ public class RegistrationController {
      */
     @EJB
     private UserService userService;
+
+    /**
+     * The LogService for Exmatrikulator logs.
+     */
+    @EJB
+    private LogService logService;
 
     /**
      * The typed in email of the user, shouldn't be in the system.
@@ -90,7 +98,9 @@ public class RegistrationController {
         /* The functionality that a user has to get confirmed by the admin first and gets an email
          * as soon as he is confirmed can be implemented here */
 
-        userService.persist(initUserFromInput());
+        User newUser = initUserFromInput();
+        userService.persist(newUser);
+        logService.persist(Log.withoutCourse(newUser, "Has registered to the exmatrikulator"));
         facesContext.addMessage(null, new FacesMessage(FacesMessage
             .SEVERITY_INFO, bundle.getString("common.success"),
             bundle.getString("registration.success")));
