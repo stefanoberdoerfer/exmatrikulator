@@ -266,7 +266,7 @@ public class CourseService extends GenericService<Course> {
                 "SELECT DISTINCT s FROM Student s"
                 + " JOIN s.course AS c"
                 + " WITH c.courseId = :courseId"
-                + " WHERE s.paboData IS NOT NULL", Student.class)
+                + " WHERE s.paboData IS NULL", Student.class)
             .setParameter("courseId", course.getCourseId())
             .getResultList();
 
