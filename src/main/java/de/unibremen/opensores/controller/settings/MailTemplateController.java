@@ -115,14 +115,13 @@ public class MailTemplateController {
                 .getExternalContext()
                 .getRequest();
 
-        String courseId = request.getParameter(
-                Constants.HTTP_PARAM_COURSE_ID);
-        String mailTemplateId = request.getParameter(
-                Constants.HTTP_PARAM_MAILTEMPLATE_ID);
 
         user = (User) context.getExternalContext()
                 .getSessionMap()
                 .get(Constants.SESSION_MAP_KEY_USER);
+
+        String courseId = request.getParameter(
+                Constants.HTTP_PARAM_COURSE_ID);
 
         Course currentCourse = null;
         if (courseId != null) {
@@ -142,6 +141,9 @@ public class MailTemplateController {
         } else {
             course = currentCourse;
         }
+
+        String mailTemplateId = request.getParameter(
+                Constants.HTTP_PARAM_MAILTEMPLATE_ID);
 
         MailTemplate template = null;
         if (mailTemplateId != null) {

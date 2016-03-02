@@ -72,7 +72,7 @@ public class RecordBookRemoveController {
     private RecordBookService recordBookService;
 
     /**
-     * The LogService for Exmatrikulator logs
+     * The LogService for Exmatrikulator logs.me
      */
     @EJB
     private LogService logService;

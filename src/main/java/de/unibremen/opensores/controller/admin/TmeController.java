@@ -485,7 +485,8 @@ public class TmeController {
         group.setTutorial(tutorial);
         groupService.persist(group);
         logService.persist(Log.from(loggedInUser, course.getCourseId(),
-                String.format("String the group %s has been created by TME import", group.getName())));
+                String.format("String the group %s has been created by TME import",
+                        group.getName())));
 
         tutorial.getGroups().add(group);
         List<Student> students = createStudents(node.getArray("students"),
@@ -734,7 +735,7 @@ public class TmeController {
         }
 
         userService.persist(newUser);
-        logUserCreated(user);
+        logUserCreated(newUser);
         log.debug(String.format("Persisted new user '%s' (%s)",
                     newUser.toString(), newUser.getEmail()));
 

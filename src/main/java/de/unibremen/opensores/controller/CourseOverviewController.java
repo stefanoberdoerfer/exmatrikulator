@@ -166,7 +166,11 @@ public class CourseOverviewController {
         log.debug("deleteOldData() called");
 
         for (Course c : oldCourses) {
+            logService.persist(Log.from(loggedInUser, c.getCourseId(),
+                    String.format("Deleting the course %s with its Associations",
+                            c.getName())));
             courseService.deleteCourseWithAssociatons(c);
+
         }
         oldCourses.clear();
 
@@ -223,6 +227,8 @@ public class CourseOverviewController {
             return;
         }
         log.debug("User " + loggedInUser + " leaves course " + courseToLeave.getName());
+
+        logService.persist(Log.from(loggedInUser, courseToLeave.getCourseId(), "Left the course"));
         Lecturer lec = courseToLeave.getLecturerFromUser(loggedInUser);
         if (lec != null) {
             //course creators can't leave the course
@@ -438,6 +444,8 @@ public class CourseOverviewController {
         user.setProfileInfo("");
         user.setBlocked(true);
         user.setPassword(RandomStringUtils.randomAlphanumeric(10));
+        logService.persist(Log.from(loggedInUser, selectedCourse.getCourseId(),
+                String.format("User %s has been deleted.", user)));
         userService.update(user);
     }
 

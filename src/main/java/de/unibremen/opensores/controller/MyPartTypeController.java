@@ -1,6 +1,7 @@
 package de.unibremen.opensores.controller;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
@@ -131,6 +132,9 @@ public class MyPartTypeController {
             student.setParticipationType(partType);
             student.setConfirmed(!course.getRequiresConfirmation());
             student = studentService.update(student);
+            logService.persist(Log.from(user, course.getCourseId(),
+                    String.format("Changed the participation type to %s.",
+                    partType.getName())));
             log.debug("ParticipationType updated to " + student.getParticipationType().getName());
             FacesContext.getCurrentInstance()
                     .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
