@@ -1,6 +1,7 @@
 package de.unibremen.opensores.controller.settings;
 
 import de.unibremen.opensores.model.Course;
+import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.ParticipationType;
 import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.model.Student;
@@ -192,6 +193,8 @@ public class StudentImportController {
         if (event.getFile() != null && tempFileFolder != null) {
             log.debug("Upload success");
             files.add(event.getFile());
+            logService.persist(Log.from(loggedInUser, course.getCourseId(),
+                    String.format("Uploaded the file %s.", event.getFile().getFileName())));
         } else {
             facesContext.addMessage(null, new FacesMessage(FacesMessage
                     .SEVERITY_FATAL, bundle.getString("common.error"),
@@ -319,6 +322,8 @@ public class StudentImportController {
                 s.setParticipationType(defaultParttype);
                 defaultParttype.getStudents().add(s);
                 course.getStudents().add(s);
+                logService.persist(Log.from(loggedInUser, course.getCourseId(),
+                        String.format("Creating the student for user " + s.getUser())));
             }
         }
 
@@ -337,6 +342,8 @@ public class StudentImportController {
                 .initPasswordReset(newUser, RESET_TOKEN_EXPIRATION);
         newUser.setToken(passwordReset);
         newUser.setLastActivity(DateUtil.getDateTime());
+        logService.persist(Log.from(loggedInUser, course.getCourseId(),
+                String.format("Created user %s by Stud IP Import.", newUser)));
         userService.persist(newUser);
         try {
             sendRegistrationMail(newUser);
