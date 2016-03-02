@@ -162,7 +162,6 @@ public class PaboController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init called");
         bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
 

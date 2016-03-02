@@ -104,7 +104,6 @@ public class MailTemplateController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
 
         context = FacesContext.getCurrentInstance();
 

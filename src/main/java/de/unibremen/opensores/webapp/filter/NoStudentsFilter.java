@@ -70,7 +70,6 @@ public final class NoStudentsFilter implements Filter {
         HttpServletResponse hres = (HttpServletResponse) res;
         HttpServletRequest hreq = (HttpServletRequest) req;
         String path = hreq.getRequestURI().substring(hreq.getContextPath().length());
-        log.debug("doFilter() called with path " + path);
 
         String freq = hreq.getHeader("Faces-Request");
         if (freq != null && freq.equals("partial/ajax")) {
@@ -87,7 +86,6 @@ public final class NoStudentsFilter implements Filter {
 
         // Must pass here or the download doesnt work.
         if (path.startsWith(PATH_PABO_DOWNLOAD) || path.startsWith(PATH_CSV_DOWNLOAD) ) {
-            log.debug("Letting pass  download path ");
             filterChain.doFilter(req, res);
             return;
         }

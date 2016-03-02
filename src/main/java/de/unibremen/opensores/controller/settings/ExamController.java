@@ -131,15 +131,12 @@ public class ExamController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         context = FacesContext.getCurrentInstance();
         ExternalContext exContext = context.getExternalContext();
         HttpServletRequest req = (HttpServletRequest) exContext.getRequest();
 
         loggedInUser = (User) exContext.getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
         course = courseService.findCourseById(req.getParameter(Constants.HTTP_PARAM_COURSE_ID));
-
-        log.debug("Loaded course object: " + course);
 
         gradeTypeLabels = new HashMap<>();
         bundle = ResourceBundle.getBundle("messages",
@@ -265,7 +262,6 @@ public class ExamController {
             course = courseService.update(course);
             examService.remove(selectedExam);
         }
-        //TODO Mark every grade script invalid which contains the shortcut of exam
     }
 
     /*

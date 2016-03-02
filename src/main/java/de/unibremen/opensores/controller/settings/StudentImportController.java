@@ -127,7 +127,6 @@ public class StudentImportController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         context = FacesContext.getCurrentInstance();
         HttpServletRequest req = (HttpServletRequest)
                 context.getExternalContext().getRequest();
@@ -135,7 +134,6 @@ public class StudentImportController {
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
 
         course = courseService.findCourseById(req.getParameter("course-id"));
-        log.debug("Loaded course object: " + course);
 
         loggedInUser = (User) context.getExternalContext()
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);

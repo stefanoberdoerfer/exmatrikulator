@@ -139,13 +139,11 @@ public class CourseSettingsController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
         HttpServletRequest httpReq
                 = (HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest();
-        log.debug("Request URI: " + httpReq.getRequestURI());
         course = courseService.findCourseById(httpReq.getParameter(
                 Constants.HTTP_PARAM_COURSE_ID));
 
@@ -205,7 +203,6 @@ public class CourseSettingsController {
         }
 
 
-        log.debug("Loaded course object: " + course);
         if (course == null || user == null || (!isLecturer && privUser == null)
                 || tempFileFolder == null || !Files.exists(tempFileFolder)) {
             log.debug("trying to redirect to /course/overview");

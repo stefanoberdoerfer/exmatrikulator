@@ -35,7 +35,7 @@ public class CourseFilter implements Filter {
     /**
      * The log4j logger.
      */
-    private static Logger log = LogManager.getLogger(CourseFilter.class);
+    private static final Logger log = LogManager.getLogger(CourseFilter.class);
 
 
     /**
@@ -71,7 +71,6 @@ public class CourseFilter implements Filter {
 
         // Must pass here or the download doesnt work.
         if (path.startsWith(PATH_PABO_DOWNLOAD) || path.startsWith(PATH_CSV_DOWNLOAD) ) {
-            log.debug("Letting pass  download path ");
             filterChain.doFilter(req, res);
             return;
         }

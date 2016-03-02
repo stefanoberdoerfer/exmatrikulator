@@ -35,13 +35,6 @@
 
             <property name="hibernate.hbm2ddl.auto" value="update" />
 
-            <!-- Loads a database initialisation script for populating the database with data for development -->
-            <!-- TODO Add database prepoulation script when the data model is advanced enough-->
-            <!-- <property name="hibernate.hbm2ddl.import_files" value="/import.sql" /> -->
-
-            <!-- Multiply lines can be used for the initialsation script with this class -->
-            <property name="hibernate.hbm2ddl.import_files_sql_extractor" value="org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor" />
-
             <!-- Statistics generation with hibernate, false for development -->
             <property name="hibernate.generate_statistics" value="false" />
 

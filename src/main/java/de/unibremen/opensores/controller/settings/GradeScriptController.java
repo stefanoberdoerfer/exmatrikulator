@@ -326,7 +326,6 @@ public class GradeScriptController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         initPyInterpreter();
         bundle = ResourceBundle.getBundle(Constants.BUNDLE_NAME,
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
@@ -334,10 +333,8 @@ public class GradeScriptController {
         HttpServletRequest httpReq = (HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest();
 
-        log.debug("Request URI: " + httpReq.getRequestURI());
         final String courseIdString = httpReq.getParameter(Constants.HTTP_PARAM_COURSE_ID);
 
-        log.debug("course-id: " + courseIdString);
         long courseId = -1;
         if (courseIdString != null) {
             try {

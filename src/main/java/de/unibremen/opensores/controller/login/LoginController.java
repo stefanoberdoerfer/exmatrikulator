@@ -62,7 +62,6 @@ public class LoginController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         if (FacesContext.getCurrentInstance()
                 .getExternalContext().getSessionMap().get("user") != null) {
             log.debug("User is logged in during current session");

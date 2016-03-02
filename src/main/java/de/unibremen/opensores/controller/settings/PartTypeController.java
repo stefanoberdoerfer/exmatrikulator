@@ -87,7 +87,6 @@ public class PartTypeController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
         context = FacesContext.getCurrentInstance();
@@ -98,7 +97,6 @@ public class PartTypeController {
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
 
         course = courseService.findCourseById(req.getParameter("course-id"));
-        log.debug("Loaded course object: " + course);
 
         updateCurrentPartType();
     }

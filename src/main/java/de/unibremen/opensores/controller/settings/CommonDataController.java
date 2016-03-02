@@ -118,7 +118,6 @@ public class CommonDataController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         context = FacesContext.getCurrentInstance();
         HttpServletRequest req = (HttpServletRequest)
                 context.getExternalContext().getRequest();

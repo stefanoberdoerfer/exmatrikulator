@@ -1,5 +1,6 @@
 package de.unibremen.opensores.webapp.filter;
 
+import de.unibremen.opensores.model.GlobalRole;
 import de.unibremen.opensores.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,21 +65,17 @@ public final class LoginFilter implements Filter {
                          FilterChain filterChain)
             throws IOException, ServletException {
         final FilterContext context = new FilterContext(req, res, filterChain);
-        log.debug("Context Path: " + context.httpRequest.getContextPath());
         //The requested path from the http request
         String path = context.httpRequest.getRequestURI()
                             .substring(context.httpRequest
                                     .getContextPath().length());
-        log.debug("Path: " + path);
 
         boolean loggedIn = (context.httpSession != null)
                 && (context.httpSession.getAttribute(SESSION_USER) != null);
-        log.debug("User is logged in: " + loggedIn);
 
         // Handle not logged in User
         if (!loggedIn) {
             if (path.startsWith(UNREGISTERED_PATH)) {
-                log.debug("Unregistered Path");
                 filterChain.doFilter(req, res);
                 return;
             } else {
@@ -109,10 +106,8 @@ public final class LoginFilter implements Filter {
      */
     private void filterAdminPath(FilterContext context)
             throws IOException, ServletException {
-        log.debug("filterAdminPath has been called: "
-                + context.httpRequest.getRequestURI());
         User user = (User) context.httpSession.getAttribute(SESSION_USER);
-        if (user.hasGlobalRole("ADMIN")) {
+        if (user.hasGlobalRole(GlobalRole.ADMIN)) {
             context.filterChain.doFilter(context.request, context.response);
         } else {
             context.httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -126,10 +121,8 @@ public final class LoginFilter implements Filter {
      */
     private void filterLecturerPath(FilterContext context)
         throws IOException, ServletException {
-        log.debug("filterLecturerPath has been called: "
-                + context.httpRequest.getRequestURI());
         User user = (User) context.httpSession.getAttribute(SESSION_USER);
-        if (user.hasGlobalRole("LECTURER")) {
+        if (user.hasGlobalRole(GlobalRole.LECTURER)) {
             context.filterChain.doFilter(context.request, context.response);
         } else {
             context.httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);

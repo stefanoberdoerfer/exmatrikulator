@@ -137,7 +137,6 @@ public class TutorialEventController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         if (tutorialEventModel == null) {
             tutorialEventModel = new DefaultScheduleModel();
         }
@@ -148,8 +147,6 @@ public class TutorialEventController {
                 req.getParameter(Constants.HTTP_PARAM_COURSE_ID));
         tutorial = tutorialService.findTutorialById(
                 req.getParameter(Constants.HTTP_PARAM_TUTORIAL_ID));
-        log.debug("Course: " + course);
-        log.debug("Tutorial: " + tutorial);
 
         boolean validationPassed = false;
         try {
@@ -158,7 +155,6 @@ public class TutorialEventController {
         } catch (ClassCastException e) {
             log.error(e);
         }
-        log.debug("Logged in User: " + loggedInUser);
         if (course != null && tutorial != null && loggedInUser != null
                && course.getTutorials().contains(tutorial)) {
             isUserLecturer = userService.hasCourseRole(loggedInUser,

@@ -9,7 +9,6 @@
     <ui:param name="pageTitle" value="#{msg['settings.logs']}" />
 
     <!-- Breadcrumbs -->
-    <!-- TODO -->
 
     <!-- Page Content -->
     <ui:define name="content">
@@ -106,7 +105,7 @@
                               itemValue="#{course}" itemLabel="#{course.name}" />
                           </p:selectOneMenu>
                       </f:facet>
-                      <h:outputText value="#{log.courseId}" /> <!-- TODO use a converter here too -->
+                      <h:outputText value="#{log.courseId}" />
                     </p:column>
                 </p:dataTable>
             </div>

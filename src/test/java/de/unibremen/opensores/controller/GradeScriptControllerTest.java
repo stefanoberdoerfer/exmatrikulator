@@ -135,7 +135,6 @@ public class GradeScriptControllerTest {
         studentServiceMock = MockHelper.mockStudentService();
         when(studentServiceMock.getUndeletedAndConfirmedStudentsOf
                 (course.getParticipationTypes()))
-                //TODO
                 .thenReturn(new HashMap<>());
         scriptController.setStudentService(studentServiceMock);
 

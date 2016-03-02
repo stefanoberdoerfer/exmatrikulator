@@ -269,7 +269,6 @@ public class  ParticipantsController {
     public void init() {
         selectedRoleId = Role.STUDENT.getId();
         userSearchResultList = new ArrayList<>();
-        log.debug("init() called");
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext exContext = facesContext.getExternalContext();
 
@@ -286,8 +285,6 @@ public class  ParticipantsController {
             }
             return;
         }
-
-        log.debug("Loaded course object: " + course);
 
         bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());

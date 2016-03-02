@@ -148,7 +148,7 @@ public class ApplicationController {
 
         if (!userService.isEmailRegistered(mail)) {
             if (pass == null) {
-                log.error("Could not determine default admin pass.");
+                log.error("Could not determine default admin password.");
                 return;
             }
             final User newAdmin = new User();
@@ -282,8 +282,7 @@ public class ApplicationController {
 
 
     /**
-     * Inserts dummy users in the database at startup.
-      @TODO Delete before deadline :^)
+     * Inserts dummy users in the database at startup if used in init().
      */
     private void initDummyData() {
         //Users
@@ -344,7 +343,7 @@ public class ApplicationController {
         notInCourse.setEmail("notincourse@uni-bremen.de");
         notInCourse.setPassword(BCrypt.hashpw("exmatrikuliert", BCrypt.gensalt()));
         notInCourse.setFirstName("Nick");
-        notInCourse.setLastName("Imcuas");
+        notInCourse.setLastName("Notincourse");
         notInCourse.setMatriculationNumber("133742");
         notInCourse.addRole(GlobalRole.USER);
         notInCourse.setLastActivity(DateUtil.getDateTime());
@@ -353,8 +352,8 @@ public class ApplicationController {
         final User unconfirmedUser = new User();
         unconfirmedUser.setEmail("unconfirmed@uni-bremen.de");
         unconfirmedUser.setPassword(BCrypt.hashpw("exmatrikuliert", BCrypt.gensalt()));
-        unconfirmedUser.setFirstName("Nod");
-        unconfirmedUser.setLastName("Komfirmed");
+        unconfirmedUser.setFirstName("Norbert");
+        unconfirmedUser.setLastName("Unconfirmed");
         unconfirmedUser.setMatriculationNumber("113742");
         unconfirmedUser.addRole(GlobalRole.USER);
         unconfirmedUser.setLastActivity(DateUtil.getDateTime());
@@ -400,7 +399,7 @@ public class ApplicationController {
         // Mail template for course
         MailTemplate mail = new MailTemplate();
         mail.setName("Test Template");
-        mail.setSubject("Durchgefallen");
+        mail.setSubject("Exmatrikuliert");
         mail.setText("Test : {{salutation}} {{firstName}} {{lastName}}"
                 + " {{paboGrade}} {{semester}} {{courseName}}"
                 + " {{#grades}} {{.}} {{/grades}}");
@@ -447,7 +446,7 @@ public class ApplicationController {
 
         //Tutorial for course
         Tutorial tutorial = new Tutorial();
-        tutorial.setName("Schmick Tutorial");
+        tutorial.setName("Schmink Tutorial");
         tutorial.setCourse(course);
         course.getTutorials().add(tutorial);
         tutorial.getStudents().add(student);
@@ -466,7 +465,7 @@ public class ApplicationController {
 
         //Group for course and tutorial
         Group group = new Group();
-        group.setName("420 Blaze it");
+        group.setName("TestGruppe");
         group.setTutorial(tutorial);
         tutorial.getGroups().add(group);
         group.setTutorial(tutorial);
@@ -585,17 +584,6 @@ public class ApplicationController {
         grading.setGrade(grade);
         gradingService.persist(grading);
 
-        Upload upload = new Upload();
-        upload.setFileSize(100L);
-        upload.setPath("/blah/blah/upload.zip");
-        upload.setTime(new Date(123456L));
-        upload.setComment("lol");
-        upload.getUploaders().add(student);
-        student.getUploads().add(upload);
-
-        uploadService.persist(upload);
-
-
         // Recordbook
         RecordBookEntry rbe = RecordBookEntry.from(student2,course,exam,
                 new Date(),60,"Alles komplett gelöst");
@@ -641,8 +629,6 @@ public class ApplicationController {
         log.debug("Student: " + student.getUser().getFirstName() + " has GradingValue: "
                 + student.getGradings().get(0).getGrade().getValue()
                 + " from " + student.getGradings().get(0).getCorrector().getFirstName());
-        log.debug("Upload with id " + upload.getUploadId() + " uploaded by "
-                + upload.getUploaders().get(0).getUser().getFirstName());
         if (rbe != null) {
             log.debug("RecordBookEntry with id " + rbe.getEntryId() + " persisted. Summary: "
                     + rbe.getDuration() + " Minutes for exam " + rbe.getExam().getName()

@@ -122,7 +122,6 @@ public class CourseOverviewController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
 
         loggedInUser = (User) FacesContext.getCurrentInstance().getExternalContext()
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);

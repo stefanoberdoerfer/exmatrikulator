@@ -84,15 +84,12 @@ public class GradingController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         HttpServletRequest httpReq
                 = (HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest();
 
-        log.debug("Request URI: " + httpReq.getRequestURI());
         final String courseIdString = httpReq.getParameter(Constants.HTTP_PARAM_COURSE_ID);
 
-        log.debug("course-id: " + courseIdString);
         long courseId = -1;
         if (courseIdString != null) {
             try {
@@ -108,8 +105,6 @@ public class GradingController {
 
         Object userObj = FacesContext.getCurrentInstance()
                 .getExternalContext().getSessionMap().get("user");
-
-        log.debug("Loaded course object: " + course);
 
         if (course == null || !(userObj instanceof User)) {
             log.debug("trying to redirect to /course/overview");
