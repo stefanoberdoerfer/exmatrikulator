@@ -45,7 +45,7 @@ public class Course {
     private String comment;
 
     @Column(nullable = true)
-    private String kind;
+    private String approvedFor;
 
     @Column(nullable = false)
     private String defaultSws;
@@ -436,12 +436,12 @@ public class Course {
         this.comment = comment;
     }
 
-    public String getKind() {
-        return kind;
+    public String getApprovedFor() {
+        return approvedFor;
     }
 
-    public void setKind(String kind) {
-        this.kind = kind;
+    public void setApprovedFor(String approvedFor) {
+        this.approvedFor = approvedFor;
     }
 
     /**

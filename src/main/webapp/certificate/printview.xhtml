@@ -81,16 +81,16 @@
          <li><h:outputText value="#{msg['cert.semester']}: #{certificateController.course.semester}"/></li>
          <li><h:outputText value="#{msg['cert.creditPoints']}: #{certificateController.getCreditPoints(s)}"/></li>
           <li><h:outputText value="#{msg['courses.weekhours']}: #{certificateController.getSws(s)}"/></li>
-          <li><h:outputText value="#{msg['cert.approval']}: #{certificateController.getPerformanceArea(s)}"/></li>
+          <li><h:outputText value="#{msg['cert.approval']}: #{certificateController.getApprovedFor(s)}"/></li>
          <li><h:outputText value="#{msg['cert.comment']}: #{certificateController.getComment(s)}"/></li>
       </ul>
       <br></br>
       <br></br>
       <br></br>
       <ul class="list-unstyled">
-          <li><h:outputText value="#{msg['cert.performance']}: #{certificateController.getParticipationType(s)}"/></li>
+          <li><h:outputText value="#{msg['cert.performance']}: #{certificateController.getSingleOrGroupPerformance(s)}"/></li>
           <li><h:outputText value="#{msg['participationType.performanceContent']}: #{certificateController.getPerformanceContent(s)}"/></li>
-          <li><h:outputText value="#{msg['participationType.performanceArea']}: #{certificateController.getKind(s)}"/></li>
+          <li><h:outputText value="#{msg['participationType.performanceArea']}: #{certificateController.getPerformanceArea(s)}"/></li>
           <li><h:outputText value="#{msg['gradeType.grade']}: #{certificateController.getPaboGradeName(s.paboGrade)}"/></li>
       </ul>
       <br></br>

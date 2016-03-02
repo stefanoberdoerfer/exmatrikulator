@@ -202,7 +202,7 @@ public class CertificateController {
      *
      * @return the ParticipationType as a String.
      */
-    public String getParticipationType(Student student) {
+    public String getSingleOrGroupPerformance(Student student) {
         ParticipationType partType = student.getParticipationType();
 
         if (partType.getGroupPerformance()) {
@@ -291,12 +291,12 @@ public class CertificateController {
      *
      * @return String the kind.
      */
-    public String getKind(Student student) {
+    public String getApprovedFor(Student student) {
         if (student == null) {
             return "";
         }
 
-        String kind = student.getCourse().getKind();
+        String kind = student.getCourse().getApprovedFor();
 
         if (kind == null) {
             return "";
