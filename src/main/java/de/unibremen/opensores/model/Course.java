@@ -41,6 +41,12 @@ public class Course {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = true)
+    private String comment;
+
+    @Column(nullable = true)
+    private String approvedFor;
+
     @Column(nullable = false)
     private String defaultSws;
 
@@ -420,6 +426,22 @@ public class Course {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getApprovedFor() {
+        return approvedFor;
+    }
+
+    public void setApprovedFor(String approvedFor) {
+        this.approvedFor = approvedFor;
     }
 
     /**
