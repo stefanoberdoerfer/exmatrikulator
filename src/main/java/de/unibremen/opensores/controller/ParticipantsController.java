@@ -311,10 +311,11 @@ public class  ParticipantsController {
      * Also determines if a logged in student is confirmed or not.
      */
     private void checkUserRights() {
-        loggedInUserIsLecturer = course.getLecturerFromUser(loggedInUser) != null;
+        Lecturer lec = course.getLecturerFromUser(loggedInUser);
+        loggedInUserIsLecturer = lec != null && !lec.isDeleted();
 
         PrivilegedUser priv = course.getPrivilegedUserFromUser(loggedInUser);
-        if (priv != null) {
+        if (priv != null && !priv.isDeleted()) {
             loggedInUserCanManageStudents = loggedInUserIsLecturer
                     || priv.hasPrivilege(Privilege.ManageStudents);
             loggedInUserCanPrintCerts = loggedInUserIsLecturer
