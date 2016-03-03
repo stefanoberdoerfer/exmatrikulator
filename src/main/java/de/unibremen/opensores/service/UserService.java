@@ -407,13 +407,14 @@ public class UserService extends GenericService<User> {
      */
     public String getPasswordResetURL(HttpServletRequest request, User user, PasswordReset token)
             throws MalformedURLException {
-        StringBuffer requestUrl = request.getRequestURL();
+        StringBuffer url = request.getRequestURL();
+        String uri = request.getRequestURI();
+        String context = request.getContextPath();
 
-        int baseIdx = requestUrl.lastIndexOf("/");
-        String baseUrl = requestUrl.substring(0, baseIdx);
+        String baseUrl = url.substring(0, url.length() - uri.length() + context.length());
 
         return String.format("%s/%s?id=%d&token=%s", baseUrl,
-                "recovery/new-password.xhtml", user.getUserId(), token.getToken());
+                "unregistered/new-password.xhtml", user.getUserId(), token.getToken());
     }
 
     /**
