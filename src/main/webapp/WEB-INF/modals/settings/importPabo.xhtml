@@ -14,30 +14,12 @@
                     <br />
                     <p:fileUpload id="uploadBtn" fileUploadListener="#{paboController.uploadPaboExportFile}"
                                   mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true" multiple="false"
-                                  update="@form" uploadLabel="#{msg['course.paboFile.uploadPaboCSV']}"
+                                  update="@form" label="#{msg['import.choose']}"
+                                  uploadLabel="#{msg['course.paboFile.uploadPaboCSV']}"
                                   invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
                                   sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
 
                     <h:panelGroup rendered="#{paboController.uploadAndParseSucceeded}">
-                        <h4>#{msg['courses.paboFiles.uploadedFile']}</h4>
-                        <div class="form-group">
-                            <p:outputLabel for="fileNameTxt" value="#{msg['import.filename']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-                            <div class="col-xs-8">
-                                <h:outputText styleClass="form-control" id="fileNameTxt"
-                                              value="#{paboController.uploadedFile.fileName}">
-                                </h:outputText>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <p:outputLabel for="fileSizeTxt" value="#{msg['import.filesize']}"
-                                           styleClass="col-xs-3 control-label text-left"/>
-                            <div class="col-xs-8">
-                                <h:outputText styleClass="form-control" id="fileSizeTxt"
-                                              value="#{paboController.getHumanReadableFileSize(paboController.uploadedFile.size)}">
-                                </h:outputText>
-                            </div>
-                        </div>
 
                         <h4>#{msg['courses.paboFiles.uploadResults']}</h4>
                         <p:tabView scrollable="true">
@@ -46,7 +28,8 @@
                                              value="#{paboController.paboErrorMsgs}"
                                              scrollable="true" sortBy="#{paboErrorMsg.row}"
                                              scrollHeight="200" styleClass="table table-condensed">
-                                    <p:column headerText="#{msg['couses.paboFiles.line']}">
+                                    <p:column headerText="#{msg['couses.paboFiles.line']}"
+                                              style="width:20%">
                                         <h:outputText value="#{paboErrorMsg.row}" />
                                     </p:column>
 
