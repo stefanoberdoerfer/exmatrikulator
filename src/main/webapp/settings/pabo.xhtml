@@ -16,8 +16,6 @@
     <ui:define name="content">
         <h:form id="paboOverviewForm">
             <div class="headline">
-                <h1>#{msg['settings.paboFiles']}</h1>
-
                 <h:panelGroup id="btnsPnl"
                               class="btn-group main-buttons pull-right" layout="block">
                     <p:commandLink value="#{msg['course.paboFile.uploadPaboCSV']}"
@@ -32,6 +30,8 @@
                 <p:blockUI block="btnsPnl" trigger="downloadBtn">
                     #{msg['courses.paboFiles.downloadIsExecuting']}
                 </p:blockUI>
+
+                <h1>#{msg['settings.paboFiles']}</h1>
             </div>
 
 
@@ -59,20 +59,21 @@
                 </div>
             </h:panelGroup>
 
-            <h:panelGroup id="examDateGroup" layout="block">
-                <h4>#{msg['courses.paboFiles.examDate']}</h4>
+            <h:panelGroup id="examDateGroup" layout="block" styleClass="form-horizontal">
+                <h3>#{msg['courses.paboFiles.examDate']}</h3>
 
                 <div class="form-group">
                     <p:outputLabel for="examDateCal" value="#{msg['common.date']}"
-                                   styleClass="col-xs-3 control-label text-left"/>
+                                   styleClass="col-xs-2 control-label text-left"/>
 
-                    <div class="col-xs-6">
+                    <div class="col-xs-4">
                         <p:calendar id="examDateCal"
                                     value="#{paboController.course.paboExamDate}"
                                     timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy"/>
                     </div>
-
-                    <div class="col-xs-3">
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-4 col-xs-offset-2">
                         <p:commandButton id="saveExamDateBtn"
                                          update="examDateGroup finalizeAndDatePnl"
                                          value="#{msg['courses.paboFiles.saveDate']}"
@@ -83,6 +84,8 @@
             </h:panelGroup>
 
             <p:blockUI block="examDateGroup" trigger="saveExamDateBtn"/>
+
+            <h3>#{msg['courses.paboFiles.content']}</h3>
 
             <h:panelGroup rendered="#{paboController.hasEverUploadedPabo()}" layout="block">
                 <h4>#{msg['courses.paboFiles.lastUpload']}</h4>
@@ -110,11 +113,12 @@
                     </div>
                 </div>
             </h:panelGroup>
+            <div class="row">
             <h:panelGroup styleClass="col-xs-12" layout="block">
                 <p:tabView>
                     <p:tab title="#{msg['courses.paboFiles.matchedPaboStudents']}">
                         <p:dataTable id="matchedPaboStds" widgetVar="matchedPaboStds"
-                                     style="background-color: #25323A !important"
+                                     styleClass="table table-hover"
                                      var="student" tableStyleClass="table table-hover"
                                      value="#{paboController.matchedPaboStudents}"
                                      filteredValue="#{paboController.filteredMatchedPaboStudents}"
@@ -189,7 +193,7 @@
                     <p:tab title="#{msg['courses.paboFiles.unmatchedPaboStudents']}">
                         <p:dataTable id="unmatchedStdsTbl" widgetVar="unmatchedStds"
                                      var="student"
-                                     style="background-color: #25323A !important"
+                                     styleClass="table table-hover"
                                      value="#{paboController.notMatchedPaboStudents}"
                                      filteredValue="#{paboController.filteredUnMatchedPaboStudents}"
                                      emptyMessage="#{msg['course.paboFiles.noStudentsWithoutPaboData']}"
@@ -251,7 +255,7 @@
                     <p:tab title="#{msg['courses.paboFiles.matchedStudentsWOGrades']}">
                         <p:dataTable id="matchedStdWoGradesTbl" widgetVar="matchedStdWoGrades"
                                      var="student"
-                                     style="background-color: #25323A !important"
+                                     styleClass="table table-hover"
                                      value="#{paboController.matchedPaboStudentsWOPaboGrade}"
                                      filteredValue="#{paboController.filteredMatchedPaboStudentsWOPaboGrade}"
                                      emptyMessage="#{msg['courses.paboFile.noMatchedStudentsWOGrade']}"
@@ -315,6 +319,7 @@
                     </p:tab>
                 </p:tabView>
             </h:panelGroup>
+            </div>
         </h:form>
         <ui:include src="/WEB-INF/modals/settings/importPabo.xhtml" />
     </ui:define>
