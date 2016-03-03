@@ -62,6 +62,7 @@ public class GradingInsertController {
     private String formPublicComment;
     private boolean overwriting = false;
     private Integer formGradeType = GradeType.Pabo.getId();
+    private BigDecimal formMaxPoints;
 
     @ManagedProperty("#{gradingController}")
     private GradingController gradingController;
@@ -420,17 +421,21 @@ public class GradingInsertController {
 
             if (exam != null) {
                 formGradeType = exam.getGradeType();
+                formMaxPoints = exam.getMaxPoints();
             } else {
                 formGradeType = null;
+                formMaxPoints = null;
             }
         } else {
             formGradeType = null;
+            formMaxPoints = null;
         }
 
         formGrading = "";
         overwriting = false;
 
         log.debug("New grade type: " + formGradeType);
+        log.debug("Max points: " + formMaxPoints);
     }
 
     /**
@@ -476,5 +481,9 @@ public class GradingInsertController {
 
     public void setGradingController(GradingController gradingController) {
         this.gradingController = gradingController;
+    }
+
+    public BigDecimal getFormMaxPoints() {
+        return formMaxPoints;
     }
 }

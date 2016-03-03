@@ -60,6 +60,15 @@
                         <h:inputText styleClass="form-control"
                                      value="#{gradingInsertController.formGrading}"
                                      h5:autocomplete="off"/>
+
+                        <h:outputText rendered="#{gradingInsertController.formGradeType == 1}"
+                                      styleClass="grading-hint" value="#{msg['gradings.hint.numeric']}" />
+                        <h:outputFormat rendered="#{gradingInsertController.formGradeType == 3}"
+                                      styleClass="grading-hint" value="#{msg['gradings.hint.point']}">
+                            <f:param value="#{gradingInsertController.formMaxPoints}" />
+                        </h:outputFormat>
+                        <h:outputText rendered="#{gradingInsertController.formGradeType == 4}"
+                                      styleClass="grading-hint" value="#{msg['gradings.hint.percent']}" />
                     </h:panelGroup>
                     <h:panelGroup layout="block" class="col-xs-9"
                                   rendered="#{gradingInsertController.formGradeType == 2}">
