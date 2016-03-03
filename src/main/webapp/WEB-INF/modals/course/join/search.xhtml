@@ -40,14 +40,15 @@
                     </h:column>
                     <h:column>
                         <p:commandLink class="btn btn-default" action="#{courseOverviewController.courseSelected(course)}"
-                                       title="#{msg['courses.join.group']}"
+                                       title="#{msg['courses.join.group']}" process="@this"
                                        onsuccess="return exModal(':courseJoinSearch', 'courseGroupJoin');">
                             <i class="fa fa-users"></i>
                         </p:commandLink>
                         <p:commandLink class="btn btn-default" action="#{courseOverviewController.courseSelected(course)}"
                                        onsuccess="return exModal(':courseJoinSearch', 'courseJoinType');"
                                        title="#{msg['courses.join.single']}"
-                                       update=":partTypeModalForm">
+                                       update=":partTypeModalForm"
+                                       process="@this">
                             <i class="fa fa-plus"></i>
                         </p:commandLink>
                     </h:column>
