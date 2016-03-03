@@ -182,8 +182,7 @@
             </p:tabView>
         </h:panelGroup>
 
-        <c:if test="#{userController.isLecturer(tutorialController.course)
-                               or userController.isPrivilegedUser(tutorialController.course)}">
+        <c:if test="${tutorialController.tutorialManager}">
             <ui:include src="/WEB-INF/modals/tutorials/create.xhtml" />
             <ui:include src="/WEB-INF/modals/tutorials/edit.xhtml" />
             <ui:include src="/WEB-INF/modals/tutorials/remove.xhtml" />

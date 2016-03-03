@@ -187,11 +187,11 @@ public class TutorialController {
         }
 
         manageTutorials = isAllowedToManageTutorials();
-        tutorialTutors = new DualListModel<>(course.getTutors(),
+        tutorialTutors = new DualListModel<>(courseService.findPrivUsers(course),
             new ArrayList<>());
-        tutorialStudents = new DualListModel<>(course.getStudents(),
+        tutorialStudents = new DualListModel<>(courseService.findStudents(course),
             new ArrayList<>());
-        groupMembers = new DualListModel<>(course.getStudents(),
+        groupMembers = new DualListModel<>(courseService.findStudents(course),
             new ArrayList<>());
     }
 
@@ -230,7 +230,7 @@ public class TutorialController {
         course = courseService.update(course);
 
         this.tutorialName = null;
-        tutorialTutors = new DualListModel<>(course.getTutors(),
+        tutorialTutors = new DualListModel<>(courseService.findPrivUsers(course),
             new ArrayList<>());
 
         log.debug("Created new tutorial " + tutorial.getName());
@@ -255,8 +255,8 @@ public class TutorialController {
 
         List<PrivilegedUser> tutors = tutorial.getTutors();
         this.tutorialTutors.setTarget(tutors);
-        this.tutorialTutors.setSource(course.getTutors().stream()
-                .filter(t -> !tutors.contains(t))
+        this.tutorialTutors.setSource(courseService.findPrivUsers(course)
+                .stream().filter(t -> !tutors.contains(t))
                 .collect(Collectors.toList()));
 
         this.tutorialStudents.setSource(courseService
@@ -474,13 +474,26 @@ public class TutorialController {
         }
 
         List<Student> students = new ArrayList<>();
-        for (Student student : newMembers) {
-            student.setGroup(group);
-            studentService.update(student);
+        for (Student student : tutorial.getStudents()) {
+            if (newMembers.contains(student)) {
+                if (student.getGroup() != null) {
+                    continue;
+                }
 
-            log.debug(String.format("Added student with email %s to group %s",
-                student.getUser().getEmail(), group.getName()));
-            students.add(student);
+                student.setGroup(group);
+                studentService.update(student);
+
+                log.debug(String.format("Added student with email %s to group %s",
+                    student.getUser().getEmail(), group.getName()));
+                students.add(student);
+            } else {
+                student.setGroup(null);
+                studentService.update(student);
+
+                log.debug(String.format("Removed student with email %s from group %s",
+                    student.getUser().getEmail(), group.getName()));
+                students.remove(student);
+            }
         }
 
         group.setStudents(students);
@@ -580,7 +593,10 @@ public class TutorialController {
                 return null; // Should never be the case
             }
 
-            list.add(st.getTutorial());
+            Tutorial tut = st.getTutorial();
+            if (tut != null) {
+                list.add(tut);
+            }
         }
 
         return list;
