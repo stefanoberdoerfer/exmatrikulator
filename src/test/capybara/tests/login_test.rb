@@ -4,8 +4,8 @@ class LoginTest < CapybaraTestCase
   def test_valid_login
     visit "/login.xhtml"
     within ".form" do
-      fill_in "j_idt13:credentialUser", :with => "user@uni-bremen.de"
-      fill_in "j_idt13:credentialPassword", :with => "user"
+      fill_in "j_idt13:credentialUser", :with => "admin@uni-bremen.de"
+      fill_in "j_idt13:credentialPassword", :with => "admin"
       click_button "Login"
     end
 
@@ -15,7 +15,7 @@ class LoginTest < CapybaraTestCase
   def test_invalid_password
     visit "/login.xhtml"
     within ".form" do
-      fill_in "j_idt13:credentialUser", :with => "user@uni-bremen.de"
+      fill_in "j_idt13:credentialUser", :with => "admin@uni-bremen.de"
       fill_in "j_idt13:credentialPassword", :with => "foobar"
       click_button "Login"
     end

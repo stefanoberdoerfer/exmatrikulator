@@ -4,7 +4,7 @@ class ResetPasswordTest < CapybaraTestCase
   def test_a_valid_reset
     visit "/unregistered/password-reset.xhtml"
     within ".form" do
-      fill_in "j_idt13:credentialUser", :with => "user@uni-bremen.de"
+      fill_in "j_idt13:credentialUser", :with => "admin@uni-bremen.de"
       click_button "Reset password"
     end
 
@@ -14,7 +14,7 @@ class ResetPasswordTest < CapybaraTestCase
   def test_b_duplicated_reset
     visit "/unregistered/password-reset.xhtml"
     within ".form" do
-      fill_in "j_idt13:credentialUser", :with => "user@uni-bremen.de"
+      fill_in "j_idt13:credentialUser", :with => "admin@uni-bremen.de"
       click_button "Reset password"
     end
 
