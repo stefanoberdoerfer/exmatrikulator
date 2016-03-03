@@ -182,9 +182,10 @@ public class GradingInsertController {
         Try to store the grade
          */
         Exam exam = null;
+        Group group = null;
 
         try {
-            Group group = gradingService.getGroup(course, formGroup);
+            group = gradingService.getGroup(course, formGroup);
 
             if (group == null) {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -275,6 +276,8 @@ public class GradingInsertController {
         /*
         Success
          */
+        gradingController.resetExamGradings(group);
+
         facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_INFO, bundle.getString("common.success"),
                 bundle.getString("gradings.stored")));
