@@ -27,7 +27,8 @@ public class TutorialService extends GenericService<Tutorial> {
         List<Student> students = em.createQuery(
                 "SELECT s FROM Student s "
                 + "JOIN s.tutorial AS t WITH t.tutorialId = :id "
-                + "WHERE s.group IS NULL", Student.class)
+                + "WHERE s.group IS NULL AND s.isDeleted = false "
+                + "AND s.isConfirmed = true", Student.class)
             .setParameter("id", tutorial.getTutorialId())
             .getResultList();
 

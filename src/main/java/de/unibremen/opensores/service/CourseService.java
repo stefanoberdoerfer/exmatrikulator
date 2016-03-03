@@ -22,7 +22,39 @@ import java.util.List;
  */
 @Stateless
 public class CourseService extends GenericService<Course> {
+    /**
+     * Find active and confirmed students.
+     *
+     * @param course Course to look at.
+     * @return List of students or null.
+     */
+    public List<Student> findStudents(Course course) {
+        List<Student> students = em.createQuery(
+                "SELECT s FROM Student s "
+                + "JOIN s.course AS c WITH c.courseId = :id "
+                + "WHERE s.isDeleted = false AND s.isConfirmed = true", Student.class)
+            .setParameter("id", course.getCourseId())
+            .getResultList();
 
+        return (students.isEmpty()) ? null : students;
+    }
+
+    /**
+     * Find active privileged users.
+     *
+     * @param course Course to look at.
+     * @return List of privileged users or null.
+     */
+    public List<PrivilegedUser> findPrivUsers(Course course) {
+        List<PrivilegedUser> privUsers = em.createQuery(
+                "SELECT p FROM PrivilegedUser p "
+                + "JOIN p.course AS c WITH c.courseId = :id "
+                + "WHERE p.isDeleted = false", PrivilegedUser.class)
+            .setParameter("id", course.getCourseId())
+            .getResultList();
+
+        return (privUsers.isEmpty()) ? null : privUsers;
+    }
 
     /**
      * Find course using the course name.
@@ -304,7 +336,8 @@ public class CourseService extends GenericService<Course> {
         List<Student> students = em.createQuery(
                 "SELECT s FROM Student s "
                 + "JOIN s.course AS c WITH c.courseId = :id "
-                + "WHERE s.tutorial IS NULL", Student.class)
+                + "WHERE s.tutorial IS NULL AND s.isDeleted = false "
+                + "AND s.isConfirmed = true", Student.class)
             .setParameter("id", course.getCourseId())
             .getResultList();
 

@@ -187,11 +187,11 @@ public class TutorialController {
         }
 
         manageTutorials = isAllowedToManageTutorials();
-        tutorialTutors = new DualListModel<>(course.getTutors(),
+        tutorialTutors = new DualListModel<>(courseService.findPrivUsers(course),
             new ArrayList<>());
-        tutorialStudents = new DualListModel<>(course.getStudents(),
+        tutorialStudents = new DualListModel<>(courseService.findStudents(course),
             new ArrayList<>());
-        groupMembers = new DualListModel<>(course.getStudents(),
+        groupMembers = new DualListModel<>(courseService.findStudents(course),
             new ArrayList<>());
     }
 
@@ -230,7 +230,7 @@ public class TutorialController {
         course = courseService.update(course);
 
         this.tutorialName = null;
-        tutorialTutors = new DualListModel<>(course.getTutors(),
+        tutorialTutors = new DualListModel<>(courseService.findPrivUsers(course),
             new ArrayList<>());
 
         log.debug("Created new tutorial " + tutorial.getName());
@@ -255,8 +255,8 @@ public class TutorialController {
 
         List<PrivilegedUser> tutors = tutorial.getTutors();
         this.tutorialTutors.setTarget(tutors);
-        this.tutorialTutors.setSource(course.getTutors().stream()
-                .filter(t -> !tutors.contains(t))
+        this.tutorialTutors.setSource(courseService.findPrivUsers(course)
+                .stream().filter(t -> !tutors.contains(t))
                 .collect(Collectors.toList()));
 
         this.tutorialStudents.setSource(courseService
