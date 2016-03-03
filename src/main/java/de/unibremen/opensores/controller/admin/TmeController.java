@@ -134,12 +134,7 @@ public class TmeController {
     private HashMap<Integer, TMEObject> nodeMap = new HashMap<>();
 
     /**
-     * List of imported courses.
-     */
-    private List<Course> importedCourses = new ArrayList<>();
-
-    /**
-     * The currentlyl ogged in user.
+     * The currently ogged in user.
      */
     private User loggedInUser;
 
@@ -255,7 +250,6 @@ public class TmeController {
         // errors when importing a different file afterwards.
         entityMap.clear();
         nodeMap.clear();
-        importedCourses.clear();
     }
 
     /**
@@ -345,6 +339,14 @@ public class TmeController {
         course.setStudentsCanSeeFormula(true);
         course.setCreated(DateUtil.getDateTime());
 
+        int lecturerId = node.getInt("cet");
+        TMEObject lecturerNode  = findNode("jgradebook.data.Teacher", lecturerId);
+        if (lecturerNode == null) {
+            throw new TmeException("non-existend lecturer " + lecturerId);
+        } else {
+            course = createLecturer(lecturerNode, course);
+        }
+
         //super safe identifier collisionhandling
         String randomIdentifier;
         do {
@@ -399,9 +401,7 @@ public class TmeController {
         course = courseService.update(course);
         log.debug("Persisted course " + course.getName());
 
-        importedCourses.add(course);
         entityMap.put(node.getId(), course);
-
         return course;
     }
 
@@ -672,6 +672,40 @@ public class TmeController {
     }
 
     /**
+     * Returns a lecturer entity from the given TME object.
+     *
+     * @param node Teacher TME object.
+     * @param course Course the lecturer belongs to.
+     * @return Updated course entity.
+     * @throws TmeException On a failed import.
+     */
+    private Course createLecturer(TMEObject node, Course course)
+            throws TmeException {
+        User newUser = createUser(node);
+
+        Lecturer lecturer = new Lecturer();
+        lecturer.setHidden(false);
+        lecturer.setDeleted(false);
+        lecturer.setIsCourseCreator(false);
+        lecturer.setUser(newUser);
+        lecturer.setCourse(course);
+
+        PrivilegedUser privUser = new PrivilegedUser();
+        privUser.setSecretary(false);
+        privUser.setUser(newUser);
+        privUser.setHidden(false);
+        privUser.setCourse(course);
+
+        course.getLecturers().add(lecturer);
+        course.getTutors().add(privUser);
+
+        log.debug(String.format("Made user %s a lecturer in course %s",
+                    newUser.toString(), course.getName()));
+
+        return course;
+    }
+
+    /**
      * Returns a user entity from the given TME object.
      *
      * @param node StudentData or Teacher TME object.
@@ -709,29 +743,6 @@ public class TmeController {
         newUser.addRole(GlobalRole.USER);
         if (node.has("superuser") && node.getBoolean("superuser")) {
             newUser.addRole(GlobalRole.LECTURER);
-
-            Lecturer lecturer = new Lecturer();
-            lecturer.setHidden(false);
-            lecturer.setDeleted(false);
-            lecturer.setIsCourseCreator(false);
-            lecturer.setUser(newUser);
-
-            PrivilegedUser privUser = new PrivilegedUser();
-            privUser.setSecretary(false);
-            privUser.setUser(newUser);
-            privUser.setHidden(false);
-
-            for (Course course : importedCourses) {
-                lecturer.setCourse(course);
-                privUser.setCourse(course);
-
-                course.getLecturers().add(lecturer);
-                course.getTutors().add(privUser);
-
-                if (course.getLecturers().size() >= 1) {
-                    course.getLecturers().get(0).setIsCourseCreator(true);
-                }
-            }
         }
 
         userService.persist(newUser);
