@@ -52,6 +52,13 @@
 
                                     <c:if test="${tutorialController.tutorialManager}">
                                         <p:commandLink process="@this"
+                                                       oncomplete="return exModal('sendEmail');"
+                                                       class="btn btn-default">
+                                              <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
+                                              <i class="fa fa-envelope"></i>
+                                        </p:commandLink>
+
+                                        <p:commandLink process="@this"
                                                        update=":editTutorialForm"
                                                        oncomplete="return exModal('tutorialEdit');"
                                                        class="btn btn-default">
@@ -156,7 +163,6 @@
                         </ui:repeat>
                         </tbody>
                     </table>
-
                     <c:if test="${tutorialController.tutorialManager}">
                         <div class="table-groups-buttons btn-group">
                             <h:form>
@@ -191,6 +197,7 @@
             <ui:include src="/WEB-INF/modals/groups/remove.xhtml" />
             <ui:include src="/WEB-INF/modals/students/create.xhtml" />
             <ui:include src="/WEB-INF/modals/students/remove.xhtml" />
+            <ui:include src="/WEB-INF/modals/tutorials/emails.xhtml" />
         </c:if>
     </ui:define>
 </ui:composition>

@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+      <p:dialog header="#{msg['tutorials.remove']}" appendTo="@(body)" widgetVar="sendEmail"
+          id="sendEmailDialog" modal="true" visible="#{not empty facesContext.messageList}">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+
+        <h:form id="sendEmailForm">
+          <div class="modal-body">
+              #{msg['mailtemplates.question']}
+          </div>
+          <div class="modal-footer">
+              <div class="btn-group">
+                <p:commandButton value="#{msg['common.cancel']}"
+                      type="button" styleClass="btn btn-default"
+                      onclick="return exModal(':sendEmail');" />
+
+                  <p:commandLink value="#{msg['mailtemplates.send']}"
+                      update=":sendEmailDialog"
+                      class="btn btn-primary">
+                    <f:actionListener binding="#{tutorialController.sendTutorial()}" />
+                  </p:commandLink>
+              </div>
+          </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>

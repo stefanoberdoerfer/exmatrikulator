@@ -13,6 +13,7 @@ import de.unibremen.opensores.model.Course;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.Privilege;
+import de.unibremen.opensores.model.MailTemplate;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.service.GroupService;
@@ -20,6 +21,7 @@ import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.TutorialService;
 import de.unibremen.opensores.service.PrivilegedUserService;
+import de.unibremen.opensores.service.MailTemplateService;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import javax.faces.bean.ViewScoped;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
+import javax.mail.MessagingException;
 
 /**
  * Controller for managing tutorials.
@@ -74,6 +77,12 @@ public class TutorialController {
      */
     @EJB
     private TutorialService tutorialService;
+
+    /**
+     * The MailTemplateService to retrieve the default template.
+     */
+    @EJB
+    private MailTemplateService mailTemplateService;
 
     /**
      * The student service for connection to the database.
@@ -600,6 +609,40 @@ public class TutorialController {
         }
 
         return list;
+    }
+
+    /**
+     * Sends the final Mail to the whole Tutorial.
+     */
+    public void sendTutorial() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
+
+        MailTemplate template = mailTemplateService.getDefaultTemplate(course);
+        logService.persist(Log.from(user, course.getCourseId(),
+                "Sends the final mail to the whole tutorial."));
+
+        if (template == null) {
+            String msg = bundle.getString("mailtemplates.doesNotExist");
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+            return;
+        }
+
+        log.debug("Sending mails to tutorial " + tutorial.getName());
+        try {
+            template.issue(tutorial.getStudents());
+        } catch (IOException | MessagingException e) {
+            String msg = bundle.getString("mailtemplates.fail");
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+            return;
+        }
+
+        String msg = bundle.getString("mailtemplates.success");
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+            .SEVERITY_INFO, bundle.getString("common.success"), msg));
     }
 
     /**
