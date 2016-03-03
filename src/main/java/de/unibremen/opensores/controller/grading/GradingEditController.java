@@ -28,6 +28,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -191,13 +192,19 @@ public class GradingEditController {
         try {
             log.debug("Using gradingService to store the grade");
 
+            BigDecimal grading = null;
+
+            if (formGrading != null) {
+                grading = new BigDecimal(formGrading.replace(',', '.'));
+            }
+
             final Boolean overwrite = overwriting;
             overwriting = false;
 
             log.debug("formGrading: " + formGrading);
 
             gradingService.storeGrade(course, user, exam, student,
-                    formGrading, formPrivateComment, formPublicComment,
+                    grading, formPrivateComment, formPublicComment,
                     overwrite);
         } catch (IllegalAccessException e) {
             if (e.getMessage().equals("NOT_GRADABLE")) {
@@ -211,7 +218,7 @@ public class GradingEditController {
             }
 
             return;
-        } catch (InvalidGradeException e) {
+        } catch (InvalidGradeException | NumberFormatException e) {
             String errorMessage = bundle.getString("gradings.invalidGrading");
 
             if (exam.hasGradeType(GradeType.Boolean)) {

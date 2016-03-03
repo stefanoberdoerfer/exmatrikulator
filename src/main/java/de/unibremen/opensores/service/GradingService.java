@@ -321,13 +321,11 @@ public class GradingService extends GenericService<Grading> {
      * @param publicComment Public comment of the corrector
      */
     private void persistGrade(User corrector, Student student, Exam exam,
-                              String value, String privateComment,
+                              BigDecimal value, String privateComment,
                               String publicComment) {
-        BigDecimal decimal = new BigDecimal(value.replace(',', '.'));
-
         Grade grade = new Grade();
         grade.setGradeType(exam.getGradeType());
-        grade.setValue(decimal);
+        grade.setValue(value);
         grade.setMaxPoints(exam.getMaxPoints());
         gradeService.persist(grade);
 
@@ -360,14 +358,12 @@ public class GradingService extends GenericService<Grading> {
      * @param privateComment Private comment of the corrector
      * @param publicComment Public comment of the corrector
      */
-    private void persistGrade(User corrector, Grading grading, String value,
+    private void persistGrade(User corrector, Grading grading, BigDecimal value,
                               String privateComment, String publicComment) {
-        BigDecimal decimal = new BigDecimal(value.replace(',', '.'));
-
         final BigDecimal oldGrade = grading.getGrade().getValue();
         Grade grade = grading.getGrade();
         grade.setGradeType(grading.getExam().getGradeType());
-        grade.setValue(decimal);
+        grade.setValue(value);
         grade.setMaxPoints(grading.getExam().getMaxPoints());
         gradeService.update(grade);
 
@@ -491,7 +487,7 @@ public class GradingService extends GenericService<Grading> {
      */
     public void storeGrade(final Course course, final User corrector,
                            final Exam exam, final Student student,
-                           final String value, final String privateComment,
+                           final BigDecimal value, final String privateComment,
                            final String publicComment, final boolean overwrite)
             throws IllegalAccessException, InvalidGradeException,
             AlreadyGradedException {
@@ -551,9 +547,9 @@ public class GradingService extends GenericService<Grading> {
      */
     public void storeGrade(final Course course, final User corrector,
                            final Exam exam, final Group group,
-                           final String value, final String privateComment,
+                           final BigDecimal value, final String privateComment,
                            final String publicComment, final boolean overwrite)
-            throws IllegalAccessException, InvalidGradeException {
+            throws IllegalAccessException, InvalidGradeException, AlreadyGradedException {
         /*
         Check if the user is a lecturer or tutors
          */
@@ -579,7 +575,7 @@ public class GradingService extends GenericService<Grading> {
             Grading grading = this.getGrading(s, exam);
 
             if (grading != null && !overwrite) {
-                throw new IllegalStateException("");
+                throw new AlreadyGradedException();
             } else {
                 gradings.put(s, grading);
             }
