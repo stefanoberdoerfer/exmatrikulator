@@ -139,10 +139,6 @@
                     <div class="btn-group">
                         <h:commandButton class="btn btn-default" action="step2"
                                          value="#{msg['common.back']}" />
-                        <h:commandButton class="btn btn-default" action="step4"
-                                         value="#{msg['common.skip']}">
-                            <f:actionListener binding="#{courseCreateFlowController.setStepFinished(3)}"/>
-                        </h:commandButton>
                         <h:commandButton class="btn btn-primary" action="step4"
                                          value="#{msg['common.continue']}" type="submit">
                             <f:actionListener binding="#{courseCreateFlowController.setStepFinished(3)}"/>

@@ -37,6 +37,8 @@
 
         </h:panelGroup>
 
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+
         <h3>#{msg['courses.overview.normal']}</h3>
         <h:form id="courseOverviewForm">
         <p:dataTable value="#{userController.activeCourses}" var="course"
