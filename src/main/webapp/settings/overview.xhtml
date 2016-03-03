@@ -121,7 +121,8 @@
                     </h:link>
 
                 </div>
-                <div class="col-xs-6 col-xs-offset-1 settings-finalize">
+                <h:panelGroup layout="block" class="col-xs-6 col-xs-offset-1 settings-finalize"
+                              rendered="#{courseSettings.isLecturer()}">
                     <h3>#{msg['settings.finalize']}</h3>
                     <div class="alert alert-warning">
                         <p>
@@ -143,7 +144,7 @@
                         </div>
                     </div>
 
-                </div>
+                </h:panelGroup>
                 <h:panelGroup layout="block" id="csvData">
                     <div class="col-xs-6 col-xs-offset-1 settings-finalize">
                         <h3>#{msg['settings.csvData']}</h3>
