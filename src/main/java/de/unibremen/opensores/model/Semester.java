@@ -65,6 +65,7 @@ public class Semester {
             throw new SemesterFormatException("Missing space seperator");
         }
 
+        String year = null;
         Semester semester = new Semester();
         switch (splited[0]) {
             case "WiSe":
@@ -72,21 +73,26 @@ public class Semester {
                 break;
             case "SoSe":
                 semester.setIsWinter(false);
+                year = splited[1];
                 break;
             default:
                 throw new SemesterFormatException("Invalid semester type");
         }
 
-        String[] years = splited[1].split("/");
-        if (years.length != 2 || years[0].length()
-                != years[1].length()) {
-            throw new SemesterFormatException("Invalid year length");
+        if (year == null) {
+            String[] years = splited[1].split("/");
+            if (years.length != 2 || years[0].length()
+                    != years[1].length()) {
+                throw new SemesterFormatException("Invalid year length");
+            } else {
+                year = years[0];
+            }
         }
 
         String fmt = null;
-        if (years[0].length() == 2) {
+        if (year.length() == 2) {
             fmt = "yy";
-        } else if (years[0].length() == 4) {
+        } else if (year.length() == 4) {
             fmt = "yyyy";
         } else {
             throw new SemesterFormatException("Invalid year format");
@@ -95,7 +101,7 @@ public class Semester {
         Calendar cal = Calendar.getInstance();
         DateFormat sfmt = new SimpleDateFormat(fmt);
         try {
-            cal.setTime(sfmt.parse(years[0]));
+            cal.setTime(sfmt.parse(year));
         } catch (ParseException e) {
             throw new SemesterFormatException(e.getMessage());
         }
