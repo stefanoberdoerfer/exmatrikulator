@@ -17,13 +17,15 @@ import java.io.IOException;
 import javax.ejb.EJB;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
+import javax.faces.bean.ViewScoped;
 import javax.persistence.PersistenceException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.List;
+import java.lang.ProcessBuilder;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller for creating backups.
@@ -31,7 +33,7 @@ import java.util.List;
  * @author Lorenz Huether
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class BackupController {
     /**
      * The Backupservice.
@@ -45,7 +47,7 @@ public class BackupController {
      * The log4j logger.
      */
     private static Logger log = LogManager.getLogger(
-            CourseSettingsController.class);
+            BackupController.class);
 
     /**
      * The Dateformat as specified in config.properties.
@@ -61,6 +63,16 @@ public class BackupController {
      * The logged in user.
      */
     private User loggedInUser;
+
+    /**
+     * The backup to restore.
+     */
+    private Backup toRestore;
+
+    /**
+     * The Constant for getting the backup.
+     */
+    private String backupIdConst = "backup-id";
 
     /**
      * Executed after construction.
@@ -79,8 +91,20 @@ public class BackupController {
             dateForm = new SimpleDateFormat(format);
         }
 
-        loggedInUser = (User) FacesContext.getCurrentInstance().getExternalContext()
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        loggedInUser = (User) context.getExternalContext()
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
+
+        HttpServletRequest request = (HttpServletRequest) context
+                .getExternalContext()
+                .getRequest();
+
+        String backupId = request.getParameter(backupIdConst);
+
+        if (backupId != null) {
+            toRestore = backupService.findById(Long.parseLong(backupId));
+        }
     }
 
     /**
@@ -145,6 +169,43 @@ public class BackupController {
         }
 
         return dateForm.format(backup.getDate());
+    }
+
+    /**
+     * Restores a backup.
+     *
+     * @param backup Backup to restore.
+     */
+    public void restoreBackup(Backup backup) {
+        if (backup == null) {
+            log.error("Cannot restore Backup, backup is null!");
+            return;
+        } else if (backup.getName() == null) {
+            log.error("Cannot restore Backup, backupName is null!");
+            return;
+        }
+
+        String os = System.getProperty("os.name");
+
+        if (os == null) {
+            log.error("Could not determine os.");
+        } else if (os.startsWith("Windows")) {
+            new ProcessBuilder("restore.bat", backup.getName());
+        } else {
+            new ProcessBuilder("/bin/sh", "restore.sh", backup.getName());
+        }
+    }
+
+    /**
+     * Restores a backup from a dialog.
+     */
+    public void restoreBackup() {
+        if (toRestore != null) {
+            log.debug("Restroing backup, shutting down!");
+            restoreBackup(toRestore);
+        } else {
+            log.error("The backup to restore is null!");
+        }
     }
 
     @EJB
