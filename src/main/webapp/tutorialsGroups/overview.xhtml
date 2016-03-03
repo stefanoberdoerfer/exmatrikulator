@@ -160,18 +160,18 @@
                     <c:if test="${tutorialController.tutorialManager}">
                         <div class="table-groups-buttons btn-group">
                             <h:form>
-                                <p:commandLink action="#{tutorialController.sendTutorial()}"
-                                        process="@this"
-                                        value="#{msg['mailtemplates.send']}"
-	  		                            class="btn btn-primary">
+                                <p:commandLink process="@this"
+                                               value="#{msg['mailtemplates.send']}"
+                                               oncomplete="return exModal('sendEmail');"
+                                               class="btn btn-primary">
                                     <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                                 </p:commandLink>
 
                                 <p:commandLink process="@this"
-                                        value="#{msg['groups.add']}"
-                                        oncomplete="return exModal('groupCreate');"
-                                        update=":createGroupForm"
-                                        class="btn btn-default">
+                                               value="#{msg['groups.add']}"
+                                               oncomplete="return exModal('groupCreate');"
+                                               update=":createGroupForm"
+                                               class="btn btn-default">
                                     <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                                 </p:commandLink>
 
@@ -199,6 +199,7 @@
             <ui:include src="/WEB-INF/modals/groups/remove.xhtml" />
             <ui:include src="/WEB-INF/modals/students/create.xhtml" />
             <ui:include src="/WEB-INF/modals/students/remove.xhtml" />
+            <ui:include src="/WEB-INF/modals/tutorials/emails.xhtml" />
         </c:if>
     </ui:define>
 </ui:composition>
