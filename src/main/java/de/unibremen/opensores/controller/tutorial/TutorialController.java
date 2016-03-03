@@ -593,7 +593,10 @@ public class TutorialController {
                 return null; // Should never be the case
             }
 
-            list.add(st.getTutorial());
+            Tutorial tut = st.getTutorial();
+            if (tut != null) {
+                list.add(tut);
+            }
         }
 
         return list;
