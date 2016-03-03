@@ -22,6 +22,18 @@
                 </p:commandButton>
             </h:panelGroup>
             <h1>#{msg['common.user']}</h1>
+	<h:panelGroup id="oldDataAlert">
+            <h:panelGroup class="alert alert-danger"
+			  rendered="#{userOverviewController.oldData()}">
+                <h:outputText value="#{msg['courses.overview.warningOldData']}"/>
+                <p:commandLink styleClass="btn btn-danger"  update="oldDataRemoveDlg"
+                               oncomplete="return exModal('oldDataRemove');"
+                               value="#{msg['courses.overview.showOldData']}">
+
+                </p:commandLink>
+            </h:panelGroup>
+
+        </h:panelGroup>
         </h:form>
 
         <ui:include src="/WEB-INF/alerts.xhtml" />
@@ -92,6 +104,7 @@
         </p:dataTable>
         </h:form>
 
+        <ui:include src="/WEB-INF/modals/admin/oldData.xhtml" />
         <ui:include src="/WEB-INF/modals/users/create.xhtml" />
         <ui:include src="/WEB-INF/modals/users/edit.xhtml" />
         <ui:include src="/WEB-INF/modals/users/password.xhtml" />

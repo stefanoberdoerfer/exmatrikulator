@@ -22,34 +22,6 @@
                     #{course.name}
                 </h:column>
             </h:dataTable>
-            <br></br>
-            <h:dataTable value="#{courseOverviewController.oldUsers}" var="user"
-                         columnClasses="table-course-semester,responsive"
-                         styleClass="table table-hover table-courses-overview"
-			 rendered="#{courseOverviewController.oldUsers.size() > 0}">
-                <h:column>
-                    <f:facet name="header">#{msg['common.user']}</f:facet>
-                    #{user.userId}
-                </h:column>
-                <h:column>
-                    <f:facet name="header">#{msg['common.name']}</f:facet>
-                    #{user.lastName}, #{user.firstName}
-                </h:column>
-            </h:dataTable>
-            <br></br>
-            <h:dataTable value="#{courseOverviewController.oldBackups}" var="backup"
-                         columnClasses="table-course-semester,responsive"
-                         styleClass="table table-hover table-courses-overview"
-			 rendered="#{courseOverviewController.oldBackups.size() > 0}">
-                <h:column>
-                    <f:facet name="header">#{msg['common.backups']}</f:facet>
-                    #{backup.name}
-                </h:column>
-                <h:column>
-                    <f:facet name="header">#{msg['common.date']}</f:facet>
-                    #{backupController.dateToString(backup)}
-                </h:column>
-            </h:dataTable>
         </div>
         <div class="modal-footer">
             <div class="btn-group">

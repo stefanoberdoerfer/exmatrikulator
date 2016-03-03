@@ -12,6 +12,7 @@ import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.Log;
 import de.unibremen.opensores.model.PasswordReset;
 import de.unibremen.opensores.model.User;
+import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.GradeFormulaService;
 import de.unibremen.opensores.service.GradingService;
@@ -20,6 +21,7 @@ import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UserService;
+import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.util.Constants;
 import de.unibremen.opensores.util.DateUtil;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -75,12 +77,15 @@ public class UserOverviewController {
     private boolean globalRoleLecturer;
     private boolean globalRoleUser;
 
-    private List<Course> oldCoursesAsLecturer;
-
     /**
      * User ResourceBundle for internationalisation information.
      */
     private ResourceBundle bundle;
+
+    /**
+     * BackupService for finding old Backups.
+     */
+    private BackupService backupService;
 
     /**
      * The UserService for listing all users.
@@ -111,6 +116,21 @@ public class UserOverviewController {
     private LogService logService;
 
     /**
+     * A list of courses which are 10 years old.
+     */
+    private List<Course> oldCourses;
+
+    /**
+     * A list of users which have not been active for 10 years.
+     */
+    private List<User> oldUsers;
+
+    /**
+     * A list of backups that are older than 10 years.
+     */
+    private List<Backup> oldBackups;
+
+    /**
      * Initialisation method of the bean. Gets the currently logged in user
      * from the session and initialises the localized ResourceBundle.
      */
@@ -122,7 +142,50 @@ public class UserOverviewController {
         bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
 
-        oldCoursesAsLecturer = courseService.getOldCourses(loggedInUser);
+        oldCourses = courseService.getOldCourses();
+        oldUsers = userService.getOldUsers();
+        oldBackups = backupService.getOldBackups();
+    }
+
+    /**
+     * Returns true if old data is available.
+     *
+     * @return boolean if old data is available.
+     */
+    public boolean oldData() {
+        log.debug("oldData() called.");
+        if ((oldCourses != null) && (oldCourses.size() > 0)) {
+            return true;
+        } else if ((oldUsers != null) && (oldUsers.size() > 0)) {
+            return true;
+        } else if ((oldBackups != null) && (oldBackups.size() > 0)) {
+            return true;
+        } else {
+            log.debug("No old data found.");
+            return false;
+        }
+    }
+
+    /**
+     * Deletes the inactive courses with its associations.
+     */
+    public void deleteOldData() {
+        log.debug("deleteOldData() called");
+
+        for (Course c : oldCourses) {
+            courseService.deleteCourseWithAssociatons(c);
+        }
+        oldCourses.clear();
+
+        for (User u : oldUsers) {
+            deleteUser(u);
+        }
+        oldUsers.clear();
+
+        for (Backup b : oldBackups) {
+            backupService.remove(b);
+        }
+        oldBackups.clear();
     }
 
     /**
@@ -272,6 +335,43 @@ public class UserOverviewController {
         userService.update(selectedUser);
         clearFields();
         updateUserList();
+    }
+
+    /**
+     * Deletes a user by overwriting all of his/her attributes.
+     * This is beneficial for not destroying many relations by deleting this
+     * user completely. This method overloads the deleteUser method of this
+     * class.
+     *
+     * @param toDelete the user to be deleted
+     */
+    public void deleteUser(User toDelete) {
+        for (Course c : userService.getAllCourses(toDelete)) {
+            Lecturer lec = c.getLecturerFromUser(toDelete);
+            PrivilegedUser priv = c.getPrivilegedUserFromUser(toDelete);
+            Student stud = c.getStudentFromUser(toDelete);
+
+            if (lec != null) {
+                lec.setDeleted(true);
+            }
+            if (priv != null) {
+                priv.setDeleted(true);
+            }
+            if (stud != null) {
+                stud.setDeleted(true);
+            }
+
+            courseService.update(c);
+        }
+
+        toDelete.setFirstName("Deleted");
+        toDelete.setLastName("User");
+        toDelete.setEmail(RandomStringUtils.randomAlphanumeric(10));
+        toDelete.setPassword(null);
+        toDelete.setMatriculationNumber("XXXXXX");
+        toDelete.setProfileInfo("");
+        toDelete.setPassword(RandomStringUtils.randomAlphanumeric(10));
+        userService.update(toDelete);
     }
 
     /**
@@ -606,6 +706,15 @@ public class UserOverviewController {
         this.lecturerService = lecturerService;
     }
 
+    /**
+     * Injects the backup service.
+     * @param backupService The backup service to be injected to the bean.
+     */
+    @EJB
+    public void setBackupService(BackupService backupService) {
+        this.backupService = backupService;
+    }
+
     public void setUsers(List<User> users) {
         this.users = users;
     }
@@ -650,7 +759,15 @@ public class UserOverviewController {
         this.globalRoleUser = globalRoleUser;
     }
 
-    public List<Course> getOldCoursesAsLecturer() {
-        return oldCoursesAsLecturer;
+    public List<Course> getOldCourses() {
+        return oldCourses;
+    }
+
+    public List<User> getOldUsers() {
+        return oldUsers;
+    }
+
+    public List<Backup> getOldBackups() {
+        return oldBackups;
     }
 }
