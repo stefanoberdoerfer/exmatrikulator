@@ -416,17 +416,18 @@ public class CourseSettingsController {
      * Sends the final Mail to the whole Course.
      */
     public void sendCourse() {
-        if (course == null) {
-            log.error("Could not send mail course is null!");
-            return;
-        }
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+            facesContext.getViewRoot().getLocale());
 
         MailTemplate template = mailTemplateService.getDefaultTemplate(course);
         logService.persist(Log.from(user, course.getCourseId(),
                 "Sends the final mail to the whole course."));
 
         if (template == null) {
-            log.error("Could not send mail no default template set!");
+            String msg = bundle.getString("mailtemplates.doesNotExist");
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
             return;
         }
 
@@ -434,8 +435,15 @@ public class CourseSettingsController {
         try {
             template.issue(course.getStudents());
         } catch (IOException | MessagingException e) {
-            // TODO
+            String msg = bundle.getString("mailtemplates.fail");
+            facesContext.addMessage(null, new FacesMessage(FacesMessage
+                .SEVERITY_FATAL, bundle.getString("common.error"), msg));
+            return;
         }
+
+        String msg = bundle.getString("mailtemplates.success");
+        facesContext.addMessage(null, new FacesMessage(FacesMessage
+            .SEVERITY_INFO, bundle.getString("common.success"), msg));
     }
 
     /*
