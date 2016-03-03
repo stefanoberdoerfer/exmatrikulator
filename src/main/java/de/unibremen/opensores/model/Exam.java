@@ -162,17 +162,14 @@ public class Exam {
      * @param value Value to check
      * @return true if valid
      */
-    public boolean isValidGrading(String value) {
-        if (value.trim().length() == 0) {
+    public boolean isValidGrading(BigDecimal value) {
+        if (value == null) {
             return false;
         }
 
-        value = value.replace(',', '.');
-        BigDecimal decimal = new BigDecimal(value);
-
         for (GradeType g : GradeType.values()) {
             if (g.getId().equals(this.gradeType)) {
-                return g.isValidGrading(decimal, maxPoints);
+                return g.isValidGrading(value, maxPoints);
             }
         }
 

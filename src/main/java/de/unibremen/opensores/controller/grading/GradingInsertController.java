@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -211,8 +212,14 @@ public class GradingInsertController {
                     return;
                 }
 
+                BigDecimal grading = null;
+
+                if (formGrading != null) {
+                    grading = new BigDecimal(formGrading.replace(',', '.'));
+                }
+
                 gradingService.storeGrade(course, user, exam, group,
-                        formGrading, formPrivateComment, formPublicComment,
+                        grading, formPrivateComment, formPublicComment,
                         overwrite);
             }
         } catch (IllegalAccessException e) {
@@ -227,7 +234,7 @@ public class GradingInsertController {
             }
 
             return;
-        } catch (InvalidGradeException | IllegalArgumentException e) {
+        } catch (InvalidGradeException | NumberFormatException e) {
             String errorMessage = bundle.getString("gradings.invalidGrading");
 
             if (exam != null) {
@@ -316,8 +323,14 @@ public class GradingInsertController {
                     return;
                 }
 
+                BigDecimal grading = null;
+
+                if (formGrading != null) {
+                    grading = new BigDecimal(formGrading.replace(',', '.'));
+                }
+
                 gradingService.storeGrade(course, user, exam, student,
-                        formGrading, formPrivateComment, formPublicComment,
+                        grading, formPrivateComment, formPublicComment,
                         overwrite);
             }
         } catch (IllegalAccessException e) {
@@ -332,7 +345,7 @@ public class GradingInsertController {
             }
 
             return;
-        } catch (InvalidGradeException | IllegalArgumentException e) {
+        } catch (InvalidGradeException | NumberFormatException e) {
             String errorMessage = bundle.getString("gradings.invalidGrading");
 
             if (exam != null) {
