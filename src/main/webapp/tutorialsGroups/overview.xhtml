@@ -53,6 +53,13 @@
 
                                     <c:if test="${tutorialController.tutorialManager}">
                                         <p:commandLink process="@this"
+                                                       oncomplete="return exModal('sendEmail');"
+                                                       class="btn btn-default">
+                                              <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
+                                              <i class="fa fa-envelope"></i>
+                                        </p:commandLink>
+
+                                        <p:commandLink process="@this"
                                                        update=":editTutorialForm"
                                                        oncomplete="return exModal('tutorialEdit');"
                                                        class="btn btn-default">
@@ -160,13 +167,6 @@
                     <c:if test="${tutorialController.tutorialManager}">
                         <div class="table-groups-buttons btn-group">
                             <h:form>
-                                <p:commandLink process="@this"
-                                               value="#{msg['mailtemplates.send']}"
-                                               oncomplete="return exModal('sendEmail');"
-                                               class="btn btn-primary">
-                                    <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
-                                </p:commandLink>
-
                                 <p:commandLink process="@this"
                                                value="#{msg['groups.add']}"
                                                oncomplete="return exModal('groupCreate');"
