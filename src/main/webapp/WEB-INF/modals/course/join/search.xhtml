@@ -17,10 +17,10 @@
                     </p:inputText>
                 </div>
                 <div class="col-xs-1">
-                    <p:defaultCommand target="searchCourses"/>
-                    <p:commandLink styleClass="btn btn-default" id="searchCourses" process="searchCourse">
-                        <f:ajax listener="#{courseOverviewController.searchForCourses()}"
-                                render="coursesSearchOutput" />
+                    <p:defaultCommand target="searchCourse"/>
+                    <p:commandLink styleClass="btn btn-default" id="searchCourses"
+                                   action="#{courseOverviewController.searchForCourses()}"
+                                   update="coursesSearchOutput" >
                         <i class="fa fa-search"></i>
                     </p:commandLink>
                 </div>
@@ -41,13 +41,14 @@
                     <h:column>
                         <p:commandLink class="btn btn-default" action="#{courseOverviewController.courseSelected(course)}"
                                        title="#{msg['courses.join.group']}" process="@this"
+                                       update="@form"
                                        onsuccess="return exModal(':courseJoinSearch', 'courseGroupJoin');">
                             <i class="fa fa-users"></i>
                         </p:commandLink>
                         <p:commandLink class="btn btn-default" action="#{courseOverviewController.courseSelected(course)}"
                                        onsuccess="return exModal(':courseJoinSearch', 'courseJoinType');"
                                        title="#{msg['courses.join.single']}"
-                                       update=":partTypeModalForm"
+                                       update="@form :partTypeModalForm"
                                        process="@this">
                             <i class="fa fa-plus"></i>
                         </p:commandLink>

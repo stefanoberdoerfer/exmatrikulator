@@ -592,6 +592,7 @@ public class  ParticipantsController {
         log.debug("restoreStudent called: " + student.getUser());
         student.setDeleted(false);
         course = courseService.update(course);
+        logStudentRestored(student);
     }
 
     /**
@@ -606,6 +607,7 @@ public class  ParticipantsController {
         log.debug("restorePrivilegedUser called: " + privUser.getUser());
         privUser.setDeleted(false);
         course = courseService.update(course);
+        logPrivilegedUserRestored(privUser);
     }
 
 

@@ -10,11 +10,11 @@
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%-5p] %c{1}:%L - %m%n" />
         </Console>
 
-        <RollingFile name="RollingFile" filename="${logPath}/exmatrikulator.log"
-                     filepattern="${logPath}/%d{yyyyMMddHHmmss}-exmatrikulator.log">
+        <RollingFile name="RollingFile" filename="${logPath}/exmatrikulatorHibernate.log"
+                     filepattern="${logPath}/%d{yyyyMMddHHmmss}-exmatrikulatorHibernate.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%-5p] %c{1}:%L - %m%n" />
             <Policies>
-                <SizeBasedTriggeringPolicy size="1 MB" />
+                <SizeBasedTriggeringPolicy size="20 MB" />
             </Policies>
             <DefaultRolloverStrategy max="20" />
         </RollingFile>

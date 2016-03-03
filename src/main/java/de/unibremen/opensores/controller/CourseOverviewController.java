@@ -301,6 +301,7 @@ public class CourseOverviewController {
         if (stud != null) {
             newStudents.add(stud);
         }
+        searchResultList.clear();
     }
 
     /**
@@ -311,9 +312,12 @@ public class CourseOverviewController {
      * @return Newly created or restored Student object
      */
     private Student joinCourse(Course course, User user) {
+        if (course == null) {
+            return null;
+        }
         boolean deletedStudent = false;
 
-        Student stud = courseService.findStudent(course,user);
+        Student stud = course.getStudentFromUser(user);
         if (stud != null) {
             if (stud.isDeleted()) {
                 log.debug("User has already been a student");
@@ -348,6 +352,9 @@ public class CourseOverviewController {
      * object and the course will now get updated in the database.
      */
     public void parttypeSelected() {
+        if (selectedCourse == null) {
+            return;
+        }
         ParticipationType partType = null;
         for (ParticipationType p : selectedCourse.getParticipationTypes()) {
             if (p.getPartTypeId().equals(chosenPartTypeId)) {
