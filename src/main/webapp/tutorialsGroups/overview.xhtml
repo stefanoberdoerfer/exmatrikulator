@@ -157,15 +157,21 @@
                         </ui:repeat>
                         </tbody>
                     </table>
-
                     <c:if test="${tutorialController.tutorialManager}">
                         <div class="table-groups-buttons btn-group">
                             <h:form>
+                                <p:commandLink action="#{tutorialController.sendTutorial()}"
+                                        process="@this"
+                                        value="#{msg['mailtemplates.send']}"
+	  		                            class="btn btn-primary">
+                                    <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
+                                </p:commandLink>
+
                                 <p:commandLink process="@this"
-                                               value="#{msg['groups.add']}"
-                                               oncomplete="return exModal('groupCreate');"
-                                               update=":createGroupForm"
-                                               class="btn btn-default">
+                                        value="#{msg['groups.add']}"
+                                        oncomplete="return exModal('groupCreate');"
+                                        update=":createGroupForm"
+                                        class="btn btn-default">
                                     <f:actionListener binding="#{tutorialController.changeCurrentTutorial(tutorial.tutorialId)}" />
                                 </p:commandLink>
 

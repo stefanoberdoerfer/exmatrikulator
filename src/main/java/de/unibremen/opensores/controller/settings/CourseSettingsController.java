@@ -421,10 +421,6 @@ public class CourseSettingsController {
                         .SEVERITY_INFO, "", message));
     }
 
-
-
-
-
     /**
      * Generates the text from a template and a given map.
      *
