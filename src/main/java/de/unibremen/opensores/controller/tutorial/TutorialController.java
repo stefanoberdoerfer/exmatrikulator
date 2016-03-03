@@ -474,13 +474,26 @@ public class TutorialController {
         }
 
         List<Student> students = new ArrayList<>();
-        for (Student student : newMembers) {
-            student.setGroup(group);
-            studentService.update(student);
+        for (Student student : tutorial.getStudents()) {
+            if (newMembers.contains(student)) {
+                if (student.getGroup() != null) {
+                    continue;
+                }
 
-            log.debug(String.format("Added student with email %s to group %s",
-                student.getUser().getEmail(), group.getName()));
-            students.add(student);
+                student.setGroup(group);
+                studentService.update(student);
+
+                log.debug(String.format("Added student with email %s to group %s",
+                    student.getUser().getEmail(), group.getName()));
+                students.add(student);
+            } else {
+                student.setGroup(null);
+                studentService.update(student);
+
+                log.debug(String.format("Removed student with email %s from group %s",
+                    student.getUser().getEmail(), group.getName()));
+                students.remove(student);
+            }
         }
 
         group.setStudents(students);
