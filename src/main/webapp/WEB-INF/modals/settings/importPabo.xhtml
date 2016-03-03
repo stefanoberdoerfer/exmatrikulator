@@ -14,7 +14,8 @@
                     <br />
                     <p:fileUpload id="uploadBtn" fileUploadListener="#{paboController.uploadPaboExportFile}"
                                   mode="advanced" allowTypes="/(\.|\/)(csv)$/" auto="true" multiple="false"
-                                  update="@form" uploadLabel="#{msg['course.paboFile.uploadPaboCSV']}"
+                                  update="@form" label="#{msg['import.choose']}"
+                                  uploadLabel="#{msg['course.paboFile.uploadPaboCSV']}"
                                   invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
                                   sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/>
 
@@ -45,7 +46,7 @@
                                 <p:dataTable var="paboErrorMsg"
                                              value="#{paboController.paboErrorMsgs}"
                                              scrollable="true" sortBy="#{paboErrorMsg.row}"
-                                             scrollHeight="200" styleClass="table table-condensed">
+                                             scrollHeight="100" styleClass="table table-condensed">
                                     <p:column headerText="#{msg['couses.paboFiles.line']}">
                                         <h:outputText value="#{paboErrorMsg.row}" />
                                     </p:column>
@@ -59,7 +60,7 @@
                                 <p:dataTable var="paboData"
                                              value="#{paboController.notMatchedValidPaboData}"
                                              scrollable="true"
-                                             scrollHeight="200" styleClass="table table-condensed">
+                                             scrollHeight="100" styleClass="table table-condensed">
                                     <p:column headerText="#{msg['common.matriculation']}">
                                         <h:outputText value="#{paboData.matriculation}" />
                                     </p:column>

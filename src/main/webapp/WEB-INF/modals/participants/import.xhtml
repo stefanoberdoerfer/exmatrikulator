@@ -43,7 +43,6 @@
                           label="#{msg['import.choose']}"
                           invalidFileMessage="#{msg['courses.create.invalidFileCSV']}"
                           sizeLimit="#{EXcons.MAX_UPLOADFILE_SIZE}"/><br />
-
             <p:commandButton class="btn btn-primary" value="#{msg['import.startUserImport']}"
                 update="@form">
                 <f:actionListener binding="#{studentImportController.executeImport()}"/>

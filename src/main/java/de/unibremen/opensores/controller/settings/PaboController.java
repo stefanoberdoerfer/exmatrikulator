@@ -623,7 +623,8 @@ public class PaboController {
      * @param fileName The filename of the uploaded file.
      */
     private void logFileUploaded(String fileName) {
-        logAction("Has uploaded the file %s as PABO upload. Maybe the file wasnt confirmed");
+        logAction(String.format("Has uploaded the file %s as PABO upload."
+                + ". Maybe the file was not confirmed", fileName));
     }
 
     /**

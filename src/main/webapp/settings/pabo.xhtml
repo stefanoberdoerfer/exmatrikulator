@@ -115,6 +115,9 @@
                     <p:tab title="#{msg['courses.paboFiles.matchedPaboStudents']}">
                         <p:dataTable id="matchedPaboStds" widgetVar="matchedPaboStds"
                                      var="student"
+                                     tableStyleClass="table table-hover"
+
+                                     style="background-color: #25323A !important;"
                                      value="#{paboController.matchedPaboStudents}"
                                      filteredValue="#{paboController.filteredMatchedPaboStudents}"
                                      emptyMessage="#{msg['coure.paboFile.noStudentsWithPaboData']}"
