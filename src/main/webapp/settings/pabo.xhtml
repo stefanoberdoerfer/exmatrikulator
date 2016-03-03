@@ -114,10 +114,8 @@
                 <p:tabView>
                     <p:tab title="#{msg['courses.paboFiles.matchedPaboStudents']}">
                         <p:dataTable id="matchedPaboStds" widgetVar="matchedPaboStds"
-                                     var="student"
-                                     tableStyleClass="table table-hover"
-
-                                     style="background-color: #25323A !important;"
+                                     style="background-color: #25323A !important"
+                                     var="student" tableStyleClass="table table-hover"
                                      value="#{paboController.matchedPaboStudents}"
                                      filteredValue="#{paboController.filteredMatchedPaboStudents}"
                                      emptyMessage="#{msg['coure.paboFile.noStudentsWithPaboData']}"
@@ -191,6 +189,7 @@
                     <p:tab title="#{msg['courses.paboFiles.unmatchedPaboStudents']}">
                         <p:dataTable id="unmatchedStdsTbl" widgetVar="unmatchedStds"
                                      var="student"
+                                     style="background-color: #25323A !important"
                                      value="#{paboController.notMatchedPaboStudents}"
                                      filteredValue="#{paboController.filteredUnMatchedPaboStudents}"
                                      emptyMessage="#{msg['course.paboFiles.noStudentsWithoutPaboData']}"
@@ -252,6 +251,7 @@
                     <p:tab title="#{msg['courses.paboFiles.matchedStudentsWOGrades']}">
                         <p:dataTable id="matchedStdWoGradesTbl" widgetVar="matchedStdWoGrades"
                                      var="student"
+                                     style="background-color: #25323A !important"
                                      value="#{paboController.matchedPaboStudentsWOPaboGrade}"
                                      filteredValue="#{paboController.filteredMatchedPaboStudentsWOPaboGrade}"
                                      emptyMessage="#{msg['courses.paboFile.noMatchedStudentsWOGrade']}"
