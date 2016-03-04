@@ -1,0 +1,24 @@
+This directory contains the files which are used by OpenSores in our development
+environment. If you want to change the environment of the Exmatrikulator to
+development, follow these steps:
+
+1. Copy the pom.xml of this directory to the pom.xml of the main directory and
+   override the existing one.
+2. Copy the persistence.xml of this directory to the directory
+   src/main/resources/META-INF/ and override the existing persistence.xml
+3. Copy the file ApplicationController.java of this directory to the directory
+   /src/main/java/de/unibremen/opensores/controller/common/
+   and override the existing file.
+
+You can build the .war from the source code and run the embedded-glassfish
+plugin with the command in the main directory.
+
+	$ mvn clean package embedded-glassfish:run
+
+This creates a .war archive for the Exmatrikulator application and
+starts the embedded glassfish server. If you didn't see any errors
+the webapp should be running at: http://0.0.0.0:8080/exmatrikulator/
+
+If you want to change the files back to the production environment after you've
+already changed these files, then follow the stepts of the README in the directory
+/prod-environment/
