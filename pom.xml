@@ -4,7 +4,7 @@
 
   <groupId>de.unibremen.opensores</groupId>
   <artifactId>exmatrikulator</artifactId>
-  <version>0.9-SNAPSHOT</version>
+  <version>1.0-ALPHA</version>
   <packaging>war</packaging>
 
   <name>exmatrikulator</name>
