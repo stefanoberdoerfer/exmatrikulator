@@ -4,13 +4,13 @@ class RegisterTest < CapybaraTestCase
   def test_a_valid_register
     visit "/unregistered/registration.xhtml"
     within ".form" do
-      fill_in "j_idt12:credentialUser", :with => "hurr@durr.com"
+      fill_in "j_idt13:credentialUser", :with => "hurr@durr.com"
 
-      fill_in "j_idt12:credentialPassword", :with => "foobar"
-      fill_in "j_idt12:credentialPasswordConfirm", :with => "foobar"
+      fill_in "j_idt13:credentialPassword", :with => "foobar"
+      fill_in "j_idt13:credentialPasswordConfirm", :with => "foobar"
 
-      fill_in "j_idt12:credentialFirstName", :with => "Foo"
-      fill_in "j_idt12:credentialLastName", :with => "Bar"
+      fill_in "j_idt13:credentialFirstName", :with => "Foo"
+      fill_in "j_idt13:credentialLastName", :with => "Bar"
 
       click_button "Register"
     end
@@ -22,13 +22,13 @@ class RegisterTest < CapybaraTestCase
   def test_b_taken_email
     visit "/unregistered/registration.xhtml"
     within ".form" do
-      fill_in "j_idt12:credentialUser", :with => "hurr@durr.com"
+      fill_in "j_idt13:credentialUser", :with => "hurr@durr.com"
 
-      fill_in "j_idt12:credentialPassword", :with => "foobar"
-      fill_in "j_idt12:credentialPasswordConfirm", :with => "foobar"
+      fill_in "j_idt13:credentialPassword", :with => "foobar"
+      fill_in "j_idt13:credentialPasswordConfirm", :with => "foobar"
 
-      fill_in "j_idt12:credentialFirstName", :with => "Foo"
-      fill_in "j_idt12:credentialLastName", :with => "Bar"
+      fill_in "j_idt13:credentialFirstName", :with => "Foo"
+      fill_in "j_idt13:credentialLastName", :with => "Bar"
 
       click_button "Register"
     end
@@ -56,13 +56,13 @@ class RegisterTest < CapybaraTestCase
   def test_non_matching_passwords
     visit "/unregistered/registration.xhtml"
     within ".form" do
-      fill_in "j_idt12:credentialUser", :with => "lollolo@iaenit.org"
+      fill_in "j_idt13:credentialUser", :with => "lollolo@iaenit.org"
 
-      fill_in "j_idt12:credentialPassword", :with => "password1"
-      fill_in "j_idt12:credentialPasswordConfirm", :with => "password2"
+      fill_in "j_idt13:credentialPassword", :with => "password1"
+      fill_in "j_idt13:credentialPasswordConfirm", :with => "password2"
 
-      fill_in "j_idt12:credentialFirstName", :with => "Hurr"
-      fill_in "j_idt12:credentialLastName", :with => "Durr"
+      fill_in "j_idt13:credentialFirstName", :with => "Hurr"
+      fill_in "j_idt13:credentialLastName", :with => "Durr"
 
       click_button "Register"
     end
@@ -74,7 +74,7 @@ class RegisterTest < CapybaraTestCase
   def test_invalid_email
     visit "/unregistered/registration.xhtml"
     within ".form" do
-      fill_in "j_idt12:credentialUser", :with => "hurr durr @ foo bar"
+      fill_in "j_idt13:credentialUser", :with => "hurr durr @ foo bar"
       click_button "Register"
     end
 
@@ -85,7 +85,7 @@ class RegisterTest < CapybaraTestCase
   def test_too_short_password
     visit "/unregistered/registration.xhtml"
     within ".form" do
-      fill_in "j_idt12:credentialPassword", :with => "123"
+      fill_in "j_idt13:credentialPassword", :with => "123"
       click_button "Register"
     end
 
