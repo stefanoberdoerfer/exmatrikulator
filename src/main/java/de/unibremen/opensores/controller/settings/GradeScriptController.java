@@ -376,7 +376,7 @@ public class GradeScriptController {
         if (!userIsLecturer) {
             PrivilegedUser privilegedUser = course.getPrivilegedUserFromUser(loggedInUser);
             if (privilegedUser == null
-                    || !privilegedUser.hasPrivilege(Privilege.EditExams)
+                    || !privilegedUser.hasPrivilege(Privilege.EditFormulas)
                     || course.getParticipationTypes().isEmpty()) {
                 log.debug("Logged in user is not a lecturer nor has a "
                         + "privileged user association with privileges to edit formulas");
