@@ -439,7 +439,7 @@ public class UserService extends GenericService<User> {
                 + "FROM User u "
                 + "WHERE (u.lastActivity <= :date "
                 + "AND u.firstName != 'Deleted'"
-		+ "AND u.password is NOT NULL)", User.class)
+                + "AND u.password is NOT NULL)", User.class)
                 .setParameter("date", DateUtil.tenYearsAgo())
                 .getResultList();
 
