@@ -31,7 +31,7 @@ public class Grading {
     @JoinColumn(name = "studentId", nullable = false)
     private Student student;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     private Exam exam;
 
     @OneToOne(optional = false, cascade = CascadeType.PERSIST)
