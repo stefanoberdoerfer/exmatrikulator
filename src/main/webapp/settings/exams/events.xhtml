@@ -51,7 +51,7 @@
                     <div class="text-center">
                         <h:graphicImage library="images" name="el_toro_loading.svg" class="logo" />
                     </div>
-                </p:blockUI>>
+                </p:blockUI>
                 <br/>
                 <p:schedule id="editSchedule"
                             value="#{examEventController.examEventModel}"
@@ -213,7 +213,9 @@
                                     <p:calendar id="fromEditCal" value="#{examEventController.event.startDate}"
                                                 locale="#{examEventController.localeCountry}"
                                                 required="true" validatorMessage="#{msg['tutEvent.validatorMessageStartDate']}"
-                                                timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                                timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm">
+                                        <p:ajax event="dateSelect" update="toEditCal"/>
+                                    </p:calendar>
                                 </div>
 
                                 <p:outputLabel for="toEditCal" value="#{msg['common.to']}"
@@ -222,8 +224,10 @@
                                     <p:calendar id="toEditCal" value="#{examEventController.event.endDate}"
                                                 locale="#{examEventController.localeCountry}"
                                                 required="true"
-                                                validator="#{examEventController.validateEndDateAfterStartDate}"
-                                                timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                                timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm">
+                                        <f:attribute name="start-date" value="#{examEventController.event.startDate}"/>
+                                        <f:validator validatorId="dateRangeValidator"/>
+                                    </p:calendar>
                                 </div>
 
                                 <p:outputLabel for="editDescr" value="#{msg['common.description']}"

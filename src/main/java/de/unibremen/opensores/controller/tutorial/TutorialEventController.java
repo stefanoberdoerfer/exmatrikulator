@@ -280,41 +280,6 @@ public class TutorialEventController {
         return FacesContext.getCurrentInstance().getViewRoot().getLocale().toLanguageTag();
     }
 
-    /*
-     * Validations
-     */
-
-    /**
-     * Validates that the end date of the selected event is after the start date.
-     * @pre event Is not null and has a not null startDate
-     * @param context The FacesContext in which the validation is done.
-     * @param component The UIComponent for which the validation is done.
-     * @param value The value of the end date
-     * @throws ValidatorException If the input string doesnt match the First name followed
-     *                            by the last name of the user of the to be
-     *                            deleted participation class.
-     */
-    public void validateEndDateAfterStartDate(FacesContext context,
-                                          UIComponent component,
-                                          Object value)   {
-        log.debug("validateDeletionNameInput called: " + value);
-        List<FacesMessage> messages = new ArrayList<>();
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                FacesContext.getCurrentInstance().getViewRoot().getLocale());
-        addFailMessage(bundle.getString("tutEvent.validatorMessageEndDate"));
-
-        if (!(value instanceof Date) || event.getStartDate() == null) {
-            //Let the start date validator handle the invalid start date first
-            return;
-        }
-
-        Date endDate = (Date) value;
-        if (!endDate.after(event.getStartDate())) {
-            throw new ValidatorException(messages);
-        }
-    }
-
-
 
     /*
      * Private Methods
@@ -352,7 +317,6 @@ public class TutorialEventController {
                 + loggedInUser.getLastName();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
-
 
         String textFormat = bundle.getString("tutEvent.formatMailEventMoved");
         String text = new MessageFormat(textFormat).format(new Object[]{
