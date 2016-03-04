@@ -29,7 +29,6 @@ import javax.mail.MessagingException;
 @ManagedBean
 @RequestScoped
 public class ResetController {
-
     /**
      * Amount of time a token is valid (in hours).
      */
@@ -62,21 +61,6 @@ public class ResetController {
      */
     ResourceBundle bundle = ResourceBundle.getBundle("messages",
             facesContext.getViewRoot().getLocale());
-
-    /**
-     * Number of bits to use for creating the reset token.
-     */
-    private static final int numBits = 130;
-
-    /**
-     * Radix to use for converting the BigInteger to a string.
-     */
-    private static final int radix = 32;
-
-    /**
-     * Amount of time a token is valid (in hours).
-     */
-    private static final int validTime = 3;
 
     /**
      * The email of the user who requested a password reset.
