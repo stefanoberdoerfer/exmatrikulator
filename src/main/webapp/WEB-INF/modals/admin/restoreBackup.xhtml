@@ -1,0 +1,23 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['backups.restore']}" appendTo="@(body)" widgetVar="restoreBackup" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            #{msg['backups.restore.confirmation']}
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.no']}" type="button"
+                        onclick="return exModal(':restoreBackup');"
+				        styleClass="btn btn-default" />
+                <p:commandLink action="#{backupController.restoreBackup()}"
+				        class="btn btn-danger" value="#{msg['common.yes']}" >
+                </p:commandLink>
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>

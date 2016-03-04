@@ -17,13 +17,14 @@ import java.io.IOException;
 import javax.ejb.EJB;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
+import javax.faces.bean.ViewScoped;
 import javax.persistence.PersistenceException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 import java.util.List;
+import java.lang.ProcessBuilder;
+import javax.faces.context.FacesContext;
 
 /**
  * Controller for creating backups.
@@ -31,7 +32,7 @@ import java.util.List;
  * @author Lorenz Huether
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class BackupController {
     /**
      * The Backupservice.
@@ -45,7 +46,7 @@ public class BackupController {
      * The log4j logger.
      */
     private static Logger log = LogManager.getLogger(
-            CourseSettingsController.class);
+            BackupController.class);
 
     /**
      * The Dateformat as specified in config.properties.
@@ -63,6 +64,21 @@ public class BackupController {
     private User loggedInUser;
 
     /**
+     * The backup to restore.
+     */
+    private Backup toRestore;
+
+    /**
+     * The Constant for retrieving the cwd.
+     */
+    private String cwdPropertyKey = "install.path";
+
+    /**
+     * The current working directory.
+     */
+    private String currentWorkingDirectory;
+
+    /**
      * Executed after construction.
      */
     @PostConstruct
@@ -72,6 +88,7 @@ public class BackupController {
         try {
             Properties props = ServerProperties.getProperties();
             format = props.getProperty(dtePropertyKey);
+            currentWorkingDirectory = props.getProperty(cwdPropertyKey);
         } catch (final IOException e) {
             log.debug(e);
             format = "yyyy-MM-dd_HH:mm:ss";
@@ -79,7 +96,9 @@ public class BackupController {
             dateForm = new SimpleDateFormat(format);
         }
 
-        loggedInUser = (User) FacesContext.getCurrentInstance().getExternalContext()
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        loggedInUser = (User) context.getExternalContext()
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
     }
 
@@ -145,6 +164,65 @@ public class BackupController {
         }
 
         return dateForm.format(backup.getDate());
+    }
+
+    /**
+     * Restores a backup.
+     *
+     * @param backup Backup to restore.
+     */
+    public void restoreBackup(Backup backup) {
+        if (backup == null) {
+            log.error("Cannot restore Backup, backup is null!");
+            return;
+        } else if (backup.getName() == null) {
+            log.error("Cannot restore Backup, backupName is null!");
+            return;
+        }
+
+        String os = System.getProperty("os.name");
+        String backupName = backup.getName() + "_"
+                + dateForm.format(backup.getDate());
+
+        log.debug("Restoring from " + backupName);
+        log.debug("Detected OS: " + os);
+
+        try {
+            ProcessBuilder pb = null;
+            if (os == null) {
+                log.error("Could not determine os.");
+            } else if (os.startsWith("Windows")) {
+                pb = new ProcessBuilder("restore.bat", backupName);
+                pb.directory(new File(currentWorkingDirectory));
+                pb.start();
+            } else {
+                pb = new ProcessBuilder("/bin/sh", "restore.sh", backupName);
+                pb.directory(new File(currentWorkingDirectory));
+                pb.start();
+            }
+        } catch (final IOException e) {
+            log.error(e);
+        }
+    }
+
+    /**
+     * Restores a backup from a dialog.
+     */
+    public void restoreBackup() {
+        if (toRestore != null) {
+            log.debug("Restroing backup, shutting down!" );
+            restoreBackup(toRestore);
+        } else {
+            log.error("The backup to restore is null!");
+        }
+    }
+
+    public void setToRestore(Backup toRestore) {
+        this.toRestore = toRestore;
+    }
+
+    public Backup getToRestore() {
+        return toRestore;
     }
 
     @EJB

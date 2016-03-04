@@ -46,11 +46,19 @@
                         styleClass="table-backups-filesize">
                   <h:outputText value="#{backup.fileSize}"/>
               </p:column>
-              <p:column styleClass="table-common-options-one">
-                <p:commandButton class="btn btn-danger" value="#{msg['common.remove']}"
-                    action="#{backupController.deleteBackup(backup)}" />
+              <p:column styleClass="table-common-options-two">
+                <p:commandLink class="btn btn-danger"
+			actionListener="#{backupController.setToRestore(backup)}"
+                        oncomplete="return exModal('restoreBackup');" >
+		    <i class ="fa fa-history"></i>
+		</p:commandLink>
+                <p:commandLink class="btn btn-danger"
+                        action="#{backupController.deleteBackup(backup)}" >
+		            <i class ="fa fa-times"></i>
+		        </p:commandLink>
               </p:column>
           </p:dataTable>
         </h:form>
+        <ui:include src="/WEB-INF/modals/admin/restoreBackup.xhtml" />
     </ui:define>
 </ui:composition>
