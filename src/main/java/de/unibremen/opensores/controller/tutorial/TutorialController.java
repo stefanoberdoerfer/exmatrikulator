@@ -665,7 +665,12 @@ public class TutorialController {
      * @return List of students who are not a part of a group.
      */
     public List<Student> studentsWithoutGroup(Tutorial tutorial) {
-        return tutorialService.studentsWithoutGroup(tutorial);
+        List<Student> students = tutorialService.studentsWithoutGroup(tutorial);
+        if (students == null) {
+            return new ArrayList<>();
+        }
+
+        return students;
     }
 
     /**

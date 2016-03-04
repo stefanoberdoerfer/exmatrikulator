@@ -26,7 +26,7 @@ public class CourseService extends GenericService<Course> {
      * Find active and confirmed students.
      *
      * @param course Course to look at.
-     * @return List of students or null.
+     * @return List of students.
      */
     public List<Student> findStudents(Course course) {
         List<Student> students = em.createQuery(
@@ -36,14 +36,14 @@ public class CourseService extends GenericService<Course> {
             .setParameter("id", course.getCourseId())
             .getResultList();
 
-        return (students.isEmpty()) ? null : students;
+        return students;
     }
 
     /**
      * Find active privileged users.
      *
      * @param course Course to look at.
-     * @return List of privileged users or null.
+     * @return List of privileged user.
      */
     public List<PrivilegedUser> findPrivUsers(Course course) {
         List<PrivilegedUser> privUsers = em.createQuery(
@@ -53,7 +53,7 @@ public class CourseService extends GenericService<Course> {
             .setParameter("id", course.getCourseId())
             .getResultList();
 
-        return (privUsers.isEmpty()) ? null : privUsers;
+        return privUsers;
     }
 
     /**
