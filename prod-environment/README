@@ -1,12 +1,12 @@
-This directory contains the files which got are used in the production environment
-of the Exmatrikulator. These files are the same files that got used in the first
-release of the Exmatrikulator by OpenSores. If you've changed these files to
-their production-envorinment versions by following the steps explained in
-/dev-envorinment/README , you can change these files back to their production
-environment vesions by following these steps.
+This directory contains the files which are used in the production environment
+of the Exmatrikulator. These files are the same files that are used in the first
+release of Exmatrikulator by OpenSores. If you've changed the following files
+by going through the steps explained in /dev-environment/README ,
+you can change them back to their production
+environment versions by following these steps.
 
 1. Copy the pom.xml of this directory to the pom.xml of the main directory and
-   override the existing pom.xml.
+   override the existing one.
 2. Copy the persistence.xml of this directory to the directory
    src/main/resources/META-INF/ and override the existing persistence.xml
 3. Copy the file ApplicationController.java of this directory to the directory
