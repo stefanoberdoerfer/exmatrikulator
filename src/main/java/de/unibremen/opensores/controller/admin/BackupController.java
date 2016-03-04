@@ -25,7 +25,6 @@ import java.util.Properties;
 import java.util.List;
 import java.lang.ProcessBuilder;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller for creating backups.
@@ -70,11 +69,6 @@ public class BackupController {
     private Backup toRestore;
 
     /**
-     * The Constant for getting the backup.
-     */
-    private String backupIdConst = "backup-id";
-
-    /**
      * The Constant for retrieving the cwd.
      */
     private String cwdPropertyKey = "install.path";
@@ -106,16 +100,6 @@ public class BackupController {
         FacesContext context = FacesContext.getCurrentInstance();
         loggedInUser = (User) context.getExternalContext()
                 .getSessionMap().get(Constants.SESSION_MAP_KEY_USER);
-
-        HttpServletRequest request = (HttpServletRequest) context
-                .getExternalContext()
-                .getRequest();
-
-        String backupId = request.getParameter(backupIdConst);
-
-        if (backupId != null) {
-            toRestore = backupService.findById(Long.parseLong(backupId));
-        }
     }
 
     /**
