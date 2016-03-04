@@ -475,11 +475,9 @@ public class TutorialEventController {
      * @return True if the user has the rights to edit the tutorial, false otherwise.
      */
     public boolean canUserEditEvent(TutorialEvent event) {
-        boolean canUserEditEvents = event != null && (isUserTutor || isUserLecturer)
-                //TODO Change here if lecturer can also edit other events
+        return event != null && (isUserTutor || isUserLecturer)
                 && (event.getId() == null
                 || loggedInUser.getUserId() == event.getCreatorId());
-        return canUserEditEvents;
     }
 
     /**

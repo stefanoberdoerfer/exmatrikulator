@@ -200,8 +200,10 @@ public class TutorialEventControllerTest {
         event.setId("1");
         event.setStartDate(new Date());
         event.setEndDate(new Date());
-        tutEventController.setEvent(event);
         tutEventController.getTutorialEventModel().clear();
+        SelectEvent selectEvent = Mockito.mock(SelectEvent.class);
+        when (selectEvent.getObject()).thenReturn(event);
+        tutEventController.onEventSelect(selectEvent);;
         tutEventController.addEvent(null);
         assertTrue(tutEventController.getTutorialEventModel().getEvents().isEmpty());
         verify(tutorialServiceMock, times(2)).update(tutorial);
