@@ -1,5 +1,5 @@
 This directory contains the files which got used by OpenSores in our development
-environment. If you want to change the environment of the Exmatriklator to
+environment. If you want to change the environment of the Exmatrikulator to
 development, follow these steps:
 
 1. Copy the pom.xml of this directory to the pom.xml of the main directory and
