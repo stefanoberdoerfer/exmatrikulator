@@ -10,7 +10,6 @@ target/
 node_modules/
 src/main/gui/build
 src/main/gui/vendors/bootstrap/dist/
-src/main/webapp/resources/
 derby.log
 exmatrikulator-db/
 fileuploads/
