@@ -11,8 +11,6 @@
   </f:metadata>
 
   <h:head>
-
-
       <meta charset="utf-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,82 +22,129 @@
             href="#{request.contextPath}/resources/images/favicon.ico" />
 
       <title>#{msg['common.certtemplate']} · Exmatrikulator</title>
+
+      <!-- Styles -->
+      <h:outputStylesheet library="css" name="certificate.min.css"  />
   </h:head>
   <h:body id="certtemplate">
-  <h1>#{msg['common.proofs']}</h1>
-      <h2>#{certificateController.course.name}</h2>
-      <br></br>
-      <br></br>
-      <ui:repeat var="n" value="#{certificateController.course.numbers}" varStatus="status">
-      <h3>"#{n}"</h3>
-      <br></br>
-      <br></br>
-      <br></br>
-      </ui:repeat>
-      <p:dataTable var="s" value="#{certificateController.getStudentList()}"
-            rowIndexVar="i">
-        <p:column>
-            <f:facet name="header">#{msg['common.number']}</f:facet>
-            #{i+1}
-        </p:column>
-        <p:column>
-            <f:facet name="header">#{msg['common.firstName']}</f:facet>
-            #{s.user.firstName}
-        </p:column>
-        <p:column>
-            <f:facet name="header">#{msg['common.lastName']}</f:facet>
-            #{s.user.lastName}
-        </p:column>
-        <p:column>
-            <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
-            #{s.user.matriculationNumber}
-        </p:column>
-        <p:column>
-            <f:facet name="header">#{msg['gradeType.grade']}</f:facet>
-            #{certificateController.getPaboGradeName(s.paboGrade)}
-        </p:column>
-        <p:column>
-            <f:facet name="header">#{msg['participationType.singlePerformance']}</f:facet>
-            <h:outputText value="X" rendered="#{!s.participationType.getGroupPerformance()}"/>
-        </p:column>
-      </p:dataTable>
-      <br></br>
-      <br></br>
-      <br></br>
+      <div id="cover">
+          <h1>#{msg['common.proofs']}</h1>
+          <h2>#{certificateController.course.name}</h2>
+
+          <ui:repeat var="n" value="#{certificateController.course.numbers}" varStatus="status">
+              <h3>#{n}</h3>
+          </ui:repeat>
+
+          <p:dataTable var="s" value="#{certificateController.getStudentList()}"
+                       rowIndexVar="i">
+              <p:column>
+                  <f:facet name="header">#{msg['common.number']}</f:facet>
+                  #{i+1}
+              </p:column>
+              <p:column>
+                  <f:facet name="header">#{msg['common.firstName']}</f:facet>
+                  #{s.user.firstName}
+              </p:column>
+              <p:column>
+                  <f:facet name="header">#{msg['common.lastName']}</f:facet>
+                  #{s.user.lastName}
+              </p:column>
+              <p:column>
+                  <f:facet name="header">#{msg['common.studentNumber']}</f:facet>
+                  #{s.user.matriculationNumber}
+              </p:column>
+              <p:column>
+                  <f:facet name="header">#{msg['gradeType.grade']}</f:facet>
+                  #{certificateController.getPaboGradeName(s.paboGrade)}
+              </p:column>
+              <p:column>
+                  <f:facet name="header">#{msg['participationType.singlePerformance']}</f:facet>
+                  <h:outputText value="X" rendered="#{!s.participationType.getGroupPerformance()}"/>
+              </p:column>
+          </p:dataTable>
+      </div>
+
+
       <ui:repeat var="s" value="#{certificateController.getStudentList()}" varStatus="status">
-      <h1>#{certificateController.uni}</h1>
-      <h2>#{msg['common.proof']}</h2>
-      <br></br>
-      <ul class="list-unstyled">
-         <li><h:outputText value="#{msg['common.lastName']}: #{s.user.lastName}"/></li>
-         <li><h:outputText value="#{msg['common.firstName']}: #{s.user.firstName}"/></li>
-         <li><h:outputText value="#{msg['common.studentNumber']}:  #{s.user.matriculationNumber}"/></li>
-         <li><h:outputText value="#{msg['course.title']}: #{certificateController.course.name}"/></li>
-         <ui:repeat var="n" value="#{certificateController.course.numbers}">
-         <li><h:outputText value="#{msg['cert.vak']}: #{n}"/></li>
-         </ui:repeat>
-         <li><h:outputText value="#{msg['cert.semester']}: #{certificateController.course.semester}"/></li>
-         <li><h:outputText value="#{msg['cert.creditPoints']}: #{certificateController.getCreditPoints(s)}"/></li>
-          <li><h:outputText value="#{msg['courses.weekhours']}: #{certificateController.getSws(s)}"/></li>
-          <li><h:outputText value="#{msg['cert.approval']}: #{certificateController.getApprovedFor(s)}"/></li>
-         <li><h:outputText value="#{msg['cert.comment']}: #{certificateController.getComment(s)}"/></li>
-      </ul>
-      <br></br>
-      <br></br>
-      <br></br>
-      <ul class="list-unstyled">
-          <li><h:outputText value="#{msg['cert.performance']}: #{certificateController.getSingleOrGroupPerformance(s)}"/></li>
-          <li><h:outputText value="#{msg['participationType.performanceContent']}: #{certificateController.getPerformanceContent(s)}"/></li>
-          <li><h:outputText value="#{msg['participationType.performanceArea']}: #{certificateController.getPerformanceArea(s)}"/></li>
-          <li><h:outputText value="#{msg['gradeType.grade']}: #{certificateController.getPaboGradeName(s.paboGrade)}"/></li>
-      </ul>
-      <br></br>
-      <br></br>
-      <br></br>
-      <h:outputText value="#{msg['cert.seal']}:"/>
-      <br></br>
-      <br></br>
-      <h:outputText value="#{certificateController.state}: #{certificateController.getDate()}"/>
-   </ui:repeat>
+          <div class="single-certificate #{status.last ? 'last' : ''}">
+              <h5>#{certificateController.uni}</h5>
+              <h3>#{msg['common.proof']}</h3>
+
+              <ul>
+                  <li>
+                      <h:outputLabel value="#{msg['common.lastName']}:" />
+                      <h:outputText styleClass="content" value="#{s.user.lastName}"/>
+                  </li>
+                  <li>
+                      <h:outputLabel value="#{msg['common.firstName']}:"/>
+                      <h:outputText styleClass="content" value="#{s.user.firstName}"/>
+                  </li>
+                  <li>
+                      <h:outputLabel value="#{msg['common.studentNumber']}:"/>
+                      <h:outputText styleClass="content" value=" #{s.user.matriculationNumber}"/>
+                  </li>
+                  <li>
+                      <h:outputLabel value="#{msg['course.title']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.course.name}"/>
+                  </li>
+                  <ui:repeat var="n" value="#{certificateController.course.numbers}">
+                      <li>
+                          <h:outputLabel value="#{msg['cert.vak']}:"/>
+                          <h:outputText styleClass="content" value="#{n}"/>
+                      </li>
+                  </ui:repeat>
+                  <li>
+                      <h:outputLabel value="#{msg['cert.semester']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.course.semester}"/>
+                  </li>
+                  <li>
+                      <h:outputLabel value="#{msg['cert.creditPoints']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getCreditPoints(s)}"/>
+                  </li>
+                  <li>
+                      <h:outputLabel value="#{msg['courses.weekhours']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getSws(s)}"/>
+                  </li>
+                  <li>
+                      <h:outputLabel value="#{msg['cert.approval']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getApprovedFor(s)}"/>
+                  </li>
+                  <li class="large">
+                      <h:outputLabel value="#{msg['cert.comment']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getComment(s)}"/>
+                  </li>
+              </ul>
+
+              <ul>
+                  <li>
+                      <h:outputLabel value="#{msg['cert.performance']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getSingleOrGroupPerformance(s)}"/>
+                  </li>
+                  <li class="large">
+                      <h:outputLabel value="#{msg['participationType.performanceContent']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getPerformanceContent(s)}"/>
+                  </li>
+                  <li>
+                      <h:outputLabel value="#{msg['participationType.performanceArea']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getPerformanceArea(s)}"/>
+                  </li>
+                  <li>
+                      <h:outputLabel value="#{msg['gradeType.grade']}:"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getPaboGradeName(s.paboGrade)}"/>
+                  </li>
+              </ul>
+
+              <div class="footer">
+                  <div class="date">
+                      <h:outputLabel value="#{certificateController.state}"/>
+                      <h:outputText styleClass="content" value="#{certificateController.getDate()}"/>
+                  </div>
+                  <div class="seal">
+                      <h:outputLabel value="#{msg['cert.seal']}"/>
+                      <h:outputText styleClass="content" />
+                  </div>
+              </div>
+          </div>
+      </ui:repeat>
   </h:body>
 </html>
