@@ -572,8 +572,9 @@ public class TutorialController {
 
         student.setGroup(null);
         student.setTutorial(null);
-
         student = studentService.update(student);
+
+        course = student.getCourse();
         logService.persist(Log.from(user, course.getCourseId(),
                 String.format("Removed student %s from from tutorial %s.",
                         student.getUser(), tutorial.getName())));
