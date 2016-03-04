@@ -75,6 +75,16 @@ public class BackupController {
     private String backupIdConst = "backup-id";
 
     /**
+     * The Constant for retrieving the cwd.
+     */
+    private String cwdPropertyKey = "install.path";
+
+    /**
+     * The current working directory.
+     */
+    private String currentWorkingDirectory;
+
+    /**
      * Executed after construction.
      */
     @PostConstruct
@@ -84,6 +94,7 @@ public class BackupController {
         try {
             Properties props = ServerProperties.getProperties();
             format = props.getProperty(dtePropertyKey);
+            currentWorkingDirectory = props.getProperty(cwdPropertyKey);
         } catch (final IOException e) {
             log.debug(e);
             format = "yyyy-MM-dd_HH:mm:ss";
@@ -186,13 +197,27 @@ public class BackupController {
         }
 
         String os = System.getProperty("os.name");
+        String backupName = backup.getName() + "_"
+                + dateForm.format(backup.getDate());
 
-        if (os == null) {
-            log.error("Could not determine os.");
-        } else if (os.startsWith("Windows")) {
-            new ProcessBuilder("restore.bat", backup.getName());
-        } else {
-            new ProcessBuilder("/bin/sh", "restore.sh", backup.getName());
+        log.debug("Restoring from " + backupName);
+        log.debug("Detected OS: " + os);
+
+        try {
+            ProcessBuilder pb = null;
+            if (os == null) {
+                log.error("Could not determine os.");
+            } else if (os.startsWith("Windows")) {
+                pb = new ProcessBuilder("restore.bat", backupName);
+                pb.directory(new File(currentWorkingDirectory));
+                pb.start();
+            } else {
+                pb = new ProcessBuilder("/bin/sh", "restore.sh", backupName);
+                pb.directory(new File(currentWorkingDirectory));
+                pb.start();
+            }
+        } catch (final IOException e) {
+            log.error(e);
         }
     }
 
@@ -201,11 +226,19 @@ public class BackupController {
      */
     public void restoreBackup() {
         if (toRestore != null) {
-            log.debug("Restroing backup, shutting down!");
+            log.debug("Restroing backup, shutting down!" );
             restoreBackup(toRestore);
         } else {
             log.error("The backup to restore is null!");
         }
+    }
+
+    public void setToRestore(Backup toRestore) {
+        this.toRestore = toRestore;
+    }
+
+    public Backup getToRestore() {
+        return toRestore;
     }
 
     @EJB

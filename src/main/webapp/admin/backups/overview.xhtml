@@ -48,10 +48,10 @@
               </p:column>
               <p:column styleClass="table-common-options-two">
                 <p:commandLink class="btn btn-danger"
-                        onclick="return exModal('restoreBackup');" >
-                    <f:param name="backup-id" value="#{backup.backupId}"/>
-		            <i class ="fa fa-history"></i>
-		        </p:commandLink>
+			actionListener="#{backupController.setToRestore(backup)}"
+                        oncomplete="return exModal('restoreBackup');" >
+		    <i class ="fa fa-history"></i>
+		</p:commandLink>
                 <p:commandLink class="btn btn-danger"
                         action="#{backupController.deleteBackup(backup)}" >
 		            <i class ="fa fa-times"></i>
