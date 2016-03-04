@@ -119,18 +119,11 @@ public class MailTemplate {
      *
      * @param map the map.
      * @return the filled template as a string.
-     * @throws IOException If the string couldn't be created.
      */
-    private String toString(Map<String, Object> map) throws IOException {
+    private String toString(Map<String, Object> map) {
         MustacheFactory mf = new DefaultMustacheFactory();
         Mustache mustache = mf.compile(new StringReader(text), "template");
-        StringWriter writer = new StringWriter();
-        mustache.execute(writer, map);
-
-        text = writer.toString();
-        writer.close();
-
-        return text;
+        return mustache.execute(new StringWriter(), map).toString();
     }
 
     /**
