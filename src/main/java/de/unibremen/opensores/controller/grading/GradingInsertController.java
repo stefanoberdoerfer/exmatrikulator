@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -400,9 +401,22 @@ public class GradingInsertController {
         return overwriting;
     }
 
+    /**
+     * Method used for autocompletion of students.
+     * @param query string to search for
+     * @return List of student names
+     */
     public List<String> completeFormStudent(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
         List<Student> students =  gradingService.getStudents(course,user,query);
-        return students.stream().map(this::printStudent).collect(Collectors.toList());
+
+        if (students == null) {
+            return new ArrayList<>();
+        } else {
+            return students.stream().map(this::printStudent).collect(Collectors.toList());
+        }
     }
 
     private String printStudent(Student student) {

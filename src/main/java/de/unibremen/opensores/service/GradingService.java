@@ -142,7 +142,7 @@ public class GradingService extends GenericService<Grading> {
                     .setParameter("search", "%" + search.toLowerCase() + "%")
                     .getResultList();
         } else {
-            ls = em.createQuery("SELECT DISTINCT s "
+            ls = em.createQuery("SELECT s "
                             + "FROM Student s "
                             + "JOIN s.tutorial.tutors AS t "
                             + "JOIN s.user AS u "
