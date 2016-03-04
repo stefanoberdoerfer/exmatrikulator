@@ -9,14 +9,12 @@ import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Student;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.model.GlobalRole;
-import de.unibremen.opensores.model.Backup;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.LecturerService;
 import de.unibremen.opensores.service.LogService;
 import de.unibremen.opensores.service.PrivilegedUserService;
 import de.unibremen.opensores.service.StudentService;
 import de.unibremen.opensores.service.UserService;
-import de.unibremen.opensores.service.BackupService;
 import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,11 +52,6 @@ public class CourseOverviewController {
      * UserService for finding old users.
      */
     private UserService userService;
-
-    /**
-     * BackupService for finding old Backups.
-     */
-    private BackupService backupService;
 
     /**
      * The LogService for creating Exmatrikulator business domain logs.
@@ -113,16 +106,6 @@ public class CourseOverviewController {
     private List<Course> oldCourses;
 
     /**
-     * A list of users which have not been active for 10 years.
-     */
-    private List<User> oldUsers;
-
-    /**
-     * A list of backups that are older than 10 years.
-     */
-    private List<Backup> oldBackups;
-
-    /**
      * ResourceBundle for getting localised messages.
      */
     private ResourceBundle bundle;
@@ -148,15 +131,7 @@ public class CourseOverviewController {
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
 
         oldCourses = courseService.getOldCourses(loggedInUser);
-        oldUsers = new ArrayList<User>();
-        oldBackups = new ArrayList<Backup>();
         newStudents = new ArrayList<>();
-
-        if (loggedInUser.hasGlobalRole(GlobalRole.ADMIN)) {
-            oldCourses = courseService.getOldCourses();
-            oldUsers = userService.getOldUsers();
-            oldBackups = backupService.getOldBackups();
-        }
     }
 
     /**
@@ -173,16 +148,6 @@ public class CourseOverviewController {
 
         }
         oldCourses.clear();
-
-        for (User u : oldUsers) {
-            deleteUser(u);
-        }
-        oldUsers.clear();
-
-        for (Backup b : oldBackups) {
-            backupService.remove(b);
-        }
-        oldBackups.clear();
     }
 
     /**
@@ -425,35 +390,7 @@ public class CourseOverviewController {
      * @return boolean if old data is available.
      */
     public boolean oldData() {
-        if ((oldCourses != null) && (oldCourses.size() > 0)) {
-            return true;
-        } else if ((oldUsers != null) && (oldUsers.size() > 0)) {
-            return true;
-        } else if ((oldBackups != null) && (oldBackups.size() > 0)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Deletes a user by overwriting all of his/her attributes.
-     * This is beneficial for not destroying many relations by deleting this
-     * user completely.
-     *
-     * @param user the user to be deleted
-     */
-    public void deleteUser(User user) {
-        user.setFirstName("Deleted");
-        user.setLastName("User");
-        user.setEmail(RandomStringUtils.randomAlphanumeric(64));
-        user.setMatriculationNumber("XXXXXX");
-        user.setProfileInfo("");
-        user.setBlocked(true);
-        user.setPassword(RandomStringUtils.randomAlphanumeric(10));
-        logService.persist(Log.from(loggedInUser, selectedCourse.getCourseId(),
-                String.format("User %s has been deleted.", user)));
-        userService.update(user);
+        return ((oldCourses != null) && (oldCourses.size() > 0));
     }
 
     /**
@@ -511,15 +448,6 @@ public class CourseOverviewController {
         this.userService = userService;
     }
 
-    /**
-     * Injects the backup service.
-     * @param backupService The backup service to be injected to the bean.
-     */
-    @EJB
-    public void setBackupService(BackupService backupService) {
-        this.backupService = backupService;
-    }
-
     public String getCourseSearchInput() {
         return courseSearchInput;
     }
@@ -566,13 +494,5 @@ public class CourseOverviewController {
 
     public List<Course> getOldCourses() {
         return oldCourses;
-    }
-
-    public List<User> getOldUsers() {
-        return oldUsers;
-    }
-
-    public List<Backup> getOldBackups() {
-        return oldBackups;
     }
 }

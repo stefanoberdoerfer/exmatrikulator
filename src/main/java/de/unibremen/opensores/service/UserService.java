@@ -439,7 +439,8 @@ public class UserService extends GenericService<User> {
                 "SELECT DISTINCT u "
                 + "FROM User u "
                 + "WHERE (u.lastActivity <= :date "
-                + "AND u.isBlocked = false)", User.class)
+                + "AND u.firstName != 'Deleted'"
+                + "AND u.password is NOT NULL)", User.class)
                 .setParameter("date", DateUtil.tenYearsAgo())
                 .getResultList();
 

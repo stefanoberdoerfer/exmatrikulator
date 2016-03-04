@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="#{msg['courses.overview.deleteOldData']}"
+              id="oldDataRemoveDlg"
+              appendTo="@(body)" widgetVar="oldDataRemove" modal="true">
+        <ui:include src="/WEB-INF/alerts.xhtml" />
+        <div class="modal-body">
+            <h:dataTable value="#{userOverviewController.oldCourses}" var="course"
+                         columnClasses="table-course-semester,responsive"
+                         styleClass="table table-hover table-courses-overview"
+                         rendered="#{userOverviewController.oldCourses.size() > 0}">
+                <h:column>
+                    <f:facet name="header">#{msg['common.semester']}</f:facet>
+                    #{course.semester}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#{msg['common.name']}</f:facet>
+                    #{course.name}
+                </h:column>
+            </h:dataTable>
+            <br></br>
+            <h:dataTable value="#{userOverviewController.oldUsers}" var="user"
+                         columnClasses="table-course-semester,responsive"
+                         styleClass="table table-hover table-courses-overview"
+			 rendered="#{userOverviewController.oldUsers.size() > 0}">
+                <h:column>
+                    <f:facet name="header">#{msg['common.user']}</f:facet>
+                    #{user.userId}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#{msg['common.name']}</f:facet>
+                    #{user.lastName}, #{user.firstName}
+                </h:column>
+            </h:dataTable>
+            <br></br>
+            <h:dataTable value="#{userOverviewController.oldBackups}" var="backup"
+                         columnClasses="table-course-semester,responsive"
+                         styleClass="table table-hover table-courses-overview"
+			 rendered="#{userOverviewController.oldBackups.size() > 0}">
+                <h:column>
+                    <f:facet name="header">#{msg['common.backups']}</f:facet>
+                    #{backup.name}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#{msg['common.date']}</f:facet>
+                    #{backupController.dateToString(backup)}
+                </h:column>
+            </h:dataTable>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group">
+                <p:commandButton value="#{msg['common.cancel']}" type="button"
+                                 onclick="return exModal(':oldDataRemove');"
+                                 styleClass="btn btn-default" />
+                <p:commandLink class="btn btn-danger"
+                               oncomplete="if (args &amp;&amp; !args.validationFailed) return exModal(':oldDataRemove')"
+                               value="#{msg['courses.overview.deleteOldData']}">
+                    <f:actionListener binding="#{userOverviewController.deleteOldData()}"/>
+                </p:commandLink>
+            </div>
+        </div>
+    </p:dialog>
+</ui:composition>
