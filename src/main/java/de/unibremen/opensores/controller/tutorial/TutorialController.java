@@ -556,6 +556,8 @@ public class TutorialController {
                 msg = bundle.getString("courses.groupDeleteMinSize");
             } else if (members <= 1) {
                 msg = bundle.getString("courses.groupWouldBeEmpty");
+            } else {
+                group.getStudents().remove(student);
             }
         }
 
@@ -570,6 +572,7 @@ public class TutorialController {
 
         student.setGroup(null);
         student.setTutorial(null);
+
         student = studentService.update(student);
         logService.persist(Log.from(user, course.getCourseId(),
                 String.format("Removed student %s from from tutorial %s.",
