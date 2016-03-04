@@ -147,7 +147,6 @@ public class CertificateController {
         try {
             Properties props = ServerProperties.getProperties();
             state = props.getProperty(statePropertyKey);
-            state += ", " + bundle.getString("common.datearticle");
             uni = props.getProperty(uniPropertyKey);
         } catch (final IOException e) {
             log.error(e);

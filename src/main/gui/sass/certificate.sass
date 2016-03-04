@@ -1,0 +1,85 @@
+*
+  font-family: Helvetica, Arial, Verdana, sans-serif
+  box-sizing: border-box
+
+#cover
+  text-align:       center
+  page-break-after: always
+
+  h1
+    margin: 3em 0 1.5em
+
+  h3
+    font-weight:  normal
+
+    &:last-of-type
+      margin-bottom: 3em
+
+  th
+    text-align: left
+
+.single-certificate
+  page-break-after: always
+
+  &.last
+    page-break-after: avoid
+
+  h5,
+  h3
+    text-transform: uppercase
+
+  h3
+    text-align: center
+
+  .content
+    font-family: monospace
+    font-size: 15px
+    display: block
+    border: solid 1px #ddd
+    padding: 4px
+    margin-left: 40%
+    min-height: 28px
+
+  ul
+    border: solid 4px #ddd
+    padding: 2em
+    list-style-type: none
+
+    li
+      overflow: auto
+      margin-bottom: 8px
+
+      label
+        font-size: 13px
+        width: 40%
+        display: block
+        float: left
+        margin-top: 6px
+
+      &.large
+        .content
+          min-height: 96px
+
+  .footer
+    overflow: auto
+
+    label
+      float: left
+      padding: 0 15px
+
+    .date
+      width: 40%
+      float: left
+      padding-top: 5px
+
+      label
+        padding-top: 5px
+
+    .seal
+      margin-left: 40%
+
+      label
+        padding-top: 10px
+
+      .content
+        height: 40px

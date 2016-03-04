@@ -62,6 +62,7 @@ public class GradingInsertController {
     private String formPublicComment;
     private boolean overwriting = false;
     private Integer formGradeType = GradeType.Pabo.getId();
+    private BigDecimal formMaxPoints;
 
     @ManagedProperty("#{gradingController}")
     private GradingController gradingController;
@@ -181,9 +182,10 @@ public class GradingInsertController {
         Try to store the grade
          */
         Exam exam = null;
+        Group group = null;
 
         try {
-            Group group = gradingService.getGroup(course, formGroup);
+            group = gradingService.getGroup(course, formGroup);
 
             if (group == null) {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage
@@ -274,6 +276,8 @@ public class GradingInsertController {
         /*
         Success
          */
+        gradingController.resetExamGradings(group);
+
         facesContext.addMessage(null, new FacesMessage(FacesMessage
                 .SEVERITY_INFO, bundle.getString("common.success"),
                 bundle.getString("gradings.stored")));
@@ -420,17 +424,21 @@ public class GradingInsertController {
 
             if (exam != null) {
                 formGradeType = exam.getGradeType();
+                formMaxPoints = exam.getMaxPoints();
             } else {
                 formGradeType = null;
+                formMaxPoints = null;
             }
         } else {
             formGradeType = null;
+            formMaxPoints = null;
         }
 
         formGrading = "";
         overwriting = false;
 
         log.debug("New grade type: " + formGradeType);
+        log.debug("Max points: " + formMaxPoints);
     }
 
     /**
@@ -476,5 +484,9 @@ public class GradingInsertController {
 
     public void setGradingController(GradingController gradingController) {
         this.gradingController = gradingController;
+    }
+
+    public BigDecimal getFormMaxPoints() {
+        return formMaxPoints;
     }
 }

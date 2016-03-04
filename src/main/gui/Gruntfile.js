@@ -42,7 +42,9 @@ module.exports = function(grunt) {
                     './build/font-awesome.css':
                         './vendors/font-awesome/scss/font-awesome.scss',
                     './build/exmatrikulator.css':
-                        './sass/exmatrikulator.sass'
+                        './sass/exmatrikulator.sass',
+                    './build/certificate.css':
+                        './sass/certificate.sass'
                 }
             }
         },
@@ -76,6 +78,9 @@ module.exports = function(grunt) {
                     ],
                     './../webapp/resources/css/exmatrikulator.min.css': [
                         './build/exmatrikulator.css'
+                    ],
+                    './../webapp/resources/css/certificate.min.css': [
+                        './build/certificate.css'
                     ]
                 }
             }

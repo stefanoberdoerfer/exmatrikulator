@@ -55,6 +55,7 @@ public class GradingEditController {
     private String formPublicComment;
     private boolean overwriting = false;
     private Integer formGradeType;
+    private BigDecimal formMaxPoints;
 
     @ManagedProperty("#{gradingController}")
     private GradingController gradingController;
@@ -342,6 +343,7 @@ public class GradingEditController {
         this.student = student;
         this.overwriting = false;
         this.formGradeType = exam.getGradeType();
+        this.formMaxPoints = exam.getMaxPoints();
 
         log.debug("Already graded? " + (grading != null ? "yes" : "no"));
 
@@ -385,5 +387,9 @@ public class GradingEditController {
 
     public void setGradingController(GradingController gradingController) {
         this.gradingController = gradingController;
+    }
+
+    public BigDecimal getFormMaxPoints() {
+        return formMaxPoints;
     }
 }

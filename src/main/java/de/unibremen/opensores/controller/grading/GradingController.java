@@ -231,6 +231,16 @@ public class GradingController {
         studentGradings.remove(student.getStudentId());
     }
 
+    /**
+     * Called to reset the exam gradings cache for a group.
+     * @param group Group to remove from the cache.
+     */
+    public void resetExamGradings(Group group) {
+        for (Student s : group.getStudents()) {
+            resetExamGradings(s);
+        }
+    }
+
     public boolean isPointExam(Exam exam) {
         return exam.getGradeType().equals(GradeType.Point.getId());
     }
