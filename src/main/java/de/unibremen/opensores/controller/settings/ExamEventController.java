@@ -64,11 +64,6 @@ public class ExamEventController {
     private static Logger log = LogManager.getLogger(ExamEventController.class);
 
     /**
-     * The currently selected exam event.
-     */
-    private ExamEvent event;
-
-    /**
      * The LogService for adding logs related to the exmatrikulator actions.
      */
     private LogService logService;
@@ -94,14 +89,14 @@ public class ExamEventController {
     private ExamEventService examEventService;
 
     /**
-     * The schedule model used by PrimeFaces for managing exam events.
-     */
-    private ScheduleModel examEventModel;
-
-    /**
      * The StudentService for database transactions related to students.
      */
     private StudentService studentService;
+
+    /**
+     * The schedule model used by PrimeFaces for managing exam events.
+     */
+    private ScheduleModel examEventModel;
 
     /**
      * The PrivilegedUserService for database transactions related to PrivilegedUsers.
@@ -124,6 +119,11 @@ public class ExamEventController {
     private Exam exam;
 
     /**
+     * The currently selected exam event.
+     */
+    private ExamEvent event;
+
+    /**
      * Boolean whether the logged in user is a student in this course.
      */
     private boolean isUserStudent;
@@ -137,7 +137,6 @@ public class ExamEventController {
      * Boolean whether the the logged in user is a lecturer.
      */
     private boolean isUserLecturer;
-
 
     /**
      * The Student object of the logged in user if the user is a student.
@@ -186,7 +185,6 @@ public class ExamEventController {
      */
     @PostConstruct
     public void init() {
-        log.debug("init() called");
         HttpServletRequest req =
                 (HttpServletRequest) FacesContext.getCurrentInstance()
                         .getExternalContext().getRequest();
@@ -206,6 +204,7 @@ public class ExamEventController {
         } catch (ClassCastException e) {
             log.error(e);
         }
+        log.debug("User: " + loggedInUser);
         if (loggedInUser != null && course != null && exam != null
                 && course.getExams().contains(exam)) {
             isUserLecturer = userService.hasCourseRole(loggedInUser, Role.LECTURER, course);
@@ -309,13 +308,9 @@ public class ExamEventController {
     /**
      * Adds a new event to the exam event.
      * @param actionEvent The actionEvent triggered by the PrimeFaces scheduler.
+     * @pre The selected event is not null.
      */
     public void addEvent(ActionEvent actionEvent) {
-        log.debug("addEvent called with " + actionEvent);
-        log.debug("Size of registered students exceeds max num student integer");
-        log.debug("Student List size: " + studentDualList.getTarget().size());
-        log.debug("Max number of students int: " + event.getMaxNumStudents());
-
         if (event.getId() == null) {
             updateExaminedStudentsFromDualList();
             event = examEventService.persist(event);
@@ -330,16 +325,6 @@ public class ExamEventController {
             if ((oldEventEndDate != null && oldEventStartDate != null)
                     && (!event.getStartDate().equals(oldEventStartDate)
                     || !event.getEndDate().equals(oldEventEndDate))) {
-                log.debug("The event dates have changed");
-                log.debug("Curr. event start date: \t" + event.getStartDate());
-                log.debug("Old event start date: \t" + oldEventStartDate);
-                log.debug("Current event end date: \t" + event.getEndDate());
-                log.debug("Old event end date: \t" + oldEventEndDate);
-
-                log.debug("(Long) Curr. event start date: \t" + event.getStartDate().getTime());
-                log.debug("(Long) Old event start date: \t" + oldEventStartDate.getTime());
-                log.debug("(Long) Current event end date: \t" + event.getEndDate().getTime());
-                log.debug("(Long) Old event end date: \t" + oldEventEndDate.getTime());
                 logEventMoved(event);
                 mailEventMoved(event, oldEventStartDate, oldEventEndDate);
             } else {
@@ -447,10 +432,9 @@ public class ExamEventController {
      * @return True if the user has
      */
     public boolean canUserEditEvent(ExamEvent event) {
-        boolean canUserEditEvents = event != null && (isUserPrivUser || isUserLecturer)
+        return event != null && (isUserPrivUser || isUserLecturer)
                 && (event.getId() == null
                 || loggedInUser.equals(event.getExaminer().getUser()));
-        return canUserEditEvents;
     }
 
     /**
@@ -479,28 +463,6 @@ public class ExamEventController {
         return locale;
     }
 
-
-    /**
-     * Gets a list of students of the current course which have no events in this exam.
-     * @return The list of students with no events.
-     */
-    public List<Student> getStudentsWithoutEvents() {
-        log.debug("getStudentsWithoutEvents() has been called");
-        return course.getStudents().stream().filter(
-            student ->
-            {
-                for (ExamEvent event : student.getExamEvents()) {
-                    if (event.getExam().equals(exam)) {
-                        log.debug("Student is " + student.getUser()
-                                + " is registered to an exam event");
-                        return false;
-                    }
-                }
-                log.debug("Student is " + student.getUser()
-                        + " is not registered to an exam event");
-                return true;
-            }).collect(Collectors.toList());
-    }
 
     /**
      * Validates that the size of the target list of the dual list model is not
@@ -542,6 +504,29 @@ public class ExamEventController {
         event.setExam(exam);
         return event;
     }
+
+    /**
+     * Gets a list of students of the current course which have no events in this exam.
+     * @return The list of students with no events.
+     */
+    private List<Student> getStudentsWithoutEvents() {
+        log.debug("getStudentsWithoutEvents() has been called");
+        return courseService.findStudents(course).stream().filter(
+            student ->
+            {
+                for (ExamEvent event : student.getExamEvents()) {
+                    if (event.getExam().equals(exam)) {
+                        log.debug("Student is " + student.getUser()
+                                + " is registered to an exam event");
+                        return false;
+                    }
+                }
+                log.debug("Student is " + student.getUser()
+                        + " is not registered to an exam event");
+                return true;
+            }).collect(Collectors.toList());
+    }
+
 
     /**
      * Updates the examined students from the currently selected events and the picked

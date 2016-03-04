@@ -65,6 +65,10 @@ public class Tutorial {
         return tutorialId;
     }
 
+    public void setTutorialId(Long id) {
+        this.tutorialId = id;
+    }
+
     public Course getCourse() {
         return course;
     }

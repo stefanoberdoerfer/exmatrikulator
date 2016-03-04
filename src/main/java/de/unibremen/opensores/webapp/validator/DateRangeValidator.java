@@ -33,6 +33,7 @@ public class DateRangeValidator implements Validator {
      * @pre The start date is not null.
      * @param facesContext The FacesContext in which the validation is done.
      * @param uiComponent The UIComponent for which the validation is done.
+     *                    Cant be null and should have an attribute map.
      * @param value The value of the end date
      * @throws ValidatorException If the end date is after the start date,
      *                            when the end date and the start date are valid dates.

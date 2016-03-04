@@ -13,6 +13,8 @@ import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.event.ScheduleEntryMoveEvent;
+import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.ScheduleEvent;
@@ -230,7 +232,7 @@ public class TutorialEventController {
      */
     public void removeEvent(ActionEvent actionEvent) {
         log.debug("removeEvent called with " + actionEvent);
-        if (event.getId() == null) {
+        if (event == null || event.getId() == null) {
             log.debug("The PrimeFaces string id of the event is null");
         } else if (tutorialEventModel.getEvents().contains(event)) {
             log.debug("Removing the event from the EventModel");
@@ -280,7 +282,6 @@ public class TutorialEventController {
         return FacesContext.getCurrentInstance().getViewRoot().getLocale().toLanguageTag();
     }
 
-
     /*
      * Private Methods
      */
@@ -317,6 +318,7 @@ public class TutorialEventController {
                 + loggedInUser.getLastName();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
+
 
         String textFormat = bundle.getString("tutEvent.formatMailEventMoved");
         String text = new MessageFormat(textFormat).format(new Object[]{
@@ -437,11 +439,9 @@ public class TutorialEventController {
      * @return True if the user has the rights to edit the tutorial, false otherwise.
      */
     public boolean canUserEditEvent(TutorialEvent event) {
-        boolean canUserEditEvents = event != null && (isUserTutor || isUserLecturer)
-                //Change here if lecturer can also edit other events which he didn't create
+        return event != null && (isUserTutor || isUserLecturer)
                 && (event.getId() == null
                 || loggedInUser.getUserId() == event.getCreatorId());
-        return canUserEditEvents;
     }
 
     /**
@@ -519,6 +519,10 @@ public class TutorialEventController {
 
     public void setEvent(TutorialEvent event) {
         this.event = event;
+    }
+
+    public boolean isUserLecturer() {
+        return isUserLecturer;
     }
 
 }

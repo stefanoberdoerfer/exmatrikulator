@@ -181,7 +181,7 @@ public class CertificateController {
         List<Student> students = null;
 
         if (course != null && student == null) {
-            students = courseService.getStudentList(course);
+            students = courseService.findStudentWithNoPaboData(course);
         } else if (course != null && student != null) {
             students = new ArrayList<>();
             students.add(student);

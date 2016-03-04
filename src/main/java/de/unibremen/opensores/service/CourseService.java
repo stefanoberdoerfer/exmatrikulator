@@ -286,24 +286,6 @@ public class CourseService extends GenericService<Course> {
         return (students.isEmpty()) ? null : students.get(0);
     }
 
-    /**
-     * Get a list of students who are member of a particular coursen,
-     * who have paboData.
-     *
-     * @param course Course to look at.
-     * @return List of students with or null.
-     */
-    public List<Student> getStudentList(Course course) {
-        List<Student> students = em.createQuery(
-                "SELECT DISTINCT s FROM Student s"
-                + " JOIN s.course AS c"
-                + " WITH c.courseId = :courseId"
-                + " WHERE s.paboData IS NULL", Student.class)
-            .setParameter("courseId", course.getCourseId())
-            .getResultList();
-
-        return (students.isEmpty()) ? null : students;
-    }
 
     /**
      * Find tutor of this course using an email.
