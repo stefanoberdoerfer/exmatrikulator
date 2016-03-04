@@ -4,7 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui">
-      <p:dialog header="#{msg['tutorials.remove']}" appendTo="@(body)" widgetVar="sendEmail"
+      <p:dialog header="#{msg['mailtemplates.send']}" appendTo="@(body)" widgetVar="sendEmail"
           id="sendEmailDialog" modal="true" visible="#{not empty facesContext.messageList}">
         <ui:include src="/WEB-INF/alerts.xhtml" />
 
