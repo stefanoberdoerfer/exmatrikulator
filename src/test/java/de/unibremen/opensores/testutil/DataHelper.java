@@ -31,9 +31,24 @@ public final class DataHelper {
     public static final long COURSE_ID = idCount++;
 
     /**
+     * The id of the test tutorial passed as http parameter in the mocked request.
+     * It is also used to find the tutorial by the TutorialService class.
+     * This constant should be used for the tutorial id in tests.
+     */
+    public static final long TUTORIAL_ID = idCount++;
+
+    /**
+     * The id of the test exam passed as http parameter in the mocked request.
+     * It is also used to find the exam by the ExamService class.
+     * This constant should be used for the exam id in tests.
+     */
+    public static final long EXAM_ID = idCount++;
+
+    /**
      * String value of the course id.
      */
     public static final String COURSE_ID_STR = String.valueOf(COURSE_ID);
+    public static final String EXAM_ID_STR = String.valueOf(EXAM_ID);
 
     /**
      * The id of the default participation type of the basic course.

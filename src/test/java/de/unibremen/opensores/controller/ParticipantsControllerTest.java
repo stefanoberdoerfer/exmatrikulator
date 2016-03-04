@@ -8,6 +8,7 @@ import de.unibremen.opensores.model.Privilege;
 import de.unibremen.opensores.model.PrivilegedUser;
 import de.unibremen.opensores.model.Role;
 import de.unibremen.opensores.model.Student;
+import de.unibremen.opensores.model.Tutorial;
 import de.unibremen.opensores.model.User;
 import de.unibremen.opensores.service.CourseService;
 import de.unibremen.opensores.service.LogService;
@@ -110,7 +111,7 @@ public class ParticipantsControllerTest {
     /**
      * The course object used for tests.
      */
-    public Course course;
+    private Course course;
 
     /**
      * The custom session map with gets used by the mocked FacesContext.
@@ -122,6 +123,7 @@ public class ParticipantsControllerTest {
      */
     private User loggedIn;
 
+
     /**
      * Sets up the test environment for the ParticipantsController tests.
      * Mocks the dependencies of the ParticipantsController and generates dummy
@@ -132,7 +134,6 @@ public class ParticipantsControllerTest {
         course = DataHelper.createBasicCourse();
         loggedIn = DataHelper.createBasicGlobalLecturer();
         Lecturer lecturer = DataHelper.createLecturerWith(course, loggedIn);
-
         sessionMap = new HashMap<>();
         sessionMap.put(Constants.SESSION_MAP_KEY_USER, loggedIn);
 

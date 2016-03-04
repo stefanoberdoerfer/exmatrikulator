@@ -13,6 +13,8 @@ import de.unibremen.opensores.service.UserService;
 import de.unibremen.opensores.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.event.ScheduleEntryMoveEvent;
+import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleModel;
 import org.primefaces.model.ScheduleEvent;
@@ -230,7 +232,7 @@ public class TutorialEventController {
      */
     public void removeEvent(ActionEvent actionEvent) {
         log.debug("removeEvent called with " + actionEvent);
-        if (event.getId() == null) {
+        if (event == null || event.getId() == null) {
             log.debug("The PrimeFaces string id of the event is null");
         } else if (tutorialEventModel.getEvents().contains(event)) {
             log.debug("Removing the event from the EventModel");
@@ -280,6 +282,41 @@ public class TutorialEventController {
         return FacesContext.getCurrentInstance().getViewRoot().getLocale().toLanguageTag();
     }
 
+    /*
+     * Validations
+     */
+
+    /**
+     * Validates that the end date of the selected event is after the start date.
+     * @pre event Is not null and has a not null startDate
+     * @param context The FacesContext in which the validation is done.
+     * @param component The UIComponent for which the validation is done.
+     * @param value The value of the end date
+     * @throws ValidatorException If the input string doesnt match the First name followed
+     *                            by the last name of the user of the to be
+     *                            deleted participation class.
+     */
+    public void validateEndDateAfterStartDate(FacesContext context,
+                                          UIComponent component,
+                                          Object value)   {
+        log.debug("validateDeletionNameInput called: " + value);
+        List<FacesMessage> messages = new ArrayList<>();
+        ResourceBundle bundle = ResourceBundle.getBundle("messages",
+                FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        addFailMessage(bundle.getString("tutEvent.validatorMessageEndDate"));
+
+        if (!(value instanceof Date) || event.getStartDate() == null) {
+            //Let the start date validator handle the unvalid start date first
+            return;
+        }
+
+        Date endDate = (Date) value;
+        if (!endDate.after(event.getStartDate())) {
+            throw new ValidatorException(messages);
+        }
+    }
+
+
 
     /*
      * Private Methods
@@ -317,6 +354,7 @@ public class TutorialEventController {
                 + loggedInUser.getLastName();
         ResourceBundle bundle = ResourceBundle.getBundle("messages",
                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
+
 
         String textFormat = bundle.getString("tutEvent.formatMailEventMoved");
         String text = new MessageFormat(textFormat).format(new Object[]{
@@ -438,7 +476,7 @@ public class TutorialEventController {
      */
     public boolean canUserEditEvent(TutorialEvent event) {
         boolean canUserEditEvents = event != null && (isUserTutor || isUserLecturer)
-                //Change here if lecturer can also edit other events which he didn't create
+                //TODO Change here if lecturer can also edit other events
                 && (event.getId() == null
                 || loggedInUser.getUserId() == event.getCreatorId());
         return canUserEditEvents;
@@ -519,6 +557,10 @@ public class TutorialEventController {
 
     public void setEvent(TutorialEvent event) {
         this.event = event;
+    }
+
+    public boolean isUserLecturer() {
+        return isUserLecturer;
     }
 
 }

@@ -140,6 +140,10 @@ public final class MockHelper {
         HttpServletRequest reqMock = mock(HttpServletRequest.class);
         when(reqMock.getParameter(Constants.HTTP_PARAM_COURSE_ID)).
                 thenReturn(String.valueOf(DataHelper.COURSE_ID));
+        when(reqMock.getParameter(Constants.HTTP_PARAM_TUTORIAL_ID)).
+                thenReturn(String.valueOf(DataHelper.TUTORIAL_ID));
+        when(reqMock.getParameter(Constants.HTTP_PARAM_EXAM_ID))
+                .thenReturn(String.valueOf(DataHelper.EXAM_ID));
         //Extend here if you want more http params
 
         ExternalContext externalContextMock = mock(ExternalContext.class);
