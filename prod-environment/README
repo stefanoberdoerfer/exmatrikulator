@@ -1,0 +1,20 @@
+This directory contains the files which got are used in the production environment
+of the Exmatrikulator. These files are the same files that got used in the first
+release of the Exmatrikulator by OpenSores. If you've changed these files to
+their production-envorinment versions by following the steps explained in
+/dev-envorinment/README , you can change these files back to their production
+environment vesions by following these steps.
+
+1. Copy the pom.xml of this directory to the pom.xml of the main directory and
+   override the existing pom.xml.
+2. Copy the persistence.xml of this directory to the directory
+   src/main/resources/META-INF/ and override the existing persistence.xml
+3. Copy the file ApplicationController.java of this directory to the directory
+   /src/main/java/de/unibremen/opensores/controller/common/
+   and override the existing file.
+
+You can build the new .war with the following command in the main directory:
+   $ mvn clean package
+
+If there were no errors while building the .war, you can now use the new .war
+in the normal glassfish server like explained in the manual.
