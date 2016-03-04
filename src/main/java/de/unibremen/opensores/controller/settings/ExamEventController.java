@@ -463,42 +463,6 @@ public class ExamEventController {
     }
 
     /**
-     * Validates that the end date of the selected event is after the start date.
-     * @pre event Is not null and has a not null startDate
-     * @param context The FacesContext in which the validation is done.
-     * @param component The UIComponent for which the validation is done.
-     * @param value The value of the end date
-     * @throws ValidatorException If the input string doesnt match the First name followed
-     *                            by the last name of the user of the to be
-     *                            deleted participation class.
-     */
-    public void validateEndDateAfterStartDate(FacesContext context,
-                                              UIComponent component,
-                                              Object value) {
-
-        log.debug("validateEndDateAfterStartDate called with : " + value);
-
-        List<FacesMessage> messages = new ArrayList<>();
-        ResourceBundle bundle = ResourceBundle.getBundle("messages",
-                FacesContext.getCurrentInstance().getViewRoot().getLocale());
-        addFailMessage(bundle.getString("tutEvent.validatorMessageEndDate"));
-
-        if (!(value instanceof Date) || event.getStartDate() == null) {
-            log.debug("Returning.. value instance of Date? " + (value instanceof Date)
-                    + " is start date null? " + event.getStartDate());
-            return;
-        }
-
-        Date endDate = (Date) value;
-        log.debug("End Date: " + endDate);
-        log.debug("Start Date: " + event.getStartDate());
-        if (!endDate.after(event.getStartDate())) {
-            throw new ValidatorException(messages);
-        }
-        log.debug("Date is valid");
-    }
-
-    /**
      * Checks if the deadline is due for registration to
      * @return True if the deadline is over, false otherwise.
      */
@@ -556,8 +520,10 @@ public class ExamEventController {
             DualListModel<?> dualListModel = (DualListModel<?>) value;
             log.debug("Size of target list: " + dualListModel.getTarget());
             if (dualListModel.getTarget().size() > event.getMaxNumStudents()) {
-                throw new ValidatorException(new FacesMessage(bundle.getString(
-                        "examEvent.messageNumStudentsExceeded")));
+                throw new ValidatorException(
+                        new FacesMessage(FacesMessage.SEVERITY_FATAL,
+                                bundle.getString("common.error"),
+                                bundle.getString("examEvent.messageNumStudentsExceeded")));
             }
         }
 

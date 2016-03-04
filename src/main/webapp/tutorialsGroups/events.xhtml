@@ -84,7 +84,9 @@
                                 <p:calendar id="fromTutorCal" value="#{tutorialEventController.event.startDate}"
                                             locale="#{tutorialEventController.getLocaleCountry()}"
                                             required="true" validatorMessage="#{msg['tutEvent.validatorMessageStartDate']}"
-                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm">
+                                    <p:ajax event="dateSelect" update="toTutorCal"/>
+                                </p:calendar>
                             </div>
 
                             <p:outputLabel for="toTutorCal" value="#{msg['common.to']}"
@@ -93,8 +95,10 @@
                                 <p:calendar id="toTutorCal" value="#{tutorialEventController.event.endDate}"
                                             locale="#{tutorialEventController.getLocaleCountry()}"
                                             required="true"
-                                            validator="#{tutorialEventController.validateEndDateAfterStartDate}"
-                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm"/>
+                                            timeZone="#{EXcons.SYSTEM_TIMEZONE}" pattern="dd/MM/yyyy HH:mm">
+                                    <f:attribute name="start-date" value="#{tutorialEventController.event.startDate}"/>
+                                    <f:validator validatorId="dateRangeValidator"/>
+                                </p:calendar>
                             </div>
 
                             <p:outputLabel for="tutorDescr" value="#{msg['common.description']}"
