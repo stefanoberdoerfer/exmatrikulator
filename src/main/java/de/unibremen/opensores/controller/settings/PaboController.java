@@ -277,10 +277,11 @@ public class PaboController {
             addErrorMessage(bundle.getString("course.paboFile.messageErrorParsing"));
             return;
         }
+
         uploadFileName = event.getFile().getFileName();
         logFileUploaded(uploadFileName);
         List<PaboData> dataCopy = new ArrayList<>(rawParsedData);
-        log.debug("Size of raw parsed data: " + rawParsedData);
+        log.debug("Size of raw parsed data: " + rawParsedData.size());
 
         paboErrorMsgs = getPaboErrorsFromPaboData(dataCopy);
         matchedPaboStudents = matchPaboDataToStudents(rawParsedData, course.getStudents());
